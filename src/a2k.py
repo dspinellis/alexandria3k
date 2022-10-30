@@ -6,6 +6,8 @@ import sqlite3
 from uuid import uuid4
 import sys
 
+full_print = False
+
 
 def get_data_files(directory):
     columns = None
@@ -331,18 +333,20 @@ vdb.execute("CREATE VIRTUAL TABLE works USING filesource(sample)")
 vdb.execute("CREATE VIRTUAL TABLE authors USING filesource(sample)")
 
 # Streaming interface
-for r in vdb.execute("select * from works"):
-    print(r)
-(count,) = vdb.execute("select count(*) from works order by title").fetchone()
-print(f"{count} publication row(s)")
+if full_print:
+    for r in vdb.execute("SELECT * FROM works ORDER BY title"):
+        print(r)
+(count,) = vdb.execute("SELECT count(*) FROM works").fetchone()
+print(f"{count} publication(s)")
 
-for r in vdb.execute("select doi, id, orcid, given, family from authors"):
-    print(r)
+if full_print:
+    for r in vdb.execute("SELECT doi, id, orcid, given, family FROM authors"):
+        print(r)
 
 (count,) = vdb.execute(
-    "SELECT count(*) from (SELECT DISTINCT id FROM authors)"
+    "SELECT count(*) from (SELECT id FROM authors)"
 ).fetchone()
-print(f"{count} distinct authors")
+print(f"{count} author(s)")
 
 (count,) = vdb.execute(
     "SELECT count(*) FROM (SELECT DISTINCT doi FROM authors)"
@@ -365,11 +369,13 @@ vdb.execute("DETACH populated")
 
 # Populated database access
 db = sqlite3.connect("populated.db")
-for r in db.execute("select * from works order by title"):
-    print(r)
+if full_print:
+    for r in db.execute("select * from works order by title"):
+        print(r)
 
 for r in db.execute(
     """SELECT orcid, count(*) FROM authors
-         WHERE orcid is not null GROUP BY orcid"""
+         WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
+         LIMIT 10"""
 ):
     print(r)
