@@ -470,7 +470,7 @@ if full_print:
 
 # Authors with most publications
 for r in db.execute(
-    """SELECT orcid, count(*) FROM authors
+    """SELECT count(*), orcid FROM authors
          WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
          LIMIT 10"""
 ):
@@ -483,3 +483,33 @@ if full_print:
              INNER JOIN affiliations ON authors.id = affiliations.author_id"""
     ):
         print(r)
+
+# Canonicalize affiliations
+db.execute(
+    """CREATE TABLE affiliation_names AS
+  SELECT row_number() OVER (ORDER BY '') AS id, name
+  FROM (SELECT DISTINCT name FROM affiliations)"""
+)
+
+db.execute(
+    """CREATE TABLE author_affiliations AS
+  SELECT affiliation_names.id AS affiliation_id, affiliations.author_id
+    FROM affiliation_names INNER JOIN affiliations
+      ON affiliation_names.name = affiliations.name"""
+)
+
+db.execute(
+    """CREATE TABLE affiliation_works AS
+  SELECT DISTINCT affiliation_id, authors.doi
+    FROM author_affiliations
+    LEFT JOIN authors ON author_affiliations.author_id = authors.id"""
+)
+
+# Orgnizations with most publications
+for r in db.execute(
+    """SELECT count(*), name FROM affiliation_works
+    LEFT JOIN affiliation_names ON affiliation_names.id = affiliation_id
+    GROUP BY affiliation_id ORDER BY count(*) DESC
+    LIMIT 10"""
+):
+    print(r)
