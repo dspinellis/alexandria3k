@@ -134,28 +134,31 @@ class Source:
         if not self.data_files:
             self.data_files = get_data_files(data_directory)
         if table_name == "works":
-            return table_schema(table_name, work_columns), WorksTable(
-                work_columns, self.data_files
+            return table_schema(table_name, work_columns), StreamingTable(
+                work_columns, self.data_files, WorksCursor
             )
         if table_name == "authors":
-            return table_schema(table_name, author_columns), AuthorsTable(
-                author_columns, self.data_files
+            return table_schema(table_name, author_columns), StreamingTable(
+                author_columns, self.data_files, AuthorsCursor
             )
 
         if table_name == "affiliations":
             return table_schema(
                 table_name, affiliation_columns
-            ), AffiliationsTable(affiliation_columns, self.data_files)
+            ), StreamingTable(
+                affiliation_columns, self.data_files, AffiliationsCursor
+            )
 
     Connect = Create
 
 
 class StreamingTable:
-    """Common methods of tables streaming over data"""
+    """A table streaming over data through a supplied cursor class"""
 
-    def __init__(self, columns, data_files):
+    def __init__(self, columns, data_files, cursor_class):
         self.columns = columns
         self.data_files = data_files
+        self.cursor_class = cursor_class
 
     def BestIndex(self, *args):
         return None
@@ -165,26 +168,8 @@ class StreamingTable:
 
     Destroy = Disconnect
 
-
-class WorksTable(StreamingTable):
-    """A table of works"""
-
     def Open(self):
-        return WorksCursor(self)
-
-
-class AuthorsTable(StreamingTable):
-    """A table of work authors"""
-
-    def Open(self):
-        return AuthorsCursor(self)
-
-
-class AffiliationsTable(StreamingTable):
-    """A table of work authors"""
-
-    def Open(self):
-        return AffiliationsCursor(self)
+        return self.cursor_class(self)
 
 
 class FilesCursor:
