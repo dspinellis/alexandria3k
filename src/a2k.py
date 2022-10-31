@@ -140,6 +140,16 @@ reference_columns = [
     ("issn_type", lambda row: dict_value(row, "issn-type")),
 ]
 
+update_columns = [
+    ("work_doi", None),
+    ("label", lambda row: dict_value(row, "label")),
+    ("doi", lambda row: dict_value(row, "DOI")),
+    (
+        "timestamp",
+        lambda row: dict_value(dict_value(row, "updated"), "timestamp"),
+    ),
+]
+
 
 def table_columns(columns):
     """Return a comma-separated list of a table's columns"""
@@ -180,6 +190,11 @@ class Source:
         if table_name == "work_references":
             return table_schema(table_name, reference_columns), StreamingTable(
                 reference_columns, self.data_files, ReferencesCursor
+            )
+
+        if table_name == "work_updates":
+            return table_schema(table_name, update_columns), StreamingTable(
+                update_columns, self.data_files, UpdatesCursor
             )
 
     Connect = Create
@@ -288,7 +303,7 @@ class WorksCursor:
 
 
 class WorkElementsCursor:
-    """A cursor over a collection in the work items' data."""
+    """An (abstract) cursor over a collection in the work items' data."""
 
     __metaclass__ = abc.ABCMeta
 
@@ -379,7 +394,7 @@ class AuthorsCursor(WorkElementsCursor):
         if col == 0:  # id
             return self.Recordid()
 
-        if col == 1:  # DOI
+        if col == 1:  # work_doi
             return self.works_cursor.Row().get("DOI")
 
         return super().Column(col)
@@ -398,7 +413,26 @@ class ReferencesCursor(WorkElementsCursor):
         return (self.works_cursor.Rowid() << 24) | self.element_index
 
     def Column(self, col):
-        if col == 0:  # DOI
+        if col == 0:  # work_doi
+            return self.works_cursor.Row().get("DOI")
+
+        return super().Column(col)
+
+
+class UpdatesCursor(WorkElementsCursor):
+    """A cursor over the items' updates data."""
+
+    def ElementName(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return "update-to"
+
+    def Rowid(self):
+        """This allows for 16M updates"""
+        return (self.works_cursor.Rowid() << 24) | self.element_index
+
+    def Column(self, col):
+        if col == 0:  # work_doi
             return self.works_cursor.Row().get("DOI")
 
         return super().Column(col)
@@ -484,6 +518,7 @@ vdb.execute("CREATE VIRTUAL TABLE works USING filesource(sample)")
 vdb.execute("CREATE VIRTUAL TABLE work_authors USING filesource(sample)")
 vdb.execute("CREATE VIRTUAL TABLE author_affiliations USING filesource(sample)")
 vdb.execute("CREATE VIRTUAL TABLE work_references USING filesource(sample)")
+vdb.execute("CREATE VIRTUAL TABLE work_updates USING filesource(sample)")
 
 
 def sql_value(db, statement):
@@ -536,6 +571,9 @@ def database_counts(db):
     )
     print(f"{count} references(s) with DOI")
 
+    count = sql_value(db, "SELECT count(*) FROM work_updates")
+    print(f"{count} update(s)")
+
 
 database_counts(vdb)
 
@@ -583,6 +621,17 @@ vdb.execute(
 vdb.execute(
     """CREATE INDEX populated.work_references_work_doi_idx
     ON work_references(work_doi)"""
+)
+
+vdb.execute(
+    """CREATE TABLE populated.work_updates
+  AS SELECT work_updates.* FROM work_updates
+  INNER JOIN populated.works
+    ON work_updates.work_doi = populated.works.doi"""
+)
+vdb.execute(
+    """CREATE INDEX populated.work_updates_work_doi_idx
+    ON work_updates(work_doi)"""
 )
 
 vdb.execute("DETACH populated")
