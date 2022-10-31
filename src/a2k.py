@@ -402,9 +402,9 @@ vdb.execute("CREATE VIRTUAL TABLE authors USING filesource(sample)")
 vdb.execute("CREATE VIRTUAL TABLE affiliations USING filesource(sample)")
 
 
-def sql_value(statement):
-    """Return the first value of the specified SQL statement executed on vdb"""
-    (res,) = vdb.execute(statement).fetchone()
+def sql_value(db, statement):
+    """Return the first value of the specified SQL statement executed on db"""
+    (res,) = db.execute(statement).fetchone()
     return res
 
 
@@ -412,28 +412,35 @@ def sql_value(statement):
 if full_print:
     for r in vdb.execute("SELECT * FROM works ORDER BY title"):
         print(r)
-
-count = sql_value("SELECT count(*) FROM works")
-print(f"{count} publication(s)")
-
-if full_print:
     for r in vdb.execute("SELECT doi, id, orcid, given, family FROM authors"):
         print(r)
 
-count = sql_value("SELECT count(*) FROM authors")
-print(f"{count} author(s)")
 
-count = sql_value(
-    """SELECT count(*) from (SELECT DISTINCT orcid FROM authors
-                    WHERE orcid is not null)"""
-)
-print(f"{count} unique author ORCID(s)")
+def database_counts(db):
+    """Print various counts on the passed database"""
+    count = sql_value(db, "SELECT count(*) FROM works")
+    print(f"{count} publication(s)")
 
-count = sql_value("SELECT count(*) FROM (SELECT DISTINCT doi FROM authors)")
-print(f"{count} publication(s) with authors")
+    count = sql_value(db, "SELECT count(*) FROM authors")
+    print(f"{count} author(s)")
 
-count = sql_value("SELECT count(*) FROM affiliations")
-print(f"{count} affiliation(s)")
+    count = sql_value(
+        db,
+        """SELECT count(*) from (SELECT DISTINCT orcid FROM authors
+                        WHERE orcid is not null)""",
+    )
+    print(f"{count} unique author ORCID(s)")
+
+    count = sql_value(
+        db, "SELECT count(*) FROM (SELECT DISTINCT doi FROM authors)"
+    )
+    print(f"{count} publication(s) with authors")
+
+    count = sql_value(db, "SELECT count(*) FROM affiliations")
+    print(f"{count} affiliation(s)")
+
+
+database_counts(vdb)
 
 # Database population via SQLite
 db = sqlite3.connect("populated.db")
@@ -441,9 +448,23 @@ db.close()
 
 vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
 
-vdb.execute("CREATE TABLE populated.works AS SELECT * FROM works")
-vdb.execute("CREATE TABLE populated.authors AS SELECT * FROM authors")
-vdb.execute("CREATE TABLE populated.affiliations AS SELECT * FROM affiliations")
+vdb.execute(
+    """CREATE TABLE populated.works AS SELECT * FROM works
+            WHERE abs(random() % 100000) = 0"""
+)
+vdb.execute("CREATE INDEX populated.works_id_idx ON works(doi)")
+
+vdb.execute(
+    """CREATE TABLE populated.authors AS SELECT * FROM authors
+  INNER JOIN populated.works ON authors.doi = populated.works.doi"""
+)
+vdb.execute("CREATE INDEX populated.authors_id_idx ON authors(id)")
+
+vdb.execute(
+    """CREATE TABLE populated.affiliations AS SELECT * FROM affiliations
+  INNER JOIN populated.authors ON affiliations.author_id = populated.authors.id
+"""
+)
 
 vdb.execute("DETACH populated")
 
@@ -457,7 +478,7 @@ if full_print:
 for r in db.execute(
     """SELECT count(*), orcid FROM authors
          WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
-         LIMIT 10"""
+         LIMIT 3"""
 ):
     print(r)
 
@@ -495,6 +516,8 @@ for r in db.execute(
     """SELECT count(*), name FROM affiliation_works
     LEFT JOIN affiliation_names ON affiliation_names.id = affiliation_id
     GROUP BY affiliation_id ORDER BY count(*) DESC
-    LIMIT 10"""
+    LIMIT 3"""
 ):
     print(r)
+
+database_counts(db)
