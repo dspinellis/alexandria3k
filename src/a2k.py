@@ -94,7 +94,7 @@ work_columns = [
 ]
 
 author_columns = [
-    ("doi", None),
+    ("work_doi", None),
     ("id", None),
     ("orcid", lambda row: author_orcid(row)),
     ("suffix", lambda row: dict_value(row, "suffix")),
@@ -112,6 +112,32 @@ author_columns = [
 affiliation_columns = [
     ("author_id", None),
     ("name", lambda row: dict_value(row, "name")),
+]
+
+reference_columns = [
+    ("work_doi", None),
+    ("id", None),
+    ("issn", lambda row: dict_value(row, "issn")),
+    ("standards_body", lambda row: dict_value(row, "standards-body")),
+    ("issue", lambda row: dict_value(row, "issue")),
+    ("key", lambda row: dict_value(row, "key")),
+    ("series_title", lambda row: dict_value(row, "series-title")),
+    ("isbn_type", lambda row: dict_value(row, "isbn-type")),
+    ("doi_asserted-by", lambda row: dict_value(row, "doi-asserted-by")),
+    ("first_page", lambda row: dict_value(row, "first-page")),
+    ("isbn", lambda row: dict_value(row, "isbn")),
+    ("doi", lambda row: dict_value(row, "DOI")),
+    ("component", lambda row: dict_value(row, "component")),
+    ("article_title", lambda row: dict_value(row, "article-title")),
+    ("volume_title", lambda row: dict_value(row, "volume-title")),
+    ("volume", lambda row: dict_value(row, "volume")),
+    ("author", lambda row: dict_value(row, "author")),
+    ("standard_designator", lambda row: dict_value(row, "standard-designator")),
+    ("year", lambda row: dict_value(row, "year")),
+    ("unstructured", lambda row: dict_value(row, "unstructured")),
+    ("edition", lambda row: dict_value(row, "edition")),
+    ("journal_title", lambda row: dict_value(row, "journal-title")),
+    ("issn_type", lambda row: dict_value(row, "issn-type")),
 ]
 
 
@@ -133,20 +159,27 @@ class Source:
     def Create(self, db, module_name, db_name, table_name, data_directory):
         if not self.data_files:
             self.data_files = get_data_files(data_directory)
+
         if table_name == "works":
             return table_schema(table_name, work_columns), StreamingTable(
                 work_columns, self.data_files, WorksCursor
             )
-        if table_name == "authors":
+
+        if table_name == "work_authors":
             return table_schema(table_name, author_columns), StreamingTable(
                 author_columns, self.data_files, AuthorsCursor
             )
 
-        if table_name == "affiliations":
+        if table_name == "author_affiliations":
             return table_schema(
                 table_name, affiliation_columns
             ), StreamingTable(
                 affiliation_columns, self.data_files, AffiliationsCursor
+            )
+
+        if table_name == "work_references":
+            return table_schema(table_name, reference_columns), StreamingTable(
+                reference_columns, self.data_files, ReferencesCursor
             )
 
     Connect = Create
@@ -173,18 +206,21 @@ class StreamingTable:
 
 
 class FilesCursor:
-    """A cursor over the items data files. Internal use only. Not used by a table."""
+    """A cursor over the items data files. Internal use only.
+    Not used by a table."""
 
     def __init__(self, table):
         self.table = table
 
     def Filter(self, *args):
-        """Always called first to initialize an iteration to the first row of the table"""
+        """Always called first to initialize an iteration to the first row
+        of the table"""
         self.file_index = -1
         self.Next()
 
     def Next(self):
-        """Advance reading to the next available file. Files are assumed to be non-empty."""
+        """Advance reading to the next available file. Files are assumed to be
+        non-empty."""
         if self.file_index + 1 >= len(self.table.data_files):
             self.eof = True
             return
@@ -233,7 +269,8 @@ class WorksCursor:
         return extract_function(self.Row())
 
     def Filter(self, *args):
-        """Always called first to initialize an iteration to the first row of the table"""
+        """Always called first to initialize an iteration to the first row
+        of the table"""
         self.files_cursor.Filter(*args)
         self.eof = self.files_cursor.Eof()
         self.item_index = 0
@@ -258,7 +295,8 @@ class AuthorsCursor:
         self.works_cursor = WorksCursor(table)
 
     def Filter(self, *args):
-        """Always called first to initialize an iteration to the first row of the table"""
+        """Always called first to initialize an iteration to the first row
+        of the table"""
         self.works_cursor.Filter(*args)
         self.authors = None
         self.Next()
@@ -287,13 +325,11 @@ class AuthorsCursor:
         if col == 0:  # DOI
             return self.works_cursor.Row().get("DOI")
 
-        row = self.Row()
-
         if col == 1:  # id
             return self.Recordid()
 
         (_, extract_function) = self.table.columns[col]
-        return extract_function(row)
+        return extract_function(self.Row())
 
     def Next(self):
         """Advance reading to the next available author."""
@@ -328,7 +364,8 @@ class AffiliationsCursor:
         self.authors_cursor = AuthorsCursor(table)
 
     def Filter(self, *args):
-        """Always called first to initialize an iteration to the first row of the table"""
+        """Always called first to initialize an iteration to the first row
+        of the table"""
         self.authors_cursor.Filter(*args)
         self.affiliations = None
         self.Next()
@@ -352,10 +389,8 @@ class AffiliationsCursor:
         if col == 0:  # Author-id
             return self.authors_cursor.Recordid()
 
-        row = self.Row()
-
         (_, extract_function) = self.table.columns[col]
-        return extract_function(row)
+        return extract_function(self.Row())
 
     def Next(self):
         """Advance reading to the next available affiliation ."""
@@ -382,6 +417,74 @@ class AffiliationsCursor:
         self.affiliations = None
 
 
+class ReferencesCursor:
+    """A cursor over the items' references data."""
+
+    def __init__(self, table):
+        self.table = table
+        self.works_cursor = WorksCursor(table)
+
+    def Filter(self, *args):
+        """Always called first to initialize an iteration to the first
+        row of the table"""
+        self.works_cursor.Filter(*args)
+        self.references = None
+        self.Next()
+
+    def Eof(self):
+        return self.eof
+
+    def Rowid(self):
+        """This allows for 16M references"""
+        return (self.works_cursor.Rowid() << 24) | self.reference_index
+
+    def Recordid(self):
+        """Return the record's identifier. Not part of the apsw API."""
+        # Zero-pad for 60 bits
+        return f"{self.Rowid():015X}"
+
+    def Row(self):
+        """Return the current row. Not part of the apsw API."""
+        return self.references[self.reference_index]
+
+    def Column(self, col):
+        if col == -1:
+            return self.Rowid()
+
+        if col == 0:  # DOI
+            return self.works_cursor.Row().get("DOI")
+
+        if col == 1:  # id
+            return self.Recordid()
+
+        (_, extract_function) = self.table.columns[col]
+        return extract_function(self.Row())
+
+    def Next(self):
+        """Advance reading to the next available author."""
+        while True:
+            if self.works_cursor.Eof():
+                self.eof = True
+                return
+            if not self.references:
+                self.references = self.works_cursor.Row().get("reference")
+                self.reference_index = -1
+            if not self.references:
+                self.works_cursor.Next()
+                self.references = None
+                continue
+            if self.reference_index + 1 < len(self.references):
+                self.reference_index += 1
+                self.eof = False
+                return
+            self.works_cursor.Next()
+            self.references = None
+
+    def Close(self):
+        self.works_cursor.Close()
+        self.references = None
+
+
 try:
     os.unlink("virtual.db")
 except FileNotFoundError:
@@ -398,8 +501,9 @@ vdb = apsw.Connection("virtual.db")
 vdb.createmodule("filesource", Source())
 
 vdb.execute("CREATE VIRTUAL TABLE works USING filesource(sample)")
-vdb.execute("CREATE VIRTUAL TABLE authors USING filesource(sample)")
-vdb.execute("CREATE VIRTUAL TABLE affiliations USING filesource(sample)")
+vdb.execute("CREATE VIRTUAL TABLE work_authors USING filesource(sample)")
+vdb.execute("CREATE VIRTUAL TABLE author_affiliations USING filesource(sample)")
+vdb.execute("CREATE VIRTUAL TABLE work_references USING filesource(sample)")
 
 
 def sql_value(db, statement):
@@ -412,7 +516,10 @@ def sql_value(db, statement):
 if full_print:
     for r in vdb.execute("SELECT * FROM works ORDER BY title"):
         print(r)
-    for r in vdb.execute("SELECT doi, id, orcid, given, family FROM authors"):
+    for r in vdb.execute(
+        """SELECT work_doi, id, orcid, given, family
+        FROM work_authors"""
+    ):
         print(r)
 
 
@@ -421,23 +528,33 @@ def database_counts(db):
     count = sql_value(db, "SELECT count(*) FROM works")
     print(f"{count} publication(s)")
 
-    count = sql_value(db, "SELECT count(*) FROM authors")
+    count = sql_value(db, "SELECT count(*) FROM work_authors")
     print(f"{count} author(s)")
 
     count = sql_value(
         db,
-        """SELECT count(*) from (SELECT DISTINCT orcid FROM authors
+        """SELECT count(*) from (SELECT DISTINCT orcid FROM work_authors
                         WHERE orcid is not null)""",
     )
     print(f"{count} unique author ORCID(s)")
 
     count = sql_value(
-        db, "SELECT count(*) FROM (SELECT DISTINCT doi FROM authors)"
+        db, "SELECT count(*) FROM (SELECT DISTINCT work_doi FROM work_authors)"
     )
-    print(f"{count} publication(s) with authors")
+    print(f"{count} publication(s) with work_authors")
 
-    count = sql_value(db, "SELECT count(*) FROM affiliations")
+    count = sql_value(db, "SELECT count(*) FROM author_affiliations")
     print(f"{count} affiliation(s)")
+
+    count = sql_value(db, "SELECT count(*) FROM work_references")
+    print(f"{count} references(s)")
+
+    count = sql_value(
+        db,
+        """SELECT count(*) FROM work_references WHERE
+                      doi is not null""",
+    )
+    print(f"{count} references(s) with DOI")
 
 
 database_counts(vdb)
@@ -450,20 +567,46 @@ vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
 
 vdb.execute(
     """CREATE TABLE populated.works AS SELECT * FROM works
-            WHERE abs(random() % 100000) = 0"""
+            WHERE true or abs(random() % 100000) = 0"""
 )
-vdb.execute("CREATE INDEX populated.works_id_idx ON works(doi)")
+vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
 
 vdb.execute(
-    """CREATE TABLE populated.authors AS SELECT * FROM authors
-  INNER JOIN populated.works ON authors.doi = populated.works.doi"""
+    """CREATE TABLE populated.work_authors
+  AS SELECT work_authors.* FROM work_authors
+  INNER JOIN populated.works ON work_authors.work_doi = populated.works.doi"""
 )
-vdb.execute("CREATE INDEX populated.authors_id_idx ON authors(id)")
+vdb.execute("CREATE INDEX populated.work_authors_id_idx ON work_authors(id)")
+vdb.execute(
+    """CREATE INDEX populated.work_authors_work_doi_idx
+    ON work_authors(work_doi)"""
+)
 
 vdb.execute(
-    """CREATE TABLE populated.affiliations AS SELECT * FROM affiliations
-  INNER JOIN populated.authors ON affiliations.author_id = populated.authors.id
+    """CREATE TABLE populated.author_affiliations AS
+        SELECT author_affiliations.* FROM author_affiliations
+        INNER JOIN populated.work_authors
+            ON author_affiliations.author_id = populated.work_authors.id
 """
+)
+vdb.execute(
+    """CREATE INDEX populated.author_affiliations_author_id_idx
+    ON author_affiliations(author_id)"""
+)
+
+vdb.execute(
+    """CREATE TABLE populated.work_references
+  AS SELECT work_references.* FROM work_references
+  INNER JOIN populated.works
+    ON work_references.work_doi = populated.works.doi"""
+)
+vdb.execute(
+    """CREATE INDEX populated.work_references_id_idx
+    ON work_references(id)"""
+)
+vdb.execute(
+    """CREATE INDEX populated.work_references_work_doi_idx
+    ON work_references(work_doi)"""
 )
 
 vdb.execute("DETACH populated")
@@ -476,7 +619,7 @@ if full_print:
 
 # Authors with most publications
 for r in db.execute(
-    """SELECT count(*), orcid FROM authors
+    """SELECT count(*), orcid FROM work_authors
          WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
          LIMIT 3"""
 ):
@@ -485,8 +628,10 @@ for r in db.execute(
 # Author affiliations
 if full_print:
     for r in db.execute(
-        """SELECT authors.given, authors.family, affiliations.name FROM authors
-             INNER JOIN affiliations ON authors.id = affiliations.author_id"""
+        """SELECT work_authors.given, work_authors.family,
+            author_affiliations.name FROM work_authors
+             INNER JOIN author_affiliations
+                ON work_authors.id = author_affiliations.author_id"""
     ):
         print(r)
 
@@ -494,28 +639,36 @@ if full_print:
 db.execute(
     """CREATE TABLE affiliation_names AS
   SELECT row_number() OVER (ORDER BY '') AS id, name
-  FROM (SELECT DISTINCT name FROM affiliations)"""
+  FROM (SELECT DISTINCT name FROM author_affiliations)"""
 )
 
 db.execute(
-    """CREATE TABLE author_affiliations AS
-  SELECT affiliation_names.id AS affiliation_id, affiliations.author_id
-    FROM affiliation_names INNER JOIN affiliations
-      ON affiliation_names.name = affiliations.name"""
+    """CREATE TABLE authors_affiliations AS
+  SELECT affiliation_names.id AS affiliation_id, author_affiliations.author_id
+    FROM affiliation_names INNER JOIN author_affiliations
+      ON affiliation_names.name = author_affiliations.name"""
 )
 
 db.execute(
     """CREATE TABLE affiliation_works AS
-  SELECT DISTINCT affiliation_id, authors.doi
-    FROM author_affiliations
-    LEFT JOIN authors ON author_affiliations.author_id = authors.id"""
+  SELECT DISTINCT affiliation_id, work_authors.work_doi
+    FROM authors_affiliations
+    LEFT JOIN work_authors ON authors_affiliations.author_id = work_authors.id"""
 )
 
-# Orgnizations with most publications
+# Organizations with most publications
 for r in db.execute(
     """SELECT count(*), name FROM affiliation_works
     LEFT JOIN affiliation_names ON affiliation_names.id = affiliation_id
     GROUP BY affiliation_id ORDER BY count(*) DESC
+    LIMIT 3"""
+):
+    print(r)
+
+# Most cited references
+for r in db.execute(
+    """SELECT count(*), doi FROM work_references
+    GROUP BY doi ORDER BY count(*) DESC
     LIMIT 3"""
 ):
     print(r)
