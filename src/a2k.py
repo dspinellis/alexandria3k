@@ -456,14 +456,9 @@ db.close()
 
 vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
 
-vdb.execute(table_schema("populated.works", work_columns))
-vdb.execute("INSERT INTO populated.works SELECT * FROM works")
-
-vdb.execute(table_schema("populated.authors", author_columns))
-vdb.execute("INSERT INTO populated.authors SELECT * FROM authors")
-
-vdb.execute(table_schema("populated.affiliations", affiliation_columns))
-vdb.execute("INSERT INTO populated.affiliations SELECT * FROM affiliations")
+vdb.execute("CREATE TABLE populated.works AS SELECT * FROM works")
+vdb.execute("CREATE TABLE populated.authors AS SELECT * FROM authors")
+vdb.execute("CREATE TABLE populated.affiliations AS SELECT * FROM affiliations")
 
 vdb.execute("DETACH populated")
 
@@ -482,8 +477,9 @@ for r in db.execute(
     print(r)
 
 # Author affiliations
-for r in db.execute(
-    """SELECT authors.given, authors.family, affiliations.name FROM authors
-         INNER JOIN affiliations ON authors.id = affiliations.author_id"""
-):
-    print(r)
+if full_print:
+    for r in db.execute(
+        """SELECT authors.given, authors.family, affiliations.name FROM authors
+             INNER JOIN affiliations ON authors.id = affiliations.author_id"""
+    ):
+        print(r)
