@@ -94,8 +94,8 @@ work_columns = [
 ]
 
 author_columns = [
-    ("work_doi", None),
     ("id", None),
+    ("work_doi", None),
     ("orcid", lambda row: author_orcid(row)),
     ("suffix", lambda row: dict_value(row, "suffix")),
     ("given", lambda row: dict_value(row, "given")),
@@ -116,7 +116,6 @@ affiliation_columns = [
 
 reference_columns = [
     ("work_doi", None),
-    ("id", None),
     ("issn", lambda row: dict_value(row, "issn")),
     ("standards_body", lambda row: dict_value(row, "standards-body")),
     ("issue", lambda row: dict_value(row, "issue")),
@@ -322,11 +321,11 @@ class AuthorsCursor:
         if col == -1:
             return self.Rowid()
 
-        if col == 0:  # DOI
-            return self.works_cursor.Row().get("DOI")
-
-        if col == 1:  # id
+        if col == 0:  # id
             return self.Recordid()
+
+        if col == 1:  # DOI
+            return self.works_cursor.Row().get("DOI")
 
         (_, extract_function) = self.table.columns[col]
         return extract_function(self.Row())
@@ -453,9 +452,6 @@ class ReferencesCursor:
 
         if col == 0:  # DOI
             return self.works_cursor.Row().get("DOI")
-
-        if col == 1:  # id
-            return self.Recordid()
 
         (_, extract_function) = self.table.columns[col]
         return extract_function(self.Row())
@@ -599,10 +595,6 @@ vdb.execute(
   AS SELECT work_references.* FROM work_references
   INNER JOIN populated.works
     ON work_references.work_doi = populated.works.doi"""
-)
-vdb.execute(
-    """CREATE INDEX populated.work_references_id_idx
-    ON work_references(id)"""
 )
 vdb.execute(
     """CREATE INDEX populated.work_references_work_doi_idx
