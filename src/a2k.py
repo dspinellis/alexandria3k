@@ -109,6 +109,11 @@ author_columns = [
     ("sequence", lambda row: dict_value(row, "sequence")),
 ]
 
+affiliation_columns = [
+    ("author_id", None),
+    ("name", lambda row: dict_value(row, "name")),
+]
+
 
 def table_columns(columns):
     """Return a comma-separated list of a table's columns"""
@@ -136,6 +141,11 @@ class Source:
             return table_schema(table_name, author_columns), AuthorsTable(
                 author_columns, self.data_files
             )
+
+        if table_name == "affiliations":
+            return table_schema(
+                table_name, affiliation_columns
+            ), AffiliationsTable(affiliation_columns, self.data_files)
 
     Connect = Create
 
@@ -168,6 +178,13 @@ class AuthorsTable(StreamingTable):
 
     def Open(self):
         return AuthorsCursor(self)
+
+
+class AffiliationsTable(StreamingTable):
+    """A table of work authors"""
+
+    def Open(self):
+        return AffiliationsCursor(self)
 
 
 class FilesCursor:
@@ -269,6 +286,11 @@ class AuthorsCursor:
         authors."""
         return (self.works_cursor.Rowid() << 16) | self.author_index
 
+    def Recordid(self):
+        """Return the record's identifier. Not part of the apsw API."""
+        # Zero-pad for 60 bits
+        return f"{self.Rowid():015X}"
+
     def Row(self):
         """Return the current row. Not part of the apsw API."""
         return self.authors[self.author_index]
@@ -283,8 +305,7 @@ class AuthorsCursor:
         row = self.Row()
 
         if col == 1:  # id
-            # Zero-pad for 60 bits
-            return f"{self.Rowid():015X}"
+            return self.Recordid()
 
         (_, extract_function) = self.table.columns[col]
         return extract_function(row)
@@ -314,6 +335,68 @@ class AuthorsCursor:
         self.authors = None
 
 
+class AffiliationsCursor:
+    """A cursor over the authors' affiliation data."""
+
+    def __init__(self, table):
+        self.table = table
+        self.authors_cursor = AuthorsCursor(table)
+
+    def Filter(self, *args):
+        """Always called first to initialize an iteration to the first row of the table"""
+        self.authors_cursor.Filter(*args)
+        self.affiliations = None
+        self.Next()
+
+    def Eof(self):
+        return self.eof
+
+    def Rowid(self):
+        """This allows for 128 affiliations per author
+        authors."""
+        return (self.authors_cursor.Rowid() << 7) | self.affiliation_index
+
+    def Row(self):
+        """Return the current row. Not part of the apsw API."""
+        return self.affiliations[self.affiliation_index]
+
+    def Column(self, col):
+        if col == -1:
+            return self.Rowid()
+
+        if col == 0:  # Author-id
+            return self.authors_cursor.Recordid()
+
+        row = self.Row()
+
+        (_, extract_function) = self.table.columns[col]
+        return extract_function(row)
+
+    def Next(self):
+        """Advance reading to the next available affiliation ."""
+        while True:
+            if self.authors_cursor.Eof():
+                self.eof = True
+                return
+            if not self.affiliations:
+                self.affiliations = self.authors_cursor.Row().get("affiliation")
+                self.affiliation_index = -1
+            if not self.affiliations:
+                self.authors_cursor.Next()
+                self.affiliations = None
+                continue
+            if self.affiliation_index + 1 < len(self.affiliations):
+                self.affiliation_index += 1
+                self.eof = False
+                return
+            self.authors_cursor.Next()
+            self.affiliations = None
+
+    def Close(self):
+        self.authors_cursor.Close()
+        self.affiliations = None
+
+
 try:
     os.unlink("virtual.db")
 except FileNotFoundError:
@@ -331,27 +414,41 @@ vdb.createmodule("filesource", Source())
 
 vdb.execute("CREATE VIRTUAL TABLE works USING filesource(sample)")
 vdb.execute("CREATE VIRTUAL TABLE authors USING filesource(sample)")
+vdb.execute("CREATE VIRTUAL TABLE affiliations USING filesource(sample)")
+
+
+def sql_value(statement):
+    """Return the first value of the specified SQL statement executed on vdb"""
+    (res,) = vdb.execute(statement).fetchone()
+    return res
+
 
 # Streaming interface
 if full_print:
     for r in vdb.execute("SELECT * FROM works ORDER BY title"):
         print(r)
-(count,) = vdb.execute("SELECT count(*) FROM works").fetchone()
+
+count = sql_value("SELECT count(*) FROM works")
 print(f"{count} publication(s)")
 
 if full_print:
     for r in vdb.execute("SELECT doi, id, orcid, given, family FROM authors"):
         print(r)
 
-(count,) = vdb.execute(
-    "SELECT count(*) from (SELECT id FROM authors)"
-).fetchone()
+count = sql_value("SELECT count(*) FROM authors")
 print(f"{count} author(s)")
 
-(count,) = vdb.execute(
-    "SELECT count(*) FROM (SELECT DISTINCT doi FROM authors)"
-).fetchone()
+count = sql_value(
+    """SELECT count(*) from (SELECT DISTINCT orcid FROM authors
+                    WHERE orcid is not null)"""
+)
+print(f"{count} unique author ORCID(s)")
+
+count = sql_value("SELECT count(*) FROM (SELECT DISTINCT doi FROM authors)")
 print(f"{count} publication(s) with authors")
+
+count = sql_value("SELECT count(*) FROM affiliations")
+print(f"{count} affiliation(s)")
 
 # Database population via SQLite
 db = sqlite3.connect("populated.db")
@@ -365,6 +462,9 @@ vdb.execute("INSERT INTO populated.works SELECT * FROM works")
 vdb.execute(table_schema("populated.authors", author_columns))
 vdb.execute("INSERT INTO populated.authors SELECT * FROM authors")
 
+vdb.execute(table_schema("populated.affiliations", affiliation_columns))
+vdb.execute("INSERT INTO populated.affiliations SELECT * FROM affiliations")
+
 vdb.execute("DETACH populated")
 
 # Populated database access
@@ -373,9 +473,17 @@ if full_print:
     for r in db.execute("select * from works order by title"):
         print(r)
 
+# Authors with most publications
 for r in db.execute(
     """SELECT orcid, count(*) FROM authors
          WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
          LIMIT 10"""
+):
+    print(r)
+
+# Author affiliations
+for r in db.execute(
+    """SELECT authors.given, authors.family, affiliations.name FROM authors
+         INNER JOIN affiliations ON authors.id = affiliations.author_id"""
 ):
     print(r)
