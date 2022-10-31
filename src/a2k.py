@@ -1,3 +1,4 @@
+import abc
 import apsw
 import gzip
 import json
@@ -286,27 +287,35 @@ class WorksCursor:
         self.files_cursor.Close()
 
 
-class AuthorsCursor:
-    """A cursor over the items' authors data."""
+class WorkElementsCursor:
+    """A cursor over a collection in the work items' data."""
+
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, table):
         self.table = table
         self.works_cursor = WorksCursor(table)
 
+    @abc.abstractmethod
+    def ElementName(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return
+
     def Filter(self, *args):
         """Always called first to initialize an iteration to the first row
         of the table"""
         self.works_cursor.Filter(*args)
-        self.authors = None
+        self.elements = None
         self.Next()
 
     def Eof(self):
         return self.eof
 
+    @abc.abstractmethod
     def Rowid(self):
-        """This allows for 65k authors. There is a Physics paper with 5k
-        authors."""
-        return (self.works_cursor.Rowid() << 16) | self.author_index
+        """Return a unique id of the row along all records"""
+        return
 
     def Recordid(self):
         """Return the record's identifier. Not part of the apsw API."""
@@ -315,44 +324,84 @@ class AuthorsCursor:
 
     def Row(self):
         """Return the current row. Not part of the apsw API."""
-        return self.authors[self.author_index]
+        return self.elements[self.element_index]
+
+    @abc.abstractmethod
+    def Column(self, col):
+        return
+
+    def Next(self):
+        """Advance reading to the next available element."""
+        while True:
+            if self.works_cursor.Eof():
+                self.eof = True
+                return
+            if not self.elements:
+                self.elements = self.works_cursor.Row().get(self.ElementName())
+                self.element_index = -1
+            if not self.elements:
+                self.works_cursor.Next()
+                self.elements = None
+                continue
+            if self.element_index + 1 < len(self.elements):
+                self.element_index += 1
+                self.eof = False
+                return
+            self.works_cursor.Next()
+            self.elements = None
 
     def Column(self, col):
         if col == -1:
             return self.Rowid()
 
+        (_, extract_function) = self.table.columns[col]
+        return extract_function(self.Row())
+
+    def Close(self):
+        self.works_cursor.Close()
+        self.elements = None
+
+
+class AuthorsCursor(WorkElementsCursor):
+    """A cursor over the items' authors data."""
+
+    def ElementName(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return "author"
+
+    def Rowid(self):
+        """This allows for 65k authors. There is a Physics paper with 5k
+        authors."""
+        return (self.works_cursor.Rowid() << 16) | self.element_index
+
+    def Column(self, col):
         if col == 0:  # id
             return self.Recordid()
 
         if col == 1:  # DOI
             return self.works_cursor.Row().get("DOI")
 
-        (_, extract_function) = self.table.columns[col]
-        return extract_function(self.Row())
+        return super().Column(col)
 
-    def Next(self):
-        """Advance reading to the next available author."""
-        while True:
-            if self.works_cursor.Eof():
-                self.eof = True
-                return
-            if not self.authors:
-                self.authors = self.works_cursor.Row().get("author")
-                self.author_index = -1
-            if not self.authors:
-                self.works_cursor.Next()
-                self.authors = None
-                continue
-            if self.author_index + 1 < len(self.authors):
-                self.author_index += 1
-                self.eof = False
-                return
-            self.works_cursor.Next()
-            self.authors = None
 
-    def Close(self):
-        self.works_cursor.Close()
-        self.authors = None
+class ReferencesCursor(WorkElementsCursor):
+    """A cursor over the items' references data."""
+
+    def ElementName(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return "reference"
+
+    def Rowid(self):
+        """This allows for 16M references"""
+        return (self.works_cursor.Rowid() << 24) | self.element_index
+
+    def Column(self, col):
+        if col == 0:  # DOI
+            return self.works_cursor.Row().get("DOI")
+
+        return super().Column(col)
 
 
 class AffiliationsCursor:
@@ -414,71 +463,6 @@ class AffiliationsCursor:
     def Close(self):
         self.authors_cursor.Close()
         self.affiliations = None
-
-
-class ReferencesCursor:
-    """A cursor over the items' references data."""
-
-    def __init__(self, table):
-        self.table = table
-        self.works_cursor = WorksCursor(table)
-
-    def Filter(self, *args):
-        """Always called first to initialize an iteration to the first
-        row of the table"""
-        self.works_cursor.Filter(*args)
-        self.references = None
-        self.Next()
-
-    def Eof(self):
-        return self.eof
-
-    def Rowid(self):
-        """This allows for 16M references"""
-        return (self.works_cursor.Rowid() << 24) | self.reference_index
-
-    def Recordid(self):
-        """Return the record's identifier. Not part of the apsw API."""
-        # Zero-pad for 60 bits
-        return f"{self.Rowid():015X}"
-
-    def Row(self):
-        """Return the current row. Not part of the apsw API."""
-        return self.references[self.reference_index]
-
-    def Column(self, col):
-        if col == -1:
-            return self.Rowid()
-
-        if col == 0:  # DOI
-            return self.works_cursor.Row().get("DOI")
-
-        (_, extract_function) = self.table.columns[col]
-        return extract_function(self.Row())
-
-    def Next(self):
-        """Advance reading to the next available author."""
-        while True:
-            if self.works_cursor.Eof():
-                self.eof = True
-                return
-            if not self.references:
-                self.references = self.works_cursor.Row().get("reference")
-                self.reference_index = -1
-            if not self.references:
-                self.works_cursor.Next()
-                self.references = None
-                continue
-            if self.reference_index + 1 < len(self.references):
-                self.reference_index += 1
-                self.eof = False
-                return
-            self.works_cursor.Next()
-            self.references = None
-
-    def Close(self):
-        self.works_cursor.Close()
-        self.references = None
 
 
 try:
