@@ -63,6 +63,18 @@ def boolean_value(d, k):
     return 0
 
 
+def len_value(d, k):
+    """Return array length or None for the corresponding JSON value for key k
+    of dict d"""
+    if not d:
+        return None
+    try:
+        v = d[k]
+    except KeyError:
+        return None
+    return len(v)
+
+
 def first_value(a):
     """Return the first element of array a or None if it doesn't exist"""
     return array_value(a, 0)
@@ -92,6 +104,8 @@ work_columns = [
             2,
         ),
     ),
+    # Synthetic column, which can be used for population filtering
+    ("update_count", lambda row: len_value(row, "update-to")),
 ]
 
 author_columns = [
@@ -583,9 +597,11 @@ db.close()
 
 vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
 
+# Sampling:
+#           WHERE abs(random() % 100000) = 0"""
 vdb.execute(
     """CREATE TABLE populated.works AS SELECT * FROM works
-            WHERE true or abs(random() % 100000) = 0"""
+            WHERE update_count is not null"""
 )
 vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
 
