@@ -668,16 +668,28 @@ vdb.execute(
 )
 
 vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
+vdb.execute("CREATE INDEX populated.work_authors_id_idx ON work_authors(id)")
+vdb.execute(
+    """CREATE INDEX populated.work_authors_work_doi_idx
+    ON work_authors(work_doi)"""
+)
+vdb.execute(
+    """CREATE INDEX populated.author_affiliations_author_id_idx
+    ON author_affiliations(author_id)"""
+)
+vdb.execute(
+    """CREATE INDEX populated.work_references_work_doi_idx
+    ON work_references(work_doi)"""
+)
+vdb.execute(
+    """CREATE INDEX populated.work_updates_work_doi_idx
+    ON work_updates(work_doi)"""
+)
 
 vdb.execute(
     """INSERT INTO populated.work_authors
   SELECT work_authors.* FROM work_authors
   INNER JOIN populated.works ON work_authors.work_doi = populated.works.doi"""
-)
-vdb.execute("CREATE INDEX populated.work_authors_id_idx ON work_authors(id)")
-vdb.execute(
-    """CREATE INDEX populated.work_authors_work_doi_idx
-    ON work_authors(work_doi)"""
 )
 
 vdb.execute(
@@ -687,10 +699,6 @@ vdb.execute(
             ON author_affiliations.author_id = populated.work_authors.id
 """
 )
-vdb.execute(
-    """CREATE INDEX populated.author_affiliations_author_id_idx
-    ON author_affiliations(author_id)"""
-)
 
 vdb.execute(
     """INSERT INTO populated.work_references
@@ -698,20 +706,12 @@ vdb.execute(
   INNER JOIN populated.works
     ON work_references.work_doi = populated.works.doi"""
 )
-vdb.execute(
-    """CREATE INDEX populated.work_references_work_doi_idx
-    ON work_references(work_doi)"""
-)
 
 vdb.execute(
     """INSERT INTO populated.work_updates
   SELECT work_updates.* FROM work_updates
   INNER JOIN populated.works
     ON work_updates.work_doi = populated.works.doi"""
-)
-vdb.execute(
-    """CREATE INDEX populated.work_updates_work_doi_idx
-    ON work_updates(work_doi)"""
 )
 
 vdb.execute("DETACH populated")
