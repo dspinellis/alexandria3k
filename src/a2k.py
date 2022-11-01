@@ -80,99 +80,50 @@ def first_value(a):
     return array_value(a, 0)
 
 
-work_columns = [
-    ("DOI", lambda row: dict_value(row, "DOI")),
-    ("title", lambda row: first_value(dict_value(row, "title"))),
-    (
-        "work_year",
-        lambda row: array_value(
-            first_value(dict_value(dict_value(row, "published"), "date-parts")),
-            0,
-        ),
-    ),
-    (
-        "work_month",
-        lambda row: array_value(
-            first_value(dict_value(dict_value(row, "published"), "date-parts")),
-            1,
-        ),
-    ),
-    (
-        "work_day",
-        lambda row: array_value(
-            first_value(dict_value(dict_value(row, "published"), "date-parts")),
-            2,
-        ),
-    ),
-    # Synthetic column, which can be used for population filtering
-    ("update_count", lambda row: len_value(row, "update-to")),
-]
+class TableMeta:
+    """Meta-data of tables we maintain"""
 
-author_columns = [
-    ("id", None),
-    ("work_doi", None),
-    ("orcid", lambda row: author_orcid(row)),
-    ("suffix", lambda row: dict_value(row, "suffix")),
-    ("given", lambda row: dict_value(row, "given")),
-    ("family", lambda row: dict_value(row, "family")),
-    ("name", lambda row: dict_value(row, "name")),
-    (
-        "authenticated_orcid",
-        lambda row: boolean_value(row, "authenticated-orcid"),
-    ),
-    ("prefix", lambda row: dict_value(row, "prefix")),
-    ("sequence", lambda row: dict_value(row, "sequence")),
-]
+    def __init__(self, name, cursor_class, columns):
+        self.name = name
+        self.columns = columns
+        self.cursor_class = cursor_class
 
-affiliation_columns = [
-    ("author_id", None),
-    ("name", lambda row: dict_value(row, "name")),
-]
+    def column_list(self):
+        """Return a comma-separated list of a table's columns"""
+        return ",".join([f"'{c.get_name()}'" for c in self.columns])
 
-reference_columns = [
-    ("work_doi", None),
-    ("issn", lambda row: dict_value(row, "issn")),
-    ("standards_body", lambda row: dict_value(row, "standards-body")),
-    ("issue", lambda row: dict_value(row, "issue")),
-    ("key", lambda row: dict_value(row, "key")),
-    ("series_title", lambda row: dict_value(row, "series-title")),
-    ("isbn_type", lambda row: dict_value(row, "isbn-type")),
-    ("doi_asserted-by", lambda row: dict_value(row, "doi-asserted-by")),
-    ("first_page", lambda row: dict_value(row, "first-page")),
-    ("isbn", lambda row: dict_value(row, "isbn")),
-    ("doi", lambda row: dict_value(row, "DOI")),
-    ("component", lambda row: dict_value(row, "component")),
-    ("article_title", lambda row: dict_value(row, "article-title")),
-    ("volume_title", lambda row: dict_value(row, "volume-title")),
-    ("volume", lambda row: dict_value(row, "volume")),
-    ("author", lambda row: dict_value(row, "author")),
-    ("standard_designator", lambda row: dict_value(row, "standard-designator")),
-    ("year", lambda row: dict_value(row, "year")),
-    ("unstructured", lambda row: dict_value(row, "unstructured")),
-    ("edition", lambda row: dict_value(row, "edition")),
-    ("journal_title", lambda row: dict_value(row, "journal-title")),
-    ("issn_type", lambda row: dict_value(row, "issn-type")),
-]
+    def table_schema(self):
+        """Return the SQL command to create a table's schema"""
+        return f"CREATE TABLE {self.name}(" + self.column_list() + ")"
 
-update_columns = [
-    ("work_doi", None),
-    ("label", lambda row: dict_value(row, "label")),
-    ("doi", lambda row: dict_value(row, "DOI")),
-    (
-        "timestamp",
-        lambda row: dict_value(dict_value(row, "updated"), "timestamp"),
-    ),
-]
+    def get_name(self):
+        return self.name
+
+    def get_cursor_class(self):
+        return self.cursor_class
+
+    def get_value_extractor(self, i):
+        """Return the value extraction function for column at ordinal i"""
+        return self.columns[i].get_value_extractor()
+
+    def creation_tuple(self, data_files):
+        """Return the tuple required by the apsw.Source.Create method"""
+        return self.table_schema(), StreamingTable(self, data_files)
 
 
-def table_columns(columns):
-    """Return a comma-separated list of a table's columns"""
-    return ",".join([f"'{name}'" for (name, _) in columns])
+class ColumnMeta:
+    """Meta-data of table columns we maintain"""
 
+    def __init__(self, name, value_extractor):
+        self.name = name
+        self.value_extractor = value_extractor
 
-def table_schema(table_name, columns):
-    """Return the SQL command to create a table's schema"""
-    return f"CREATE TABLE {table_name}(" + table_columns(columns) + ")"
+    def get_name(self):
+        return self.name
+
+    def get_value_extractor(self):
+        """Return the column's value extraction function"""
+        return self.value_extractor
 
 
 # This gets registered with the Connection
@@ -184,43 +135,17 @@ class Source:
         if not self.data_files:
             self.data_files = get_data_files(data_directory)
 
-        if table_name == "works":
-            return table_schema(table_name, work_columns), StreamingTable(
-                work_columns, self.data_files, WorksCursor
-            )
-
-        if table_name == "work_authors":
-            return table_schema(table_name, author_columns), StreamingTable(
-                author_columns, self.data_files, AuthorsCursor
-            )
-
-        if table_name == "author_affiliations":
-            return table_schema(
-                table_name, affiliation_columns
-            ), StreamingTable(
-                affiliation_columns, self.data_files, AffiliationsCursor
-            )
-
-        if table_name == "work_references":
-            return table_schema(table_name, reference_columns), StreamingTable(
-                reference_columns, self.data_files, ReferencesCursor
-            )
-
-        if table_name == "work_updates":
-            return table_schema(table_name, update_columns), StreamingTable(
-                update_columns, self.data_files, UpdatesCursor
-            )
+        return table_dict[table_name].creation_tuple(self.data_files)
 
     Connect = Create
 
 
 class StreamingTable:
-    """A table streaming over data through a supplied cursor class"""
+    """An apsw table streaming over data of the supplied table metadata"""
 
-    def __init__(self, columns, data_files, cursor_class):
-        self.columns = columns
+    def __init__(self, table_meta, data_files):
+        self.table_meta = table_meta
         self.data_files = data_files
-        self.cursor_class = cursor_class
 
     def BestIndex(self, *args):
         return None
@@ -231,7 +156,12 @@ class StreamingTable:
     Destroy = Disconnect
 
     def Open(self):
-        return self.cursor_class(self)
+        return self.table_meta.get_cursor_class()(self)
+
+    def get_value_extractor(self, i):
+        """Return the value extraction function for column at ordinal i.
+        Not part of the apsw interface."""
+        return self.table_meta.get_value_extractor(i)
 
 
 class FilesCursor:
@@ -294,7 +224,7 @@ class WorksCursor:
     def Column(self, col):
         if col == -1:
             return self.Rowid()
-        (_, extract_function) = self.table.columns[col]
+        extract_function = self.table.get_value_extractor(col)
         return extract_function(self.Row())
 
     def Filter(self, *args):
@@ -383,7 +313,7 @@ class WorkElementsCursor:
         if col == -1:
             return self.Rowid()
 
-        (_, extract_function) = self.table.columns[col]
+        extract_function = self.table.get_value_extractor(col)
         return extract_function(self.Row())
 
     def Close(self):
@@ -485,7 +415,7 @@ class AffiliationsCursor:
         if col == 0:  # Author-id
             return self.authors_cursor.Recordid()
 
-        (_, extract_function) = self.table.columns[col]
+        extract_function = self.table.get_value_extractor(col)
         return extract_function(self.Row())
 
     def Next(self):
@@ -513,6 +443,137 @@ class AffiliationsCursor:
         self.affiliations = None
 
 
+tables = [
+    TableMeta(
+        "works",
+        WorksCursor,
+        [
+            ColumnMeta("DOI", lambda row: dict_value(row, "DOI")),
+            ColumnMeta(
+                "title", lambda row: first_value(dict_value(row, "title"))
+            ),
+            ColumnMeta(
+                "work_year",
+                lambda row: array_value(
+                    first_value(
+                        dict_value(dict_value(row, "published"), "date-parts")
+                    ),
+                    0,
+                ),
+            ),
+            ColumnMeta(
+                "work_month",
+                lambda row: array_value(
+                    first_value(
+                        dict_value(dict_value(row, "published"), "date-parts")
+                    ),
+                    1,
+                ),
+            ),
+            ColumnMeta(
+                "work_day",
+                lambda row: array_value(
+                    first_value(
+                        dict_value(dict_value(row, "published"), "date-parts")
+                    ),
+                    2,
+                ),
+            ),
+            # Synthetic column, which can be used for population filtering
+            ColumnMeta("update_count", lambda row: len_value(row, "update-to")),
+        ],
+    ),
+    TableMeta(
+        "work_authors",
+        AuthorsCursor,
+        [
+            ColumnMeta("id", None),
+            ColumnMeta("work_doi", None),
+            ColumnMeta("orcid", lambda row: author_orcid(row)),
+            ColumnMeta("suffix", lambda row: dict_value(row, "suffix")),
+            ColumnMeta("given", lambda row: dict_value(row, "given")),
+            ColumnMeta("family", lambda row: dict_value(row, "family")),
+            ColumnMeta("name", lambda row: dict_value(row, "name")),
+            ColumnMeta(
+                "authenticated_orcid",
+                lambda row: boolean_value(row, "authenticated-orcid"),
+            ),
+            ColumnMeta("prefix", lambda row: dict_value(row, "prefix")),
+            ColumnMeta("sequence", lambda row: dict_value(row, "sequence")),
+        ],
+    ),
+    TableMeta(
+        "author_affiliations",
+        AffiliationsCursor,
+        [
+            ColumnMeta("author_id", None),
+            ColumnMeta("name", lambda row: dict_value(row, "name")),
+        ],
+    ),
+    TableMeta(
+        "work_references",
+        ReferencesCursor,
+        [
+            ColumnMeta("work_doi", None),
+            ColumnMeta("issn", lambda row: dict_value(row, "issn")),
+            ColumnMeta(
+                "standards_body", lambda row: dict_value(row, "standards-body")
+            ),
+            ColumnMeta("issue", lambda row: dict_value(row, "issue")),
+            ColumnMeta("key", lambda row: dict_value(row, "key")),
+            ColumnMeta(
+                "series_title", lambda row: dict_value(row, "series-title")
+            ),
+            ColumnMeta("isbn_type", lambda row: dict_value(row, "isbn-type")),
+            ColumnMeta(
+                "doi_asserted-by",
+                lambda row: dict_value(row, "doi-asserted-by"),
+            ),
+            ColumnMeta("first_page", lambda row: dict_value(row, "first-page")),
+            ColumnMeta("isbn", lambda row: dict_value(row, "isbn")),
+            ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
+            ColumnMeta("component", lambda row: dict_value(row, "component")),
+            ColumnMeta(
+                "article_title", lambda row: dict_value(row, "article-title")
+            ),
+            ColumnMeta(
+                "volume_title", lambda row: dict_value(row, "volume-title")
+            ),
+            ColumnMeta("volume", lambda row: dict_value(row, "volume")),
+            ColumnMeta("author", lambda row: dict_value(row, "author")),
+            ColumnMeta(
+                "standard_designator",
+                lambda row: dict_value(row, "standard-designator"),
+            ),
+            ColumnMeta("year", lambda row: dict_value(row, "year")),
+            ColumnMeta(
+                "unstructured", lambda row: dict_value(row, "unstructured")
+            ),
+            ColumnMeta("edition", lambda row: dict_value(row, "edition")),
+            ColumnMeta(
+                "journal_title", lambda row: dict_value(row, "journal-title")
+            ),
+            ColumnMeta("issn_type", lambda row: dict_value(row, "issn-type")),
+        ],
+    ),
+    TableMeta(
+        "work_updates",
+        UpdatesCursor,
+        [
+            ColumnMeta("work_doi", None),
+            ColumnMeta("label", lambda row: dict_value(row, "label")),
+            ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
+            ColumnMeta(
+                "timestamp",
+                lambda row: dict_value(dict_value(row, "updated"), "timestamp"),
+            ),
+        ],
+    ),
+]
+
+table_dict = {t.get_name(): t for t in tables}
+
+
 try:
     os.unlink("virtual.db")
 except FileNotFoundError:
@@ -528,11 +589,8 @@ vdb = apsw.Connection("virtual.db")
 # Register the module as filesource
 vdb.createmodule("filesource", Source())
 
-vdb.execute("CREATE VIRTUAL TABLE works USING filesource(sample)")
-vdb.execute("CREATE VIRTUAL TABLE work_authors USING filesource(sample)")
-vdb.execute("CREATE VIRTUAL TABLE author_affiliations USING filesource(sample)")
-vdb.execute("CREATE VIRTUAL TABLE work_references USING filesource(sample)")
-vdb.execute("CREATE VIRTUAL TABLE work_updates USING filesource(sample)")
+for t in tables:
+    vdb.execute(f"CREATE VIRTUAL TABLE {t.get_name()} USING filesource(sample)")
 
 
 def sql_value(db, statement):
@@ -599,9 +657,10 @@ vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
 
 # Sampling:
 #           WHERE abs(random() % 100000) = 0"""
+#           WHERE update_count is not null
 vdb.execute(
     """CREATE TABLE populated.works AS SELECT * FROM works
-            WHERE update_count is not null"""
+    """
 )
 vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
 
