@@ -148,7 +148,7 @@ class Source:
     Connect = Create
 
     def get_file_array(self):
-        return self.data_files
+        return self.data_files.get_file_array()
 
 
 class StreamingTable:
@@ -191,6 +191,8 @@ class FilesCursor:
     """A cursor over the items data files. Internal use only.
     Not used by a table."""
 
+    file_reads = 0
+
     def __init__(self, table):
         self.table = table
 
@@ -210,6 +212,7 @@ class FilesCursor:
         with gzip.open(self.table.data_files[self.file_index], "rb") as f:
             file_content = f.read()
             self.items = json.loads(file_content)["items"]
+        FilesCursor.file_reads += 1
         self.eof = False
 
     def Rowid(self):
@@ -658,6 +661,8 @@ def database_counts(db):
     count = sql_value(db, "SELECT count(*) FROM work_updates")
     print(f"{count} update(s)")
 
+    print(f"{FilesCursor.file_reads} files read")
+
 
 database_counts(vdb)
 
@@ -670,13 +675,6 @@ vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
 for t in tables:
     vdb.execute(t.table_schema("populated."))
 
-# Sampling:
-#           WHERE abs(random() % 100000) = 0"""
-#           WHERE update_count is not null
-vdb.execute(
-    """INSERT INTO populated.works SELECT * FROM works
-    """
-)
 
 vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
 vdb.execute("CREATE INDEX populated.work_authors_id_idx ON work_authors(id)")
@@ -697,33 +695,56 @@ vdb.execute(
     ON work_updates(work_doi)"""
 )
 
-vdb.execute(
-    """INSERT INTO populated.work_authors
-  SELECT work_authors.* FROM work_authors
-  INNER JOIN populated.works ON work_authors.work_doi = populated.works.doi"""
-)
+for i in range(0, len(data_source.get_file_array())):
+    # Sampling:
+    #           WHERE abs(random() % 100000) = 0"""
+    #           WHERE update_count is not null
+    vdb.execute(
+        f"""
+        INSERT INTO populated.works SELECT * FROM works
+            WHERE container_id = {i}
+        """
+    )
 
-vdb.execute(
-    """INSERT INTO populated.author_affiliations
-        SELECT author_affiliations.* FROM author_affiliations
-        INNER JOIN populated.work_authors
-            ON author_affiliations.author_id = populated.work_authors.id
-"""
-)
+    vdb.execute(
+        f"""
+        INSERT INTO populated.work_authors
+            SELECT work_authors.* FROM work_authors
+            INNER JOIN populated.works
+                ON work_authors.work_doi = populated.works.doi
+            WHERE work_authors.container_id = {i}
+        """
+    )
 
-vdb.execute(
-    """INSERT INTO populated.work_references
-  SELECT work_references.* FROM work_references
-  INNER JOIN populated.works
-    ON work_references.work_doi = populated.works.doi"""
-)
+    vdb.execute(
+        f"""
+        INSERT INTO populated.author_affiliations
+            SELECT author_affiliations.* FROM author_affiliations
+            INNER JOIN populated.work_authors
+                ON author_affiliations.author_id = populated.work_authors.id
+            WHERE author_affiliations.container_id = {i}
+        """
+    )
 
-vdb.execute(
-    """INSERT INTO populated.work_updates
-  SELECT work_updates.* FROM work_updates
-  INNER JOIN populated.works
-    ON work_updates.work_doi = populated.works.doi"""
-)
+    vdb.execute(
+        f"""
+        INSERT INTO populated.work_references
+            SELECT work_references.* FROM work_references
+            INNER JOIN populated.works
+                ON work_references.work_doi = populated.works.doi
+            WHERE work_references.container_id = {i}
+        """
+    )
+
+    vdb.execute(
+        f"""
+        INSERT INTO populated.work_updates
+            SELECT work_updates.* FROM work_updates
+                INNER JOIN populated.works
+                    ON work_updates.work_doi = populated.works.doi
+            WHERE work_updates.container_id = {i}
+        """
+    )
 
 vdb.execute("DETACH populated")
 
