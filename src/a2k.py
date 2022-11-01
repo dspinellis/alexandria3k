@@ -9,6 +9,10 @@ import sys
 
 full_print = False
 
+# By convention column 1 of each table hold the container (file) id
+# which is the index of the file in the files array
+CONTAINER_ID = 1
+
 
 class DataFiles:
     """The source of the compressed JSON data files"""
@@ -158,8 +162,34 @@ class StreamingTable:
         self.table_meta = table_meta
         self.data_files = data_files
 
-    def BestIndex(self, *args):
-        return None
+    def BestIndex(self, constraints, orderbys):
+        """Called by the Engine to determine the best available index
+        for the operation at hand"""
+        # print(f"BestIndex c={constraints} o={orderbys}")
+        used_constraints = []
+        found_index = False
+        for (column, operation) in constraints:
+            if (
+                column == CONTAINER_ID
+                and operation == apsw.SQLITE_INDEX_CONSTRAINT_EQ
+            ):
+                # Pass value to Filter as constraint_arg[0], and do not
+                # require the engine to perform extra checks (exact match)
+                used_constraints.append((0, False))
+                found_index = True
+            else:
+                # No suitable index
+                used_constraints.append(None)
+        if found_index:
+            return (
+                used_constraints,
+                1,  # index number
+                None,  # index name
+                False,  # results are not in orderbys order
+                2000,  # about 2000 disk i/o (8M file / 4k block)
+            )
+        else:
+            return None
 
     def Disconnect(self):
         pass
@@ -187,33 +217,71 @@ class StreamingTable:
         return self.table_meta.get_value_extractor(i)
 
 
+class FileCache:
+    """Cache the reading/decompression/parsing of a single compressed
+    JSON file"""
+
+    file_reads = 0
+
+    def __init__(self):
+        self.cached_path = None
+
+    def read(self, path):
+        """Read the compressed JSON file at the specified path and return
+        its parsed contents"""
+
+        if path == self.cached_path:
+            return self.cached_data
+
+        # print(f"READ FILE {path}")
+        with gzip.open(path, "rb") as f:
+            file_content = f.read()
+            self.cached_data = json.loads(file_content)["items"]
+        self.cached_path = path
+        FileCache.file_reads += 1
+        return self.cached_data
+
+
+file_cache = FileCache()
+
+
 class FilesCursor:
     """A cursor over the items data files. Internal use only.
     Not used by a table."""
 
-    file_reads = 0
-
     def __init__(self, table):
         self.table = table
 
-    def Filter(self, *args):
-        """Always called first to initialize an iteration to the first row
-        of the table"""
-        self.file_index = -1
+    def Filter(self, index_number, index_name, constraint_args):
+        """Always called first to initialize an iteration to the first
+        (possibly constrained) row of the table"""
+        # print(f"Filter c={constraint_args}")
+
+        if index_number == 0:
+            # No index; iterate through all the files
+            self.file_index = -1
+            self.single_file = False
+        else:
+            # Index; constraint reading through the specified file
+            self.single_file = True
+            self.file_read = False
+            self.file_index = constraint_args[0] - 1
         self.Next()
 
     def Next(self):
         """Advance reading to the next available file. Files are assumed to be
         non-empty."""
+        if self.single_file and self.file_read:
+            self.eof = True
+            return
         if self.file_index + 1 >= len(self.table.data_files):
             self.eof = True
             return
         self.file_index += 1
-        with gzip.open(self.table.data_files[self.file_index], "rb") as f:
-            file_content = f.read()
-            self.items = json.loads(file_content)["items"]
-        FilesCursor.file_reads += 1
+        self.items = file_cache.read(self.table.data_files[self.file_index])
         self.eof = False
+        # The single file has been read. Set EOF in next Next call
+        self.file_read = True
 
     def Rowid(self):
         return self.file_index
@@ -256,7 +324,7 @@ class WorksCursor:
         if col == -1:
             return self.Rowid()
 
-        if col == 1:
+        if col == CONTAINER_ID:
             return self.container_id()
 
         extract_function = self.table.get_value_extractor(col)
@@ -352,7 +420,7 @@ class ElementsCursor:
         if col == -1:
             return self.Rowid()
 
-        if col == 1:
+        if col == CONTAINER_ID:
             return self.container_id()
 
         extract_function = self.table.get_value_extractor(col)
@@ -661,7 +729,7 @@ def database_counts(db):
     count = sql_value(db, "SELECT count(*) FROM work_updates")
     print(f"{count} update(s)")
 
-    print(f"{FilesCursor.file_reads} files read")
+    print(f"{FileCache.file_reads} files read")
 
 
 database_counts(vdb)
@@ -695,6 +763,10 @@ vdb.execute(
     ON work_updates(work_doi)"""
 )
 
+# Populate all tables from the records of each file in sequence.
+# This improves the locality of reference and through the constraint
+# indexing and the file cache avoids opening, reading, decompressing,
+# and parsing each file multiple times.
 for i in range(0, len(data_source.get_file_array())):
     # Sampling:
     #           WHERE abs(random() % 100000) = 0"""
