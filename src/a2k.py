@@ -490,6 +490,24 @@ class UpdatesCursor(ElementsCursor):
         return super().Column(col)
 
 
+class SubjectsCursor(ElementsCursor):
+    """A cursor over the work items' subject data."""
+
+    def element_name(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return "subject"
+
+    def Rowid(self):
+        """This allows for 16M subjects"""
+        return (self.parent_cursor.Rowid() << 24) | self.element_index
+
+    def Column(self, col):
+        if col == 0:  # work_doi
+            return self.parent_cursor.current_row_value().get("DOI")
+        return super().Column(col)
+
+
 class AffiliationsCursor(ElementsCursor):
     """A cursor over the authors' affiliation data."""
 
@@ -660,6 +678,16 @@ tables = [
             ),
         ],
     ),
+    TableMeta(
+        "work_subjects",
+        "works",
+        SubjectsCursor,
+        [
+            ColumnMeta("work_doi", None),
+            ColumnMeta("container_id", None),
+            ColumnMeta("name", lambda row: row),
+        ],
+    ),
 ]
 
 table_dict = {t.get_name(): t for t in tables}
@@ -742,6 +770,9 @@ def database_counts(db):
     count = sql_value(db, "SELECT count(*) FROM work_updates")
     print(f"{count} update(s)")
 
+    count = sql_value(db, "SELECT count(*) FROM work_subjects")
+    print(f"{count} subject(s)")
+
     print(f"{FileCache.file_reads} files read")
 
 
@@ -774,6 +805,10 @@ vdb.execute(
 vdb.execute(
     """CREATE INDEX populated.work_updates_work_doi_idx
     ON work_updates(work_doi)"""
+)
+vdb.execute(
+    """CREATE INDEX populated.work_subjects_work_doi_idx
+    ON work_subjects(work_doi)"""
 )
 
 # Populate all tables from the records of each file in sequence.
@@ -828,6 +863,16 @@ for i in range(0, len(data_source.get_file_array())):
                 INNER JOIN populated.works
                     ON work_updates.work_doi = populated.works.doi
             WHERE work_updates.container_id = {i}
+        """
+    )
+
+    vdb.execute(
+        f"""
+        INSERT INTO populated.work_subjects
+            SELECT work_subjects.* FROM work_subjects
+                INNER JOIN populated.works
+                    ON work_subjects.work_doi = populated.works.doi
+            WHERE work_subjects.container_id = {i}
         """
     )
 
