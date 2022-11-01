@@ -523,7 +523,7 @@ tables = [
                 "title", lambda row: first_value(dict_value(row, "title"))
             ),
             ColumnMeta(
-                "work_year",
+                "published_year",
                 lambda row: array_value(
                     first_value(
                         dict_value(dict_value(row, "published"), "date-parts")
@@ -532,7 +532,7 @@ tables = [
                 ),
             ),
             ColumnMeta(
-                "work_month",
+                "published_month",
                 lambda row: array_value(
                     first_value(
                         dict_value(dict_value(row, "published"), "date-parts")
@@ -541,7 +541,7 @@ tables = [
                 ),
             ),
             ColumnMeta(
-                "work_day",
+                "published_day",
                 lambda row: array_value(
                     first_value(
                         dict_value(dict_value(row, "published"), "date-parts")
