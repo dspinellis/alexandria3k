@@ -10,17 +10,21 @@ import sys
 full_print = False
 
 
-def get_data_files(directory):
-    columns = None
-    data_files = []
-    counter = 1
-    for f in os.listdir(directory):
-        path = os.path.join(directory, f)
-        if not os.path.isfile(path):
-            continue
-        counter += 1
-        data_files.append(path)
-    return data_files
+class DataFiles:
+    """The source of the compressed JSON data files"""
+
+    def __init__(self, directory):
+        self.data_files = []
+        counter = 1
+        for f in os.listdir(directory):
+            path = os.path.join(directory, f)
+            if not os.path.isfile(path):
+                continue
+            counter += 1
+            self.data_files.append(path)
+
+    def get_file_array(self):
+        return self.data_files
 
 
 def dict_value(d, k):
@@ -133,16 +137,18 @@ class ColumnMeta:
 
 # This gets registered with the Connection
 class Source:
-    def __init__(self):
-        self.data_files = None
+    def __init__(self, data_directory):
+        self.data_files = DataFiles(data_directory)
 
-    def Create(self, db, module_name, db_name, table_name, data_directory):
-        if not self.data_files:
-            self.data_files = get_data_files(data_directory)
-
-        return table_dict[table_name].creation_tuple(self.data_files)
+    def Create(self, db, module_name, db_name, table_name):
+        return table_dict[table_name].creation_tuple(
+            self.data_files.get_file_array()
+        )
 
     Connect = Create
+
+    def get_file_array(self):
+        return self.data_files
 
 
 class StreamingTable:
@@ -592,10 +598,11 @@ except FileNotFoundError:
 vdb = apsw.Connection("virtual.db")
 
 # Register the module as filesource
-vdb.createmodule("filesource", Source())
+data_source = Source("sample")
+vdb.createmodule("filesource", data_source)
 
 for t in tables:
-    vdb.execute(f"CREATE VIRTUAL TABLE {t.get_name()} USING filesource(sample)")
+    vdb.execute(f"CREATE VIRTUAL TABLE {t.get_name()} USING filesource()")
 
 
 def sql_value(db, statement):
