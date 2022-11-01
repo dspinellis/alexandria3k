@@ -92,9 +92,10 @@ class TableMeta:
         """Return a comma-separated list of a table's columns"""
         return ",".join([f"'{c.get_name()}'" for c in self.columns])
 
-    def table_schema(self):
-        """Return the SQL command to create a table's schema"""
-        return f"CREATE TABLE {self.name}(" + self.column_list() + ")"
+    def table_schema(self, prefix=""):
+        """Return the SQL command to create a table's schema with the
+        optional specified prefix."""
+        return f"CREATE TABLE {prefix}{self.name}(" + self.column_list() + ")"
 
     def get_name(self):
         return self.name
@@ -655,18 +656,22 @@ db.close()
 
 vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
 
+for t in tables:
+    vdb.execute(t.table_schema("populated."))
+
 # Sampling:
 #           WHERE abs(random() % 100000) = 0"""
 #           WHERE update_count is not null
 vdb.execute(
-    """CREATE TABLE populated.works AS SELECT * FROM works
+    """INSERT INTO populated.works SELECT * FROM works
     """
 )
+
 vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
 
 vdb.execute(
-    """CREATE TABLE populated.work_authors
-  AS SELECT work_authors.* FROM work_authors
+    """INSERT INTO populated.work_authors
+  SELECT work_authors.* FROM work_authors
   INNER JOIN populated.works ON work_authors.work_doi = populated.works.doi"""
 )
 vdb.execute("CREATE INDEX populated.work_authors_id_idx ON work_authors(id)")
@@ -676,7 +681,7 @@ vdb.execute(
 )
 
 vdb.execute(
-    """CREATE TABLE populated.author_affiliations AS
+    """INSERT INTO populated.author_affiliations
         SELECT author_affiliations.* FROM author_affiliations
         INNER JOIN populated.work_authors
             ON author_affiliations.author_id = populated.work_authors.id
@@ -688,8 +693,8 @@ vdb.execute(
 )
 
 vdb.execute(
-    """CREATE TABLE populated.work_references
-  AS SELECT work_references.* FROM work_references
+    """INSERT INTO populated.work_references
+  SELECT work_references.* FROM work_references
   INNER JOIN populated.works
     ON work_references.work_doi = populated.works.doi"""
 )
@@ -699,8 +704,8 @@ vdb.execute(
 )
 
 vdb.execute(
-    """CREATE TABLE populated.work_updates
-  AS SELECT work_updates.* FROM work_updates
+    """INSERT INTO populated.work_updates
+  SELECT work_updates.* FROM work_updates
   INNER JOIN populated.works
     ON work_updates.work_doi = populated.works.doi"""
 )
