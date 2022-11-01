@@ -193,7 +193,7 @@ class FilesCursor:
     def Rowid(self):
         return self.file_index
 
-    def Row(self):
+    def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
         return self.items
 
@@ -218,15 +218,15 @@ class WorksCursor:
         # Allow for 65k items per file (currently 5k)
         return (self.files_cursor.Rowid() << 16) | (self.item_index)
 
-    def Row(self):
+    def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
-        return self.files_cursor.Row()[self.item_index]
+        return self.files_cursor.current_row_value()[self.item_index]
 
     def Column(self, col):
         if col == -1:
             return self.Rowid()
         extract_function = self.table.get_value_extractor(col)
-        return extract_function(self.Row())
+        return extract_function(self.current_row_value())
 
     def Filter(self, *args):
         """Always called first to initialize an iteration to the first row
@@ -247,17 +247,17 @@ class WorksCursor:
         self.files_cursor.Close()
 
 
-class WorkElementsCursor:
-    """An (abstract) cursor over a collection in the work items' data."""
+class ElementsCursor:
+    """An (abstract) cursor over an embedding collection of data."""
 
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, table):
         self.table = table
-        self.works_cursor = WorksCursor(table)
+        self.parent_cursor = WorksCursor(table)
 
     @abc.abstractmethod
-    def ElementName(self):
+    def element_name(self):
         """The work key from which to retrieve the elements. Not part of the
         apsw API."""
         return
@@ -265,7 +265,7 @@ class WorkElementsCursor:
     def Filter(self, *args):
         """Always called first to initialize an iteration to the first row
         of the table"""
-        self.works_cursor.Filter(*args)
+        self.parent_cursor.Filter(*args)
         self.elements = None
         self.Next()
 
@@ -277,12 +277,12 @@ class WorkElementsCursor:
         """Return a unique id of the row along all records"""
         return
 
-    def Recordid(self):
+    def record_id(self):
         """Return the record's identifier. Not part of the apsw API."""
         # Zero-pad for 60 bits
         return f"{self.Rowid():015X}"
 
-    def Row(self):
+    def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
         return self.elements[self.element_index]
 
@@ -293,21 +293,23 @@ class WorkElementsCursor:
     def Next(self):
         """Advance reading to the next available element."""
         while True:
-            if self.works_cursor.Eof():
+            if self.parent_cursor.Eof():
                 self.eof = True
                 return
             if not self.elements:
-                self.elements = self.works_cursor.Row().get(self.ElementName())
+                self.elements = self.parent_cursor.current_row_value().get(
+                    self.element_name()
+                )
                 self.element_index = -1
             if not self.elements:
-                self.works_cursor.Next()
+                self.parent_cursor.Next()
                 self.elements = None
                 continue
             if self.element_index + 1 < len(self.elements):
                 self.element_index += 1
                 self.eof = False
                 return
-            self.works_cursor.Next()
+            self.parent_cursor.Next()
             self.elements = None
 
     def Column(self, col):
@@ -315,17 +317,17 @@ class WorkElementsCursor:
             return self.Rowid()
 
         extract_function = self.table.get_value_extractor(col)
-        return extract_function(self.Row())
+        return extract_function(self.current_row_value())
 
     def Close(self):
-        self.works_cursor.Close()
+        self.parent_cursor.Close()
         self.elements = None
 
 
-class AuthorsCursor(WorkElementsCursor):
+class AuthorsCursor(ElementsCursor):
     """A cursor over the items' authors data."""
 
-    def ElementName(self):
+    def element_name(self):
         """The work key from which to retrieve the elements. Not part of the
         apsw API."""
         return "author"
@@ -333,52 +335,52 @@ class AuthorsCursor(WorkElementsCursor):
     def Rowid(self):
         """This allows for 65k authors. There is a Physics paper with 5k
         authors."""
-        return (self.works_cursor.Rowid() << 16) | self.element_index
+        return (self.parent_cursor.Rowid() << 16) | self.element_index
 
     def Column(self, col):
         if col == 0:  # id
-            return self.Recordid()
+            return self.record_id()
 
         if col == 1:  # work_doi
-            return self.works_cursor.Row().get("DOI")
+            return self.parent_cursor.current_row_value().get("DOI")
 
         return super().Column(col)
 
 
-class ReferencesCursor(WorkElementsCursor):
+class ReferencesCursor(ElementsCursor):
     """A cursor over the items' references data."""
 
-    def ElementName(self):
+    def element_name(self):
         """The work key from which to retrieve the elements. Not part of the
         apsw API."""
         return "reference"
 
     def Rowid(self):
         """This allows for 16M references"""
-        return (self.works_cursor.Rowid() << 24) | self.element_index
+        return (self.parent_cursor.Rowid() << 24) | self.element_index
 
     def Column(self, col):
         if col == 0:  # work_doi
-            return self.works_cursor.Row().get("DOI")
+            return self.parent_cursor.current_row_value().get("DOI")
 
         return super().Column(col)
 
 
-class UpdatesCursor(WorkElementsCursor):
+class UpdatesCursor(ElementsCursor):
     """A cursor over the items' updates data."""
 
-    def ElementName(self):
+    def element_name(self):
         """The work key from which to retrieve the elements. Not part of the
         apsw API."""
         return "update-to"
 
     def Rowid(self):
         """This allows for 16M updates"""
-        return (self.works_cursor.Rowid() << 24) | self.element_index
+        return (self.parent_cursor.Rowid() << 24) | self.element_index
 
     def Column(self, col):
         if col == 0:  # work_doi
-            return self.works_cursor.Row().get("DOI")
+            return self.parent_cursor.current_row_value().get("DOI")
 
         return super().Column(col)
 
@@ -405,7 +407,7 @@ class AffiliationsCursor:
         authors."""
         return (self.authors_cursor.Rowid() << 7) | self.affiliation_index
 
-    def Row(self):
+    def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
         return self.affiliations[self.affiliation_index]
 
@@ -414,10 +416,10 @@ class AffiliationsCursor:
             return self.Rowid()
 
         if col == 0:  # Author-id
-            return self.authors_cursor.Recordid()
+            return self.authors_cursor.record_id()
 
         extract_function = self.table.get_value_extractor(col)
-        return extract_function(self.Row())
+        return extract_function(self.current_row_value())
 
     def Next(self):
         """Advance reading to the next available affiliation ."""
@@ -426,7 +428,9 @@ class AffiliationsCursor:
                 self.eof = True
                 return
             if not self.affiliations:
-                self.affiliations = self.authors_cursor.Row().get("affiliation")
+                self.affiliations = self.authors_cursor.current_row_value().get(
+                    "affiliation"
+                )
                 self.affiliation_index = -1
             if not self.affiliations:
                 self.authors_cursor.Next()
