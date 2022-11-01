@@ -238,9 +238,18 @@ class WorksCursor:
         """Return the current row. Not part of the apsw API."""
         return self.files_cursor.current_row_value()[self.item_index]
 
+    def container_id(self):
+        """Return the id of the container containing the data being fetched.
+        Not part of the apsw API."""
+        return self.files_cursor.Rowid()
+
     def Column(self, col):
         if col == -1:
             return self.Rowid()
+
+        if col == 1:
+            return self.container_id()
+
         extract_function = self.table.get_value_extractor(col)
         return extract_function(self.current_row_value())
 
@@ -303,10 +312,6 @@ class ElementsCursor:
         """Return the current row. Not part of the apsw API."""
         return self.elements[self.element_index]
 
-    @abc.abstractmethod
-    def Column(self, col):
-        return
-
     def Next(self):
         """Advance reading to the next available element."""
         while True:
@@ -329,9 +334,17 @@ class ElementsCursor:
             self.parent_cursor.Next()
             self.elements = None
 
+    def container_id(self):
+        """Return the id of the container containing the data being fetched.
+        Not part of the apsw API."""
+        return self.parent_cursor.container_id()
+
     def Column(self, col):
         if col == -1:
             return self.Rowid()
+
+        if col == 1:
+            return self.container_id()
 
         extract_function = self.table.get_value_extractor(col)
         return extract_function(self.current_row_value())
@@ -358,7 +371,7 @@ class AuthorsCursor(ElementsCursor):
         if col == 0:  # id
             return self.record_id()
 
-        if col == 1:  # work_doi
+        if col == 2:  # work_doi
             return self.parent_cursor.current_row_value().get("DOI")
 
         return super().Column(col)
@@ -379,7 +392,6 @@ class ReferencesCursor(ElementsCursor):
     def Column(self, col):
         if col == 0:  # work_doi
             return self.parent_cursor.current_row_value().get("DOI")
-
         return super().Column(col)
 
 
@@ -420,6 +432,8 @@ class AffiliationsCursor(ElementsCursor):
         return super().Column(col)
 
 
+"""By convention column 0 is the unique or foreign key,
+and column 1 the data's container"""
 tables = [
     TableMeta(
         "works",
@@ -427,6 +441,7 @@ tables = [
         WorksCursor,
         [
             ColumnMeta("DOI", lambda row: dict_value(row, "DOI")),
+            ColumnMeta("container_id", None),
             ColumnMeta(
                 "title", lambda row: first_value(dict_value(row, "title"))
             ),
@@ -467,6 +482,7 @@ tables = [
         AuthorsCursor,
         [
             ColumnMeta("id", None),
+            ColumnMeta("container_id", None),
             ColumnMeta("work_doi", None),
             ColumnMeta("orcid", lambda row: author_orcid(row)),
             ColumnMeta("suffix", lambda row: dict_value(row, "suffix")),
@@ -487,6 +503,7 @@ tables = [
         AffiliationsCursor,
         [
             ColumnMeta("author_id", None),
+            ColumnMeta("container_id", None),
             ColumnMeta("name", lambda row: dict_value(row, "name")),
         ],
     ),
@@ -496,6 +513,7 @@ tables = [
         ReferencesCursor,
         [
             ColumnMeta("work_doi", None),
+            ColumnMeta("container_id", None),
             ColumnMeta("issn", lambda row: dict_value(row, "issn")),
             ColumnMeta(
                 "standards_body", lambda row: dict_value(row, "standards-body")
@@ -543,6 +561,7 @@ tables = [
         UpdatesCursor,
         [
             ColumnMeta("work_doi", None),
+            ColumnMeta("container_id", None),
             ColumnMeta("label", lambda row: dict_value(row, "label")),
             ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
             ColumnMeta(
