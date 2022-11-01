@@ -88,6 +88,15 @@ def first_value(a):
     return array_value(a, 0)
 
 
+def tab_values(a):
+    """Return the elements of array a separated by tab or None if it doesn't
+    exist"""
+    if not a:
+        return None
+    return "\t".join(a)
+    return array_value(a, 0)
+
+
 class TableMeta:
     """Meta-data of tables we maintain"""
 
@@ -508,6 +517,24 @@ class SubjectsCursor(ElementsCursor):
         return super().Column(col)
 
 
+class FundersCursor(ElementsCursor):
+    """A cursor over the work items' funder data."""
+
+    def element_name(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return "funder"
+
+    def Rowid(self):
+        """This allows for 16M funders"""
+        return (self.parent_cursor.Rowid() << 24) | self.element_index
+
+    def Column(self, col):
+        if col == 0:  # work_doi
+            return self.parent_cursor.current_row_value().get("DOI")
+        return super().Column(col)
+
+
 class AffiliationsCursor(ElementsCursor):
     """A cursor over the authors' affiliation data."""
 
@@ -538,7 +565,7 @@ tables = [
             ColumnMeta("DOI", lambda row: dict_value(row, "DOI")),
             ColumnMeta("container_id", None),
             ColumnMeta(
-                "title", lambda row: first_value(dict_value(row, "title"))
+                "title", lambda row: tab_values(dict_value(row, "title"))
             ),
             ColumnMeta(
                 "published_year",
@@ -688,6 +715,20 @@ tables = [
             ColumnMeta("name", lambda row: row),
         ],
     ),
+    TableMeta(
+        "work_funders",
+        "works",
+        FundersCursor,
+        [
+            ColumnMeta("work_doi", None),
+            ColumnMeta("container_id", None),
+            ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
+            ColumnMeta("name", lambda row: dict_value(row, "name")),
+            ColumnMeta(
+                "awards", lambda row: tab_values(dict_value(row, "award"))
+            ),
+        ],
+    ),
 ]
 
 table_dict = {t.get_name(): t for t in tables}
@@ -736,11 +777,9 @@ if full_print:
 
 def database_counts(db):
     """Print various counts on the passed database"""
-    count = sql_value(db, "SELECT count(*) FROM works")
-    print(f"{count} publication(s)")
-
-    count = sql_value(db, "SELECT count(*) FROM work_authors")
-    print(f"{count} author(s)")
+    for t in tables:
+        count = sql_value(db, f"SELECT count(*) FROM {t.get_name()}")
+        print(f"{count} element(s)\tin {t.get_name()}")
 
     count = sql_value(
         db,
@@ -754,24 +793,12 @@ def database_counts(db):
     )
     print(f"{count} publication(s) with work_authors")
 
-    count = sql_value(db, "SELECT count(*) FROM author_affiliations")
-    print(f"{count} affiliation(s)")
-
-    count = sql_value(db, "SELECT count(*) FROM work_references")
-    print(f"{count} references(s)")
-
     count = sql_value(
         db,
         """SELECT count(*) FROM work_references WHERE
                       doi is not null""",
     )
     print(f"{count} references(s) with DOI")
-
-    count = sql_value(db, "SELECT count(*) FROM work_updates")
-    print(f"{count} update(s)")
-
-    count = sql_value(db, "SELECT count(*) FROM work_subjects")
-    print(f"{count} subject(s)")
 
     print(f"{FileCache.file_reads} files read")
 
@@ -873,6 +900,16 @@ for i in range(0, len(data_source.get_file_array())):
                 INNER JOIN populated.works
                     ON work_subjects.work_doi = populated.works.doi
             WHERE work_subjects.container_id = {i}
+        """
+    )
+
+    vdb.execute(
+        f"""
+        INSERT INTO populated.work_funders
+            SELECT work_funders.* FROM work_funders
+                INNER JOIN populated.works
+                    ON work_funders.work_doi = populated.works.doi
+            WHERE work_funders.container_id = {i}
         """
     )
 
