@@ -549,6 +549,19 @@ tables = [
                     2,
                 ),
             ),
+            ColumnMeta("type", lambda row: dict_value(row, "type")),
+            ColumnMeta("subtype", lambda row: dict_value(row, "subtype")),
+            ColumnMeta("page", lambda row: dict_value(row, "page")),
+            ColumnMeta("volume", lambda row: dict_value(row, "volume")),
+            ColumnMeta(
+                "article_number", lambda row: dict_value(row, "article-number")
+            ),
+            ColumnMeta(
+                "journal_issue",
+                lambda row: dict_value(
+                    dict_value(row, "journal-issue"), "issue"
+                ),
+            ),
             # Synthetic column, which can be used for population filtering
             ColumnMeta("update_count", lambda row: len_value(row, "update-to")),
         ],
