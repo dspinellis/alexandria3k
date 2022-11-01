@@ -83,8 +83,9 @@ def first_value(a):
 class TableMeta:
     """Meta-data of tables we maintain"""
 
-    def __init__(self, name, cursor_class, columns):
+    def __init__(self, name, parent_name, cursor_class, columns):
         self.name = name
+        self.parent_name = parent_name
         self.columns = columns
         self.cursor_class = cursor_class
 
@@ -99,6 +100,9 @@ class TableMeta:
 
     def get_name(self):
         return self.name
+
+    def get_parent_name(self):
+        return self.parent_name
 
     def get_cursor_class(self):
         return self.cursor_class
@@ -156,8 +160,20 @@ class StreamingTable:
 
     Destroy = Disconnect
 
+    def cursor(self, table_meta):
+        """Return the cursor associated with this table.  The constructor
+        for cursors embedded in others takes a parent cursor argument.  To
+        handle this requirement, this method recursively calls itself until
+        it reaches the top-level table."""
+        cursor_class = table_meta.get_cursor_class()
+        parent_name = table_meta.get_parent_name()
+        if not parent_name:
+            return cursor_class(self)
+        parent = get_table_meta_by_name(parent_name)
+        return cursor_class(self, self.cursor(parent))
+
     def Open(self):
-        return self.table_meta.get_cursor_class()(self)
+        return self.cursor(self.table_meta)
 
     def get_value_extractor(self, i):
         """Return the value extraction function for column at ordinal i.
@@ -248,13 +264,14 @@ class WorksCursor:
 
 
 class ElementsCursor:
-    """An (abstract) cursor over an embedding collection of data."""
+    """An (abstract) cursor over a collection of data embedded within
+    another cursor."""
 
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, table):
+    def __init__(self, table, parent_cursor):
         self.table = table
-        self.parent_cursor = WorksCursor(table)
+        self.parent_cursor = parent_cursor
 
     @abc.abstractmethod
     def element_name(self):
@@ -381,76 +398,32 @@ class UpdatesCursor(ElementsCursor):
     def Column(self, col):
         if col == 0:  # work_doi
             return self.parent_cursor.current_row_value().get("DOI")
-
         return super().Column(col)
 
 
-class AffiliationsCursor:
+class AffiliationsCursor(ElementsCursor):
     """A cursor over the authors' affiliation data."""
 
-    def __init__(self, table):
-        self.table = table
-        self.authors_cursor = AuthorsCursor(table)
-
-    def Filter(self, *args):
-        """Always called first to initialize an iteration to the first row
-        of the table"""
-        self.authors_cursor.Filter(*args)
-        self.affiliations = None
-        self.Next()
-
-    def Eof(self):
-        return self.eof
+    def element_name(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return "affiliation"
 
     def Rowid(self):
         """This allows for 128 affiliations per author
         authors."""
-        return (self.authors_cursor.Rowid() << 7) | self.affiliation_index
-
-    def current_row_value(self):
-        """Return the current row. Not part of the apsw API."""
-        return self.affiliations[self.affiliation_index]
+        return (self.parent_cursor.Rowid() << 7) | self.element_index
 
     def Column(self, col):
-        if col == -1:
-            return self.Rowid()
-
         if col == 0:  # Author-id
-            return self.authors_cursor.record_id()
-
-        extract_function = self.table.get_value_extractor(col)
-        return extract_function(self.current_row_value())
-
-    def Next(self):
-        """Advance reading to the next available affiliation ."""
-        while True:
-            if self.authors_cursor.Eof():
-                self.eof = True
-                return
-            if not self.affiliations:
-                self.affiliations = self.authors_cursor.current_row_value().get(
-                    "affiliation"
-                )
-                self.affiliation_index = -1
-            if not self.affiliations:
-                self.authors_cursor.Next()
-                self.affiliations = None
-                continue
-            if self.affiliation_index + 1 < len(self.affiliations):
-                self.affiliation_index += 1
-                self.eof = False
-                return
-            self.authors_cursor.Next()
-            self.affiliations = None
-
-    def Close(self):
-        self.authors_cursor.Close()
-        self.affiliations = None
+            return self.parent_cursor.record_id()
+        return super().Column(col)
 
 
 tables = [
     TableMeta(
         "works",
+        None,
         WorksCursor,
         [
             ColumnMeta("DOI", lambda row: dict_value(row, "DOI")),
@@ -490,6 +463,7 @@ tables = [
     ),
     TableMeta(
         "work_authors",
+        "works",
         AuthorsCursor,
         [
             ColumnMeta("id", None),
@@ -509,6 +483,7 @@ tables = [
     ),
     TableMeta(
         "author_affiliations",
+        "work_authors",
         AffiliationsCursor,
         [
             ColumnMeta("author_id", None),
@@ -517,6 +492,7 @@ tables = [
     ),
     TableMeta(
         "work_references",
+        "works",
         ReferencesCursor,
         [
             ColumnMeta("work_doi", None),
@@ -563,6 +539,7 @@ tables = [
     ),
     TableMeta(
         "work_updates",
+        "works",
         UpdatesCursor,
         [
             ColumnMeta("work_doi", None),
@@ -577,6 +554,10 @@ tables = [
 ]
 
 table_dict = {t.get_name(): t for t in tables}
+
+
+def get_table_meta_by_name(name):
+    return table_dict[name]
 
 
 try:
