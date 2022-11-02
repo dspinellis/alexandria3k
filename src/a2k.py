@@ -9,20 +9,17 @@ import sys
 
 full_print = False
 
-# By convention column 1 of each table hold the container (file) id
-# which is the index of the file in the files array
-CONTAINER_ID = 1
-
-
 class DataFiles:
     """The source of the compressed JSON data files"""
 
-    def __init__(self, directory):
+    def __init__(self, directory, sample_container=lambda path: True):
         self.data_files = []
         counter = 1
         for f in os.listdir(directory):
             path = os.path.join(directory, f)
             if not os.path.isfile(path):
+                continue
+            if not sample_container(path):
                 continue
             counter += 1
             self.data_files.append(path)
@@ -163,6 +160,9 @@ class Source:
     def get_file_array(self):
         return self.data_files.get_file_array()
 
+# By convention column 1 of each table hold the container (file) id
+# which is the index of the file in the files array
+CONTAINER_ID_COLUMN = 1
 
 class StreamingTable:
     """An apsw table streaming over data of the supplied table metadata"""
@@ -179,7 +179,7 @@ class StreamingTable:
         found_index = False
         for (column, operation) in constraints:
             if (
-                column == CONTAINER_ID
+                column == CONTAINER_ID_COLUMN
                 and operation == apsw.SQLITE_INDEX_CONSTRAINT_EQ
             ):
                 # Pass value to Filter as constraint_arg[0], and do not
@@ -333,7 +333,7 @@ class WorksCursor:
         if col == -1:
             return self.Rowid()
 
-        if col == CONTAINER_ID:
+        if col == CONTAINER_ID_COLUMN:
             return self.container_id()
 
         extract_function = self.table.get_value_extractor(col)
@@ -429,7 +429,7 @@ class ElementsCursor:
         if col == -1:
             return self.Rowid()
 
-        if col == CONTAINER_ID:
+        if col == CONTAINER_ID_COLUMN:
             return self.container_id()
 
         extract_function = self.table.get_value_extractor(col)
