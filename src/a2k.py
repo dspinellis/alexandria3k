@@ -29,6 +29,7 @@ import sys
 
 full_print = False
 
+
 class DataFiles:
     """The source of the compressed JSON data files"""
 
@@ -180,9 +181,11 @@ class Source:
     def get_file_array(self):
         return self.data_files.get_file_array()
 
+
 # By convention column 1 of each table hold the container (file) id
 # which is the index of the file in the files array
 CONTAINER_ID_COLUMN = 1
+
 
 class StreamingTable:
     """An apsw table streaming over data of the supplied table metadata"""
@@ -986,6 +989,21 @@ db.execute(
     LEFT JOIN work_authors ON authors_affiliations.author_id = work_authors.id"""
 )
 
+# Canonicalize subjects
+db.execute(
+    """CREATE TABLE subject_names AS
+        SELECT row_number() OVER (ORDER BY '') AS id, name
+            FROM (SELECT DISTINCT name FROM work_subjects)
+    """
+)
+
+db.execute(
+    """CREATE TABLE works_subjects AS
+        SELECT subject_names.id AS subject_id, work_doi FROM subject_names
+        INNER JOIN work_subjects ON subject_names.name = work_subjects.name
+    """
+)
+
 # Organizations with most publications
 for r in db.execute(
     """SELECT count(*), name FROM affiliation_works
@@ -1000,6 +1018,18 @@ for r in db.execute(
     """SELECT count(*), doi FROM work_references
     GROUP BY doi ORDER BY count(*) DESC
     LIMIT 3"""
+):
+    print(r)
+
+# Most treated subjects
+for r in db.execute(
+    """SELECT count(*), name
+            FROM works_subjects INNER JOIN subject_names
+                ON works_subjects.subject_id = subject_names.id
+        GROUP BY(works_subjects.subject_id)
+        ORDER BY count(*) DESC
+        LIMIT 3
+    """
 ):
     print(r)
 
