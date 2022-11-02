@@ -838,6 +838,11 @@ vdb.execute(
     """CREATE INDEX populated.work_subjects_work_doi_idx
     ON work_subjects(work_doi)"""
 )
+vdb.execute(
+    """CREATE INDEX populated.work_funders_work_doi_idx
+    ON work_funders(work_doi)"""
+)
+
 
 # Populate all tables from the records of each file in sequence.
 # This improves the locality of reference and through the constraint
