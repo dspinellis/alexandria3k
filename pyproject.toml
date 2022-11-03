@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "alexandria-3k"
+version = "0.0.1"
+authors = [
+  { name="Diomidis Spinellis", email="dds@aueb.gr" },
+]
+description = "Efficient relational database queries over the entire CrossRef data set"
+readme = "README.md"
+requires-python = ">=3.7"
+
+# See https://pypi.org/classifiers/
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/dspinellis/alexandria-3k"
+"Bug Tracker" = "https://github.com/dspinellis/alexandria-3k/issues"

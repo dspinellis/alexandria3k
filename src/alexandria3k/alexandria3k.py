@@ -17,17 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-
+"""Main package module"""
 import abc
-import apsw
 import gzip
 import json
 import os
 import sqlite3
-from uuid import uuid4
-import sys
 
-full_print = False
+import apsw
+
+FULL_PRINT = False
 
 
 class DataFiles:
@@ -36,8 +35,8 @@ class DataFiles:
     def __init__(self, directory, sample_container=lambda path: True):
         self.data_files = []
         counter = 1
-        for f in os.listdir(directory):
-            path = os.path.join(directory, f)
+        for file_name in os.listdir(directory):
+            path = os.path.join(directory, file_name)
             if not os.path.isfile(path):
                 continue
             if not sample_container(path):
@@ -46,23 +45,28 @@ class DataFiles:
             self.data_files.append(path)
 
     def get_file_array(self):
+        """Return the array of data files"""
         return self.data_files
 
+    def get_file_id_iterator(self):
+        """Return an iterator over the int identifiers of all data files"""
+        return range(0, len(self.data_files))
 
-def dict_value(d, k):
-    """Return the value of dict d for key or None if it doesn't exist"""
-    if not d:
+
+def dict_value(dictionary, key):
+    """Return the value of dictionary for key or None if it doesn't exist"""
+    if not dictionary:
         return None
     try:
-        return d[k]
+        return dictionary[key]
     except KeyError:
         return None
 
 
-def array_value(a, i):
-    """Return the value of array a for index i or None if it doesn't exist"""
+def array_value(array, index):
+    """Return the value of array at index or None if it doesn't exist"""
     try:
-        return a[i]
+        return array[index]
     except (IndexError, TypeError):
         return None
 
@@ -75,44 +79,43 @@ def author_orcid(row):
     return None
 
 
-def boolean_value(d, k):
+def boolean_value(dictionary, key):
     """Return 0, 1, or None for the corresponding JSON value for key k
     of dict d"""
-    if not d:
+    if not dictionary:
         return None
     try:
-        v = d[k]
+        value = dictionary[key]
     except KeyError:
         return None
-    if v:
+    if value:
         return 1
     return 0
 
 
-def len_value(d, k):
+def len_value(dictionary, key):
     """Return array length or None for the corresponding JSON value for key k
     of dict d"""
-    if not d:
+    if not dictionary:
         return None
     try:
-        v = d[k]
+        value = dictionary[key]
     except KeyError:
         return None
-    return len(v)
+    return len(value)
 
 
-def first_value(a):
+def first_value(array):
     """Return the first element of array a or None if it doesn't exist"""
-    return array_value(a, 0)
+    return array_value(array, 0)
 
 
-def tab_values(a):
+def tab_values(array):
     """Return the elements of array a separated by tab or None if it doesn't
     exist"""
-    if not a:
+    if not array:
         return None
-    return "\t".join(a)
-    return array_value(a, 0)
+    return "\t".join(array)
 
 
 class TableMeta:
@@ -134,12 +137,15 @@ class TableMeta:
         return f"CREATE TABLE {prefix}{self.name}(" + self.column_list() + ")"
 
     def get_name(self):
+        """Return the table's name"""
         return self.name
 
     def get_parent_name(self):
+        """Return the name of the main table of which this has details"""
         return self.parent_name
 
     def get_cursor_class(self):
+        """Return the table's specified cursor class"""
         return self.cursor_class
 
     def get_value_extractor(self, i):
@@ -159,6 +165,7 @@ class ColumnMeta:
         self.value_extractor = value_extractor
 
     def get_name(self):
+        """Return column's name"""
         return self.name
 
     def get_value_extractor(self):
@@ -166,20 +173,23 @@ class ColumnMeta:
         return self.value_extractor
 
 
-# This gets registered with the Connection
 class Source:
+    """Virtual table data source.  This gets registered with the Connection"""
+
     def __init__(self, data_directory):
         self.data_files = DataFiles(data_directory)
 
-    def Create(self, db, module_name, db_name, table_name):
+    def Create(self, _db, _module_name, _db_name, table_name):
+        """Create the specified virtual table"""
         return table_dict[table_name].creation_tuple(
             self.data_files.get_file_array()
         )
 
     Connect = Create
 
-    def get_file_array(self):
-        return self.data_files.get_file_array()
+    def get_file_id_iterator(self):
+        """Return an iterator over the data files' identifiers"""
+        return self.data_files.get_file_id_iterator()
 
 
 # By convention column 1 of each table hold the container (file) id
@@ -194,7 +204,7 @@ class StreamingTable:
         self.table_meta = table_meta
         self.data_files = data_files
 
-    def BestIndex(self, constraints, orderbys):
+    def BestIndex(self, constraints, _orderbys):
         """Called by the Engine to determine the best available index
         for the operation at hand"""
         # print(f"BestIndex c={constraints} o={orderbys}")
@@ -220,11 +230,10 @@ class StreamingTable:
                 False,  # results are not in orderbys order
                 2000,  # about 2000 disk i/o (8M file / 4k block)
             )
-        else:
-            return None
+        return None
 
     def Disconnect(self):
-        pass
+        """Called when a reference to a virtual table is no longer used"""
 
     Destroy = Disconnect
 
@@ -241,12 +250,13 @@ class StreamingTable:
         return cursor_class(self, self.cursor(parent))
 
     def Open(self):
+        """Return the table's cursor object"""
         return self.cursor(self.table_meta)
 
-    def get_value_extractor(self, i):
-        """Return the value extraction function for column at ordinal i.
-        Not part of the apsw interface."""
-        return self.table_meta.get_value_extractor(i)
+    def get_value_extractor(self, column_ordinal):
+        """Return the value extraction function for column at specified
+        ordinal.  Not part of the apsw interface."""
+        return self.table_meta.get_value_extractor(column_ordinal)
 
 
 class FileCache:
@@ -257,6 +267,7 @@ class FileCache:
 
     def __init__(self):
         self.cached_path = None
+        self.cached_data = None
 
     def read(self, path):
         """Read the compressed JSON file at the specified path and return
@@ -266,8 +277,8 @@ class FileCache:
             return self.cached_data
 
         # print(f"READ FILE {path}")
-        with gzip.open(path, "rb") as f:
-            file_content = f.read()
+        with gzip.open(path, "rb") as uncompressed_file:
+            file_content = uncompressed_file.read()
             self.cached_data = json.loads(file_content)["items"]
         self.cached_path = path
         FileCache.file_reads += 1
@@ -283,8 +294,14 @@ class FilesCursor:
 
     def __init__(self, table):
         self.table = table
+        self.eof = False
+        # The following get initialized in Filter()
+        self.file_index = None
+        self.single_file = None
+        self.file_read = None
+        self.items = None
 
-    def Filter(self, index_number, index_name, constraint_args):
+    def Filter(self, index_number, _index_name, constraint_args):
         """Always called first to initialize an iteration to the first
         (possibly constrained) row of the table"""
         # print(f"Filter c={constraint_args}")
@@ -316,6 +333,7 @@ class FilesCursor:
         self.file_read = True
 
     def Rowid(self):
+        """Return a unique id of the row along all records"""
         return self.file_index
 
     def current_row_value(self):
@@ -323,9 +341,11 @@ class FilesCursor:
         return self.items
 
     def Eof(self):
+        """Return True when the end of the table's records has been reached."""
         return self.eof
 
     def Close(self):
+        """Cursor's destructor, used for cleanup"""
         self.items = None
 
 
@@ -335,11 +355,16 @@ class WorksCursor:
     def __init__(self, table):
         self.table = table
         self.files_cursor = FilesCursor(table)
+        # Initialized in Filter()
+        self.eof = None
+        self.item_index = None
 
     def Eof(self):
+        """Return True when the end of the table's records has been reached."""
         return self.eof
 
     def Rowid(self):
+        """Return a unique id of the row along all records"""
         # Allow for 65k items per file (currently 5k)
         return (self.files_cursor.Rowid() << 16) | (self.item_index)
 
@@ -353,6 +378,7 @@ class WorksCursor:
         return self.files_cursor.Rowid()
 
     def Column(self, col):
+        """Return the value of the column with ordinal col"""
         if col == -1:
             return self.Rowid()
 
@@ -378,6 +404,7 @@ class WorksCursor:
             self.eof = self.files_cursor.eof
 
     def Close(self):
+        """Cursor's destructor, used for cleanup"""
         self.files_cursor.Close()
 
 
@@ -390,6 +417,10 @@ class ElementsCursor:
     def __init__(self, table, parent_cursor):
         self.table = table
         self.parent_cursor = parent_cursor
+        self.elements = None
+        self.eof = None
+        # Initialized in Filter()
+        self.element_index = None
 
     @abc.abstractmethod
     def element_name(self):
@@ -405,6 +436,7 @@ class ElementsCursor:
         self.Next()
 
     def Eof(self):
+        """Return True when the end of the table's records has been reached."""
         return self.eof
 
     @abc.abstractmethod
@@ -449,6 +481,7 @@ class ElementsCursor:
         return self.parent_cursor.container_id()
 
     def Column(self, col):
+        """Return the value of the column with ordinal col"""
         if col == -1:
             return self.Rowid()
 
@@ -459,6 +492,7 @@ class ElementsCursor:
         return extract_function(self.current_row_value())
 
     def Close(self):
+        """Cursor's destructor, used for cleanup"""
         self.parent_cursor.Close()
         self.elements = None
 
@@ -472,11 +506,13 @@ class AuthorsCursor(ElementsCursor):
         return "author"
 
     def Rowid(self):
-        """This allows for 65k authors. There is a Physics paper with 5k
+        """Return a unique id of the row along all records.
+        This allows for 65k authors. There is a Physics paper with 5k
         authors."""
         return (self.parent_cursor.Rowid() << 16) | self.element_index
 
     def Column(self, col):
+        """Return the value of the column with ordinal col"""
         if col == 0:  # id
             return self.record_id()
 
@@ -495,7 +531,8 @@ class ReferencesCursor(ElementsCursor):
         return "reference"
 
     def Rowid(self):
-        """This allows for 16M references"""
+        """Return a unique id of the row along all records.
+        This allows for 16M references"""
         return (self.parent_cursor.Rowid() << 24) | self.element_index
 
     def Column(self, col):
@@ -513,7 +550,8 @@ class UpdatesCursor(ElementsCursor):
         return "update-to"
 
     def Rowid(self):
-        """This allows for 16M updates"""
+        """Return a unique id of the row along all records.
+        This allows for 16M updates"""
         return (self.parent_cursor.Rowid() << 24) | self.element_index
 
     def Column(self, col):
@@ -531,10 +569,12 @@ class SubjectsCursor(ElementsCursor):
         return "subject"
 
     def Rowid(self):
-        """This allows for 16M subjects"""
+        """Return a unique id of the row along all records.
+        This allows for 16M subjects"""
         return (self.parent_cursor.Rowid() << 24) | self.element_index
 
     def Column(self, col):
+        """Return the value of the column with ordinal col"""
         if col == 0:  # work_doi
             return self.parent_cursor.current_row_value().get("DOI")
         return super().Column(col)
@@ -549,10 +589,12 @@ class FundersCursor(ElementsCursor):
         return "funder"
 
     def Rowid(self):
-        """This allows for 16M funders"""
+        """Return a unique id of the row along all records
+        This allows for 16M funders"""
         return (self.parent_cursor.Rowid() << 24) | self.element_index
 
     def Column(self, col):
+        """Return the value of the column with ordinal col"""
         if col == 0:  # work_doi
             return self.parent_cursor.current_row_value().get("DOI")
         return super().Column(col)
@@ -567,18 +609,20 @@ class AffiliationsCursor(ElementsCursor):
         return "affiliation"
 
     def Rowid(self):
-        """This allows for 128 affiliations per author
+        """Return a unique id of the row along all records
+        This allows for 128 affiliations per author
         authors."""
         return (self.parent_cursor.Rowid() << 7) | self.element_index
 
     def Column(self, col):
+        """Return the value of the column with ordinal col"""
         if col == 0:  # Author-id
             return self.parent_cursor.record_id()
         return super().Column(col)
 
 
-"""By convention column 0 is the unique or foreign key,
-and column 1 the data's container"""
+# By convention column 0 is the unique or foreign key,
+# and column 1 the data's container
 tables = [
     TableMeta(
         "works",
@@ -632,7 +676,9 @@ tables = [
                 ),
             ),
             # Synthetic column, which can be used for population filtering
-            ColumnMeta("update_count", lambda row: len_value(row, "update-to")),
+            ColumnMeta(
+                "update_count", lambda row: len_value(row, "update-to")
+            ),
         ],
     ),
     TableMeta(
@@ -643,7 +689,7 @@ tables = [
             ColumnMeta("id", None),
             ColumnMeta("container_id", None),
             ColumnMeta("work_doi", None),
-            ColumnMeta("orcid", lambda row: author_orcid(row)),
+            ColumnMeta("orcid", author_orcid),
             ColumnMeta("suffix", lambda row: dict_value(row, "suffix")),
             ColumnMeta("given", lambda row: dict_value(row, "given")),
             ColumnMeta("family", lambda row: dict_value(row, "family")),
@@ -687,7 +733,9 @@ tables = [
                 "doi_asserted-by",
                 lambda row: dict_value(row, "doi-asserted-by"),
             ),
-            ColumnMeta("first_page", lambda row: dict_value(row, "first-page")),
+            ColumnMeta(
+                "first_page", lambda row: dict_value(row, "first-page")
+            ),
             ColumnMeta("isbn", lambda row: dict_value(row, "isbn")),
             ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
             ColumnMeta("component", lambda row: dict_value(row, "component")),
@@ -725,7 +773,9 @@ tables = [
             ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
             ColumnMeta(
                 "timestamp",
-                lambda row: dict_value(dict_value(row, "updated"), "timestamp"),
+                lambda row: dict_value(
+                    dict_value(row, "updated"), "timestamp"
+                ),
             ),
         ],
     ),
@@ -759,6 +809,7 @@ table_dict = {t.get_name(): t for t in tables}
 
 
 def get_table_meta_by_name(name):
+    """Return the metadata of the specified table"""
     return table_dict[name]
 
 
@@ -782,43 +833,45 @@ for t in tables:
     vdb.execute(f"CREATE VIRTUAL TABLE {t.get_name()} USING filesource()")
 
 
-def sql_value(db, statement):
-    """Return the first value of the specified SQL statement executed on db"""
-    (res,) = db.execute(statement).fetchone()
+def sql_value(database, statement):
+    """Return the first value of the specified SQL statement executed on
+    the specified database"""
+    (res,) = database.execute(statement).fetchone()
     return res
 
 
 # Streaming interface
-if full_print:
-    for r in vdb.execute("SELECT * FROM works ORDER BY title"):
-        print(r)
-    for r in vdb.execute(
+if FULL_PRINT:
+    for rec in vdb.execute("SELECT * FROM works ORDER BY title"):
+        print(rec)
+    for rec in vdb.execute(
         """SELECT work_doi, id, orcid, given, family
         FROM work_authors"""
     ):
-        print(r)
+        print(rec)
 
 
-def database_counts(db):
+def database_counts(database):
     """Print various counts on the passed database"""
-    for t in tables:
-        count = sql_value(db, f"SELECT count(*) FROM {t.get_name()}")
-        print(f"{count} element(s)\tin {t.get_name()}")
+    for table in tables:
+        count = sql_value(database, f"SELECT count(*) FROM {table.get_name()}")
+        print(f"{count} element(s)\tin {table.get_name()}")
 
     count = sql_value(
-        db,
+        database,
         """SELECT count(*) from (SELECT DISTINCT orcid FROM work_authors
                         WHERE orcid is not null)""",
     )
     print(f"{count} unique author ORCID(s)")
 
     count = sql_value(
-        db, "SELECT count(*) FROM (SELECT DISTINCT work_doi FROM work_authors)"
+        database,
+        "SELECT count(*) FROM (SELECT DISTINCT work_doi FROM work_authors)",
     )
     print(f"{count} publication(s) with work_authors")
 
     count = sql_value(
-        db,
+        database,
         """SELECT count(*) FROM work_references WHERE
                       doi is not null""",
     )
@@ -829,208 +882,217 @@ def database_counts(db):
 
 database_counts(vdb)
 
-# Database population via SQLite
-db = sqlite3.connect("populated.db")
-db.close()
 
-vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
+def populate(name):
+    """Database population via SQLite"""
+    populated_db = sqlite3.connect(name)
+    populated_db.close()
 
-for t in tables:
-    vdb.execute(t.table_schema("populated."))
+    vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
 
+    for table in tables:
+        vdb.execute(table.table_schema("populated."))
 
-vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
-vdb.execute("CREATE INDEX populated.work_authors_id_idx ON work_authors(id)")
-vdb.execute(
-    """CREATE INDEX populated.work_authors_work_doi_idx
-    ON work_authors(work_doi)"""
-)
-vdb.execute(
-    """CREATE INDEX populated.author_affiliations_author_id_idx
-    ON author_affiliations(author_id)"""
-)
-vdb.execute(
-    """CREATE INDEX populated.work_references_work_doi_idx
-    ON work_references(work_doi)"""
-)
-vdb.execute(
-    """CREATE INDEX populated.work_updates_work_doi_idx
-    ON work_updates(work_doi)"""
-)
-vdb.execute(
-    """CREATE INDEX populated.work_subjects_work_doi_idx
-    ON work_subjects(work_doi)"""
-)
-vdb.execute(
-    """CREATE INDEX populated.work_funders_work_doi_idx
-    ON work_funders(work_doi)"""
-)
-
-
-# Populate all tables from the records of each file in sequence.
-# This improves the locality of reference and through the constraint
-# indexing and the file cache avoids opening, reading, decompressing,
-# and parsing each file multiple times.
-for i in range(0, len(data_source.get_file_array())):
-    # Sampling:
-    #           WHERE abs(random() % 100000) = 0"""
-    #           WHERE update_count is not null
+    vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
     vdb.execute(
-        f"""
-        INSERT INTO populated.works SELECT * FROM works
-            WHERE container_id = {i}
-        """
+        "CREATE INDEX populated.work_authors_id_idx ON work_authors(id)"
+    )
+    vdb.execute(
+        """CREATE INDEX populated.work_authors_work_doi_idx
+        ON work_authors(work_doi)"""
+    )
+    vdb.execute(
+        """CREATE INDEX populated.author_affiliations_author_id_idx
+        ON author_affiliations(author_id)"""
+    )
+    vdb.execute(
+        """CREATE INDEX populated.work_references_work_doi_idx
+        ON work_references(work_doi)"""
+    )
+    vdb.execute(
+        """CREATE INDEX populated.work_updates_work_doi_idx
+        ON work_updates(work_doi)"""
+    )
+    vdb.execute(
+        """CREATE INDEX populated.work_subjects_work_doi_idx
+        ON work_subjects(work_doi)"""
+    )
+    vdb.execute(
+        """CREATE INDEX populated.work_funders_work_doi_idx
+        ON work_funders(work_doi)"""
     )
 
-    vdb.execute(
-        f"""
-        INSERT INTO populated.work_authors
-            SELECT work_authors.* FROM work_authors
-            INNER JOIN populated.works
-                ON work_authors.work_doi = populated.works.doi
-            WHERE work_authors.container_id = {i}
-        """
-    )
+    # Populate all tables from the records of each file in sequence.
+    # This improves the locality of reference and through the constraint
+    # indexing and the file cache avoids opening, reading, decompressing,
+    # and parsing each file multiple times.
+    for i in data_source.get_file_id_iterator():
+        # Sampling:
+        #           WHERE abs(random() % 100000) = 0"""
+        #           WHERE update_count is not null
+        vdb.execute(
+            f"""
+            INSERT INTO populated.works SELECT * FROM works
+                WHERE container_id = {i}
+            """
+        )
 
-    vdb.execute(
-        f"""
-        INSERT INTO populated.author_affiliations
-            SELECT author_affiliations.* FROM author_affiliations
-            INNER JOIN populated.work_authors
-                ON author_affiliations.author_id = populated.work_authors.id
-            WHERE author_affiliations.container_id = {i}
-        """
-    )
-
-    vdb.execute(
-        f"""
-        INSERT INTO populated.work_references
-            SELECT work_references.* FROM work_references
-            INNER JOIN populated.works
-                ON work_references.work_doi = populated.works.doi
-            WHERE work_references.container_id = {i}
-        """
-    )
-
-    vdb.execute(
-        f"""
-        INSERT INTO populated.work_updates
-            SELECT work_updates.* FROM work_updates
+        vdb.execute(
+            f"""
+            INSERT INTO populated.work_authors
+                SELECT work_authors.* FROM work_authors
                 INNER JOIN populated.works
-                    ON work_updates.work_doi = populated.works.doi
-            WHERE work_updates.container_id = {i}
-        """
-    )
+                    ON work_authors.work_doi = populated.works.doi
+                WHERE work_authors.container_id = {i}
+            """
+        )
 
-    vdb.execute(
-        f"""
-        INSERT INTO populated.work_subjects
-            SELECT work_subjects.* FROM work_subjects
+        vdb.execute(
+            f"""
+            INSERT INTO populated.author_affiliations
+                SELECT author_affiliations.* FROM author_affiliations
+                INNER JOIN populated.work_authors
+                  ON author_affiliations.author_id = populated.work_authors.id
+                WHERE author_affiliations.container_id = {i}
+            """
+        )
+
+        vdb.execute(
+            f"""
+            INSERT INTO populated.work_references
+                SELECT work_references.* FROM work_references
                 INNER JOIN populated.works
-                    ON work_subjects.work_doi = populated.works.doi
-            WHERE work_subjects.container_id = {i}
-        """
-    )
+                    ON work_references.work_doi = populated.works.doi
+                WHERE work_references.container_id = {i}
+            """
+        )
 
-    vdb.execute(
-        f"""
-        INSERT INTO populated.work_funders
-            SELECT work_funders.* FROM work_funders
-                INNER JOIN populated.works
-                    ON work_funders.work_doi = populated.works.doi
-            WHERE work_funders.container_id = {i}
-        """
-    )
+        vdb.execute(
+            f"""
+            INSERT INTO populated.work_updates
+                SELECT work_updates.* FROM work_updates
+                    INNER JOIN populated.works
+                        ON work_updates.work_doi = populated.works.doi
+                WHERE work_updates.container_id = {i}
+            """
+        )
 
-vdb.execute("DETACH populated")
+        vdb.execute(
+            f"""
+            INSERT INTO populated.work_subjects
+                SELECT work_subjects.* FROM work_subjects
+                    INNER JOIN populated.works
+                        ON work_subjects.work_doi = populated.works.doi
+                WHERE work_subjects.container_id = {i}
+            """
+        )
 
-# Populated database access
-db = sqlite3.connect("populated.db")
-if full_print:
-    for r in db.execute("select * from works order by title"):
-        print(r)
+        vdb.execute(
+            f"""
+            INSERT INTO populated.work_funders
+                SELECT work_funders.* FROM work_funders
+                    INNER JOIN populated.works
+                        ON work_funders.work_doi = populated.works.doi
+                WHERE work_funders.container_id = {i}
+            """
+        )
 
-# Authors with most publications
-for r in db.execute(
-    """SELECT count(*), orcid FROM work_authors
-         WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
-         LIMIT 3"""
-):
-    print(r)
+    vdb.execute("DETACH populated")
 
-# Author affiliations
-if full_print:
-    for r in db.execute(
-        """SELECT work_authors.given, work_authors.family,
-            author_affiliations.name FROM work_authors
-             INNER JOIN author_affiliations
-                ON work_authors.id = author_affiliations.author_id"""
+
+def populated_db_reports(name):
+    """Populated database access"""
+    populated_db = sqlite3.connect(name)
+    if FULL_PRINT:
+        for rec in populated_db.execute("select * from works order by title"):
+            print(rec)
+
+    # Authors with most publications
+    for rec in populated_db.execute(
+        """SELECT count(*), orcid FROM work_authors
+             WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
+             LIMIT 3"""
     ):
-        print(r)
+        print(rec)
 
-# Canonicalize affiliations
-db.execute(
-    """CREATE TABLE affiliation_names AS
-  SELECT row_number() OVER (ORDER BY '') AS id, name
-  FROM (SELECT DISTINCT name FROM author_affiliations)"""
-)
+    # Author affiliations
+    if FULL_PRINT:
+        for rec in populated_db.execute(
+            """SELECT work_authors.given, work_authors.family,
+                author_affiliations.name FROM work_authors
+                 INNER JOIN author_affiliations
+                    ON work_authors.id = author_affiliations.author_id"""
+        ):
+            print(rec)
 
-db.execute(
-    """CREATE TABLE authors_affiliations AS
-  SELECT affiliation_names.id AS affiliation_id, author_affiliations.author_id
-    FROM affiliation_names INNER JOIN author_affiliations
-      ON affiliation_names.name = author_affiliations.name"""
-)
+    # Canonicalize affiliations
+    populated_db.execute(
+        """CREATE TABLE affiliation_names AS
+      SELECT row_number() OVER (ORDER BY '') AS id, name
+      FROM (SELECT DISTINCT name FROM author_affiliations)"""
+    )
 
-db.execute(
-    """CREATE TABLE affiliation_works AS
-  SELECT DISTINCT affiliation_id, work_authors.work_doi
-    FROM authors_affiliations
-    LEFT JOIN work_authors ON authors_affiliations.author_id = work_authors.id"""
-)
+    populated_db.execute(
+        """CREATE TABLE authors_affiliations AS
+      SELECT affiliation_names.id AS affiliation_id,
+        author_affiliations.author_id
+        FROM affiliation_names INNER JOIN author_affiliations
+          ON affiliation_names.name = author_affiliations.name"""
+    )
 
-# Canonicalize subjects
-db.execute(
-    """CREATE TABLE subject_names AS
-        SELECT row_number() OVER (ORDER BY '') AS id, name
-            FROM (SELECT DISTINCT name FROM work_subjects)
-    """
-)
+    populated_db.execute(
+        """CREATE TABLE affiliation_works AS
+      SELECT DISTINCT affiliation_id, work_authors.work_doi
+        FROM authors_affiliations
+        LEFT JOIN work_authors
+          ON authors_affiliations.author_id = work_authors.id"""
+    )
 
-db.execute(
-    """CREATE TABLE works_subjects AS
-        SELECT subject_names.id AS subject_id, work_doi FROM subject_names
-        INNER JOIN work_subjects ON subject_names.name = work_subjects.name
-    """
-)
+    # Canonicalize subjects
+    populated_db.execute(
+        """CREATE TABLE subject_names AS
+            SELECT row_number() OVER (ORDER BY '') AS id, name
+                FROM (SELECT DISTINCT name FROM work_subjects)
+        """
+    )
 
-# Organizations with most publications
-for r in db.execute(
-    """SELECT count(*), name FROM affiliation_works
-    LEFT JOIN affiliation_names ON affiliation_names.id = affiliation_id
-    GROUP BY affiliation_id ORDER BY count(*) DESC
-    LIMIT 3"""
-):
-    print(r)
+    populated_db.execute(
+        """CREATE TABLE works_subjects AS
+            SELECT subject_names.id AS subject_id, work_doi FROM subject_names
+            INNER JOIN work_subjects ON subject_names.name = work_subjects.name
+        """
+    )
 
-# Most cited references
-for r in db.execute(
-    """SELECT count(*), doi FROM work_references
-    GROUP BY doi ORDER BY count(*) DESC
-    LIMIT 3"""
-):
-    print(r)
+    # Organizations with most publications
+    for rec in populated_db.execute(
+        """SELECT count(*), name FROM affiliation_works
+        LEFT JOIN affiliation_names ON affiliation_names.id = affiliation_id
+        GROUP BY affiliation_id ORDER BY count(*) DESC
+        LIMIT 3"""
+    ):
+        print(rec)
 
-# Most treated subjects
-for r in db.execute(
-    """SELECT count(*), name
-            FROM works_subjects INNER JOIN subject_names
-                ON works_subjects.subject_id = subject_names.id
-        GROUP BY(works_subjects.subject_id)
-        ORDER BY count(*) DESC
-        LIMIT 3
-    """
-):
-    print(r)
+    # Most cited references
+    for rec in populated_db.execute(
+        """SELECT count(*), doi FROM work_references
+        GROUP BY doi ORDER BY count(*) DESC
+        LIMIT 3"""
+    ):
+        print(rec)
 
-database_counts(db)
+    # Most treated subjects
+    for rec in populated_db.execute(
+        """SELECT count(*), name
+                FROM works_subjects INNER JOIN subject_names
+                    ON works_subjects.subject_id = subject_names.id
+            GROUP BY(works_subjects.subject_id)
+            ORDER BY count(*) DESC
+            LIMIT 3
+        """
+    ):
+        print(rec)
+    database_counts(populated_db)
+
+
+populate("populated.db")
+populated_db_reports("populated.db")

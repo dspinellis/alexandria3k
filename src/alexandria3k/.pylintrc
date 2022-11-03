@@ -202,7 +202,8 @@ method-naming-style=snake_case
 
 # Regular expression matching correct method names. Overrides method-naming-
 # style. If left empty, method names will be checked with the set naming style.
-#method-rgx=
+# Exception for apws method names
+method-rgx=(([a-z_][a-z0-9_]{2,30})|(BestIndex|Close|Column|Create|Disconnect|Eof|Filter|Next|Open|Rowid))$
 
 # Naming style matching correct module names.
 module-naming-style=snake_case
