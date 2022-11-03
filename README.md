@@ -1,9 +1,9 @@
-## alexandria-3k
+## alexandria3k
 
-Alexandria-3k (the
+The alexandria3k package (the
 [Library of Alexandria](https://en.wikipedia.org/wiki/Library_of_Alexandria)
 in the third millenium AD)
-is a library and a command-line tool providing efficient relational
+provides a library and a command-line tool providing efficient relational
 query access the entire
 [CrossRef dataset](https://www.nature.com/articles/d41586-022-02926-y)
 (157 GB compressed, 1 PB uncompressed).
