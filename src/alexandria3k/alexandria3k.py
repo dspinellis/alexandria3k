@@ -883,6 +883,13 @@ def database_counts(database):
 database_counts(vdb)
 
 
+def create_index(database, table, column):
+    """Create a database index for the specified table column"""
+    database.execute(
+        f"CREATE INDEX populated.{table}_{column}_idx ON {table}({column})"
+    )
+
+
 def populate(name):
     """Database population via SQLite"""
     populated_db = sqlite3.connect(name)
@@ -893,34 +900,14 @@ def populate(name):
     for table in tables:
         vdb.execute(table.table_schema("populated."))
 
-    vdb.execute("CREATE INDEX populated.works_doi_idx ON works(doi)")
-    vdb.execute(
-        "CREATE INDEX populated.work_authors_id_idx ON work_authors(id)"
-    )
-    vdb.execute(
-        """CREATE INDEX populated.work_authors_work_doi_idx
-        ON work_authors(work_doi)"""
-    )
-    vdb.execute(
-        """CREATE INDEX populated.author_affiliations_author_id_idx
-        ON author_affiliations(author_id)"""
-    )
-    vdb.execute(
-        """CREATE INDEX populated.work_references_work_doi_idx
-        ON work_references(work_doi)"""
-    )
-    vdb.execute(
-        """CREATE INDEX populated.work_updates_work_doi_idx
-        ON work_updates(work_doi)"""
-    )
-    vdb.execute(
-        """CREATE INDEX populated.work_subjects_work_doi_idx
-        ON work_subjects(work_doi)"""
-    )
-    vdb.execute(
-        """CREATE INDEX populated.work_funders_work_doi_idx
-        ON work_funders(work_doi)"""
-    )
+    create_index(vdb, "works", "doi")
+    create_index(vdb, "work_authors", "id")
+    create_index(vdb, "work_authors", "work_doi")
+    create_index(vdb, "author_affiliations", "author_id")
+    create_index(vdb, "work_references", "work_doi")
+    create_index(vdb, "work_updates", "work_doi")
+    create_index(vdb, "work_subjects", "work_doi")
+    create_index(vdb, "work_funders", "work_doi")
 
     # Populate all tables from the records of each file in sequence.
     # This improves the locality of reference and through the constraint
