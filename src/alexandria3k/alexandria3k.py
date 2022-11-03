@@ -813,26 +813,6 @@ def get_table_meta_by_name(name):
     return table_dict[name]
 
 
-try:
-    os.unlink("virtual.db")
-except FileNotFoundError:
-    pass
-
-try:
-    os.unlink("populated.db")
-except FileNotFoundError:
-    pass
-
-vdb = apsw.Connection("virtual.db")
-
-# Register the module as filesource
-data_source = Source("sample")
-vdb.createmodule("filesource", data_source)
-
-for t in tables:
-    vdb.execute(f"CREATE VIRTUAL TABLE {t.get_name()} USING filesource()")
-
-
 def sql_value(database, statement):
     """Return the first value of the specified SQL statement executed on
     the specified database"""
@@ -840,19 +820,18 @@ def sql_value(database, statement):
     return res
 
 
-# Streaming interface
-if FULL_PRINT:
-    for rec in vdb.execute("SELECT * FROM works ORDER BY title"):
-        print(rec)
-    for rec in vdb.execute(
-        """SELECT work_doi, id, orcid, given, family
-        FROM work_authors"""
-    ):
-        print(rec)
-
-
 def database_counts(database):
     """Print various counts on the passed database"""
+
+    if FULL_PRINT:
+        for rec in database.execute("SELECT * FROM works ORDER BY title"):
+            print(rec)
+        for rec in database.execute(
+            """SELECT work_doi, id, orcid, given, family
+            FROM work_authors"""
+        ):
+            print(rec)
+
     for table in tables:
         count = sql_value(database, f"SELECT count(*) FROM {table.get_name()}")
         print(f"{count} element(s)\tin {table.get_name()}")
@@ -880,9 +859,6 @@ def database_counts(database):
     print(f"{FileCache.file_reads} files read")
 
 
-database_counts(vdb)
-
-
 def create_index(database, table, column):
     """Create a database index for the specified table column"""
     database.execute(
@@ -890,12 +866,15 @@ def create_index(database, table, column):
     )
 
 
-def populate(name):
-    """Database population via SQLite"""
-    populated_db = sqlite3.connect(name)
-    populated_db.close()
+def populate(name, vdb):
+    """Create and populate named database from the passed virtual database
+    vdb via SQLite statements"""
 
-    vdb.execute("ATTACH DATABASE 'populated.db' AS populated")
+    # Create the populated database
+    pdb = sqlite3.connect(name)
+    pdb.close()
+
+    vdb.execute(f"ATTACH DATABASE '{name}' AS populated")
 
     for table in tables:
         vdb.execute(table.table_schema("populated."))
@@ -987,15 +966,57 @@ def populate(name):
     vdb.execute("DETACH populated")
 
 
-def populated_db_reports(name):
+def normalize(pdb):
+    """Introduce identifiers and many-to-many relations for repeated string
+    attributes"""
+
+    # Normalize affiliations
+    pdb.execute(
+        """CREATE TABLE affiliation_names AS
+      SELECT row_number() OVER (ORDER BY '') AS id, name
+      FROM (SELECT DISTINCT name FROM author_affiliations)"""
+    )
+
+    pdb.execute(
+        """CREATE TABLE authors_affiliations AS
+      SELECT affiliation_names.id AS affiliation_id,
+        author_affiliations.author_id
+        FROM affiliation_names INNER JOIN author_affiliations
+          ON affiliation_names.name = author_affiliations.name"""
+    )
+
+    pdb.execute(
+        """CREATE TABLE affiliation_works AS
+      SELECT DISTINCT affiliation_id, work_authors.work_doi
+        FROM authors_affiliations
+        LEFT JOIN work_authors
+          ON authors_affiliations.author_id = work_authors.id"""
+    )
+
+    # Normalize subjects
+    pdb.execute(
+        """CREATE TABLE subject_names AS
+            SELECT row_number() OVER (ORDER BY '') AS id, name
+                FROM (SELECT DISTINCT name FROM work_subjects)
+        """
+    )
+
+    pdb.execute(
+        """CREATE TABLE works_subjects AS
+            SELECT subject_names.id AS subject_id, work_doi FROM subject_names
+            INNER JOIN work_subjects ON subject_names.name = work_subjects.name
+        """
+    )
+
+
+def populated_db_reports(pdb):
     """Populated database access"""
-    populated_db = sqlite3.connect(name)
     if FULL_PRINT:
-        for rec in populated_db.execute("select * from works order by title"):
+        for rec in pdb.execute("select * from works order by title"):
             print(rec)
 
     # Authors with most publications
-    for rec in populated_db.execute(
+    for rec in pdb.execute(
         """SELECT count(*), orcid FROM work_authors
              WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
              LIMIT 3"""
@@ -1004,7 +1025,7 @@ def populated_db_reports(name):
 
     # Author affiliations
     if FULL_PRINT:
-        for rec in populated_db.execute(
+        for rec in pdb.execute(
             """SELECT work_authors.given, work_authors.family,
                 author_affiliations.name FROM work_authors
                  INNER JOIN author_affiliations
@@ -1012,46 +1033,8 @@ def populated_db_reports(name):
         ):
             print(rec)
 
-    # Canonicalize affiliations
-    populated_db.execute(
-        """CREATE TABLE affiliation_names AS
-      SELECT row_number() OVER (ORDER BY '') AS id, name
-      FROM (SELECT DISTINCT name FROM author_affiliations)"""
-    )
-
-    populated_db.execute(
-        """CREATE TABLE authors_affiliations AS
-      SELECT affiliation_names.id AS affiliation_id,
-        author_affiliations.author_id
-        FROM affiliation_names INNER JOIN author_affiliations
-          ON affiliation_names.name = author_affiliations.name"""
-    )
-
-    populated_db.execute(
-        """CREATE TABLE affiliation_works AS
-      SELECT DISTINCT affiliation_id, work_authors.work_doi
-        FROM authors_affiliations
-        LEFT JOIN work_authors
-          ON authors_affiliations.author_id = work_authors.id"""
-    )
-
-    # Canonicalize subjects
-    populated_db.execute(
-        """CREATE TABLE subject_names AS
-            SELECT row_number() OVER (ORDER BY '') AS id, name
-                FROM (SELECT DISTINCT name FROM work_subjects)
-        """
-    )
-
-    populated_db.execute(
-        """CREATE TABLE works_subjects AS
-            SELECT subject_names.id AS subject_id, work_doi FROM subject_names
-            INNER JOIN work_subjects ON subject_names.name = work_subjects.name
-        """
-    )
-
     # Organizations with most publications
-    for rec in populated_db.execute(
+    for rec in pdb.execute(
         """SELECT count(*), name FROM affiliation_works
         LEFT JOIN affiliation_names ON affiliation_names.id = affiliation_id
         GROUP BY affiliation_id ORDER BY count(*) DESC
@@ -1060,7 +1043,7 @@ def populated_db_reports(name):
         print(rec)
 
     # Most cited references
-    for rec in populated_db.execute(
+    for rec in pdb.execute(
         """SELECT count(*), doi FROM work_references
         GROUP BY doi ORDER BY count(*) DESC
         LIMIT 3"""
@@ -1068,7 +1051,7 @@ def populated_db_reports(name):
         print(rec)
 
     # Most treated subjects
-    for rec in populated_db.execute(
+    for rec in pdb.execute(
         """SELECT count(*), name
                 FROM works_subjects INNER JOIN subject_names
                     ON works_subjects.subject_id = subject_names.id
@@ -1078,8 +1061,34 @@ def populated_db_reports(name):
         """
     ):
         print(rec)
-    database_counts(populated_db)
 
 
-populate("populated.db")
-populated_db_reports("populated.db")
+try:
+    os.unlink("virtual.db")
+except FileNotFoundError:
+    pass
+
+try:
+    os.unlink("populated.db")
+except FileNotFoundError:
+    pass
+
+virtual_db = apsw.Connection("virtual.db")
+
+# Register the module as filesource
+data_source = Source("sample")
+virtual_db.createmodule("filesource", data_source)
+
+for t in tables:
+    virtual_db.execute(
+        f"CREATE VIRTUAL TABLE {t.get_name()} USING filesource()"
+    )
+
+# Streaming interface
+database_counts(virtual_db)
+
+populate("populated.db", virtual_db)
+populated_db = sqlite3.connect("populated.db")
+normalize(populated_db)
+populated_db_reports(populated_db)
+database_counts(populated_db)
