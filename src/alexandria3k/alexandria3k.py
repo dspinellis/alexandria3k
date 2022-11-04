@@ -77,10 +77,11 @@ class CrossrefMetaData:
         in quadratic (or worse) algorithmic complexity."""
 
         if not partition:
-            yield self.vdb.execute(query)
+            for row in self.vdb.execute(query):
+                yield row
         else:
             for i in self.data_source.get_file_id_iterator():
-                container_query = query.replace('CONTAINER_ID', i)
+                container_query = query.replace('CONTAINER_ID', str(i))
                 query_results = self.vdb.execute(container_query)
                 for row in query_results:
                     yield row
