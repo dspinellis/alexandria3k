@@ -33,6 +33,7 @@ class CrossrefMetaData:
     """Create a Crossref meta-data object that support queries over its
     (virtual) table and the population of an SQLite database with its
     data"""
+
     def __init__(
         self,
         container_directory,
@@ -81,12 +82,14 @@ class CrossrefMetaData:
                 yield row
         else:
             for i in self.data_source.get_file_id_iterator():
-                container_query = query.replace('CONTAINER_ID', str(i))
+                container_query = query.replace("CONTAINER_ID", str(i))
                 query_results = self.vdb.execute(container_query)
                 for row in query_results:
                     yield row
 
-    def populate_database(self, database_path, _columns, _conditions, _indexes):
+    def populate_database(
+        self, database_path, _columns, _conditions, _indexes
+    ):
         """Populate the specified SQLite database.
         The database is created if it does not exist.
         If it exists, the populated tables are dropped

@@ -630,6 +630,7 @@ tables = [
                     2,
                 ),
             ),
+            ColumnMeta("publisher", lambda row: dict_value(row, "publisher")),
             ColumnMeta("abstract", lambda row: dict_value(row, "abstract")),
             ColumnMeta("type", lambda row: dict_value(row, "type")),
             ColumnMeta("subtype", lambda row: dict_value(row, "subtype")),
