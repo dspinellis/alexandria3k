@@ -416,8 +416,7 @@ class ElementsCursor:
 
     def record_id(self):
         """Return the record's identifier. Not part of the apsw API."""
-        # Zero-pad for 60 bits
-        return f"{self.Rowid():015X}"
+        return self.Rowid()
 
     def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
