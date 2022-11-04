@@ -417,7 +417,7 @@ def main():
         "-M",
         "--metrics",
         action="store_true",
-        help="Output metrics from the scanned and populated database",
+        help="Output metrics regarding files read",
     )
     parser.add_argument(
         "-N",
@@ -496,6 +496,9 @@ def main():
         database_counts(populated_db)
         database_dump(populated_db)
         populated_reports(populated_db)
+
+    if args.metrics:
+        print(f"{FileCache.file_reads} files read")
 
 
 if __name__ == "__main__":
