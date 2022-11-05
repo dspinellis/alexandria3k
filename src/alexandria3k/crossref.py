@@ -579,8 +579,12 @@ class FundersCursor(ElementsCursor):
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
-        if col == 0:  # work_doi
+        if col == 0:  # id
+            return self.record_id()
+
+        if col == 2:  # work_doi
             return self.parent_cursor.current_row_value().get("DOI")
+
         return super().Column(col)
 
 
@@ -594,13 +598,32 @@ class AffiliationsCursor(ElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records
-        This allows for 128 affiliations per author
-        authors."""
+        This allows for 128 affiliations per author."""
         return (self.parent_cursor.Rowid() << 7) | self.element_index
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
         if col == 0:  # Author-id
+            return self.parent_cursor.record_id()
+        return super().Column(col)
+
+
+class AwardsCursor(ElementsCursor):
+    """A cursor over the authors' affiliation data."""
+
+    def element_name(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return "award"
+
+    def Rowid(self):
+        """Return a unique id of the row along all records
+        This allows for 1024 awards per funder."""
+        return (self.parent_cursor.Rowid() << 10) | self.element_index
+
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:  # Funder-id
             return self.parent_cursor.record_id()
         return super().Column(col)
 
@@ -783,13 +806,21 @@ tables = [
         "works",
         FundersCursor,
         [
-            ColumnMeta("work_doi", None),
+            ColumnMeta("id", None),
             ColumnMeta("container_id", None),
+            ColumnMeta("work_doi", None),
             ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
             ColumnMeta("name", lambda row: dict_value(row, "name")),
-            ColumnMeta(
-                "awards", lambda row: tab_values(dict_value(row, "award"))
-            ),
+        ],
+    ),
+    TableMeta(
+        "funder_awards",
+        "work_funders",
+        AwardsCursor,
+        [
+            ColumnMeta("funder_id", None),
+            ColumnMeta("container_id", None),
+            ColumnMeta("name", lambda row: row),
         ],
     ),
 ]

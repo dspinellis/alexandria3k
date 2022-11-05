@@ -191,6 +191,7 @@ class CrossrefMetaData:
         self.create_index("work_references", "work_doi")
         self.create_index("work_updates", "work_doi")
         self.create_index("work_subjects", "work_doi")
+        self.create_index("work_funders", "id")
         self.create_index("work_funders", "work_doi")
 
         # Populate all tables from the records of each file in sequence.
@@ -243,6 +244,14 @@ class CrossrefMetaData:
                 i,
                 """populated.works
                         ON work_funders.work_doi = populated.works.doi""",
+            )
+
+            populate_table(
+                "funder_awards",
+                i,
+                """populated.work_funders
+                        ON funder_awards.funder_id
+                            = populated.work_funders.id""",
             )
 
         self.vdb.execute("DETACH populated")
