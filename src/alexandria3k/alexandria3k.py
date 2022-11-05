@@ -197,13 +197,11 @@ class CrossrefMetaData:
                 self.table_columns[table] = [column]
 
         # Create empty tables
-        for table in crossref.tables:
-            if not table.get_name() in self.table_columns:
-                continue
+        for (table_name, columns) in self.table_columns.items():
+            table = crossref.get_table_meta_by_name(table_name)
             self.vdb.execute(
-                f"DROP TABLE IF EXISTS populated.{table.get_name()}"
+                f"DROP TABLE IF EXISTS populated.{table_name}"
             )
-            columns = self.table_columns[table.get_name()]
             self.vdb.execute(table.table_schema("populated.", columns))
 
         create_join_index("works", "doi")
@@ -621,6 +619,7 @@ def main():
         populated_reports(populated_db)
 
     if args.metrics:
+        database_counts(populated_db)
         print(f"{FileCache.file_reads} files read")
 
 
