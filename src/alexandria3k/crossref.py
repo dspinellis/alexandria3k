@@ -90,6 +90,20 @@ def boolean_value(dictionary, key):
     return 0
 
 
+def issn_value(dictionary, issn_type):
+    """Return the ISSN of the specified type from a row that may contain
+    an issn-type entry"""
+    if not dictionary:
+        return None
+    try:
+        # Array of entries like { "type": "electronic" , "value": "1756-2848" }
+        type_values = dictionary["issn-type"]
+    except KeyError:
+        return None
+    value = [tv["value"] for tv in type_values if tv["type"] == issn_type]
+    return value[0] if value else None
+
+
 def len_value(dictionary, key):
     """Return array length or None for the corresponding JSON value for key k
     of dict d"""
@@ -644,6 +658,10 @@ tables = [
                 lambda row: dict_value(
                     dict_value(row, "journal-issue"), "issue"
                 ),
+            ),
+            ColumnMeta("issn_print", lambda row: issn_value(row, "print")),
+            ColumnMeta(
+                "issn_electronic", lambda row: issn_value(row, "electronic")
             ),
             # Synthetic column, which can be used for population filtering
             ColumnMeta(
