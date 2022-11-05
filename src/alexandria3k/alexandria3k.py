@@ -98,7 +98,7 @@ class CrossrefMetaData:
                 for row in query_results:
                     yield row
 
-    def populate_database(self, database_path, columns, _conditions, _indexes):
+    def populate_database(self, database_path, columns, conditions, _indexes):
         """Populate the specified SQLite database.
         The database is created if it does not exist.
         If it exists, the populated tables are dropped
@@ -128,18 +128,26 @@ class CrossrefMetaData:
 
         def populate_table(table, partition_index, join_part=""):
             """Populate the specified table"""
+
             if table not in self.table_columns:
                 return
             join = f"INNER JOIN {join_part}" if join_part else ""
             columns = ", ".join(
                 [f"{table}.{col}" for col in self.table_columns[table]]
             )
+
+            if table in conditions:
+                condition = f"AND ({conditions[table]})"
+            else:
+                condition = ""
+
             self.vdb.execute(
                 f"""
                 INSERT INTO populated.{table}
                     SELECT {columns} FROM {table}
                     {join}
                     WHERE {table}.container_id = {partition_index}
+                    {condition}
                 """
             )
 
@@ -541,8 +549,19 @@ def main():
             indexes = [x.split(":", 1) for x in args.index]
         else:
             indexes = []
+
+        if args.row_selection:
+            try:
+                conditions = {
+                    x.split(":", 1)[0]: x.split(":", 1)[1]
+                    for x in args.row_selection
+                }
+            except IndexError:
+                fail("Invalid row selection specification")
+        else:
+            conditions = {}
         crmd.populate_database(
-            args.populate, args.columns, args.row_selection, indexes
+            args.populate, args.columns, conditions, indexes
         )
 
     if args.query:
