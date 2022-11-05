@@ -20,8 +20,10 @@
 """Main package module"""
 
 import argparse
+import csv
 import os
 import sqlite3
+import sys
 
 import apsw
 
@@ -329,7 +331,7 @@ def database_dump(database):
         name = table.get_name()
         print(f"TABLE {name}")
         for rec in database.execute(f"SELECT * FROM {name}"):
-            print(rec)
+            print("\t".join(rec))
 
 
 def database_counts(database):
@@ -375,6 +377,9 @@ def main():
     )
 
     parser.add_argument(
+        "-B", "--cached-bytes", type=str, help="Size of data cache"
+    )
+    parser.add_argument(
         "-c",
         "--columns",
         nargs="*",
@@ -395,10 +400,18 @@ def main():
         help="Directory storing the downloaded data",
     )
     parser.add_argument(
+        "-E",
+        "--output-encoding",
+        type=str,
+        default="utf-8",
+        help="Query output character encoding (use utf-8-sig for Excel)",
+    )
+    parser.add_argument(
         "-F",
-        "--cached-files",
-        type=int,
-        help="Number of files to cache in memory",
+        "--field-separator",
+        type=str,
+        default=",",
+        help="Character to use for separating query output fields",
     )
     parser.add_argument(
         "-i",
@@ -420,16 +433,28 @@ def main():
         help="Output metrics regarding files read",
     )
     parser.add_argument(
-        "-N",
+        "-n",
         "--normalize",
         action="store_true",
         help="Normalize relations in the populated database",
+    )
+    parser.add_argument(
+        "-N",
+        "--cached-file-number",
+        type=int,
+        help="Number of files to cache in memory",
     )
     parser.add_argument(
         "-P",
         "--partition",
         action="store_true",
         help="Run the query over partitioned data slices",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Output file for query results",
     )
     parser.add_argument(
         "-p",
@@ -448,9 +473,6 @@ def main():
         help="SQL expressions that select the populated rows",
     )
     parser.add_argument(
-        "-S", "--cache-size", type=str, help="Size of data cache"
-    )
-    parser.add_argument(
         "-s",
         "--sample",
         default="True",
@@ -462,7 +484,11 @@ def main():
     # pylint: disable=W0123
     sample = eval(f"lambda word: {args.sample}")
     crmd = CrossrefMetaData(
-        args.directory, sample, None, args.cached_files, args.cache_size
+        args.directory,
+        sample,
+        None,
+        args.cached_file_number,
+        args.cached_bytes,
     )
 
     if args.dump:
@@ -482,8 +508,17 @@ def main():
         )
 
     if args.query:
+        if args.output:
+            # pylint: disable=R1732
+            csv_file = open(
+                args.output, "w", newline="", encoding=args.output_encoding
+            )
+        else:
+            sys.stdout.reconfigure(encoding=args.output_encoding)
+            csv_file = sys.stdout
+        csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
         for rec in crmd.query(args.query, args.partition):
-            print(rec)
+            csv_writer.writerow(rec)
 
     if args.normalize:
         populated_db = sqlite3.connect("populated.db")
