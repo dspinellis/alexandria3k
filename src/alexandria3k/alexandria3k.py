@@ -337,8 +337,9 @@ def database_dump(database):
     for table in crossref.tables:
         name = table.get_name()
         print(f"TABLE {name}")
+        csv_writer = csv.writer(sys.stdout, delimiter="\t")
         for rec in database.execute(f"SELECT * FROM {name}"):
-            print("\t".join(rec))
+            csv_writer.writerow(rec)
 
 
 def database_counts(database):
