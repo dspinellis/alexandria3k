@@ -126,12 +126,34 @@ class CrossrefMetaData:
         not be specified.
         """
 
+        def table_under_condition(table):
+            """Return True if a condition has been specified for
+            the table or its parents.  This allows us to avoid
+            unneeded joins and indexes, making the population at
+            least 12% faster."""
+            while table:
+                if table in conditions:
+                    return True
+                table = crossref.get_table_meta_by_name(
+                    table
+                ).get_parent_name()
+            return False
+
+        def create_join_index(table, column):
+            """Create (if required) a database index for the specified table
+            column"""
+            if table_under_condition(table):
+                self.create_index(table, column)
+
         def populate_table(table, partition_index, join_part=""):
             """Populate the specified table"""
 
             if table not in self.table_columns:
                 return
-            join = f"INNER JOIN {join_part}" if join_part else ""
+            if join_part and table_under_condition(table):
+                join = f"INNER JOIN {join_part}"
+            else:
+                join = ""
             columns = ", ".join(
                 [f"{table}.{col}" for col in self.table_columns[table]]
             )
@@ -184,15 +206,15 @@ class CrossrefMetaData:
             columns = self.table_columns[table.get_name()]
             self.vdb.execute(table.table_schema("populated.", columns))
 
-        self.create_index("works", "doi")
-        self.create_index("work_authors", "id")
-        self.create_index("work_authors", "work_doi")
-        self.create_index("author_affiliations", "author_id")
-        self.create_index("work_references", "work_doi")
-        self.create_index("work_updates", "work_doi")
-        self.create_index("work_subjects", "work_doi")
-        self.create_index("work_funders", "id")
-        self.create_index("work_funders", "work_doi")
+        create_join_index("works", "doi")
+        create_join_index("work_authors", "id")
+        create_join_index("work_authors", "work_doi")
+        create_join_index("author_affiliations", "author_id")
+        create_join_index("work_references", "work_doi")
+        create_join_index("work_updates", "work_doi")
+        create_join_index("work_subjects", "work_doi")
+        create_join_index("work_funders", "id")
+        create_join_index("work_funders", "work_doi")
 
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
