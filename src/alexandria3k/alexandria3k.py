@@ -324,6 +324,13 @@ def populated_reports(pdb):
         print(rec)
 
 
+def schema_list():
+    """Print the full database schema"""
+
+    for table in crossref.tables:
+        print(table.table_schema())
+
+
 def database_dump(database):
     """Print the passed database data"""
 
@@ -381,10 +388,10 @@ def parse_cli_arguments():
     )
     parser.add_argument(
         "-c",
-        "--columns",
+        "--column",
         nargs="*",
         type=str,
-        help="Columns to populate using table.column or table.*",
+        help="Column to populate using table.column or table.* (can be repeated)",
     )
     parser.add_argument(
         "-D",
@@ -395,7 +402,6 @@ def parse_cli_arguments():
     parser.add_argument(
         "-d",
         "--directory",
-        required=True,
         type=str,
         help="Directory storing the downloaded data",
     )
@@ -470,7 +476,7 @@ def parse_cli_arguments():
         "--row-selection",
         nargs="*",
         type=str,
-        help="SQL expressions that select the populated rows",
+        help="SQL expressions that select the populated rows (can be repeated)",
     )
     parser.add_argument(
         "-s",
@@ -486,6 +492,10 @@ def main():
     """Program entry point"""
     args = parse_cli_arguments()
 
+    if args.list_schema:
+        schema_list()
+        sys.exit(0)
+
     # pylint: disable=W0123
     sample = eval(f"lambda word: {args.sample}")
     crmd = CrossrefMetaData(
@@ -495,6 +505,10 @@ def main():
         args.cached_file_number,
         args.cached_bytes,
     )
+
+    if not args.directory:
+        print("Data directory must be specified", file=sys.stderr)
+        sys.exit(1)
 
     if args.dump:
         # Streaming interface
@@ -509,7 +523,7 @@ def main():
         else:
             indexes = []
         crmd.populate_database(
-            args.populate, args.columns, args.row_selection, indexes
+            args.populate, args.column, args.row_selection, indexes
         )
 
     if args.query:
