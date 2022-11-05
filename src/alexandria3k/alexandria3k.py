@@ -370,8 +370,8 @@ def database_counts(database):
     print(f"{FileCache.file_reads} files read")
 
 
-def main():
-    """Program entry point"""
+def parse_cli_arguments():
+    """Parse command line arguments"""
     parser = argparse.ArgumentParser(
         description="a3k: Publication metadata interface"
     )
@@ -479,7 +479,12 @@ def main():
         type=str,
         help="Python expression to sample the Crossref tables",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main():
+    """Program entry point"""
+    args = parse_cli_arguments()
 
     # pylint: disable=W0123
     sample = eval(f"lambda word: {args.sample}")
