@@ -138,14 +138,15 @@ class TableMeta:
         self.columns = columns
         self.cursor_class = cursor_class
 
-    def column_list(self):
-        """Return a comma-separated list of a table's columns"""
-        return ",".join([f"'{c.get_name()}'" for c in self.columns])
-
-    def table_schema(self, prefix=""):
+    def table_schema(self, prefix="", columns=None):
         """Return the SQL command to create a table's schema with the
-        optional specified prefix."""
-        return f"CREATE TABLE {prefix}{self.name}(" + self.column_list() + ")"
+        optional specified prefix.
+        A columns array can be used to specify which columns to include."""
+        if not columns or columns == ["*"]:
+            columns = [c.get_name() for c in self.columns]
+        # A comma-separated list of the table's columns
+        column_list = ", ".join(columns)
+        return f"CREATE TABLE {prefix}{self.name}(" + column_list + ")"
 
     def get_name(self):
         """Return the table's name"""
@@ -718,7 +719,7 @@ tables = [
             ),
             ColumnMeta("isbn_type", lambda row: dict_value(row, "isbn-type")),
             ColumnMeta(
-                "doi_asserted-by",
+                "doi_asserted_by",
                 lambda row: dict_value(row, "doi-asserted-by"),
             ),
             ColumnMeta(

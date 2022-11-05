@@ -31,6 +31,12 @@ import crossref
 from file_cache import FileCache
 
 
+def fail(message):
+    """Fail the program execution with the specified error message"""
+    print(message, file=sys.stderr)
+    sys.exit(1)
+
+
 class CrossrefMetaData:
     """Create a Crossref meta-data object that support queries over its
     (virtual) table and the population of an SQLite database with its
@@ -48,6 +54,7 @@ class CrossrefMetaData:
         # Register the module as filesource
         self.data_source = crossref.Source(container_directory)
         self.vdb.createmodule("filesource", self.data_source)
+        self.table_columns = {}
 
         for table in crossref.tables:
             self.vdb.execute(
@@ -60,9 +67,11 @@ class CrossrefMetaData:
 
     def create_index(self, table, column):
         """Create a database index for the specified table column"""
-        self.vdb.execute(
-            f"CREATE INDEX populated.{table}_{column}_idx ON {table}({column})"
-        )
+        if table not in self.table_columns:
+            return
+        index_name = f"populated.{table}_{column}_idx"
+        self.vdb.execute(f"DROP INDEX IF EXISTS {index_name}")
+        self.vdb.execute(f"CREATE INDEX {index_name} ON {table}({column})")
 
     def query(self, query, partition=False):
         """Run the specified query on the virtual database.
@@ -89,9 +98,7 @@ class CrossrefMetaData:
                 for row in query_results:
                     yield row
 
-    def populate_database(
-        self, database_path, _columns, _conditions, _indexes
-    ):
+    def populate_database(self, database_path, columns, _conditions, _indexes):
         """Populate the specified SQLite database.
         The database is created if it does not exist.
         If it exists, the populated tables are dropped
@@ -119,15 +126,20 @@ class CrossrefMetaData:
         not be specified.
         """
 
-        def populate_table(table_name, partition_index, join_part=""):
+        def populate_table(table, partition_index, join_part=""):
             """Populate the specified table"""
+            if table not in self.table_columns:
+                return
             join = f"INNER JOIN {join_part}" if join_part else ""
+            columns = ", ".join(
+                [f"{table}.{col}" for col in self.table_columns[table]]
+            )
             self.vdb.execute(
                 f"""
-                INSERT INTO populated.{table_name}
-                    SELECT {table_name}.* FROM {table_name}
+                INSERT INTO populated.{table}
+                    SELECT {columns} FROM {table}
                     {join}
-                    WHERE {table_name}.container_id = {partition_index}
+                    WHERE {table}.container_id = {partition_index}
                 """
             )
 
@@ -138,12 +150,31 @@ class CrossrefMetaData:
 
         self.vdb.execute(f"ATTACH DATABASE '{database_path}' AS populated")
 
+        # By default include all tables and columns
+        if not columns:
+            columns = []
+            for table in crossref.tables:
+                columns.append(f"{table.get_name()}.*")
+
+        # A dictionary of columns populated for each table
+        for col in columns:
+            (table, column) = col.split(".")
+            if not table or not column:
+                fail(f"Invalid column specification: {col}")
+            if table in self.table_columns:
+                self.table_columns[table].append(column)
+            else:
+                self.table_columns[table] = [column]
+
         # Create empty tables
         for table in crossref.tables:
+            if not table.get_name() in self.table_columns:
+                continue
             self.vdb.execute(
                 f"DROP TABLE IF EXISTS populated.{table.get_name()}"
             )
-            self.vdb.execute(table.table_schema("populated."))
+            columns = self.table_columns[table.get_name()]
+            self.vdb.execute(table.table_schema("populated.", columns))
 
         self.create_index("works", "doi")
         self.create_index("work_authors", "id")
@@ -377,10 +408,10 @@ def parse_cli_arguments():
     )
     parser.add_argument(
         "-c",
-        "--column",
+        "--columns",
         nargs="*",
         type=str,
-        help="Column to populate using table.column or table.* (repeatable)",
+        help="Columns to populate using table.column or table.*",
     )
     parser.add_argument(
         "-D",
@@ -465,7 +496,7 @@ def parse_cli_arguments():
         "--row-selection",
         nargs="*",
         type=str,
-        help="SQL expressions that select the populated rows (repeatable)",
+        help="SQL expressions that select the populated rows",
     )
     parser.add_argument(
         "-s",
@@ -496,8 +527,7 @@ def main():
     )
 
     if not args.directory:
-        print("Data directory must be specified", file=sys.stderr)
-        sys.exit(1)
+        fail("Data directory must be specified")
 
     if args.dump:
         # Streaming interface
@@ -512,7 +542,7 @@ def main():
         else:
             indexes = []
         crmd.populate_database(
-            args.populate, args.column, args.row_selection, indexes
+            args.populate, args.columns, args.row_selection, indexes
         )
 
     if args.query:
