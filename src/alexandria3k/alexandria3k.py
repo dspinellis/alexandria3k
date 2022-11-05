@@ -119,6 +119,18 @@ class CrossrefMetaData:
         not be specified.
         """
 
+        def populate_table(table_name, partition_index, join_part=""):
+            """Populate the specified table"""
+            join = f"INNER JOIN {join_part}" if join_part else ""
+            self.vdb.execute(
+                f"""
+                INSERT INTO populated.{table_name}
+                    SELECT {table_name}.* FROM {table_name}
+                    {join}
+                    WHERE {table_name}.container_id = {partition_index}
+                """
+            )
+
         # Create the populated database, if needed
         if not os.path.exists(database_path):
             pdb = sqlite3.connect(database_path)
@@ -150,72 +162,48 @@ class CrossrefMetaData:
             # Sampling:
             #           WHERE abs(random() % 100000) = 0"""
             #           WHERE update_count is not null
-            self.vdb.execute(
-                f"""
-                INSERT INTO populated.works SELECT * FROM works
-                    WHERE container_id = {i}
-                """
+            populate_table("works", i)
+            populate_table(
+                "work_authors",
+                i,
+                """populated.works
+                        ON work_authors.work_doi = populated.works.doi""",
             )
 
-            self.vdb.execute(
-                f"""
-                INSERT INTO populated.work_authors
-                    SELECT work_authors.* FROM work_authors
-                    INNER JOIN populated.works
-                        ON work_authors.work_doi = populated.works.doi
-                    WHERE work_authors.container_id = {i}
-                """
+            populate_table(
+                "author_affiliations",
+                i,
+                """populated.work_authors
+                        ON author_affiliations.author_id
+                            = populated.work_authors.id""",
             )
 
-            self.vdb.execute(
-                f"""
-                INSERT INTO populated.author_affiliations
-                    SELECT author_affiliations.* FROM author_affiliations
-                    INNER JOIN populated.work_authors
-                      ON author_affiliations.author_id
-                        = populated.work_authors.id
-                    WHERE author_affiliations.container_id = {i}
-                """
+            populate_table(
+                "work_references",
+                i,
+                """populated.works
+                        ON work_references.work_doi = populated.works.doi""",
             )
 
-            self.vdb.execute(
-                f"""
-                INSERT INTO populated.work_references
-                    SELECT work_references.* FROM work_references
-                    INNER JOIN populated.works
-                        ON work_references.work_doi = populated.works.doi
-                    WHERE work_references.container_id = {i}
-                """
+            populate_table(
+                "work_updates",
+                i,
+                """populated.works
+                        ON work_updates.work_doi = populated.works.doi""",
             )
 
-            self.vdb.execute(
-                f"""
-                INSERT INTO populated.work_updates
-                    SELECT work_updates.* FROM work_updates
-                        INNER JOIN populated.works
-                            ON work_updates.work_doi = populated.works.doi
-                    WHERE work_updates.container_id = {i}
-                """
+            populate_table(
+                "work_subjects",
+                i,
+                """populated.works
+                        ON work_subjects.work_doi = populated.works.doi""",
             )
 
-            self.vdb.execute(
-                f"""
-                INSERT INTO populated.work_subjects
-                    SELECT work_subjects.* FROM work_subjects
-                        INNER JOIN populated.works
-                            ON work_subjects.work_doi = populated.works.doi
-                    WHERE work_subjects.container_id = {i}
-                """
-            )
-
-            self.vdb.execute(
-                f"""
-                INSERT INTO populated.work_funders
-                    SELECT work_funders.* FROM work_funders
-                        INNER JOIN populated.works
-                            ON work_funders.work_doi = populated.works.doi
-                    WHERE work_funders.container_id = {i}
-                """
+            populate_table(
+                "work_funders",
+                i,
+                """populated.works
+                        ON work_funders.work_doi = populated.works.doi""",
             )
 
         self.vdb.execute("DETACH populated")
@@ -392,7 +380,7 @@ def parse_cli_arguments():
         "--column",
         nargs="*",
         type=str,
-        help="Column to populate using table.column or table.* (can be repeated)",
+        help="Column to populate using table.column or table.* (repeatable)",
     )
     parser.add_argument(
         "-D",
@@ -477,7 +465,7 @@ def parse_cli_arguments():
         "--row-selection",
         nargs="*",
         type=str,
-        help="SQL expressions that select the populated rows (can be repeated)",
+        help="SQL expressions that select the populated rows (repeatable)",
     )
     parser.add_argument(
         "-s",
