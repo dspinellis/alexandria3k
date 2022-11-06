@@ -132,9 +132,19 @@ def tab_values(array):
 class TableMeta:
     """Meta-data of tables we maintain"""
 
-    def __init__(self, name, parent_name, cursor_class, columns):
+    def __init__(
+        self,
+        name,
+        foreign_key,
+        parent_name,
+        primary_key,
+        cursor_class,
+        columns,
+    ):
         self.name = name
+        self.foreign_key = foreign_key
         self.parent_name = parent_name
+        self.primary_key = primary_key
         self.columns = columns
         self.cursor_class = cursor_class
 
@@ -151,6 +161,15 @@ class TableMeta:
     def get_name(self):
         """Return the table's name"""
         return self.name
+
+    def get_primary_key(self):
+        """Return the parent table's column name that refers to our
+        foreign key"""
+        return self.primary_key
+
+    def get_foreign_key(self):
+        """Return our column that refers to the parent table's primary key"""
+        return self.foreign_key
 
     def get_parent_name(self):
         """Return the name of the main table of which this has details"""
@@ -634,6 +653,8 @@ tables = [
     TableMeta(
         "works",
         None,
+        None,
+        None,
         WorksCursor,
         [
             ColumnMeta("DOI", lambda row: dict_value(row, "DOI")),
@@ -695,7 +716,9 @@ tables = [
     ),
     TableMeta(
         "work_authors",
+        "work_doi",
         "works",
+        "doi",
         AuthorsCursor,
         [
             ColumnMeta("id", None),
@@ -716,7 +739,9 @@ tables = [
     ),
     TableMeta(
         "author_affiliations",
+        "author_id",
         "work_authors",
+        "id",
         AffiliationsCursor,
         [
             ColumnMeta("author_id", None),
@@ -726,7 +751,9 @@ tables = [
     ),
     TableMeta(
         "work_references",
+        "work_doi",
         "works",
+        "doi",
         ReferencesCursor,
         [
             ColumnMeta("work_doi", None),
@@ -776,7 +803,9 @@ tables = [
     ),
     TableMeta(
         "work_updates",
+        "work_doi",
         "works",
+        "doi",
         UpdatesCursor,
         [
             ColumnMeta("work_doi", None),
@@ -793,7 +822,9 @@ tables = [
     ),
     TableMeta(
         "work_subjects",
+        "work_doi",
         "works",
+        "doi",
         SubjectsCursor,
         [
             ColumnMeta("work_doi", None),
@@ -803,7 +834,9 @@ tables = [
     ),
     TableMeta(
         "work_funders",
+        "work_doi",
         "works",
+        "doi",
         FundersCursor,
         [
             ColumnMeta("id", None),
@@ -815,7 +848,9 @@ tables = [
     ),
     TableMeta(
         "funder_awards",
+        "funder_id",
         "work_funders",
+        "id",
         AwardsCursor,
         [
             ColumnMeta("funder_id", None),

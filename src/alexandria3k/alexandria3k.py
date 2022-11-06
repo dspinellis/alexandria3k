@@ -98,7 +98,7 @@ class CrossrefMetaData:
                 for row in query_results:
                     yield row
 
-    def populate_database(self, database_path, columns, conditions, _indexes):
+    def populate_database(self, database_path, columns, condition, _indexes):
         """Populate the specified SQLite database.
         The database is created if it does not exist.
         If it exists, the populated tables are dropped
@@ -126,40 +126,35 @@ class CrossrefMetaData:
         not be specified.
         """
 
-        def table_under_condition(table):
-            """Return True if a condition has been specified for
-            the table or its parents.  This allows us to avoid
-            unneeded joins and indexes, making the population at
-            least 12% faster."""
-            while table:
-                if table in conditions:
-                    return True
-                table = crossref.get_table_meta_by_name(
-                    table
-                ).get_parent_name()
-            return False
+        def joined_tables(partition_id):
+            """Return JOIN statements for all tables to be populated.
+            The partition_id is part of the JOIN condition, because otherwise
+            applying the condition on empty tables obliterates the
+            entire result set."""
+            result = ""
+            for table_name in self.table_columns:
+                if table_name == "works":
+                    continue
+                table = crossref.get_table_meta_by_name(table_name)
+                parent_table = table.get_parent_name()
+                primary_key = table.get_primary_key()
+                foreign_key = table.get_foreign_key()
+                result += f""" LEFT JOIN {table_name} ON
+                    {parent_table}.{primary_key} = {table_name}.{foreign_key}
+                    AND {table_name}.container_id = {partition_id}"""
+            return result
 
-        def create_join_index(table, column):
-            """Create (if required) a database index for the specified table
-            column"""
-            if table_under_condition(table):
-                self.create_index(table, column)
-
-        def populate_table(table, partition_index, join_part=""):
+        def populate_table(table, partition_index, condition):
             """Populate the specified table"""
 
-            if table not in self.table_columns:
-                return
-            if join_part and table_under_condition(table):
-                join = f"INNER JOIN {join_part}"
-            else:
-                join = ""
             columns = ", ".join(
                 [f"{table}.{col}" for col in self.table_columns[table]]
             )
 
-            if table in conditions:
-                condition = f"AND ({conditions[table]})"
+            if condition:
+                condition = f"""AND EXISTS
+                    (SELECT 1 FROM combined_records WHERE
+                        {table}.rowid = combined_records.{table}_rowid)"""
             else:
                 condition = ""
 
@@ -167,9 +162,7 @@ class CrossrefMetaData:
                 f"""
                 INSERT INTO populated.{table}
                     SELECT {columns} FROM {table}
-                    {join}
-                    WHERE {table}.container_id = {partition_index}
-                    {condition}
+                    WHERE {table}.container_id = {partition_index} {condition}
                 """
             )
 
@@ -197,22 +190,10 @@ class CrossrefMetaData:
                 self.table_columns[table] = [column]
 
         # Create empty tables
-        for (table_name, columns) in self.table_columns.items():
+        for (table_name, table_columns) in self.table_columns.items():
             table = crossref.get_table_meta_by_name(table_name)
-            self.vdb.execute(
-                f"DROP TABLE IF EXISTS populated.{table_name}"
-            )
-            self.vdb.execute(table.table_schema("populated.", columns))
-
-        create_join_index("works", "doi")
-        create_join_index("work_authors", "id")
-        create_join_index("work_authors", "work_doi")
-        create_join_index("author_affiliations", "author_id")
-        create_join_index("work_references", "work_doi")
-        create_join_index("work_updates", "work_doi")
-        create_join_index("work_subjects", "work_doi")
-        create_join_index("work_funders", "id")
-        create_join_index("work_funders", "work_doi")
+            self.vdb.execute(f"DROP TABLE IF EXISTS populated.{table_name}")
+            self.vdb.execute(table.table_schema("populated.", table_columns))
 
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
@@ -222,57 +203,27 @@ class CrossrefMetaData:
             # Sampling:
             #           WHERE abs(random() % 100000) = 0"""
             #           WHERE update_count is not null
-            populate_table("works", i)
-            populate_table(
-                "work_authors",
-                i,
-                """populated.works
-                        ON work_authors.work_doi = populated.works.doi""",
-            )
 
-            populate_table(
-                "author_affiliations",
-                i,
-                """populated.work_authors
-                        ON author_affiliations.author_id
-                            = populated.work_authors.id""",
-            )
+            if condition:
+                # Creat the statement for the combined records
+                create = (
+                    "CREATE TEMP TABLE combined_records AS SELECT "
+                    + ", ".join(
+                        [
+                            f"{table}.rowid AS {table}_rowid"
+                            for table in self.table_columns
+                        ]
+                    )
+                    + " FROM works "
+                    + joined_tables(i)
+                    + f" WHERE ({condition})"
+                )
+                # print(create)
+                self.vdb.execute(create)
+                # print('CREATED')
 
-            populate_table(
-                "work_references",
-                i,
-                """populated.works
-                        ON work_references.work_doi = populated.works.doi""",
-            )
-
-            populate_table(
-                "work_updates",
-                i,
-                """populated.works
-                        ON work_updates.work_doi = populated.works.doi""",
-            )
-
-            populate_table(
-                "work_subjects",
-                i,
-                """populated.works
-                        ON work_subjects.work_doi = populated.works.doi""",
-            )
-
-            populate_table(
-                "work_funders",
-                i,
-                """populated.works
-                        ON work_funders.work_doi = populated.works.doi""",
-            )
-
-            populate_table(
-                "funder_awards",
-                i,
-                """populated.work_funders
-                        ON funder_awards.funder_id
-                            = populated.work_funders.id""",
-            )
+            for table in self.table_columns:
+                populate_table(table, i, condition)
 
         self.vdb.execute("DETACH populated")
 
@@ -531,9 +482,8 @@ def parse_cli_arguments():
     parser.add_argument(
         "-r",
         "--row-selection",
-        nargs="*",
         type=str,
-        help="SQL expressions that select the populated rows",
+        help="SQL expression that selects the populated rows",
     )
     parser.add_argument(
         "-s",
@@ -579,18 +529,8 @@ def main():
         else:
             indexes = []
 
-        if args.row_selection:
-            try:
-                conditions = {
-                    x.split(":", 1)[0]: x.split(":", 1)[1]
-                    for x in args.row_selection
-                }
-            except IndexError:
-                fail("Invalid row selection specification")
-        else:
-            conditions = {}
         crmd.populate_database(
-            args.populate, args.columns, conditions, indexes
+            args.populate, args.columns, args.row_selection, indexes
         )
 
     if args.query:
@@ -619,6 +559,7 @@ def main():
         populated_reports(populated_db)
 
     if args.metrics:
+        populated_db = sqlite3.connect(args.populate)
         database_counts(populated_db)
         print(f"{FileCache.file_reads} files read")
 
