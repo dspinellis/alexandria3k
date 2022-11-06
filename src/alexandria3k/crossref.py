@@ -132,21 +132,18 @@ def tab_values(array):
 class TableMeta:
     """Meta-data of tables we maintain"""
 
-    def __init__(
-        self,
-        name,
-        foreign_key,
-        parent_name,
-        primary_key,
-        cursor_class,
-        columns,
-    ):
+    def __init__(self, name, **kwargs):
         self.name = name
-        self.foreign_key = foreign_key
-        self.parent_name = parent_name
-        self.primary_key = primary_key
-        self.columns = columns
-        self.cursor_class = cursor_class
+
+        # This table's key that refers to the parent table
+        self.foreign_key = kwargs.get("foreign_key")
+
+        # Parent table and its key that joins with this table's foreign key
+        self.parent_name = kwargs.get("parent_name")
+        self.primary_key = kwargs.get("primary_key")
+
+        self.cursor_class = kwargs["cursor_class"]
+        self.columns = kwargs["columns"]
 
     def table_schema(self, prefix="", columns=None):
         """Return the SQL command to create a table's schema with the
@@ -652,11 +649,8 @@ class AwardsCursor(ElementsCursor):
 tables = [
     TableMeta(
         "works",
-        None,
-        None,
-        None,
-        WorksCursor,
-        [
+        cursor_class=WorksCursor,
+        columns=[
             ColumnMeta("DOI", lambda row: dict_value(row, "DOI")),
             ColumnMeta("container_id", None),
             ColumnMeta(
@@ -716,11 +710,11 @@ tables = [
     ),
     TableMeta(
         "work_authors",
-        "work_doi",
-        "works",
-        "doi",
-        AuthorsCursor,
-        [
+        foreign_key="work_doi",
+        parent_name="works",
+        primary_key="doi",
+        cursor_class=AuthorsCursor,
+        columns=[
             ColumnMeta("id", None),
             ColumnMeta("container_id", None),
             ColumnMeta("work_doi", None),
@@ -739,11 +733,11 @@ tables = [
     ),
     TableMeta(
         "author_affiliations",
-        "author_id",
-        "work_authors",
-        "id",
-        AffiliationsCursor,
-        [
+        foreign_key="author_id",
+        parent_name="work_authors",
+        primary_key="id",
+        cursor_class=AffiliationsCursor,
+        columns=[
             ColumnMeta("author_id", None),
             ColumnMeta("container_id", None),
             ColumnMeta("name", lambda row: dict_value(row, "name")),
@@ -751,11 +745,11 @@ tables = [
     ),
     TableMeta(
         "work_references",
-        "work_doi",
-        "works",
-        "doi",
-        ReferencesCursor,
-        [
+        foreign_key="work_doi",
+        parent_name="works",
+        primary_key="doi",
+        cursor_class=ReferencesCursor,
+        columns=[
             ColumnMeta("work_doi", None),
             ColumnMeta("container_id", None),
             ColumnMeta("issn", lambda row: dict_value(row, "issn")),
@@ -803,11 +797,11 @@ tables = [
     ),
     TableMeta(
         "work_updates",
-        "work_doi",
-        "works",
-        "doi",
-        UpdatesCursor,
-        [
+        foreign_key="work_doi",
+        parent_name="works",
+        primary_key="doi",
+        cursor_class=UpdatesCursor,
+        columns=[
             ColumnMeta("work_doi", None),
             ColumnMeta("container_id", None),
             ColumnMeta("label", lambda row: dict_value(row, "label")),
@@ -822,11 +816,11 @@ tables = [
     ),
     TableMeta(
         "work_subjects",
-        "work_doi",
-        "works",
-        "doi",
-        SubjectsCursor,
-        [
+        foreign_key="work_doi",
+        parent_name="works",
+        primary_key="doi",
+        cursor_class=SubjectsCursor,
+        columns=[
             ColumnMeta("work_doi", None),
             ColumnMeta("container_id", None),
             ColumnMeta("name", lambda row: row),
@@ -834,11 +828,11 @@ tables = [
     ),
     TableMeta(
         "work_funders",
-        "work_doi",
-        "works",
-        "doi",
-        FundersCursor,
-        [
+        foreign_key="work_doi",
+        parent_name="works",
+        primary_key="doi",
+        cursor_class=FundersCursor,
+        columns=[
             ColumnMeta("id", None),
             ColumnMeta("container_id", None),
             ColumnMeta("work_doi", None),
@@ -848,11 +842,11 @@ tables = [
     ),
     TableMeta(
         "funder_awards",
-        "funder_id",
-        "work_funders",
-        "id",
-        AwardsCursor,
-        [
+        foreign_key="funder_id",
+        parent_name="work_funders",
+        primary_key="id",
+        cursor_class=AwardsCursor,
+        columns=[
             ColumnMeta("funder_id", None),
             ColumnMeta("container_id", None),
             ColumnMeta("name", lambda row: row),
