@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Alexandria2k Crossref bibliographic metadata processing
+# Alexandria3k Crossref bibliographic metadata processing
 # Copyright (C) 2022  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -29,6 +29,7 @@ import apsw
 
 import crossref
 from file_cache import FileCache
+from tsort import tsort
 
 
 def fail(message):
@@ -51,10 +52,15 @@ class CrossrefMetaData:
         _cached_size=None,
     ):
         self.vdb = apsw.Connection(":memory:")
+        self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = crossref.Source(container_directory)
         self.vdb.createmodule("filesource", self.data_source)
-        self.table_columns = {}
+
+        # Dictionaries of tables containing a set of columns required
+        # for querying or populating the database
+        self.query_columns = {}
+        self.population_columns = {}
 
         for table in crossref.tables:
             self.vdb.execute(
@@ -64,14 +70,6 @@ class CrossrefMetaData:
     def get_virtual_db(self):
         """Return the virtual table database as an apsw object"""
         return self.vdb
-
-    def create_index(self, table, column):
-        """Create a database index for the specified table column"""
-        if table not in self.table_columns:
-            return
-        index_name = f"populated.{table}_{column}_idx"
-        self.vdb.execute(f"DROP INDEX IF EXISTS {index_name}")
-        self.vdb.execute(f"CREATE INDEX {index_name} ON {table}({column})")
 
     def query(self, query, partition=False):
         """Run the specified query on the virtual database.
@@ -126,35 +124,92 @@ class CrossrefMetaData:
         not be specified.
         """
 
-        def joined_tables(partition_id):
-            """Return JOIN statements for all tables to be populated.
-            The partition_id is part of the JOIN condition, because otherwise
-            applying the condition on empty tables obliterates the
-            entire result set."""
+        def add_column(dictionary, table, column):
+            """Add a column required for executing a query to the
+            specified dictionary"""
+            if table in dictionary:
+                dictionary[table].add(column)
+            else:
+                dictionary[table] = {column}
+
+        def set_query_columns(query):
+            """Set the columns a query requires to run.
+            See https://rogerbinns.github.io/apsw/tips.html#parsing-sql"""
+
+            def authorizer(op_code, table, column, _database, _trigger):
+                """Query authorizer to monitor used columns"""
+                if op_code == apsw.SQLITE_READ and column:
+                    # print(f"AUTH: adding {table}.{column}")
+                    add_column(self.query_columns, table, column)
+                return apsw.SQLITE_OK
+
+            def tracer(_cursor, _query, _bindings):
+                """An execution tracer that denies the query's operation"""
+                # Abort the query's evaluation with an exception.  Returning
+                # apsw.SQLITE_DENY seems to be doing something that takes
+                # minutes to finish
+                return None
+
+            # Add the columns required by the actual query
+            self.cursor.setexectrace(tracer)
+            self.vdb.setauthorizer(authorizer)
+            self.cursor.execute(query, can_cache=False)
+            # NOTREACHED
+
+        def set_join_columns():
+            """Add columns required for joins"""
+            to_add = []
+            for table_name in population_and_query_tables():
+                while table_name:
+                    table = crossref.get_table_meta_by_name(table_name)
+                    parent_table_name = table.get_parent_name()
+                    primary_key = table.get_primary_key()
+                    foreign_key = table.get_foreign_key()
+                    if foreign_key:
+                        to_add.append((table_name, foreign_key))
+                    if parent_table_name and primary_key:
+                        to_add.append((parent_table_name, primary_key))
+                    table_name = parent_table_name
+            # print("ADD COLUMNS ", to_add)
+            for (table, column) in to_add:
+                add_column(self.query_columns, table, column)
+
+        def population_and_query_tables():
+            """Return a sequence consisting of the tables required
+            for populating and querying the data"""
+            return set.union(
+                set(self.population_columns.keys()),
+                set(self.query_columns.keys()),
+            )
+
+        def joined_tables():
+            """Return JOIN statements for all tables to be populated."""
             result = ""
-            for table_name in self.table_columns:
+            sorted_tables = tsort(population_and_query_tables())
+            # print("SORTED", sorted_tables)
+            for table_name in sorted_tables:
                 if table_name == "works":
                     continue
                 table = crossref.get_table_meta_by_name(table_name)
-                parent_table = table.get_parent_name()
+                parent_table_name = table.get_parent_name()
                 primary_key = table.get_primary_key()
                 foreign_key = table.get_foreign_key()
-                result += f""" LEFT JOIN {table_name} ON
-                    {parent_table}.{primary_key} = {table_name}.{foreign_key}
-                    AND {table_name}.container_id = {partition_id}"""
+                result += f""" LEFT JOIN temp_{table_name} AS {table_name} ON
+                    {parent_table_name}.{primary_key}
+                      = {table_name}.{foreign_key}"""
             return result
 
         def populate_table(table, partition_index, condition):
             """Populate the specified table"""
 
             columns = ", ".join(
-                [f"{table}.{col}" for col in self.table_columns[table]]
+                [f"{table}.{col}" for col in self.population_columns[table]]
             )
 
             if condition:
                 condition = f"""AND EXISTS
-                    (SELECT 1 FROM combined_records WHERE
-                        {table}.rowid = combined_records.{table}_rowid)"""
+                    (SELECT 1 FROM temp_combined WHERE
+                        {table}.rowid = temp_combined.{table}_rowid)"""
             else:
                 condition = ""
 
@@ -179,18 +234,28 @@ class CrossrefMetaData:
             for table in crossref.tables:
                 columns.append(f"{table.get_name()}.*")
 
-        # A dictionary of columns populated for each table
+        # A dictionary of columns to be populated for each table
         for col in columns:
             (table, column) = col.split(".")
             if not table or not column:
                 fail(f"Invalid column specification: {col}")
-            if table in self.table_columns:
-                self.table_columns[table].append(column)
-            else:
-                self.table_columns[table] = [column]
+            add_column(self.population_columns, table, column)
+
+        # Setup the columns required for executing the query
+        if condition:
+            tables = ", ".join(crossref.table_dict.keys())
+            query = f"""SELECT DISTINCT 1 FROM {tables} WHERE {condition}"""
+            try:
+                set_query_columns(query)
+            except apsw.ExecTraceAbort:
+                pass
+            self.vdb.setauthorizer(None)
+            self.cursor.setexectrace(None)
+            set_join_columns()
+            # print("DONE SELECTION")
 
         # Create empty tables
-        for (table_name, table_columns) in self.table_columns.items():
+        for (table_name, table_columns) in self.population_columns.items():
             table = crossref.get_table_meta_by_name(table_name)
             self.vdb.execute(f"DROP TABLE IF EXISTS populated.{table_name}")
             self.vdb.execute(table.table_schema("populated.", table_columns))
@@ -205,24 +270,40 @@ class CrossrefMetaData:
             #           WHERE update_count is not null
 
             if condition:
-                # Creat the statement for the combined records
+                # Create copies of the virtual tables for fast access
+                for table in population_and_query_tables():
+                    columns = self.query_columns.get(table)
+                    if columns:
+                        columns = set.union(columns, {"rowid"})
+                    else:
+                        columns = {"rowid"}
+                    column_list = ", ".join(columns)
+                    self.vdb.execute(f"""DROP TABLE IF EXISTS temp_{table}""")
+                    create = f"""CREATE TEMP TABLE temp_{table} AS
+                        SELECT {column_list} FROM {table}
+                        WHERE container_id = {i}"""
+                    # print(create)
+                    self.vdb.execute(create)
+
+                # Create the statement for the combined records
                 create = (
-                    "CREATE TEMP TABLE combined_records AS SELECT "
+                    "CREATE TEMP TABLE temp_combined AS SELECT "
                     + ", ".join(
                         [
                             f"{table}.rowid AS {table}_rowid"
-                            for table in self.table_columns
+                            for table in population_and_query_tables()
                         ]
                     )
-                    + " FROM works "
-                    + joined_tables(i)
+                    + " FROM temp_works AS works "
+                    + joined_tables()
                     + f" WHERE ({condition})"
                 )
+                self.vdb.execute("DROP TABLE IF EXISTS temp_combined")
                 # print(create)
                 self.vdb.execute(create)
-                # print('CREATED')
+                # print("CREATED")
 
-            for table in self.table_columns:
+            for table in self.population_columns:
                 populate_table(table, i, condition)
 
         self.vdb.execute("DETACH populated")
@@ -559,8 +640,6 @@ def main():
         populated_reports(populated_db)
 
     if args.metrics:
-        populated_db = sqlite3.connect(args.populate)
-        database_counts(populated_db)
         print(f"{FileCache.file_reads} files read")
 
 

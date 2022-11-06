@@ -1,5 +1,5 @@
 #
-# Alexandria2k Crossref bibliographic metadata processing
+# Alexandria3k Crossref bibliographic metadata processing
 # Copyright (C) 2022  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -149,7 +149,7 @@ class TableMeta:
         """Return the SQL command to create a table's schema with the
         optional specified prefix.
         A columns array can be used to specify which columns to include."""
-        if not columns or columns == ["*"]:
+        if not columns or "*" in columns:
             columns = [c.get_name() for c in self.columns]
         # A comma-separated list of the table's columns
         column_list = ", ".join(columns)
