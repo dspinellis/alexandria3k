@@ -549,7 +549,7 @@ def parse_cli_arguments():
         "-P",
         "--partition",
         action="store_true",
-        help="Run the query over partitioned data slices",
+        help="Run the query over partitioned data slices. ( Warning: arguments are run per partition.)",
     )
     parser.add_argument(
         "-o",
@@ -562,6 +562,12 @@ def parse_cli_arguments():
         "--populate",
         type=str,
         help="Populate the SQLite database in the specified path",
+    )
+    parser.add_argument(
+        "-Q",
+        "--query-file",
+        type=str,
+        help="File containing query to run on the virtual tables",
     )
     parser.add_argument(
         "-q", "--query", type=str, help="Query to run on the virtual tables"
@@ -632,6 +638,12 @@ def main():
         crmd.populate_database(args.populate, args.columns, args.row_selection, indexes)
         if "files-read" in args.debug:
             print(f"{FileCache.file_reads} files read")
+
+    if args.query_file:
+        args.query = ""
+        with open(args.query_file) as query_input:
+            for line in query_input:
+                args.query += line
 
     if args.query:
         if args.output:
