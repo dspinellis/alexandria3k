@@ -29,7 +29,12 @@ import apsw
 
 import crossref
 from file_cache import FileCache
+from perf import Perf
 from tsort import tsort
+
+# Performance monitoring
+# pylint: disable-next-line=C0103
+perf = None
 
 
 def fail(message):
@@ -252,13 +257,14 @@ class CrossrefMetaData:
             self.vdb.setauthorizer(None)
             self.cursor.setexectrace(None)
             set_join_columns()
-            # print("DONE SELECTION")
+            perf.print("Condition parsing")
 
         # Create empty tables
         for (table_name, table_columns) in self.population_columns.items():
             table = crossref.get_table_meta_by_name(table_name)
             self.vdb.execute(f"DROP TABLE IF EXISTS populated.{table_name}")
             self.vdb.execute(table.table_schema("populated.", table_columns))
+        perf.print("Table creation")
 
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
@@ -284,6 +290,7 @@ class CrossrefMetaData:
                         WHERE container_id = {i}"""
                     # print(create)
                     self.vdb.execute(create)
+                perf.print("Virtual table copies")
 
                 # Create the statement for the combined records
                 create = (
@@ -301,10 +308,11 @@ class CrossrefMetaData:
                 self.vdb.execute("DROP TABLE IF EXISTS temp_combined")
                 # print(create)
                 self.vdb.execute(create)
-                # print("CREATED")
+                perf.print("Combined table creation")
 
             for table in self.population_columns:
                 populate_table(table, i, condition)
+        perf.print("Table population")
 
         self.vdb.execute("DETACH populated")
 
@@ -463,30 +471,34 @@ def database_counts(database):
     )
     print(f"{count} references(s) with DOI")
 
-    print(f"{FileCache.file_reads} files read")
-
 
 def parse_cli_arguments():
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(
-        description="a3k: Publication metadata interface"
-    )
+    parser = argparse.ArgumentParser(description="a3k: Publication metadata interface")
 
-    parser.add_argument(
-        "-B", "--cached-bytes", type=str, help="Size of data cache"
-    )
+    parser.add_argument("-B", "--cached-bytes", type=str, help="Size of data cache")
     parser.add_argument(
         "-c",
         "--columns",
-        nargs="*",
+        nargs="+",
         type=str,
         help="Columns to populate using table.column or table.*",
     )
     parser.add_argument(
         "-D",
-        "--dump",
-        action="store_true",
-        help="Dump the data of the virtual and populated databases",
+        "--debug",
+        nargs="+",
+        type=str,
+        default=[],
+        help="""Output debuggging information as specfied by the arguments.
+    files-read: Output counts of data files read;
+    perf: Output performance timings;
+    populated-counts: Dump counts of the populated database;
+    populated-data: Dump the data of the populated database;
+    populated-reports: Output query results from the populated database;
+    virtual-counts: Dump counts of the virtual database;
+    virtual-data: Dump the data of the virtual database.
+""",
     )
     parser.add_argument(
         "-d",
@@ -520,12 +532,6 @@ def parse_cli_arguments():
         "--list-schema",
         action="store_true",
         help="List the schema of the scanned database",
-    )
-    parser.add_argument(
-        "-M",
-        "--metrics",
-        action="store_true",
-        help="Output metrics regarding files read",
     )
     parser.add_argument(
         "-n",
@@ -597,12 +603,25 @@ def main():
     if not args.directory:
         fail("Data directory must be specified")
 
-    if args.dump:
+    # Setup performance monitoring
+    global perf
+    if "perf" in args.debug:
+        perf = Perf(True)
+        perf.print("Start")
+    else:
+        perf = Perf(False)
+
+    if "virtual-counts" in args.debug:
         # Streaming interface
         database_counts(crmd.get_virtual_db())
+        if "files-read" in args.debug:
+            print(f"{FileCache.file_reads} files read")
+
+    if "virtual-data" in args.debug:
+        # Streaming interface
         database_dump(crmd.get_virtual_db())
-        # Before population
-        print(f"{FileCache.file_reads} files read")
+        if "files-read" in args.debug:
+            print(f"{FileCache.file_reads} files read")
 
     if args.populate:
         if args.index:
@@ -610,36 +629,42 @@ def main():
         else:
             indexes = []
 
-        crmd.populate_database(
-            args.populate, args.columns, args.row_selection, indexes
-        )
+        crmd.populate_database(args.populate, args.columns, args.row_selection, indexes)
+        if "files-read" in args.debug:
+            print(f"{FileCache.file_reads} files read")
 
     if args.query:
         if args.output:
             # pylint: disable=R1732
-            csv_file = open(
-                args.output, "w", newline="", encoding=args.output_encoding
-            )
+            csv_file = open(args.output, "w", newline="", encoding=args.output_encoding)
         else:
             sys.stdout.reconfigure(encoding=args.output_encoding)
             csv_file = sys.stdout
         csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
         for rec in crmd.query(args.query, args.partition):
             csv_writer.writerow(rec)
+        if "files-read" in args.debug:
+            print(f"{FileCache.file_reads} files read")
 
     if args.normalize:
         populated_db = sqlite3.connect("populated.db")
         CrossrefMetaData.normalize_affiliations(populated_db)
         CrossrefMetaData.normalize_subjects(populated_db)
+        perf.print("Data normalization")
 
-    if args.dump:
-        # Populated database
+    if "populated-counts" in args.debug:
         populated_db = sqlite3.connect(args.populate)
         database_counts(populated_db)
+
+    if "populated-data" in args.debug:
+        populated_db = sqlite3.connect(args.populate)
         database_dump(populated_db)
+
+    if "populated-reports" in args.debug:
+        populated_db = sqlite3.connect(args.populate)
         populated_reports(populated_db)
 
-    if args.metrics:
+    if "files-read" in args.debug:
         print(f"{FileCache.file_reads} files read")
 
 
