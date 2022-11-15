@@ -24,7 +24,7 @@ import os
 import apsw
 
 from file_cache import get_file_cache
-from virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN 
+from virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN, FilesCursor
 
 
 class DataFiles:
@@ -130,7 +130,6 @@ def tab_values(array):
     return "\t".join(array)
 
 
-
 class Source:
     """Virtual table data source.  This gets registered with the apsw
     Connection through createmodule in order to instantiate the virtual
@@ -143,8 +142,7 @@ class Source:
     def Create(self, _db, _module_name, _db_name, table_name):
         """Create the specified virtual table"""
         return self.table_dict[table_name].creation_tuple(
-            self.table_dict,
-            self.data_files.get_file_array()
+            self.table_dict, self.data_files.get_file_array()
         )
 
     Connect = Create
@@ -152,70 +150,6 @@ class Source:
     def get_file_id_iterator(self):
         """Return an iterator over the data files' identifiers"""
         return self.data_files.get_file_id_iterator()
-
-
-
-class FilesCursor:
-    """A cursor over the items data files. Internal use only.
-    Not used by a table."""
-
-    def __init__(self, table):
-        self.table = table
-        self.eof = False
-        # The following get initialized in Filter()
-        self.file_index = None
-        self.single_file = None
-        self.file_read = None
-        self.items = None
-
-    def Filter(self, index_number, _index_name, constraint_args):
-        """Always called first to initialize an iteration to the first
-        (possibly constrained) row of the table"""
-        # print(f"Filter c={constraint_args}")
-
-        if index_number == 0:
-            # No index; iterate through all the files
-            self.file_index = -1
-            self.single_file = False
-        else:
-            # Index; constraint reading through the specified file
-            self.single_file = True
-            self.file_read = False
-            self.file_index = constraint_args[0] - 1
-        self.Next()
-
-    def Next(self):
-        """Advance reading to the next available file. Files are assumed to be
-        non-empty."""
-        if self.single_file and self.file_read:
-            self.eof = True
-            return
-        if self.file_index + 1 >= len(self.table.data_files):
-            self.eof = True
-            return
-        self.file_index += 1
-        self.items = get_file_cache().read(
-            self.table.data_files[self.file_index]
-        )
-        self.eof = False
-        # The single file has been read. Set EOF in next Next call
-        self.file_read = True
-
-    def Rowid(self):
-        """Return a unique id of the row along all records"""
-        return self.file_index
-
-    def current_row_value(self):
-        """Return the current row. Not part of the apsw API."""
-        return self.items
-
-    def Eof(self):
-        """Return True when the end of the table's records has been reached."""
-        return self.eof
-
-    def Close(self):
-        """Cursor's destructor, used for cleanup"""
-        self.items = None
 
 
 class WorksCursor:
@@ -723,6 +657,7 @@ tables = [
 ]
 
 table_dict = {t.get_name(): t for t in tables}
+
 
 def get_table_meta_by_name(name):
     """Return the metadata of the specified table"""
