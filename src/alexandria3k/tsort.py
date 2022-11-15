@@ -39,13 +39,16 @@ import crossref
 # else
 #     return L   (a topologically sorted order)
 
+
 def tsort(table_names):
     """Return the passed iterable of table names topologically sorted
     based on their dependencies"""
     tables = [crossref.get_table_meta_by_name(t) for t in table_names]
     result = []
     # Nodes with no parent
-    todo = {t.get_name() for t in tables if t.get_parent_name() not in table_names}
+    todo = {
+        t.get_name() for t in tables if t.get_parent_name() not in table_names
+    }
     while todo:
         current = todo.pop()
         result.append(current)

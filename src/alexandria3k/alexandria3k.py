@@ -474,9 +474,13 @@ def database_counts(database):
 
 def parse_cli_arguments():
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description="a3k: Publication metadata interface")
+    parser = argparse.ArgumentParser(
+        description="a3k: Publication metadata interface"
+    )
 
-    parser.add_argument("-B", "--cached-bytes", type=str, help="Size of data cache")
+    parser.add_argument(
+        "-B", "--cached-bytes", type=str, help="Size of data cache"
+    )
     parser.add_argument(
         "-C",
         "--crossref-directory",
@@ -652,7 +656,9 @@ def main():
         else:
             indexes = []
 
-        crmd.populate_database(args.populate, args.columns, args.row_selection, indexes)
+        crmd.populate_database(
+            args.populate, args.columns, args.row_selection, indexes
+        )
         if "files-read" in args.debug:
             print(f"{FileCache.file_reads} files read")
 
@@ -665,7 +671,9 @@ def main():
     if args.query:
         if args.output:
             # pylint: disable=R1732
-            csv_file = open(args.output, "w", newline="", encoding=args.output_encoding)
+            csv_file = open(
+                args.output, "w", newline="", encoding=args.output_encoding
+            )
         else:
             sys.stdout.reconfigure(encoding=args.output_encoding)
             csv_file = sys.stdout
