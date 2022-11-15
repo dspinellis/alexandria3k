@@ -478,6 +478,12 @@ def parse_cli_arguments():
 
     parser.add_argument("-B", "--cached-bytes", type=str, help="Size of data cache")
     parser.add_argument(
+        "-C",
+        "--crossref-directory",
+        type=str,
+        help="Directory storing the downloaded Crossref publication data",
+    )
+    parser.add_argument(
         "-c",
         "--columns",
         nargs="+",
@@ -499,12 +505,6 @@ def parse_cli_arguments():
     virtual-counts: Dump counts of the virtual database;
     virtual-data: Dump the data of the virtual database.
 """,
-    )
-    parser.add_argument(
-        "-d",
-        "--directory",
-        type=str,
-        help="Directory storing the downloaded data",
     )
     parser.add_argument(
         "-E",
@@ -546,16 +546,22 @@ def parse_cli_arguments():
         help="Number of files to cache in memory",
     )
     parser.add_argument(
-        "-P",
-        "--partition",
-        action="store_true",
-        help="Run the query over partitioned data slices. ( Warning: arguments are run per partition.)",
+        "-O",
+        "--orcid-data",
+        type=str,
+        help="URL or file for obtaining ORCID author data",
     )
     parser.add_argument(
         "-o",
         "--output",
         type=str,
         help="Output file for query results",
+    )
+    parser.add_argument(
+        "-P",
+        "--partition",
+        action="store_true",
+        help="Run the query over partitioned data slices. ( Warning: arguments are run per partition.)",
     )
     parser.add_argument(
         "-p",
@@ -598,15 +604,26 @@ def main():
 
     # pylint: disable=W0123
     sample = eval(f"lambda word: {args.sample}")
+
     crmd = CrossrefMetaData(
-        args.directory,
+        args.crossref_directory,
         sample,
         None,
         args.cached_file_number,
         args.cached_bytes,
     )
 
-    if not args.directory:
+    orcid_md = None
+    if args.orcid_data:
+        orcid_md = OrcidMetaData(
+            args.orcid_data,
+            sample,
+            None,
+            args.cached_file_number,
+            args.cached_bytes,
+        )
+
+    if not args.crossref_directory:
         fail("Data directory must be specified")
 
     # Setup performance monitoring
