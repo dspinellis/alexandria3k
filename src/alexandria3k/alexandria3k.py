@@ -59,7 +59,7 @@ class CrossrefMetaData:
         self.vdb = apsw.Connection(":memory:")
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
-        self.data_source = crossref.Source(container_directory)
+        self.data_source = crossref.Source(crossref.table_dict, container_directory)
         self.vdb.createmodule("filesource", self.data_source)
 
         # Dictionaries of tables containing a set of columns required

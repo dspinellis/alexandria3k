@@ -24,6 +24,7 @@ import os
 import apsw
 
 from file_cache import get_file_cache
+from virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN 
 
 
 class DataFiles:
@@ -129,87 +130,20 @@ def tab_values(array):
     return "\t".join(array)
 
 
-class TableMeta:
-    """Meta-data of tables we maintain"""
-
-    def __init__(self, name, **kwargs):
-        self.name = name
-
-        # This table's key that refers to the parent table
-        self.foreign_key = kwargs.get("foreign_key")
-
-        # Parent table and its key that joins with this table's foreign key
-        self.parent_name = kwargs.get("parent_name")
-        self.primary_key = kwargs.get("primary_key")
-
-        self.cursor_class = kwargs["cursor_class"]
-        self.columns = kwargs["columns"]
-
-    def table_schema(self, prefix="", columns=None):
-        """Return the SQL command to create a table's schema with the
-        optional specified prefix.
-        A columns array can be used to specify which columns to include."""
-        if not columns or "*" in columns:
-            columns = [c.get_name() for c in self.columns]
-        # A comma-separated list of the table's columns
-        column_list = ", ".join(columns)
-        return f"CREATE TABLE {prefix}{self.name}(" + column_list + ")"
-
-    def get_name(self):
-        """Return the table's name"""
-        return self.name
-
-    def get_primary_key(self):
-        """Return the parent table's column name that refers to our
-        foreign key"""
-        return self.primary_key
-
-    def get_foreign_key(self):
-        """Return our column that refers to the parent table's primary key"""
-        return self.foreign_key
-
-    def get_parent_name(self):
-        """Return the name of the main table of which this has details"""
-        return self.parent_name
-
-    def get_cursor_class(self):
-        """Return the table's specified cursor class"""
-        return self.cursor_class
-
-    def get_value_extractor(self, i):
-        """Return the value extraction function for column at ordinal i"""
-        return self.columns[i].get_value_extractor()
-
-    def creation_tuple(self, data_files):
-        """Return the tuple required by the apsw.Source.Create method"""
-        return self.table_schema(), StreamingTable(self, data_files)
-
-
-class ColumnMeta:
-    """Meta-data of table columns we maintain"""
-
-    def __init__(self, name, value_extractor):
-        self.name = name
-        self.value_extractor = value_extractor
-
-    def get_name(self):
-        """Return column's name"""
-        return self.name
-
-    def get_value_extractor(self):
-        """Return the column's value extraction function"""
-        return self.value_extractor
-
 
 class Source:
-    """Virtual table data source.  This gets registered with the Connection"""
+    """Virtual table data source.  This gets registered with the apsw
+    Connection through createmodule in order to instantiate the virtual
+    tavles."""
 
-    def __init__(self, data_directory):
+    def __init__(self, table_dict, data_directory):
         self.data_files = DataFiles(data_directory)
+        self.table_dict = table_dict
 
     def Create(self, _db, _module_name, _db_name, table_name):
         """Create the specified virtual table"""
-        return table_dict[table_name].creation_tuple(
+        return self.table_dict[table_name].creation_tuple(
+            self.table_dict,
             self.data_files.get_file_array()
         )
 
@@ -219,72 +153,6 @@ class Source:
         """Return an iterator over the data files' identifiers"""
         return self.data_files.get_file_id_iterator()
 
-
-# By convention column 1 of each table hold the container (file) id
-# which is the index of the file in the files array
-CONTAINER_ID_COLUMN = 1
-
-
-class StreamingTable:
-    """An apsw table streaming over data of the supplied table metadata"""
-
-    def __init__(self, table_meta, data_files):
-        self.table_meta = table_meta
-        self.data_files = data_files
-
-    def BestIndex(self, constraints, _orderbys):
-        """Called by the Engine to determine the best available index
-        for the operation at hand"""
-        # print(f"BestIndex c={constraints} o={orderbys}")
-        used_constraints = []
-        found_index = False
-        for (column, operation) in constraints:
-            if (
-                column == CONTAINER_ID_COLUMN
-                and operation == apsw.SQLITE_INDEX_CONSTRAINT_EQ
-            ):
-                # Pass value to Filter as constraint_arg[0], and do not
-                # require the engine to perform extra checks (exact match)
-                used_constraints.append((0, False))
-                found_index = True
-            else:
-                # No suitable index
-                used_constraints.append(None)
-        if found_index:
-            return (
-                used_constraints,
-                1,  # index number
-                None,  # index name
-                False,  # results are not in orderbys order
-                2000,  # about 2000 disk i/o (8M file / 4k block)
-            )
-        return None
-
-    def Disconnect(self):
-        """Called when a reference to a virtual table is no longer used"""
-
-    Destroy = Disconnect
-
-    def cursor(self, table_meta):
-        """Return the cursor associated with this table.  The constructor
-        for cursors embedded in others takes a parent cursor argument.  To
-        handle this requirement, this method recursively calls itself until
-        it reaches the top-level table."""
-        cursor_class = table_meta.get_cursor_class()
-        parent_name = table_meta.get_parent_name()
-        if not parent_name:
-            return cursor_class(self)
-        parent = get_table_meta_by_name(parent_name)
-        return cursor_class(self, self.cursor(parent))
-
-    def Open(self):
-        """Return the table's cursor object"""
-        return self.cursor(self.table_meta)
-
-    def get_value_extractor(self, column_ordinal):
-        """Return the value extraction function for column at specified
-        ordinal.  Not part of the apsw interface."""
-        return self.table_meta.get_value_extractor(column_ordinal)
 
 
 class FilesCursor:
@@ -855,7 +723,6 @@ tables = [
 ]
 
 table_dict = {t.get_name(): t for t in tables}
-
 
 def get_table_meta_by_name(name):
     """Return the metadata of the specified table"""
