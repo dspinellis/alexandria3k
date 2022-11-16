@@ -31,6 +31,7 @@ class DataFiles:
     """The source of the compressed JSON data files"""
 
     def __init__(self, directory, sample_container=lambda path: True):
+        # Collect the names of all available data files
         self.data_files = []
         counter = 1
         for file_name in os.listdir(directory):
@@ -133,7 +134,7 @@ def tab_values(array):
 class Source:
     """Virtual table data source.  This gets registered with the apsw
     Connection through createmodule in order to instantiate the virtual
-    tavles."""
+    tables."""
 
     def __init__(self, table_dict, data_directory):
         self.data_files = DataFiles(data_directory)
@@ -188,7 +189,7 @@ class WorksCursor:
         if col == CONTAINER_ID_COLUMN:
             return self.container_id()
 
-        extract_function = self.table.get_value_extractor(col)
+        extract_function = self.table.get_value_extractor_by_ordinal(col)
         return extract_function(self.current_row_value())
 
     def Filter(self, *args):
@@ -290,7 +291,7 @@ class ElementsCursor:
         if col == CONTAINER_ID_COLUMN:
             return self.container_id()
 
-        extract_function = self.table.get_value_extractor(col)
+        extract_function = self.table.get_value_extractor_by_ordinal(col)
         return extract_function(self.current_row_value())
 
     def Close(self):
@@ -454,7 +455,7 @@ tables = [
         cursor_class=WorksCursor,
         columns=[
             ColumnMeta("DOI", lambda row: dict_value(row, "DOI")),
-            ColumnMeta("container_id", None),
+            ColumnMeta("container_id"),
             ColumnMeta(
                 "title", lambda row: tab_values(dict_value(row, "title"))
             ),
@@ -517,9 +518,9 @@ tables = [
         primary_key="doi",
         cursor_class=AuthorsCursor,
         columns=[
-            ColumnMeta("id", None),
-            ColumnMeta("container_id", None),
-            ColumnMeta("work_doi", None),
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("work_doi"),
             ColumnMeta("orcid", author_orcid),
             ColumnMeta("suffix", lambda row: dict_value(row, "suffix")),
             ColumnMeta("given", lambda row: dict_value(row, "given")),
@@ -540,8 +541,8 @@ tables = [
         primary_key="id",
         cursor_class=AffiliationsCursor,
         columns=[
-            ColumnMeta("author_id", None),
-            ColumnMeta("container_id", None),
+            ColumnMeta("author_id"),
+            ColumnMeta("container_id"),
             ColumnMeta("name", lambda row: dict_value(row, "name")),
         ],
     ),
@@ -552,8 +553,8 @@ tables = [
         primary_key="doi",
         cursor_class=ReferencesCursor,
         columns=[
-            ColumnMeta("work_doi", None),
-            ColumnMeta("container_id", None),
+            ColumnMeta("work_doi"),
+            ColumnMeta("container_id"),
             ColumnMeta("issn", lambda row: dict_value(row, "issn")),
             ColumnMeta(
                 "standards_body", lambda row: dict_value(row, "standards-body")
@@ -604,8 +605,8 @@ tables = [
         primary_key="doi",
         cursor_class=UpdatesCursor,
         columns=[
-            ColumnMeta("work_doi", None),
-            ColumnMeta("container_id", None),
+            ColumnMeta("work_doi"),
+            ColumnMeta("container_id"),
             ColumnMeta("label", lambda row: dict_value(row, "label")),
             ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
             ColumnMeta(
@@ -623,8 +624,8 @@ tables = [
         primary_key="doi",
         cursor_class=SubjectsCursor,
         columns=[
-            ColumnMeta("work_doi", None),
-            ColumnMeta("container_id", None),
+            ColumnMeta("work_doi"),
+            ColumnMeta("container_id"),
             ColumnMeta("name", lambda row: row),
         ],
     ),
@@ -635,9 +636,9 @@ tables = [
         primary_key="doi",
         cursor_class=FundersCursor,
         columns=[
-            ColumnMeta("id", None),
-            ColumnMeta("container_id", None),
-            ColumnMeta("work_doi", None),
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("work_doi"),
             ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
             ColumnMeta("name", lambda row: dict_value(row, "name")),
         ],
@@ -649,8 +650,8 @@ tables = [
         primary_key="id",
         cursor_class=AwardsCursor,
         columns=[
-            ColumnMeta("funder_id", None),
-            ColumnMeta("container_id", None),
+            ColumnMeta("funder_id"),
+            ColumnMeta("container_id"),
             ColumnMeta("name", lambda row: row),
         ],
     ),

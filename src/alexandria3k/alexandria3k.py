@@ -29,6 +29,7 @@ import apsw
 
 import crossref
 from file_cache import FileCache
+import orcid
 from perf import Perf
 from tsort import tsort
 
@@ -239,6 +240,7 @@ class CrossrefMetaData:
         if not columns:
             columns = []
             for table in crossref.tables:
+                # table_name.* will get expanded by the SQL SELECT statement
                 columns.append(f"{table.get_name()}.*")
 
         # A dictionary of columns to be populated for each table
@@ -540,6 +542,12 @@ def parse_cli_arguments():
         help="List the schema of the scanned database",
     )
     parser.add_argument(
+        "-l",
+        "--linked-records",
+        action="store_true",
+        help="Only add ORCID records that link to existing ones",
+    )
+    parser.add_argument(
         "-n",
         "--normalize",
         action="store_true",
@@ -571,7 +579,7 @@ def parse_cli_arguments():
     )
     parser.add_argument(
         "-p",
-        "--populate",
+        "--populate-db-path",
         type=str,
         help="Populate the SQLite database in the specified path",
     )
@@ -611,26 +619,17 @@ def main():
     # pylint: disable=W0123
     sample = eval(f"lambda word: {args.sample}")
 
-    crmd = CrossrefMetaData(
-        args.crossref_directory,
-        sample,
-        None,
-        args.cached_file_number,
-        args.cached_bytes,
-    )
-
-    orcid_md = None
-    if args.orcid_data:
-        orcid_md = OrcidMetaData(
-            args.orcid_data,
+    crossref = (
+        CrossrefMetaData(
+            args.crossref_directory,
             sample,
             None,
             args.cached_file_number,
             args.cached_bytes,
         )
-
-    if not args.crossref_directory:
-        fail("Data directory must be specified")
+        if args.crossref_directory
+        else None
+    )
 
     # Setup performance monitoring
     global perf
@@ -642,27 +641,39 @@ def main():
 
     if "virtual-counts" in args.debug:
         # Streaming interface
-        database_counts(crmd.get_virtual_db())
+        database_counts(crossref.get_virtual_db())
         if "files-read" in args.debug:
             print(f"{FileCache.file_reads} files read")
 
     if "virtual-data" in args.debug:
         # Streaming interface
-        database_dump(crmd.get_virtual_db())
+        database_dump(crossref.get_virtual_db())
         if "files-read" in args.debug:
             print(f"{FileCache.file_reads} files read")
 
-    if args.populate:
+    if crossref and args.populate_db_path:
         if args.index:
             indexes = [x.split(":", 1) for x in args.index]
         else:
             indexes = []
 
-        crmd.populate_database(
-            args.populate, args.columns, args.row_selection, indexes
+        crossref.populate_database(
+            args.populate_db_path, args.columns, args.row_selection, indexes
         )
         if "files-read" in args.debug:
             print(f"{FileCache.file_reads} files read")
+        perf.print("Crossref table population")
+
+    if args.orcid_data:
+        if not args.populate_db_path:
+            fail("Database path must be specified")
+        orcid.populate(
+            args.orcid_data,
+            args.populate_db_path,
+            args.columns,
+            args.linked_records,
+        )
+        perf.print("ORCID table population")
 
     if args.query_file:
         args.query = ""
@@ -671,6 +682,9 @@ def main():
                 args.query += line
 
     if args.query:
+        if not crossref:
+            fail("Crossref data directory must be specified")
+
         if args.output:
             # pylint: disable=R1732
             csv_file = open(
@@ -680,27 +694,29 @@ def main():
             sys.stdout.reconfigure(encoding=args.output_encoding)
             csv_file = sys.stdout
         csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
-        for rec in crmd.query(args.query, args.partition):
+        for rec in crossref.query(args.query, args.partition):
             csv_writer.writerow(rec)
         if "files-read" in args.debug:
             print(f"{FileCache.file_reads} files read")
 
     if args.normalize:
-        populated_db = sqlite3.connect("populated.db")
+        if not args.populate_db_path:
+            fail("Database path must be specified")
+        populated_db = sqlite3.connect(args.populate_db_path)
         CrossrefMetaData.normalize_affiliations(populated_db)
         CrossrefMetaData.normalize_subjects(populated_db)
         perf.print("Data normalization")
 
     if "populated-counts" in args.debug:
-        populated_db = sqlite3.connect(args.populate)
+        populated_db = sqlite3.connect(args.populate_db_path)
         database_counts(populated_db)
 
     if "populated-data" in args.debug:
-        populated_db = sqlite3.connect(args.populate)
+        populated_db = sqlite3.connect(args.populate_db_path)
         database_dump(populated_db)
 
     if "populated-reports" in args.debug:
-        populated_db = sqlite3.connect(args.populate)
+        populated_db = sqlite3.connect(args.populate_db_path)
         populated_reports(populated_db)
 
     if "files-read" in args.debug:

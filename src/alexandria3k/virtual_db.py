@@ -39,8 +39,15 @@ class TableMeta:
         self.parent_name = kwargs.get("parent_name")
         self.primary_key = kwargs.get("primary_key")
 
-        self.cursor_class = kwargs["cursor_class"]
+        self.cursor_class = kwargs.get("cursor_class")
+        self.records_path = kwargs.get("records_path")
         self.columns = kwargs["columns"]
+
+        # Create dictionary of columns by name
+        self.columns_by_name = {}
+        for column in self.columns:
+            name = column.get_name()
+            self.columns_by_name[name] = column
 
     def table_schema(self, prefix="", columns=None):
         """Return the SQL command to create a table's schema with the
@@ -65,6 +72,10 @@ class TableMeta:
         """Return our column that refers to the parent table's primary key"""
         return self.foreign_key
 
+    def get_records_path(self):
+        """Return the XML path for obtaining multiple records"""
+        return self.records_path
+
     def get_parent_name(self):
         """Return the name of the main table of which this has details"""
         return self.parent_name
@@ -73,9 +84,17 @@ class TableMeta:
         """Return the table's specified cursor class"""
         return self.cursor_class
 
-    def get_value_extractor(self, i):
-        """Return the value extraction function for column at ordinal i"""
+    def get_columns(self):
+        """Return the table's columns"""
+        return self.columns
+
+    def get_value_extractor_by_ordinal(self, i):
+        """Return defined value extraction function for column at ordinal i"""
         return self.columns[i].get_value_extractor()
+
+    def get_value_extractor_by_name(self, name):
+        """Return defined value extraction function for column name"""
+        return self.columns_by_name[name].get_value_extractor()
 
     def creation_tuple(self, table_dict, data_source):
         """Return the tuple required by the apsw.Source.Create method:
@@ -88,7 +107,7 @@ class TableMeta:
 class ColumnMeta:
     """Meta-data of table columns we maintain"""
 
-    def __init__(self, name, value_extractor):
+    def __init__(self, name, value_extractor=None):
         self.name = name
         self.value_extractor = value_extractor
 
@@ -97,7 +116,7 @@ class ColumnMeta:
         return self.name
 
     def get_value_extractor(self):
-        """Return the column's value extraction function"""
+        """Return the column's value defined extraction function"""
         return self.value_extractor
 
 
@@ -167,10 +186,10 @@ class StreamingTable:
         """Return the table's cursor object"""
         return self.cursor(self.table_meta)
 
-    def get_value_extractor(self, column_ordinal):
+    def get_value_extractor_by_ordinal(self, column_ordinal):
         """Return the value extraction function for column at specified
         ordinal.  Not part of the apsw interface."""
-        return self.table_meta.get_value_extractor(column_ordinal)
+        return self.table_meta.get_value_extractor_by_ordinal(column_ordinal)
 
 
 class FilesCursor:
