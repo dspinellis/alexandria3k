@@ -486,6 +486,16 @@ tables = [
                     2,
                 ),
             ),
+            ColumnMeta(
+                "short_container_title",
+                lambda row: tab_values(
+                    dict_value(row, "short-container-title")
+                ),
+            ),
+            ColumnMeta(
+                "container_title",
+                lambda row: tab_values(dict_value(row, "container-title")),
+            ),
             ColumnMeta("publisher", lambda row: dict_value(row, "publisher")),
             ColumnMeta("abstract", lambda row: dict_value(row, "abstract")),
             ColumnMeta("type", lambda row: dict_value(row, "type")),
