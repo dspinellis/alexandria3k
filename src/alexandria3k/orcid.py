@@ -436,6 +436,18 @@ class TableFiller:
         )
 
 
+def order_columns_by_schema(table_name, column_names):
+    """Return the passed set of columns as an iterable ordered in the same
+    order as that in which columns are defined in the table's schema"""
+    all_columns = get_table_meta_by_name(table_name).get_columns()
+    all_column_names = map(lambda c: c.get_name(), all_columns)
+    result = []
+    for column in all_column_names:
+        if column in column_names:
+            result.append(column)
+    return result
+
+
 def populate(data_path, database_path, columns, authors_only):
     """Populate the specified SQLite database.
     The database is created if it does not exist.
@@ -472,6 +484,13 @@ def populate(data_path, database_path, columns, authors_only):
         if not table or not column:
             fail(f"Invalid column specification: {col}")
         add_column(table, column)
+
+    # Reorder columns to match the defined schema order
+    # This creates deterministic schemas
+    for (table_name, table_columns) in population_columns.items():
+        population_columns[table_name] = order_columns_by_schema(
+            table_name, population_columns[table_name]
+        )
 
     # Create empty tables and their TableFiller objects
     db = apsw.Connection(database_path)
