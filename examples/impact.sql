@@ -1,13 +1,15 @@
+ATTACH 'impact_data.db' AS impact_data;
+
 CREATE TABLE works_issn AS
   SELECT doi, Coalesce(issn_print, issn_electronic) AS issn, published_year
-  FROM works
+  FROM impact_data.works
   WHERE issn is not null;
 
 CREATE index works_issn_doi_idx ON works_issn(doi);
 
 CREATE TABLE citations AS
   SELECT cited_work.issn, COUNT(*) AS citations_number
-  FROM work_references
+  FROM impact_data.work_references
   INNER JOIN works_issn AS published_work
     ON work_references.work_doi = published_work.doi
   INNER JOIN works_issn AS cited_work
