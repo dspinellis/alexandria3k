@@ -215,19 +215,24 @@ class CrossrefMetaData:
             )
 
             if condition:
-                condition = f"""AND EXISTS
-                    (SELECT 1 FROM temp_combined WHERE
-                        {table}.rowid = temp_combined.{table}_rowid)"""
+                self.vdb.execute("DROP INDEX IF EXISTS temp_combined_idx")
+                self.vdb.execute(
+                    f"""CREATE INDEX temp_combined_idx
+                          ON temp_combined({table}_rowid)"""
+                )
+                join = f"""INNER JOIN temp_combined
+                             ON {table}.rowid = temp_combined.{table}_rowid"""
             else:
-                condition = ""
+                join = ""
 
-            self.vdb.execute(
-                f"""
+            statement = f"""
                 INSERT INTO populated.{table}
                     SELECT {columns} FROM {table}
-                    WHERE {table}.container_id = {partition_index} {condition}
+                    {join}
+                    WHERE {table}.container_id = {partition_index}
                 """
-            )
+            # print(statement)
+            self.vdb.execute(statement)
 
         # Create the populated database, if needed
         if not os.path.exists(database_path):

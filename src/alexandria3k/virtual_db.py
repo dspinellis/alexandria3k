@@ -124,6 +124,11 @@ class ColumnMeta:
 # which is the index of the file in the files array
 CONTAINER_ID_COLUMN = 1
 
+ROWID_COLUMN = -1
+
+CONTAINER_INDEX = 1
+ROWID_INDEX = 2
+
 
 class StreamingTable:
     """An apsw table streaming over data of the supplied table metadata"""
@@ -136,9 +141,9 @@ class StreamingTable:
     def BestIndex(self, constraints, _orderbys):
         """Called by the Engine to determine the best available index
         for the operation at hand"""
-        # print(f"BestIndex c={constraints} o={orderbys}")
+        # print(f"BestIndex gets c={constraints} o={_orderbys}")
         used_constraints = []
-        found_index = False
+        index_number = 0
         for (column, operation) in constraints:
             if (
                 column == CONTAINER_ID_COLUMN
@@ -147,17 +152,29 @@ class StreamingTable:
                 # Pass value to Filter as constraint_arg[0], and do not
                 # require the engine to perform extra checks (exact match)
                 used_constraints.append((0, False))
-                found_index = True
+                index_number |= CONTAINER_INDEX
+            elif (
+                column == ROWID_COLUMN
+                and operation == apsw.SQLITE_INDEX_CONSTRAINT_EQ
+            ):
+                # Pass value to Filter as constraint_arg[1], and do not
+                # require the engine to perform extra checks (exact match)
+                used_constraints.append((1, False))
+                index_number |= ROWID_INDEX
             else:
                 # No suitable index
                 used_constraints.append(None)
-        if found_index:
+        if index_number != 0:
+            # print(f"BestIndex returns: {index_number}, {used_constraints}")
             return (
                 used_constraints,
-                1,  # index number
-                None,  # index name
+                # First argument to Filter: 0 no index, 1 file index,
+                # 2 rowid index, 3 both indexes
+                index_number,
+                None,  # index name (second argument to Filter)
                 False,  # results are not in orderbys order
-                2000,  # about 2000 disk i/o (8M file / 4k block)
+                2000
+                / index_number,  # about 2000 disk i/o (8M file / 4k block)
             )
         return None
 
@@ -208,13 +225,13 @@ class FilesCursor:
     def Filter(self, index_number, _index_name, constraint_args):
         """Always called first to initialize an iteration to the first
         (possibly constrained) row of the table"""
-        # print(f"Filter c={constraint_args}")
+        # print(f"Filter n={index_number} c={constraint_args}")
 
         if index_number == 0:
             # No index; iterate through all the files
             self.file_index = -1
             self.single_file = False
-        else:
+        elif index_number & CONTAINER_INDEX:
             # Index; constraint reading through the specified file
             self.single_file = True
             self.file_read = False

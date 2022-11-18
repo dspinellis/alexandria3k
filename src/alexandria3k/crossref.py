@@ -24,7 +24,13 @@ import os
 import apsw
 
 from file_cache import get_file_cache
-from virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN, FilesCursor
+from virtual_db import (
+    ColumnMeta,
+    TableMeta,
+    CONTAINER_ID_COLUMN,
+    FilesCursor,
+    ROWID_INDEX,
+)
 
 
 class DataFiles:
@@ -197,12 +203,17 @@ class WorksCursor:
         extract_function = self.table.get_value_extractor_by_ordinal(col)
         return extract_function(self.current_row_value())
 
-    def Filter(self, *args):
+    def Filter(self, index_number, index_name, constraint_args):
         """Always called first to initialize an iteration to the first row
-        of the table"""
-        self.files_cursor.Filter(*args)
+        of the table according to the index"""
+        self.files_cursor.Filter(index_number, index_name, constraint_args)
         self.eof = self.files_cursor.Eof()
-        self.item_index = 0
+        # print("FILTER", index_number, constraint_args)
+        if index_number & ROWID_INDEX:
+            # This has never happened, so this is untested
+            self.item_index = constraint_args[1]
+        else:
+            self.item_index = 0
 
     def Next(self):
         """Advance to the next item."""
