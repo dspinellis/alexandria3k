@@ -1,7 +1,9 @@
+-- Calculate the 2021 journal impact factor
+
 ATTACH 'impact_data.db' AS impact_data;
 
 CREATE TABLE works_issn AS
-  SELECT Lower(doi) AS doi,
+  SELECT doi AS doi,
     Coalesce(issn_print, issn_electronic) AS issn, published_year
   FROM impact_data.works
   WHERE issn is not null;
@@ -12,9 +14,9 @@ CREATE TABLE citations AS
   SELECT cited_work.issn, COUNT(*) AS citations_number
   FROM impact_data.work_references
   INNER JOIN works_issn AS published_work
-    ON Lower(work_references.work_doi) = published_work.doi
+    ON work_references.work_doi = published_work.doi
   INNER JOIN works_issn AS cited_work
-    ON Lower(work_references.doi) = cited_work.doi
+    ON work_references.doi = cited_work.doi
   WHERE published_work.published_year = 2021
     AND cited_work.published_year BETWEEN 2019 AND 2020
   GROUP BY cited_work.issn;
