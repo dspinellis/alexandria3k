@@ -229,7 +229,7 @@ class CrossrefMetaData:
                     table_name = parent_table_name
             # print("ADD COLUMNS ", to_add)
             for (table, column) in to_add:
-                add_column(self.query_columns, table, column)
+                CrossrefMetaData.add_column(self.query_columns, table, column)
 
         def population_and_query_tables():
             """Return a sequence consisting of the tables required
@@ -302,7 +302,7 @@ class CrossrefMetaData:
             (table, column) = col.split(".")
             if not table or not column:
                 fail(f"Invalid column specification: {col}")
-            add_column(self.population_columns, table, column)
+            CrossrefMetaData.add_column(self.population_columns, table, column)
 
         # Setup the columns required for executing the query
         if condition:
