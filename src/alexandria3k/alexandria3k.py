@@ -308,7 +308,7 @@ class CrossrefMetaData:
         if condition:
             tables = ", ".join(crossref.table_dict.keys())
             query = f"""SELECT DISTINCT 1 FROM {tables} WHERE {condition}"""
-            set_query_columns(query)
+            self.set_query_columns(query)
             set_join_columns()
             perf.print("Condition parsing")
 
