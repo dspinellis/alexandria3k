@@ -131,6 +131,11 @@ def tab_values(array):
     return "\t".join(array)
 
 
+def lower_or_none(str):
+    """Return the string in lowercase or None if None is passed"""
+    return str.lower() if str else None
+
+
 class Source:
     """Virtual table data source.  This gets registered with the apsw
     Connection through createmodule in order to instantiate the virtual
@@ -320,7 +325,7 @@ class AuthorsCursor(ElementsCursor):
             return self.record_id()
 
         if col == 2:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI")
+            return self.parent_cursor.current_row_value().get("DOI").lower()
 
         return super().Column(col)
 
@@ -340,7 +345,7 @@ class ReferencesCursor(ElementsCursor):
 
     def Column(self, col):
         if col == 0:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI")
+            return self.parent_cursor.current_row_value().get("DOI").lower()
         return super().Column(col)
 
 
@@ -359,7 +364,7 @@ class UpdatesCursor(ElementsCursor):
 
     def Column(self, col):
         if col == 0:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI")
+            return self.parent_cursor.current_row_value().get("DOI").lower()
         return super().Column(col)
 
 
@@ -379,7 +384,7 @@ class SubjectsCursor(ElementsCursor):
     def Column(self, col):
         """Return the value of the column with ordinal col"""
         if col == 0:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI")
+            return self.parent_cursor.current_row_value().get("DOI").lower()
         return super().Column(col)
 
 
@@ -402,7 +407,7 @@ class FundersCursor(ElementsCursor):
             return self.record_id()
 
         if col == 2:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI")
+            return self.parent_cursor.current_row_value().get("DOI").lower()
 
         return super().Column(col)
 
@@ -454,7 +459,7 @@ tables = [
         "works",
         cursor_class=WorksCursor,
         columns=[
-            ColumnMeta("DOI", lambda row: dict_value(row, "DOI")),
+            ColumnMeta("DOI", lambda row: dict_value(row, "DOI").lower()),
             ColumnMeta("container_id"),
             ColumnMeta(
                 "title", lambda row: tab_values(dict_value(row, "title"))
@@ -583,7 +588,9 @@ tables = [
                 "first_page", lambda row: dict_value(row, "first-page")
             ),
             ColumnMeta("isbn", lambda row: dict_value(row, "isbn")),
-            ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
+            ColumnMeta(
+                "doi", lambda row: lower_or_none(dict_value(row, "DOI"))
+            ),
             ColumnMeta("component", lambda row: dict_value(row, "component")),
             ColumnMeta(
                 "article_title", lambda row: dict_value(row, "article-title")
@@ -618,7 +625,9 @@ tables = [
             ColumnMeta("work_doi"),
             ColumnMeta("container_id"),
             ColumnMeta("label", lambda row: dict_value(row, "label")),
-            ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
+            ColumnMeta(
+                "doi", lambda row: lower_or_none(dict_value(row, "DOI"))
+            ),
             ColumnMeta(
                 "timestamp",
                 lambda row: dict_value(
@@ -649,7 +658,9 @@ tables = [
             ColumnMeta("id"),
             ColumnMeta("container_id"),
             ColumnMeta("work_doi"),
-            ColumnMeta("doi", lambda row: dict_value(row, "DOI")),
+            ColumnMeta(
+                "doi", lambda row: lower_or_none(dict_value(row, "DOI"))
+            ),
             ColumnMeta("name", lambda row: dict_value(row, "name")),
         ],
     ),
