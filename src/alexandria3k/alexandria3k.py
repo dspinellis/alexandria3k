@@ -57,7 +57,11 @@ class CrossrefMetaData:
         _cached_files=1,
         _cached_size=None,
     ):
-        self.vdb = apsw.Connection(":memory:")
+        # A named in-memory database; it can be attached by name to others
+        self.vdb = apsw.Connection(
+            "file:virtual?mode=memory&cache=shared",
+            apsw.SQLITE_OPEN_URI | apsw.SQLITE_OPEN_READWRITE,
+        )
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = crossref.Source(
@@ -79,6 +83,53 @@ class CrossrefMetaData:
         """Return the virtual table database as an apsw object"""
         return self.vdb
 
+    @staticmethod
+    def add_column(dictionary, table, column):
+        """Add a column required for executing a query to the
+        specified dictionary"""
+        if table in dictionary:
+            dictionary[table].add(column)
+        else:
+            dictionary[table] = {column}
+
+    def set_query_columns(self, query):
+        """Set the columns a query requires to run as a set in
+        self.query_columns by invoking the tracer"""
+
+        def trace_query_columns(query):
+            """Set the columns a query requires to run as a set in
+            self.query_columns.
+            See https://rogerbinns.github.io/apsw/tips.html#parsing-sql"""
+
+            def authorizer(op_code, table, column, _database, _trigger):
+                """Query authorizer to monitor used columns"""
+                if op_code == apsw.SQLITE_READ and column:
+                    # print(f"AUTH: adding {table}.{column}")
+                    CrossrefMetaData.add_column(
+                        self.query_columns, table, column
+                    )
+                return apsw.SQLITE_OK
+
+            def tracer(_cursor, _query, _bindings):
+                """An execution tracer that denies the query's operation"""
+                # Abort the query's evaluation with an exception.  Returning
+                # apsw.SQLITE_DENY seems to be doing something that takes
+                # minutes to finish
+                return None
+
+            # Add the columns required by the actual query
+            self.cursor.setexectrace(tracer)
+            self.vdb.setauthorizer(authorizer)
+            self.cursor.execute(query, can_cache=False)
+            # NOTREACHED
+
+        try:
+            trace_query_columns(query)
+        except apsw.ExecTraceAbort:
+            pass
+        self.vdb.setauthorizer(None)
+        self.cursor.setexectrace(None)
+
     def query(self, query, partition=False):
         """Run the specified query on the virtual database.
         Returns an iterable over the query's results.
@@ -94,15 +145,45 @@ class CrossrefMetaData:
         Running queries with joins without partitioning will often result
         in quadratic (or worse) algorithmic complexity."""
 
+        # Easy case
         if not partition:
             for row in self.vdb.execute(query):
                 yield row
-        else:
-            for i in self.data_source.get_file_id_iterator():
-                container_query = query.replace("CONTAINER_ID", str(i))
-                query_results = self.vdb.execute(container_query)
-                for row in query_results:
-                    yield row
+            return
+
+        # Even when restricting multiple JOINs with container_id
+        # SQLite seems to scan all containers for each JOIN making the
+        # performance intolerably slow. Address this by creating non-virtual
+        # tables with the required columns for each partition, as follows.
+        #
+        # Identify required tables and columns
+        # Create an in-memory database
+        # Attach database partition to in-memory database
+        # For each partition:
+        #   Copy tables to in-memory database
+        #   Run query on in-memory database
+        #   drop tables
+        self.set_query_columns(query)
+        partition = apsw.Connection(
+            "file:partition?mode=memory&cache=shared",
+            apsw.SQLITE_OPEN_URI | apsw.SQLITE_OPEN_READWRITE,
+        )
+        partition.createmodule("filesource", self.data_source)
+        partition.execute(
+            "ATTACH DATABASE 'file:virtual?mode=memory&cache=shared' AS virtual"
+        )
+        for i in self.data_source.get_file_id_iterator():
+            for table_name in self.query_columns.keys():
+                columns = ", ".join(self.query_columns[table_name])
+                statement = f"""CREATE TABLE {table_name}
+                  AS SELECT {columns} FROM virtual.{table_name}
+                    WHERE virtual.{table_name}.container_id={i}"""
+                # print(statement)
+                partition.execute(statement)
+            for row in partition.execute(query):
+                yield row
+            for table_name in self.query_columns.keys():
+                partition.execute(f"DROP TABLE {table_name}")
 
     def populate_database(self, database_path, columns, condition, _indexes):
         """Populate the specified SQLite database.
@@ -131,38 +212,6 @@ class CrossrefMetaData:
         Note that foreign key indexes will always be created and need
         not be specified.
         """
-
-        def add_column(dictionary, table, column):
-            """Add a column required for executing a query to the
-            specified dictionary"""
-            if table in dictionary:
-                dictionary[table].add(column)
-            else:
-                dictionary[table] = {column}
-
-        def set_query_columns(query):
-            """Set the columns a query requires to run.
-            See https://rogerbinns.github.io/apsw/tips.html#parsing-sql"""
-
-            def authorizer(op_code, table, column, _database, _trigger):
-                """Query authorizer to monitor used columns"""
-                if op_code == apsw.SQLITE_READ and column:
-                    # print(f"AUTH: adding {table}.{column}")
-                    add_column(self.query_columns, table, column)
-                return apsw.SQLITE_OK
-
-            def tracer(_cursor, _query, _bindings):
-                """An execution tracer that denies the query's operation"""
-                # Abort the query's evaluation with an exception.  Returning
-                # apsw.SQLITE_DENY seems to be doing something that takes
-                # minutes to finish
-                return None
-
-            # Add the columns required by the actual query
-            self.cursor.setexectrace(tracer)
-            self.vdb.setauthorizer(authorizer)
-            self.cursor.execute(query, can_cache=False)
-            # NOTREACHED
 
         def set_join_columns():
             """Add columns required for joins"""
@@ -259,12 +308,7 @@ class CrossrefMetaData:
         if condition:
             tables = ", ".join(crossref.table_dict.keys())
             query = f"""SELECT DISTINCT 1 FROM {tables} WHERE {condition}"""
-            try:
-                set_query_columns(query)
-            except apsw.ExecTraceAbort:
-                pass
-            self.vdb.setauthorizer(None)
-            self.cursor.setexectrace(None)
+            set_query_columns(query)
             set_join_columns()
             perf.print("Condition parsing")
 
