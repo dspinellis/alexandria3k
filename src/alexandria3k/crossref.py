@@ -180,8 +180,8 @@ class WorksCursor:
 
     def Rowid(self):
         """Return a unique id of the row along all records"""
-        # Allow for 65k items per file (currently 5k)
-        return (self.files_cursor.Rowid() << 16) | (self.item_index)
+        # Allow for 16k items per file (currently 5k)
+        return (self.files_cursor.Rowid() << 14) | (self.item_index)
 
     def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
@@ -326,9 +326,9 @@ class AuthorsCursor(ElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records.
-        This allows for 65k authors. There is a Physics paper with 5k
+        This allows for 16k authors. There is a Physics paper with 5k
         authors."""
-        return (self.parent_cursor.Rowid() << 16) | self.element_index
+        return (self.parent_cursor.Rowid() << 14) | self.element_index
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
@@ -351,8 +351,8 @@ class ReferencesCursor(ElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records.
-        This allows for 16M references"""
-        return (self.parent_cursor.Rowid() << 24) | self.element_index
+        This allows for 1M references"""
+        return (self.parent_cursor.Rowid() << 20) | self.element_index
 
     def Column(self, col):
         if col == 0:  # work_doi
@@ -370,8 +370,8 @@ class UpdatesCursor(ElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records.
-        This allows for 16M updates"""
-        return (self.parent_cursor.Rowid() << 24) | self.element_index
+        This allows for 1M updates"""
+        return (self.parent_cursor.Rowid() << 20) | self.element_index
 
     def Column(self, col):
         if col == 0:  # work_doi
@@ -389,8 +389,8 @@ class SubjectsCursor(ElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records.
-        This allows for 16M subjects"""
-        return (self.parent_cursor.Rowid() << 24) | self.element_index
+        This allows for 1M subjects"""
+        return (self.parent_cursor.Rowid() << 20) | self.element_index
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
@@ -409,8 +409,8 @@ class FundersCursor(ElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records
-        This allows for 16M funders"""
-        return (self.parent_cursor.Rowid() << 24) | self.element_index
+        This allows for 1k funders"""
+        return (self.parent_cursor.Rowid() << 10) | self.element_index
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
@@ -453,7 +453,7 @@ class AwardsCursor(ElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records
-        This allows for 1024 awards per funder."""
+        This allows for 1k awards per funder."""
         return (self.parent_cursor.Rowid() << 10) | self.element_index
 
     def Column(self, col):
