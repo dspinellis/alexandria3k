@@ -33,11 +33,6 @@ import orcid
 from perf import Perf
 from tsort import tsort
 
-# Performance monitoring
-# pylint: disable-next-line=C0103
-perf = None
-
-
 def fail(message):
     """Fail the program execution with the specified error message"""
     print(message, file=sys.stderr)
@@ -49,14 +44,8 @@ class CrossrefMetaData:
     (virtual) table and the population of an SQLite database with its
     data"""
 
-    def __init__(
-        self,
-        container_directory,
-        _sample_container=lambda name: True,
-        _source=None,
-        _cached_files=1,
-        _cached_size=None,
-    ):
+    def __init__( self, args):
+        self.args = args
         # A named in-memory database; it can be attached by name to others
         self.vdb = apsw.Connection(
             "file:virtual?mode=memory&cache=shared",
@@ -65,7 +54,7 @@ class CrossrefMetaData:
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = crossref.Source(
-            crossref.table_dict, container_directory
+            crossref.table_dict, args.crossref_directory
         )
         self.vdb.createmodule("filesource", self.data_source)
 
@@ -173,6 +162,8 @@ class CrossrefMetaData:
             "ATTACH DATABASE 'file:virtual?mode=memory&cache=shared' AS virtual"
         )
         for i in self.data_source.get_file_id_iterator():
+            if "progress" in self.args.debug:
+                print(f"Container {i}")
             for table_name in self.query_columns.keys():
                 columns = ", ".join(self.query_columns[table_name])
                 statement = f"""CREATE TABLE {table_name}
@@ -310,20 +301,22 @@ class CrossrefMetaData:
             query = f"""SELECT DISTINCT 1 FROM {tables} WHERE {condition}"""
             self.set_query_columns(query)
             set_join_columns()
-            perf.print("Condition parsing")
+            self.args.perf.print("Condition parsing")
 
         # Create empty tables
         for (table_name, table_columns) in self.population_columns.items():
             table = crossref.get_table_meta_by_name(table_name)
             self.vdb.execute(f"DROP TABLE IF EXISTS populated.{table_name}")
             self.vdb.execute(table.table_schema("populated.", table_columns))
-        perf.print("Table creation")
+        self.args.perf.print("Table creation")
 
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
         # indexing and the file cache avoids opening, reading, decompressing,
         # and parsing each file multiple times.
         for i in self.data_source.get_file_id_iterator():
+            if "progress" in self.args.debug:
+                print(f"Container {i}")
             # Sampling:
             #           WHERE abs(random() % 100000) = 0"""
             #           WHERE update_count is not null
@@ -343,7 +336,7 @@ class CrossrefMetaData:
                         WHERE container_id = {i}"""
                     # print(create)
                     self.vdb.execute(create)
-                perf.print("Virtual table copies")
+                self.args.perf.print("Virtual table copies")
 
                 # Create the statement for the combined records
                 create = (
@@ -361,11 +354,11 @@ class CrossrefMetaData:
                 self.vdb.execute("DROP TABLE IF EXISTS temp_combined")
                 # print(create)
                 self.vdb.execute(create)
-                perf.print("Combined table creation")
+                self.args.perf.print("Combined table creation")
 
             for table in self.population_columns:
                 populate_table(table, i, condition)
-        perf.print("Table population")
+        self.args.perf.print("Table population")
 
         self.vdb.execute("DETACH populated")
 
@@ -669,24 +662,17 @@ def main():
     sample = eval(f"lambda word: {args.sample}")
 
     crossref = (
-        CrossrefMetaData(
-            args.crossref_directory,
-            sample,
-            None,
-            args.cached_file_number,
-            args.cached_bytes,
-        )
+        CrossrefMetaData(args)
         if args.crossref_directory
         else None
     )
 
     # Setup performance monitoring
-    global perf
     if "perf" in args.debug:
-        perf = Perf(True)
-        perf.print("Start")
+        args.perf = Perf(True)
+        args.perf.print("Start")
     else:
-        perf = Perf(False)
+        args.perf = Perf(False)
 
     if "virtual-counts" in args.debug:
         # Streaming interface
@@ -711,7 +697,7 @@ def main():
         )
         if "files-read" in args.debug:
             print(f"{FileCache.file_reads} files read")
-        perf.print("Crossref table population")
+        args.perf.print("Crossref table population")
 
     if args.orcid_data:
         if not args.populate_db_path:
@@ -722,7 +708,7 @@ def main():
             args.columns,
             args.linked_records,
         )
-        perf.print("ORCID table population")
+        args.perf.print("ORCID table population")
 
     if args.query_file:
         args.query = ""
@@ -754,7 +740,7 @@ def main():
         populated_db = sqlite3.connect(args.populate_db_path)
         CrossrefMetaData.normalize_affiliations(populated_db)
         CrossrefMetaData.normalize_subjects(populated_db)
-        perf.print("Data normalization")
+        args.perf.print("Data normalization")
 
     if "populated-counts" in args.debug:
         populated_db = sqlite3.connect(args.populate_db_path)
