@@ -57,7 +57,7 @@ class TableMeta:
             columns = [c.get_name() for c in self.columns]
         # A comma-separated list of the table's columns
         column_list = ", ".join(columns)
-        return f"CREATE TABLE {prefix}{self.name}(" + column_list + ")"
+        return f"CREATE TABLE {prefix}{self.name}(" + column_list + ");"
 
     def get_name(self):
         """Return the table's name"""

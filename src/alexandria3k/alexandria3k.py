@@ -500,7 +500,7 @@ def populated_reports(pdb):
 def schema_list():
     """Print the full database schema"""
 
-    for table in crossref.tables:
+    for table in crossref.tables + orcid.tables:
         print(table.table_schema())
 
 
