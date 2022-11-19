@@ -163,7 +163,7 @@ class CrossrefMetaData:
         )
         for i in self.data_source.get_file_id_iterator():
             if "progress" in self.args.debug:
-                print(f"Container {i}")
+                print(f"Container {i}", flush=True)
             for table_name in self.query_columns.keys():
                 columns = ", ".join(self.query_columns[table_name])
                 statement = f"""CREATE TABLE {table_name}
@@ -316,7 +316,7 @@ class CrossrefMetaData:
         # and parsing each file multiple times.
         for i in self.data_source.get_file_id_iterator():
             if "progress" in self.args.debug:
-                print(f"Container {i}")
+                print(f"Container {i}", flush=True)
             # Sampling:
             #           WHERE abs(random() % 100000) = 0"""
             #           WHERE update_count is not null
