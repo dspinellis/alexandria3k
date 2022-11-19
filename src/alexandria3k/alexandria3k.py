@@ -66,8 +66,17 @@ class CrossrefMetaData:
 
         for table in crossref.tables:
             self.vdb.execute(
-                f"CREATE VIRTUAL TABLE {table.get_name()} USING filesource()"
+                self.log_sql(
+                    f"CREATE VIRTUAL TABLE {table.get_name()} USING filesource()"
+                )
             )
+
+    def log_sql(self, statement):
+        """Return the specified SQL statement. If "log-sql" is set,
+        output a copy of the statement on the standard output"""
+        if "log-sql" in self.args.debug:
+            print(statement)
+        return statement
 
     def get_virtual_db(self):
         """Return the virtual table database as an apsw object"""
@@ -110,7 +119,7 @@ class CrossrefMetaData:
             # Add the columns required by the actual query
             self.cursor.setexectrace(tracer)
             self.vdb.setauthorizer(authorizer)
-            self.cursor.execute(query, can_cache=False)
+            self.cursor.execute(self.log_sql(query), can_cache=False)
             # NOTREACHED
 
         try:
@@ -137,7 +146,7 @@ class CrossrefMetaData:
 
         # Easy case
         if not partition:
-            for row in self.vdb.execute(query):
+            for row in self.vdb.execute(self.log_sql(query)):
                 yield row
             return
 
@@ -160,7 +169,9 @@ class CrossrefMetaData:
         )
         partition.createmodule("filesource", self.data_source)
         partition.execute(
-            "ATTACH DATABASE 'file:virtual?mode=memory&cache=shared' AS virtual"
+            self.log_sql(
+                "ATTACH DATABASE 'file:virtual?mode=memory&cache=shared' AS virtual"
+            )
         )
         for i in self.data_source.get_file_id_iterator():
             if "progress" in self.args.debug:
@@ -170,15 +181,17 @@ class CrossrefMetaData:
                 )
             for table_name in self.query_columns.keys():
                 columns = ", ".join(self.query_columns[table_name])
-                statement = f"""CREATE TABLE {table_name}
+                partition.execute(
+                    self.log_sql(
+                        f"""CREATE TABLE {table_name}
                   AS SELECT {columns} FROM virtual.{table_name}
                     WHERE virtual.{table_name}.container_id={i}"""
-                # print(statement)
-                partition.execute(statement)
-            for row in partition.execute(query):
+                    )
+                )
+            for row in partition.execute(self.log_sql(query)):
                 yield row
             for table_name in self.query_columns.keys():
-                partition.execute(f"DROP TABLE {table_name}")
+                partition.execute(self.log_sql(f"DROP TABLE {table_name}"))
 
     def populate_database(self, database_path, columns, condition, _indexes):
         """Populate the specified SQLite database.
@@ -259,13 +272,17 @@ class CrossrefMetaData:
             )
 
             if condition:
-                self.vdb.execute("DROP INDEX IF EXISTS temp_combined_idx")
                 self.vdb.execute(
-                    f"""CREATE INDEX temp_combined_idx
-                          ON temp_combined({table}_rowid)"""
+                    self.log_sql("DROP INDEX IF EXISTS temp_matched_idx")
                 )
-                join = f"""INNER JOIN temp_combined
-                             ON {table}.rowid = temp_combined.{table}_rowid"""
+                self.vdb.execute(
+                    self.log_sql(
+                        f"""CREATE INDEX temp_matched_idx
+                          ON temp_matched({table}_rowid)"""
+                    )
+                )
+                join = f"""INNER JOIN temp_matched
+                             ON {table}.rowid = temp_matched.{table}_rowid"""
             else:
                 join = ""
 
@@ -275,15 +292,16 @@ class CrossrefMetaData:
                     {join}
                     WHERE {table}.container_id = {partition_index}
                 """
-            # print(statement)
-            self.vdb.execute(statement)
+            self.vdb.execute(self.log_sql(statement))
 
         # Create the populated database, if needed
         if not os.path.exists(database_path):
             pdb = sqlite3.connect(database_path)
             pdb.close()
 
-        self.vdb.execute(f"ATTACH DATABASE '{database_path}' AS populated")
+        self.vdb.execute(
+            self.log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
+        )
 
         # By default include all tables and columns
         if not columns:
@@ -310,8 +328,12 @@ class CrossrefMetaData:
         # Create empty tables
         for (table_name, table_columns) in self.population_columns.items():
             table = crossref.get_table_meta_by_name(table_name)
-            self.vdb.execute(f"DROP TABLE IF EXISTS populated.{table_name}")
-            self.vdb.execute(table.table_schema("populated.", table_columns))
+            self.vdb.execute(
+                self.log_sql(f"DROP TABLE IF EXISTS populated.{table_name}")
+            )
+            self.vdb.execute(
+                self.log_sql(table.table_schema("populated.", table_columns))
+            )
         self.args.perf.print("Table creation")
 
         # Populate all tables from the records of each file in sequence.
@@ -337,17 +359,18 @@ class CrossrefMetaData:
                     else:
                         columns = {"rowid"}
                     column_list = ", ".join(columns)
-                    self.vdb.execute(f"""DROP TABLE IF EXISTS temp_{table}""")
+                    self.vdb.execute(
+                        self.log_sql(f"""DROP TABLE IF EXISTS temp_{table}""")
+                    )
                     create = f"""CREATE TEMP TABLE temp_{table} AS
                         SELECT {column_list} FROM {table}
                         WHERE container_id = {i}"""
-                    # print(create)
-                    self.vdb.execute(create)
+                    self.vdb.execute(self.log_sql(create))
                 self.args.perf.print("Virtual table copies")
 
                 # Create the statement for the combined records
                 create = (
-                    "CREATE TEMP TABLE temp_combined AS SELECT "
+                    "CREATE TEMP TABLE temp_matched AS SELECT "
                     + ", ".join(
                         [
                             f"{table}.rowid AS {table}_rowid"
@@ -358,16 +381,17 @@ class CrossrefMetaData:
                     + joined_tables()
                     + f" WHERE ({condition})"
                 )
-                self.vdb.execute("DROP TABLE IF EXISTS temp_combined")
-                # print(create)
-                self.vdb.execute(create)
+                self.vdb.execute(
+                    self.log_sql("DROP TABLE IF EXISTS temp_matched")
+                )
+                self.vdb.execute(self.log_sql(create))
                 self.args.perf.print("Combined table creation")
 
             for table in self.population_columns:
                 populate_table(table, i, condition)
         self.args.perf.print("Table population")
 
-        self.vdb.execute("DETACH populated")
+        self.vdb.execute(self.log_sql("DETACH populated"))
 
     @staticmethod
     def normalize_affiliations(pdb):
