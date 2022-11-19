@@ -57,6 +57,10 @@ class DataFiles:
         """Return an iterator over the int identifiers of all data files"""
         return range(0, len(self.data_files))
 
+    def get_file_name_by_id(self, id):
+        """Return the name of the file corresponding to the specified id"""
+        return self.data_files[id]
+
 
 def dict_value(dictionary, key):
     """Return the value of dictionary for key or None if it doesn't exist"""
@@ -162,6 +166,10 @@ class Source:
     def get_file_id_iterator(self):
         """Return an iterator over the data files' identifiers"""
         return self.data_files.get_file_id_iterator()
+
+    def get_file_name_by_id(self, id):
+        """Return the name of the file corresponding to the specified id"""
+        return self.data_files.get_file_name_by_id(id)
 
 
 class WorksCursor:

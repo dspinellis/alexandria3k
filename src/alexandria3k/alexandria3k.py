@@ -33,6 +33,7 @@ import orcid
 from perf import Perf
 from tsort import tsort
 
+
 def fail(message):
     """Fail the program execution with the specified error message"""
     print(message, file=sys.stderr)
@@ -44,7 +45,7 @@ class CrossrefMetaData:
     (virtual) table and the population of an SQLite database with its
     data"""
 
-    def __init__( self, args):
+    def __init__(self, args):
         self.args = args
         # A named in-memory database; it can be attached by name to others
         self.vdb = apsw.Connection(
@@ -163,7 +164,10 @@ class CrossrefMetaData:
         )
         for i in self.data_source.get_file_id_iterator():
             if "progress" in self.args.debug:
-                print(f"Container {i}", flush=True)
+                print(
+                    f"Container {i} {self.data_source.get_file_name_by_id(i)}",
+                    flush=True,
+                )
             for table_name in self.query_columns.keys():
                 columns = ", ".join(self.query_columns[table_name])
                 statement = f"""CREATE TABLE {table_name}
@@ -316,7 +320,10 @@ class CrossrefMetaData:
         # and parsing each file multiple times.
         for i in self.data_source.get_file_id_iterator():
             if "progress" in self.args.debug:
-                print(f"Container {i}", flush=True)
+                print(
+                    f"Container {i} {self.data_source.get_file_name_by_id(i)}",
+                    flush=True,
+                )
             # Sampling:
             #           WHERE abs(random() % 100000) = 0"""
             #           WHERE update_count is not null
@@ -661,11 +668,7 @@ def main():
     # pylint: disable=W0123
     sample = eval(f"lambda word: {args.sample}")
 
-    crossref = (
-        CrossrefMetaData(args)
-        if args.crossref_directory
-        else None
-    )
+    crossref = CrossrefMetaData(args) if args.crossref_directory else None
 
     # Setup performance monitoring
     if "perf" in args.debug:
