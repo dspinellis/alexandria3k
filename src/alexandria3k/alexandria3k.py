@@ -22,6 +22,7 @@
 import argparse
 import csv
 import os
+import random
 import sqlite3
 import sys
 
@@ -33,6 +34,7 @@ import orcid
 from perf import Perf
 from tsort import tsort
 
+random.seed("alexandria3k")
 
 def fail(message):
     """Fail the program execution with the specified error message"""
@@ -55,7 +57,7 @@ class CrossrefMetaData:
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = crossref.Source(
-            crossref.table_dict, args.crossref_directory
+            crossref.table_dict, args.crossref_directory, args.sample
         )
         self.vdb.createmodule("filesource", self.data_source)
 
@@ -674,9 +676,10 @@ def parse_cli_arguments():
     parser.add_argument(
         "-s",
         "--sample",
+        # By default the function always returns True
         default="True",
         type=str,
-        help="Python expression to sample the Crossref tables",
+        help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
     )
     return parser.parse_args()
 
@@ -690,7 +693,7 @@ def main():
         sys.exit(0)
 
     # pylint: disable=W0123
-    sample = eval(f"lambda word: {args.sample}")
+    args.sample = eval(f"lambda path: {args.sample}")
 
     crossref = CrossrefMetaData(args) if args.crossref_directory else None
 

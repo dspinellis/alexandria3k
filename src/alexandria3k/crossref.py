@@ -36,7 +36,7 @@ from virtual_db import (
 class DataFiles:
     """The source of the compressed JSON data files"""
 
-    def __init__(self, directory, sample_container=lambda path: True):
+    def __init__(self, directory, sample_container):
         # Collect the names of all available data files
         self.data_files = []
         counter = 1
@@ -151,8 +151,8 @@ class Source:
     Connection through createmodule in order to instantiate the virtual
     tables."""
 
-    def __init__(self, table_dict, data_directory):
-        self.data_files = DataFiles(data_directory)
+    def __init__(self, table_dict, data_directory, sample):
+        self.data_files = DataFiles(data_directory, sample)
         self.table_dict = table_dict
 
     def Create(self, _db, _module_name, _db_name, table_name):
