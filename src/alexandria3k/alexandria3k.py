@@ -283,16 +283,15 @@ class CrossrefMetaData:
                           ON temp_matched({table}_rowid)"""
                     )
                 )
-                join = f"""INNER JOIN temp_matched
-                             ON {table}.rowid = temp_matched.{table}_rowid"""
+                exists = f"""AND EXISTS (SELECT 1 FROM temp_matched
+                  WHERE {table}.rowid = temp_matched.{table}_rowid)"""
             else:
-                join = ""
+                exists = ""
 
             statement = f"""
                 INSERT INTO populated.{table}
                     SELECT {columns} FROM {table}
-                    {join}
-                    WHERE {table}.container_id = {partition_index}
+                    WHERE {table}.container_id = {partition_index} {exists}
                 """
             self.vdb.execute(self.log_sql(statement))
 
