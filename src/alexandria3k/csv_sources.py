@@ -68,7 +68,6 @@ def load_csv_data(database_path, table_meta, source):
     cur = con.cursor()
     cur.execute(f"DROP TABLE IF EXISTS {table_meta.get_name()}")
     cur.execute(table_meta.table_schema())
-    print(table_meta.insert_statement())
     cur.executemany(table_meta.insert_statement(), record_source(source))
     con.commit()
     con.close()
