@@ -29,12 +29,14 @@ import sys
 import apsw
 
 import crossref
+import csv_sources
 from file_cache import FileCache
 import orcid
 from perf import Perf
 from tsort import tsort
 
 random.seed("alexandria3k")
+
 
 def fail(message):
     """Fail the program execution with the specified error message"""
@@ -610,6 +612,13 @@ def parse_cli_arguments():
         help="SQL expressions that select the populated rows",
     )
     parser.add_argument(
+        "-J",
+        "--journal-data",
+        default="http://ftp.crossref.org/titlelist/titleFile.csv",
+        type=str,
+        help="Populate database with Crossref journal data from URL or file",
+    )
+    parser.add_argument(
         "-L",
         "--list-schema",
         action="store_true",
@@ -770,6 +779,15 @@ def main():
         CrossrefMetaData.normalize_affiliations(populated_db)
         CrossrefMetaData.normalize_subjects(populated_db)
         args.perf.print("Data normalization")
+
+    if args.journal_data:
+        if not args.populate_db_path:
+            fail("Database path must be specified")
+        csv_sources.load_csv_data(
+            args.populate_db_path,
+            csv_sources.journals_table,
+            args.journal_data,
+        )
 
     if "populated-counts" in args.debug:
         populated_db = sqlite3.connect(args.populate_db_path)

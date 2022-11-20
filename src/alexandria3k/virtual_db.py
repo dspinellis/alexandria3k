@@ -59,6 +59,20 @@ class TableMeta:
         column_list = ", ".join(columns)
         return f"CREATE TABLE {prefix}{self.name}(" + column_list + ");"
 
+    def insert_statement(self):
+        """Return an SQL command to insert data into the table"""
+        # A comma-separated list of the table's columns
+        columns = [c.get_name() for c in self.columns]
+        column_list = ", ".join(columns)
+
+        # A comma-separated list of one question mark per column
+        values = ["?" for c in self.columns]
+        values_list = ", ".join(values)
+
+        return (
+            f"INSERT INTO {self.name}({column_list}) VALUES ({values_list});"
+        )
+
     def get_name(self):
         """Return the table's name"""
         return self.name
