@@ -614,7 +614,8 @@ def parse_cli_arguments():
     parser.add_argument(
         "-J",
         "--journal-data",
-        default="http://ftp.crossref.org/titlelist/titleFile.csv",
+        nargs="?",
+        const="http://ftp.crossref.org/titlelist/titleFile.csv",
         type=str,
         help="Populate database with Crossref journal data from URL or file",
     )
@@ -780,6 +781,7 @@ def main():
         CrossrefMetaData.normalize_subjects(populated_db)
         args.perf.print("Data normalization")
 
+    print("J", args.journal_data)
     if args.journal_data:
         if not args.populate_db_path:
             fail("Database path must be specified")
