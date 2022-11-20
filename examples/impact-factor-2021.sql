@@ -8,7 +8,7 @@ CREATE TABLE works_issn AS
   FROM impact_data.works
   WHERE issn is not null;
 
-CREATE index works_issn_doi_idx ON works_issn(doi);
+CREATE INDEX works_issn_doi_idx ON works_issn(doi);
 
 CREATE TABLE citations AS
   SELECT cited_work.issn, COUNT(*) AS citations_number
@@ -27,9 +27,23 @@ CREATE TABLE publications AS
   GROUP BY issn;
 
 CREATE TABLE impact_factor AS
-  SELECT publications.issn, citations_number, publications_number,
+  SELECT Replace(publications.issn, '-', '') AS issn,
+    citations_number, publications_number,
     Cast(Coalesce(citations_number, 0) AS FLOAT) / publications_number
       AS impact_factor
   FROM publications
   LEFT JOIN citations ON citations.issn = publications.issn
   WHERE publications_number > 0;
+
+UPDATE Journal_data SET issn_print=Replace(issn_print, "-", "");
+UPDATE Journal_data SET issn_eprint=Replace(issn_eprint, "-", "");
+
+CREATE INDEX journal_data_issn_print_idx ON journal_data(issn_print);
+CREATE INDEX journal_data_issn_eprint_idx ON journal_data(issn_eprint);
+
+SELECT issn, title, impact_factor
+  FROM impact_factor
+  LEFT JOIN journal_data
+    ON impact_factor.issn = journal_data.issn_print
+      OR impact_factor.issn = journal_data.issn_eprint
+ORDER BY impact_factor DESC LIMIT 30;
