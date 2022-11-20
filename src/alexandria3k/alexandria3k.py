@@ -605,6 +605,14 @@ def parse_cli_arguments():
         help="Character to use for separating query output fields",
     )
     parser.add_argument(
+        "-f",
+        "--funder-data",
+        nargs="?",
+        const="https://doi.crossref.org/funderNames?mode=list",
+        type=str,
+        help="Populate database with Crossref funder names from URL or file",
+    )
+    parser.add_argument(
         "-i",
         "--index",
         nargs="*",
@@ -612,7 +620,7 @@ def parse_cli_arguments():
         help="SQL expressions that select the populated rows",
     )
     parser.add_argument(
-        "-J",
+        "-j",
         "--journal-data",
         nargs="?",
         const="http://ftp.crossref.org/titlelist/titleFile.csv",
@@ -781,7 +789,6 @@ def main():
         CrossrefMetaData.normalize_subjects(populated_db)
         args.perf.print("Data normalization")
 
-    print("J", args.journal_data)
     if args.journal_data:
         if not args.populate_db_path:
             fail("Database path must be specified")
@@ -789,6 +796,15 @@ def main():
             args.populate_db_path,
             csv_sources.journals_table,
             args.journal_data,
+        )
+
+    if args.funder_data:
+        if not args.populate_db_path:
+            fail("Database path must be specified")
+        csv_sources.load_csv_data(
+            args.populate_db_path,
+            csv_sources.funders_table,
+            args.funder_data,
         )
 
     if "populated-counts" in args.debug:

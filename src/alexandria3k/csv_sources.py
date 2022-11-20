@@ -32,7 +32,6 @@ RE_URL = re.compile(r"\w+://")
 def data_source(source):
     """Given a file path or a URL return a readable source for its contents"""
     if RE_URL.match(source):
-        print("READ URL")
         return urlopen(source)
     else:
         return open(source, "rb")
@@ -58,6 +57,15 @@ journals_table = TableMeta(
         ColumnMeta("issns_additional"),
         ColumnMeta("doi"),
         ColumnMeta("volume_info"),
+    ],
+)
+
+funders_table = TableMeta(
+    "funder_data",
+    columns=[
+        ColumnMeta("url"),
+        ColumnMeta("name"),
+        ColumnMeta("replaced"),
     ],
 )
 
