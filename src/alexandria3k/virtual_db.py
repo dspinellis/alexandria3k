@@ -121,7 +121,7 @@ class TableMeta:
 class ColumnMeta:
     """Meta-data of table columns we maintain"""
 
-    def __init__(self, name, value_extractor=None):
+    def __init__(self, name, value_extractor=None, **kwargs):
         self.name = name
         self.value_extractor = value_extractor
 

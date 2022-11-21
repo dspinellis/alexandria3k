@@ -503,7 +503,15 @@ def populated_reports(pdb):
 def schema_list():
     """Print the full database schema"""
 
-    for table in crossref.tables + orcid.tables:
+    for table in (
+        crossref.tables
+        + orcid.tables
+        + [
+            csv_sources.open_access_table,
+            csv_sources.funders_table,
+            csv_sources.journals_table,
+        ]
+    ):
         print(table.table_schema())
 
 
@@ -590,6 +598,14 @@ def parse_cli_arguments():
 """,
     )
     parser.add_argument(
+        "-A",
+        "--open-access-journals",
+        nargs="?",
+        const="https://s3.eu-west-2.amazonaws.com/doaj-data-cache/journalcsv__doaj_20221121_0635_utf8.csv",
+        type=str,
+        help="Populate database with DOAJ open access journal metadata from URL or file",
+    )
+    parser.add_argument(
         "-E",
         "--output-encoding",
         type=str,
@@ -611,12 +627,12 @@ def parse_cli_arguments():
         help="SQL expressions that select the populated rows",
     )
     parser.add_argument(
-        "-j",
-        "--journal-data",
+        "-J",
+        "--journal-names",
         nargs="?",
         const="http://ftp.crossref.org/titlelist/titleFile.csv",
         type=str,
-        help="Populate database with Crossref journal data from URL or file",
+        help="Populate database with Crossref journal names from URL or file",
     )
     parser.add_argument(
         "-L",
@@ -685,7 +701,7 @@ def parse_cli_arguments():
     )
     parser.add_argument(
         "-U",
-        "--funder-data",
+        "--funder-names",
         nargs="?",
         const="https://doi.crossref.org/funderNames?mode=list",
         type=str,
@@ -798,6 +814,15 @@ def main():
             args.populate_db_path,
             csv_sources.funders_table,
             args.funder_data,
+        )
+
+    if args.open_access_data:
+        if not args.populate_db_path:
+            fail("Database path must be specified")
+        csv_sources.load_csv_data(
+            args.populate_db_path,
+            csv_sources.open_access_table,
+            args.open_access_data,
         )
 
     if "populated-counts" in args.debug:

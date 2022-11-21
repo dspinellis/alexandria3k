@@ -38,12 +38,12 @@ CREATE TABLE impact_factor AS
 UPDATE Journal_data SET issn_print=Replace(issn_print, "-", "");
 UPDATE Journal_data SET issn_eprint=Replace(issn_eprint, "-", "");
 
-CREATE INDEX journal_data_issn_print_idx ON journal_data(issn_print);
-CREATE INDEX journal_data_issn_eprint_idx ON journal_data(issn_eprint);
+CREATE INDEX journal_names_issn_print_idx ON journal_names(issn_print);
+CREATE INDEX journal_names_issn_eprint_idx ON journal_names(issn_eprint);
 
 SELECT issn, title, impact_factor
   FROM impact_factor
-  LEFT JOIN journal_data
-    ON impact_factor.issn = journal_data.issn_print
-      OR impact_factor.issn = journal_data.issn_eprint
+  LEFT JOIN journal_names
+    ON impact_factor.issn = journal_names.issn_print
+      OR impact_factor.issn = journal_names.issn_eprint
 ORDER BY impact_factor DESC LIMIT 30;
