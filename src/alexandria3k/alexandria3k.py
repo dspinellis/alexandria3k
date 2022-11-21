@@ -555,12 +555,9 @@ def database_counts(database):
 def parse_cli_arguments():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
-        description="a3k: Publication metadata interface"
+        description="alexandria3k: Publication metadata interface"
     )
 
-    parser.add_argument(
-        "-B", "--cached-bytes", type=str, help="Size of data cache"
-    )
     parser.add_argument(
         "-C",
         "--crossref-directory",
@@ -582,10 +579,12 @@ def parse_cli_arguments():
         default=[],
         help="""Output debuggging information as specfied by the arguments.
     files-read: Output counts of data files read;
+    log-sql: Output executed SQL statements;
     perf: Output performance timings;
     populated-counts: Dump counts of the populated database;
     populated-data: Dump the data of the populated database;
     populated-reports: Output query results from the populated database;
+    progress: Report progress;
     virtual-counts: Dump counts of the virtual database;
     virtual-data: Dump the data of the virtual database.
 """,
@@ -603,14 +602,6 @@ def parse_cli_arguments():
         type=str,
         default=",",
         help="Character to use for separating query output fields",
-    )
-    parser.add_argument(
-        "-f",
-        "--funder-data",
-        nargs="?",
-        const="https://doi.crossref.org/funderNames?mode=list",
-        type=str,
-        help="Populate database with Crossref funder names from URL or file",
     )
     parser.add_argument(
         "-i",
@@ -643,13 +634,7 @@ def parse_cli_arguments():
         "-n",
         "--normalize",
         action="store_true",
-        help="Normalize relations in the populated database",
-    )
-    parser.add_argument(
-        "-N",
-        "--cached-file-number",
-        type=int,
-        help="Number of files to cache in memory",
+        help="Normalize relations in the populated Crossref database",
     )
     parser.add_argument(
         "-O",
@@ -667,7 +652,7 @@ def parse_cli_arguments():
         "-P",
         "--partition",
         action="store_true",
-        help="Run the query over partitioned data slices. ( Warning: arguments are run per partition.)",
+        help="Run the query over partitioned data slices. (Warning: arguments are run per partition.)",
     )
     parser.add_argument(
         "-p",
@@ -697,6 +682,14 @@ def parse_cli_arguments():
         default="True",
         type=str,
         help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
+    )
+    parser.add_argument(
+        "-U",
+        "--funder-data",
+        nargs="?",
+        const="https://doi.crossref.org/funderNames?mode=list",
+        type=str,
+        help="Populate database with Crossref funder names from URL or file",
     )
     return parser.parse_args()
 
