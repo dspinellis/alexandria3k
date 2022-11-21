@@ -798,31 +798,31 @@ def main():
         CrossrefMetaData.normalize_subjects(populated_db)
         args.perf.print("Data normalization")
 
-    if args.journal_data:
+    if args.journal_names:
         if not args.populate_db_path:
             fail("Database path must be specified")
         csv_sources.load_csv_data(
             args.populate_db_path,
             csv_sources.journals_table,
-            args.journal_data,
+            args.journal_names,
         )
 
-    if args.funder_data:
+    if args.funder_names:
         if not args.populate_db_path:
             fail("Database path must be specified")
         csv_sources.load_csv_data(
             args.populate_db_path,
             csv_sources.funders_table,
-            args.funder_data,
+            args.funder_names,
         )
 
-    if args.open_access_data:
+    if args.open_access_journals:
         if not args.populate_db_path:
             fail("Database path must be specified")
         csv_sources.load_csv_data(
             args.populate_db_path,
             csv_sources.open_access_table,
-            args.open_access_data,
+            args.open_access_journals,
         )
 
     if "populated-counts" in args.debug:

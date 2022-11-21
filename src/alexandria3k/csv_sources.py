@@ -62,6 +62,7 @@ journals_table = TableMeta(
 )
 
 # Crossref funder data https://doi.crossref.org/funderNames?mode=list
+# https://www.crossref.org/services/funder-registry/
 funders_table = TableMeta(
     "funder_names",
     columns=[
