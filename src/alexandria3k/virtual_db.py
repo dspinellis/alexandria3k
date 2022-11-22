@@ -42,6 +42,7 @@ class TableMeta:
         self.cursor_class = kwargs.get("cursor_class")
         self.records_path = kwargs.get("records_path")
         self.columns = kwargs["columns"]
+        self.post_population_command = kwargs.get("post_population_command")
 
         # Create dictionary of columns by name
         self.columns_by_name = {}
@@ -54,10 +55,10 @@ class TableMeta:
         optional specified prefix.
         A columns array can be used to specify which columns to include."""
         if not columns or "*" in columns:
-            columns = [c.get_name() for c in self.columns]
+            columns = [f"  {c.get_name()}" for c in self.columns]
         # A comma-separated list of the table's columns
-        column_list = ", ".join(columns)
-        return f"CREATE TABLE {prefix}{self.name}(" + column_list + ");"
+        column_list = ",\n".join(columns)
+        return f"CREATE TABLE {prefix}{self.name}(\n" + column_list + "\n);\n"
 
     def insert_statement(self):
         """Return an SQL command to insert data into the table"""
@@ -89,6 +90,10 @@ class TableMeta:
     def get_records_path(self):
         """Return the XML path for obtaining multiple records"""
         return self.records_path
+
+    def get_post_population_command(self):
+        """Return the SQL command to run after the table is populated"""
+        return self.post_population_command
 
     def get_parent_name(self):
         """Return the name of the main table of which this has details"""
@@ -124,10 +129,15 @@ class ColumnMeta:
     def __init__(self, name, value_extractor=None, **kwargs):
         self.name = name
         self.value_extractor = value_extractor
+        self.description = kwargs.get("description")
 
     def get_name(self):
         """Return column's name"""
         return self.name
+
+    def get_description(self):
+        """Return column's description, if any"""
+        return self.description
 
     def get_value_extractor(self):
         """Return the column's value defined extraction function"""

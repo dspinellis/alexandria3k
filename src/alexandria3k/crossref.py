@@ -113,7 +113,8 @@ def issn_value(dictionary, issn_type):
     except KeyError:
         return None
     value = [tv["value"] for tv in type_values if tv["type"] == issn_type]
-    return value[0] if value else None
+    # Normalize by removing the dash
+    return value[0].replace("-", "") if value else None
 
 
 def len_value(dictionary, key):
@@ -478,7 +479,7 @@ tables = [
         "works",
         cursor_class=WorksCursor,
         columns=[
-            ColumnMeta("DOI", lambda row: dict_value(row, "DOI").lower()),
+            ColumnMeta("doi", lambda row: dict_value(row, "DOI").lower()),
             ColumnMeta("container_id"),
             ColumnMeta(
                 "title", lambda row: tab_values(dict_value(row, "title"))
