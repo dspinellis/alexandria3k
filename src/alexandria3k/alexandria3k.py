@@ -686,6 +686,12 @@ def parse_cli_arguments():
         "-q", "--query", type=str, help="Query to run on the virtual tables"
     )
     parser.add_argument(
+        "-R",
+        "--row-selection-file",
+        type=str,
+        help="File containing SQL expression that selects the populated rows",
+    )
+    parser.add_argument(
         "-r",
         "--row-selection",
         type=str,
@@ -741,6 +747,12 @@ def main():
         database_dump(crossref.get_virtual_db())
         if "files-read" in args.debug:
             print(f"{FileCache.file_reads} files read")
+
+    if args.row_selection_file:
+        args.row_selection = ""
+        with open(args.row_selection_file) as query_input:
+            for line in query_input:
+                args.row_selection += line
 
     if crossref and args.populate_db_path:
         if args.index:
