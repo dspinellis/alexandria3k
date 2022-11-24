@@ -20,25 +20,45 @@
 
 import time
 
+from debug import Debug
 
-class Perf:
-    """Maintain and output performance values"""
+PERF_FLAG = "perf"
 
-    def __init__(self, enabled, counter=time.process_time):
-        # By default use perf_counter() rather than process_time() to also
-        # take into account I/O time
-        self.counter = counter
-        self.start = counter()
-        self.previous = self.start
 
-        self.output_enabled = enabled
+class Perf(object):
+    """Maintain and output time performance values.
+    Use:
+    p = Perf()
+    p.enable()
+    expensive_task()
+    p.print("Finished expensive task")
+    another_expensive_task()
+    p.print("Finished another expensive task")
+    """
+
+    # Make this a singleton
+    # See https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
+    def __new__(cls):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(Perf, cls).__new__(cls)
+            self = cls.instance
+            # By default use perf_counter() rather than process_time() to also
+            # take into account I/O time
+            self.counter = time.perf_counter
+            self.start = self.counter()
+            self.previous = self.start
+
+            self.debug = Debug()
+        return cls.instance
 
     def print(self, message):
-        """Print the specified performance timestamp"""
-        if not self.output_enabled:
+        """Print the specified performance figure timestamp.
+        To enable this call Debug().enable_flags(["perf"]).
+        """
+        if not self.debug.enabled(PERF_FLAG):
             return
         now = self.counter()
         relative = now - self.start
         delta = now - self.previous
-        print(f"{relative:10} Δ={delta:10} {message}")
+        self.debug.print(PERF_FLAG, f"{relative:10} Δ={delta:10} {message}")
         self.previous = now

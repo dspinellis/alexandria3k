@@ -20,10 +20,13 @@
 
 import abc
 import os
+import sqlite3
 
 import apsw
 from common import fail
+from debug import Debug
 from file_cache import get_file_cache
+from perf import Perf
 from tsort import tsort
 from virtual_db import (
     ColumnMeta,
@@ -712,8 +715,7 @@ class Crossref:
     (virtual) table and the population of an SQLite database with its
     data"""
 
-    def __init__(self, args):
-        self.args = args
+    def __init__(self, crossref_directory, sample=lambda n: True):
         # A named in-memory database; it can be attached by name to others
         self.vdb = apsw.Connection(
             "file:virtual?mode=memory&cache=shared",
@@ -722,7 +724,7 @@ class Crossref:
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = Source(
-            table_dict, args.crossref_directory, args.sample
+            table_dict, crossref_directory, sample
         )
         self.vdb.createmodule("filesource", self.data_source)
 
@@ -730,6 +732,9 @@ class Crossref:
         # for querying or populating the database
         self.query_columns = {}
         self.population_columns = {}
+
+        self.debug = Debug()
+        self.perf = Perf()
 
         for table in tables:
             self.vdb.execute(
@@ -741,8 +746,7 @@ class Crossref:
     def log_sql(self, statement):
         """Return the specified SQL statement. If "log-sql" is set,
         output a copy of the statement on the standard output"""
-        if "log-sql" in self.args.debug:
-            print(statement)
+        self.debug.print("log-sql", statement)
         return statement
 
     def get_virtual_db(self):
@@ -839,11 +843,10 @@ class Crossref:
             )
         )
         for i in self.data_source.get_file_id_iterator():
-            if "progress" in self.args.debug:
-                print(
-                    f"Container {i} {self.data_source.get_file_name_by_id(i)}",
-                    flush=True,
-                )
+            self.debug.print(
+                "progress",
+                f"Container {i} {self.data_source.get_file_name_by_id(i)}",
+            )
             for table_name in self.query_columns.keys():
                 columns = ", ".join(self.query_columns[table_name])
                 partition.execute(
@@ -988,7 +991,7 @@ class Crossref:
             query = f"""SELECT DISTINCT 1 FROM {tables} WHERE {condition}"""
             self.set_query_columns(query)
             set_join_columns()
-            self.args.perf.print("Condition parsing")
+            self.perf.print("Condition parsing")
 
         # Create empty tables
         for (table_name, table_columns) in self.population_columns.items():
@@ -999,18 +1002,17 @@ class Crossref:
             self.vdb.execute(
                 self.log_sql(table.table_schema("populated.", table_columns))
             )
-        self.args.perf.print("Table creation")
+        self.perf.print("Table creation")
 
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
         # indexing and the file cache avoids opening, reading, decompressing,
         # and parsing each file multiple times.
         for i in self.data_source.get_file_id_iterator():
-            if "progress" in self.args.debug:
-                print(
-                    f"Container {i} {self.data_source.get_file_name_by_id(i)}",
-                    flush=True,
-                )
+            self.debug.print(
+                "progress",
+                f"Container {i} {self.data_source.get_file_name_by_id(i)}",
+            )
             # Sampling:
             #           WHERE abs(random() % 100000) = 0"""
             #           WHERE update_count is not null
@@ -1031,7 +1033,7 @@ class Crossref:
                         SELECT {column_list} FROM {table}
                         WHERE container_id = {i}"""
                     self.vdb.execute(self.log_sql(create))
-                self.args.perf.print("Virtual table copies")
+                self.perf.print("Virtual table copies")
 
                 # Create the statement for the combined records
                 create = (
@@ -1050,11 +1052,11 @@ class Crossref:
                     self.log_sql("DROP TABLE IF EXISTS temp_matched")
                 )
                 self.vdb.execute(self.log_sql(create))
-                self.args.perf.print("Combined table creation")
+                self.perf.print("Combined table creation")
 
             for table in self.population_columns:
                 populate_table(table, i, condition)
-        self.args.perf.print("Table population")
+        self.perf.print("Table population")
 
         self.vdb.execute(self.log_sql("DETACH populated"))
 

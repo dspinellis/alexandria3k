@@ -31,6 +31,7 @@ import apsw
 from common import fail
 import crossref
 import csv_sources
+from debug import Debug
 from file_cache import FileCache
 import orcid
 from perf import Perf
@@ -308,35 +309,31 @@ def main():
     """Program entry point"""
     args = parse_cli_arguments()
 
+    # Setup debug logging and performance monitoring
+    debug = Debug()
+    debug.set_flags(args.debug)
+    perf = Perf()
+    perf.print("Start")
+
     if args.list_schema:
         schema_list()
         sys.exit(0)
 
-    # pylint: disable=W0123
-    args.sample = eval(f"lambda path: {args.sample}")
+    crossref_instance = None
+    if args.crossref_directory:
+        # pylint: disable=W0123
+        sample = eval(f"lambda path: {args.sample}")
+        crossref_instance = crossref.Crossref(args.crossref_directory, sample)
 
-    crossref_instance = (
-        crossref.Crossref(args) if args.crossref_directory else None
-    )
-
-    # Setup performance monitoring
-    if "perf" in args.debug:
-        args.perf = Perf(True)
-        args.perf.print("Start")
-    else:
-        args.perf = Perf(False)
-
-    if "virtual-counts" in args.debug:
+    if debug.enabled("virtual-counts"):
         # Streaming interface
         database_counts(crossref_instance.get_virtual_db())
-        if "files-read" in args.debug:
-            print(f"{FileCache.file_reads} files read")
+        debug.print("files-read", f"{FileCache.file_reads} files read")
 
-    if "virtual-data" in args.debug:
+    if debug.enabled("virtual-data"):
         # Streaming interface
         database_dump(crossref_instance.get_virtual_db())
-        if "files-read" in args.debug:
-            print(f"{FileCache.file_reads} files read")
+        debug.print("files-read", f"{FileCache.file_reads} files read")
 
     if args.row_selection_file:
         args.row_selection = ""
@@ -353,9 +350,8 @@ def main():
         crossref_instance.populate_database(
             args.populate_db_path, args.columns, args.row_selection, indexes
         )
-        if "files-read" in args.debug:
-            print(f"{FileCache.file_reads} files read")
-        args.perf.print("Crossref table population")
+        debug.print("files-read", f"{FileCache.file_reads} files read")
+        perf.print("Crossref table population")
 
     if args.orcid_data:
         if not args.populate_db_path:
@@ -366,7 +362,7 @@ def main():
             args.columns,
             args.linked_records,
         )
-        args.perf.print("ORCID table population")
+        perf.print("ORCID table population")
 
     if args.query_file:
         args.query = ""
@@ -389,8 +385,7 @@ def main():
         csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
         for rec in crossref_instance.query(args.query, args.partition):
             csv_writer.writerow(rec)
-        if "files-read" in args.debug:
-            print(f"{FileCache.file_reads} files read")
+        debug.print("files-read", f"{FileCache.file_reads} files read")
 
     if args.normalize:
         if not args.populate_db_path:
@@ -398,7 +393,7 @@ def main():
         populated_db = sqlite3.connect(args.populate_db_path)
         crossref.normalize_affiliations(populated_db)
         crossref.normalize_subjects(populated_db)
-        args.perf.print("Data normalization")
+        perf.print("Data normalization")
 
     if args.journal_names:
         if not args.populate_db_path:
@@ -427,20 +422,19 @@ def main():
             args.open_access_journals,
         )
 
-    if "populated-counts" in args.debug:
+    if debug.enabled("populated-counts"):
         populated_db = sqlite3.connect(args.populate_db_path)
         database_counts(populated_db)
 
-    if "populated-data" in args.debug:
+    if debug.enabled("populated-data"):
         populated_db = sqlite3.connect(args.populate_db_path)
         database_dump(populated_db)
 
-    if "populated-reports" in args.debug:
+    if debug.enabled("populated-reports"):
         populated_db = sqlite3.connect(args.populate_db_path)
         populated_reports(populated_db)
 
-    if "files-read" in args.debug:
-        print(f"{FileCache.file_reads} files read")
+    debug.print("files-read", f"{FileCache.file_reads} files read")
 
 
 if __name__ == "__main__":
