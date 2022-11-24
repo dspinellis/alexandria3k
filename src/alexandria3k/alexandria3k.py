@@ -342,13 +342,8 @@ def main():
                 args.row_selection += line
 
     if crossref_instance and args.populate_db_path:
-        if args.index:
-            indexes = [x.split(":", 1) for x in args.index]
-        else:
-            indexes = []
-
         crossref_instance.populate_database(
-            args.populate_db_path, args.columns, args.row_selection, indexes
+            args.populate_db_path, args.columns, args.row_selection
         )
         debug.print("files-read", f"{FileCache.file_reads} files read")
         perf.print("Crossref table population")
