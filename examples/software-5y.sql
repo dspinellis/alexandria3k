@@ -9,8 +9,6 @@ works.published_year BETWEEN 2017 AND 2021 AND (
     '09505849',
     -- Software: Practice and Experience
     '00380644',
-    -- Proceedings of the ACM on Programming Languages
-    '24751421',
 
     -- All titleFile.csv lines containing "Soft.*Eng"
     -- ACM SIGSOFT Software Engineering Notes
