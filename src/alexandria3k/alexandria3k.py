@@ -182,6 +182,7 @@ def parse_cli_arguments():
     populated-data: Dump the data of the populated database;
     populated-reports: Output query results from the populated database;
     progress: Report progress;
+    stderr: Log to standard error;
     virtual-counts: Dump counts of the virtual database;
     virtual-data: Dump the data of the virtual database.
 """,
@@ -311,6 +312,8 @@ def main():
 
     # Setup debug logging and performance monitoring
     debug.set_flags(args.debug)
+    if debug.enabled("stderr"):
+        debug.set_output(sys.stderr)
     perf.print("Start")
 
     if args.list_schema:
