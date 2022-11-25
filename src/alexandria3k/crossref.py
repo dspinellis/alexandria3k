@@ -715,6 +715,13 @@ def get_table_meta_by_name(name):
     return table_dict[name]
 
 
+def log_sql(statement):
+    """Return the specified SQL statement. If "log-sql" is set,
+    output a copy of the statement on the standard output"""
+    debug.print("log-sql", statement)
+    return statement
+
+
 def tables_transitive_closure(tables, top):
     """Return the transitive closure of all named tables
     with all the ones required to reach the specified top
@@ -726,6 +733,36 @@ def tables_transitive_closure(tables, top):
             table = get_table_meta_by_name(table_name)
             table_name = table.get_parent_name()
     return result
+
+
+class IndexManager:
+    """Create database indexes, avoiding duplication, and allowing
+    them to be dropped."""
+
+    def __init__(self, db):
+        self.db = db
+        self.indexes = set()
+
+    def create_index(self, table, column):
+        """Create an index on the specified table and column, if required"""
+        if table == "temp_works":
+            table = "temp_matched"
+        index = (table, column)
+        if index in self.indexes:
+            return
+
+        self.db.execute(
+            log_sql(
+                f"""CREATE INDEX {table}_{column}_idx ON {table}({column})"""
+            )
+        )
+        self.indexes.add((table, column))
+
+    def drop_indexes(self):
+        """Drop all created indexes"""
+        for (table, column) in self.indexes:
+            self.db.execute(log_sql(f"DROP INDEX {table}_{column}_idx"))
+        self.indexes.clear()
 
 
 class Crossref:
@@ -752,16 +789,10 @@ class Crossref:
 
         for table in tables:
             self.vdb.execute(
-                self.log_sql(
+                log_sql(
                     f"CREATE VIRTUAL TABLE {table.get_name()} USING filesource()"
                 )
             )
-
-    def log_sql(self, statement):
-        """Return the specified SQL statement. If "log-sql" is set,
-        output a copy of the statement on the standard output"""
-        debug.print("log-sql", statement)
-        return statement
 
     def get_virtual_db(self):
         """Return the virtual table database as an apsw object"""
@@ -802,7 +833,7 @@ class Crossref:
             # Add the columns required by the actual query
             self.cursor.setexectrace(tracer)
             self.vdb.setauthorizer(authorizer)
-            self.cursor.execute(self.log_sql(query), can_cache=False)
+            self.cursor.execute(log_sql(query), can_cache=False)
             # NOTREACHED
 
         try:
@@ -829,7 +860,7 @@ class Crossref:
 
         # Easy case
         if not partition:
-            for row in self.vdb.execute(self.log_sql(query)):
+            for row in self.vdb.execute(log_sql(query)):
                 yield row
             return
 
@@ -852,7 +883,7 @@ class Crossref:
         )
         partition.createmodule("filesource", self.data_source)
         partition.execute(
-            self.log_sql(
+            log_sql(
                 "ATTACH DATABASE 'file:virtual?mode=memory&cache=shared' AS virtual"
             )
         )
@@ -864,16 +895,16 @@ class Crossref:
             for table_name in self.query_columns.keys():
                 columns = ", ".join(self.query_columns[table_name])
                 partition.execute(
-                    self.log_sql(
+                    log_sql(
                         f"""CREATE TABLE {table_name}
                   AS SELECT {columns} FROM virtual.{table_name}
                     WHERE virtual.{table_name}.container_id={i}"""
                     )
                 )
-            for row in partition.execute(self.log_sql(query)):
+            for row in partition.execute(log_sql(query)):
                 yield row
             for table_name in self.query_columns.keys():
-                partition.execute(self.log_sql(f"DROP TABLE {table_name}"))
+                partition.execute(log_sql(f"DROP TABLE {table_name}"))
 
     def populate_database(self, database_path, columns=None, condition=None):
         """Populate the specified SQLite database.
@@ -933,12 +964,14 @@ class Crossref:
 
         def joined_tables(table_names, rename_temp):
             """Return JOIN statements for all specified tables.
-            If rename_temp is True, temporary tebles are renamed to
-            their virtual names (e.g. temp_workers becomes workers)."""
+            If rename_temp is True, temporary tables are renamed to
+            their virtual names (e.g. temp_workers becomes workers).
+            This change provides a context for evaluating user-specified
+            queries."""
             result = ""
             tables_meta = [get_table_meta_by_name(t) for t in table_names]
             sorted_tables = tsort(tables_meta, table_names)
-            # print("SORTED", sorted_tables)
+            debug.print("sorted-tables", sorted_tables)
             for table_name in sorted_tables:
                 if table_name == "works":
                     continue
@@ -948,29 +981,23 @@ class Crossref:
                 foreign_key = table.get_foreign_key()
                 if rename_temp:
                     rename = f"AS {table_name}"
-                    joined_table_name = table_name
+                    primary_table_name = parent_table_name
+                    foreign_table_name = table_name
                 else:
                     rename = ""
-                    joined_table_name = f"temp_{table_name}"
-                    parent_table_name = f"temp_{parent_table_name}"
+                    primary_table_name = f"temp_{parent_table_name}"
+                    foreign_table_name = f"temp_{table_name}"
                 result += f""" LEFT JOIN temp_{table_name} {rename} ON
-                    {parent_table_name}.{primary_key}
-                      = {joined_table_name}.{foreign_key}"""
-            return result
-
-        def create_indexes(table_names):
-            """Create indexes for the specified table names"""
-            for table in table_names:
-                self.vdb.execute(
-                    self.log_sql("DROP INDEX IF EXISTS temp_{table}_idx")
-                )
-                self.vdb.execute(
-                    # TODO
-                    self.log_sql(
-                        f"""CREATE INDEX temp_{table}_idx
-                          ON temp_{table}(XXX)"""
+                    {primary_table_name}.{primary_key}
+                      = {foreign_table_name}.{foreign_key}"""
+                if not rename_temp:
+                    self.index_manager.create_index(
+                        f"temp_{parent_table_name}", primary_key
                     )
-                )
+                    self.index_manager.create_index(
+                        f"temp_{table_name}", foreign_key
+                    )
+            return result
 
         def join_to_works(table):
             """Return temporary table join statements to join
@@ -985,10 +1012,14 @@ class Crossref:
 
             if condition:
                 path = tables_transitive_closure([table], "works")
+                self.index_manager.create_index(f"temp_{table}", "rowid")
+                # Putting AND in the JOIN condition, rather than WHERE
+                # improves dramatically the execution's performance time
                 exists = f"""AND EXISTS (SELECT 1
                   FROM temp_matched AS temp_works
                   {joined_tables(path, False)}
-                  WHERE {table}.rowid = temp_{table}.rowid)"""
+                  {"AND" if len(path) > 1 else "WHERE"}
+                    {table}.rowid = temp_{table}.rowid)"""
             else:
                 exists = ""
 
@@ -997,7 +1028,8 @@ class Crossref:
                     SELECT {columns} FROM {table}
                     WHERE {table}.container_id = {partition_index} {exists}
                 """
-            self.vdb.execute(self.log_sql(statement))
+            self.vdb.execute(log_sql(statement))
+            perf.print(f"Populate {table}")
 
         # Create the populated database, if needed
         if not os.path.exists(database_path):
@@ -1005,8 +1037,10 @@ class Crossref:
             pdb.close()
 
         self.vdb.execute(
-            self.log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
+            log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
         )
+
+        self.index_manager = IndexManager(self.vdb)
 
         # By default include all tables and columns
         if not columns:
@@ -1036,10 +1070,10 @@ class Crossref:
         for (table_name, table_columns) in self.population_columns.items():
             table = get_table_meta_by_name(table_name)
             self.vdb.execute(
-                self.log_sql(f"DROP TABLE IF EXISTS populated.{table_name}")
+                log_sql(f"DROP TABLE IF EXISTS populated.{table_name}")
             )
             self.vdb.execute(
-                self.log_sql(table.table_schema("populated.", table_columns))
+                log_sql(table.table_schema("populated.", table_columns))
             )
         perf.print("Table creation")
 
@@ -1052,9 +1086,6 @@ class Crossref:
                 "progress",
                 f"Container {i} {self.data_source.get_file_name_by_id(i)}",
             )
-            # Sampling:
-            #           WHERE abs(random() % 100000) = 0"""
-            #           WHERE update_count is not null
 
             if condition:
                 query_table_names = tables_transitive_closure(
@@ -1063,7 +1094,6 @@ class Crossref:
                 population_table_names = tables_transitive_closure(
                     self.population_columns.keys(), "works"
                 )
-                # create_indexes(set.union(query_table_names, population_table_names))
 
                 # Create copies of the virtual tables for fast access
                 for table in query_and_population_tables():
@@ -1080,16 +1110,16 @@ class Crossref:
 
                     column_list = ", ".join(columns)
                     self.vdb.execute(
-                        self.log_sql(f"""DROP TABLE IF EXISTS temp_{table}""")
+                        log_sql(f"""DROP TABLE IF EXISTS temp_{table}""")
                     )
                     create = f"""CREATE TEMP TABLE temp_{table} AS
                         SELECT {column_list} FROM {table}
                         WHERE container_id = {i}"""
-                    self.vdb.execute(self.log_sql(create))
+                    self.vdb.execute(log_sql(create))
                 perf.print("Virtual table copies")
 
                 # Create a table containing the work ids for all works
-                # matching the query, which is execcuted in a context
+                # matching the query, which is executed in a context
                 # containing all required tables.
                 create = (
                     """CREATE TEMP TABLE temp_matched AS
@@ -1098,10 +1128,8 @@ class Crossref:
                     + joined_tables(query_table_names, True)
                     + f" WHERE ({condition})"
                 )
-                self.vdb.execute(
-                    self.log_sql("DROP TABLE IF EXISTS temp_matched")
-                )
-                self.vdb.execute(self.log_sql(create))
+                self.vdb.execute(log_sql("DROP TABLE IF EXISTS temp_matched"))
+                self.vdb.execute(log_sql(create))
 
                 if debug.enabled("dump-matched"):
                     csv_writer = csv.writer(debug.get_output(), delimiter="\t")
@@ -1112,9 +1140,10 @@ class Crossref:
 
             for table in self.population_columns:
                 populate_table(table, i, condition)
+            self.index_manager.drop_indexes()
         perf.print("Table population")
 
-        self.vdb.execute(self.log_sql("DETACH populated"))
+        self.vdb.execute(log_sql("DETACH populated"))
         self.vdb.close()
 
 

@@ -321,6 +321,7 @@ class TestCrossrefQuery(unittest.TestCase):
                 5,
             )
 
+
 class TestCrossrefPopulateNormalize(TestCrossrefPopulate):
     @classmethod
     def setUpClass(cls):
