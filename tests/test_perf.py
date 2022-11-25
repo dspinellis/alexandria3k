@@ -25,25 +25,23 @@ import unittest
 sys.path.append("src/alexandria3k")
 
 import debug
-from perf import Perf
+import perf
 
 
 class TestPerf(unittest.TestCase):
     def test_no_output(self):
 
-        p = Perf()
         f = io.StringIO()
         debug.set_output(f)
 
-        p.print("One message")
+        perf.print("One message")
         self.assertRegex(f.getvalue(), r"^$")
 
     def test_output(self):
 
-        p = Perf()
         debug.set_flags(["perf"])
         f = io.StringIO()
         debug.set_output(f)
 
-        p.print("phase 1")
+        perf.print("phase 1")
         self.assertRegex(f.getvalue(), r"phase 1")

@@ -34,7 +34,7 @@ import csv_sources
 import debug
 from file_cache import FileCache
 import orcid
-from perf import Perf
+import perf
 
 random.seed("alexandria3k")
 
@@ -311,7 +311,6 @@ def main():
 
     # Setup debug logging and performance monitoring
     debug.set_flags(args.debug)
-    perf = Perf()
     perf.print("Start")
 
     if args.list_schema:

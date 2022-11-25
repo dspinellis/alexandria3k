@@ -16,8 +16,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Output performance values"""
+"""Maintain and output time performance values.
 
+Use:
+import perf
+perf.enable()
+expensive_task()
+perf.print("Finished expensive task")
+another_expensive_task()
+perf.print("Finished another expensive task")
+"""
+
+import builtins
 import time
 
 import debug
@@ -25,39 +35,22 @@ import debug
 PERF_FLAG = "perf"
 
 
-class Perf(object):
-    """Maintain and output time performance values.
-    Use:
-    p = Perf()
-    p.enable()
-    expensive_task()
-    p.print("Finished expensive task")
-    another_expensive_task()
-    p.print("Finished another expensive task")
+# By default use perf_counter() rather than process_time() to also
+# take into account I/O time
+counter = time.perf_counter
+start = counter()
+previous = start
+
+
+def print(message):
+    """Print the specified performance figure timestamp.
+    To enable this call debug.enable_flags(["perf"]).
     """
-
-    # Make this a singleton
-    # See https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(Perf, cls).__new__(cls)
-            self = cls.instance
-            # By default use perf_counter() rather than process_time() to also
-            # take into account I/O time
-            self.counter = time.perf_counter
-            self.start = self.counter()
-            self.previous = self.start
-
-        return cls.instance
-
-    def print(self, message):
-        """Print the specified performance figure timestamp.
-        To enable this call debug.enable_flags(["perf"]).
-        """
-        if not debug.enabled(PERF_FLAG):
-            return
-        now = self.counter()
-        relative = now - self.start
-        delta = now - self.previous
-        debug.print(PERF_FLAG, f"{relative:10} Δ={delta:10} {message}")
-        self.previous = now
+    if not debug.enabled(PERF_FLAG):
+        return
+    now = counter()
+    relative = now - start
+    global previous
+    delta = now - previous
+    debug.print(PERF_FLAG, f"{relative:10} Δ={delta:10} {message}")
+    previous = now

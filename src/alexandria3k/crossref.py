@@ -27,7 +27,7 @@ import apsw
 from common import fail
 import debug
 from file_cache import get_file_cache
-from perf import Perf
+import perf
 from tsort import tsort
 from virtual_db import (
     ColumnMeta,
@@ -750,8 +750,6 @@ class Crossref:
         self.population_columns = {}
         self.query_and_population_columns = {}
 
-        self.perf = Perf()
-
         for table in tables:
             self.vdb.execute(
                 self.log_sql(
@@ -1032,7 +1030,7 @@ class Crossref:
             )
             self.set_query_columns(query)
             set_join_columns()
-            self.perf.print("Condition parsing")
+            perf.print("Condition parsing")
 
         # Create empty tables
         for (table_name, table_columns) in self.population_columns.items():
@@ -1043,7 +1041,7 @@ class Crossref:
             self.vdb.execute(
                 self.log_sql(table.table_schema("populated.", table_columns))
             )
-        self.perf.print("Table creation")
+        perf.print("Table creation")
 
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
@@ -1088,7 +1086,7 @@ class Crossref:
                         SELECT {column_list} FROM {table}
                         WHERE container_id = {i}"""
                     self.vdb.execute(self.log_sql(create))
-                self.perf.print("Virtual table copies")
+                perf.print("Virtual table copies")
 
                 # Create a table containing the work ids for all works
                 # matching the query, which is execcuted in a context
@@ -1110,11 +1108,11 @@ class Crossref:
                     for rec in self.vdb.execute("SELECT * FROM temp_matched"):
                         csv_writer.writerow(rec)
 
-                self.perf.print("Matched table creation")
+                perf.print("Matched table creation")
 
             for table in self.population_columns:
                 populate_table(table, i, condition)
-        self.perf.print("Table population")
+        perf.print("Table population")
 
         self.vdb.execute(self.log_sql("DETACH populated"))
         self.vdb.close()
