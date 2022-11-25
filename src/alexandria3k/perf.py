@@ -20,7 +20,7 @@
 
 import time
 
-from debug import Debug
+import debug
 
 PERF_FLAG = "perf"
 
@@ -48,17 +48,16 @@ class Perf(object):
             self.start = self.counter()
             self.previous = self.start
 
-            self.debug = Debug()
         return cls.instance
 
     def print(self, message):
         """Print the specified performance figure timestamp.
-        To enable this call Debug().enable_flags(["perf"]).
+        To enable this call debug.enable_flags(["perf"]).
         """
-        if not self.debug.enabled(PERF_FLAG):
+        if not debug.enabled(PERF_FLAG):
             return
         now = self.counter()
         relative = now - self.start
         delta = now - self.previous
-        self.debug.print(PERF_FLAG, f"{relative:10} Δ={delta:10} {message}")
+        debug.print(PERF_FLAG, f"{relative:10} Δ={delta:10} {message}")
         self.previous = now

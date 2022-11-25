@@ -16,48 +16,47 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Output debug info based on flags"""
+"""Maintain debug state and output enabled messages
 
+Use:
+import debug
+debug.set_flags(["parsing", "time"])
+debug.print("flag_name", "Some message")
+if debug.enable("flag_name") ...
+"""
+
+import builtins
 import sys
 import time
 
 
-class Debug(object):
-    """Maintain debug state and output enabled messages
-    Use:
-    d = Debug() # Can be used in multiple places
-    d.set_flags(["parsing", "time"])
-    d.print("flag_name", "Some message")
-    """
+flags = set()
+output = sys.stdout
 
-    # Make this a singleton
-    # See https://www.geeksforgeeks.org/singleton-pattern-in-python-a-complete-guide/
-    def __new__(cls):
-        if not hasattr(cls, "instance"):
-            cls.instance = super(Debug, cls).__new__(cls)
-            self = cls.instance
-            self.flags = set()
-            self.output = sys.stdout
-        return cls.instance
 
-    def set_output(self, output):
-        """Direct output to the specified output target"""
-        self.output = output
+def set_output(output_arg):
+    """Direct output to the specified output target"""
+    global output
+    output = output_arg
 
-    def get_output(self):
-        """Return output target"""
-        return self.output
 
-    def set_flags(self, flags):
-        """Enable the specified debug flags"""
-        for i in flags:
-            self.flags.add(i)
+def get_output():
+    """Return output target"""
+    return output
 
-    def enabled(self, flag):
-        """Return true if the specified flag is enabled"""
-        return flag in self.flags
 
-    def print(self, flag, message):
-        """Print the specified message if the corresponding flag is enabled"""
-        if flag in self.flags:
-            print(message, file=self.output, flush=True)
+def set_flags(flags_arg):
+    """Enable the specified debug flags"""
+    for i in flags_arg:
+        flags.add(i)
+
+
+def enabled(flag):
+    """Return true if the specified flag is enabled"""
+    return flag in flags
+
+
+def print(flag, message):
+    """Print the specified message if the corresponding flag is enabled"""
+    if flag in flags:
+        builtins.print(message, file=output, flush=True)

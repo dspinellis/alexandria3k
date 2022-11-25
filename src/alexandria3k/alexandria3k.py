@@ -31,7 +31,7 @@ import apsw
 from common import fail
 import crossref
 import csv_sources
-from debug import Debug
+import debug
 from file_cache import FileCache
 import orcid
 from perf import Perf
@@ -310,7 +310,6 @@ def main():
     args = parse_cli_arguments()
 
     # Setup debug logging and performance monitoring
-    debug = Debug()
     debug.set_flags(args.debug)
     perf = Perf()
     perf.print("Start")

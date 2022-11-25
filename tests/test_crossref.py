@@ -27,7 +27,7 @@ sys.path.append("src/alexandria3k")
 
 from common import ensure_unlinked, query_result
 import crossref
-from debug import Debug
+import debug
 from file_cache import FileCache
 
 DATABASE_PATH = "tests/tmp/crossref.db"
@@ -60,7 +60,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
-        # Debug().set_flags(["log-sql", "dump-matched"])
+        # debug.set_flags(["log-sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/sample")
         cls.crossref.populate_database(DATABASE_PATH)
@@ -137,7 +137,7 @@ class TestCrossrefPopulateCondition(TestCrossrefPopulate):
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
-        # Debug().set_flags(["log-sql", "dump-matched"])
+        # debug.set_flags(["log-sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/sample")
         cls.crossref.populate_database(

@@ -24,38 +24,35 @@ import unittest
 
 sys.path.append("src/alexandria3k")
 
-from debug import Debug
+import debug
 
 
 class TestDebug(unittest.TestCase):
     def test_no_output(self):
 
-        d = Debug()
         f = io.StringIO()
-        d.set_output(f)
+        debug.set_output(f)
 
-        d.print("test", "One message")
+        debug.print("test", "One message")
         self.assertRegex(f.getvalue(), r"^$")
 
-        d.set_flags(["aflag"])
-        d.print("test", "Second message")
+        debug.set_flags(["aflag"])
+        debug.print("test", "Second message")
         self.assertRegex(f.getvalue(), r"^$")
 
     def test_output(self):
 
-        d = Debug()
-        d.set_flags(["test"])
+        debug.set_flags(["test"])
         f = io.StringIO()
-        d.set_output(f)
+        debug.set_output(f)
+        self.assertEqual(debug.get_output(), f)
 
-        d.print("test", "Another message")
+        debug.print("test", "Another message")
         self.assertRegex(f.getvalue(), r"^Another message\n$")
 
     def test_enabled(self):
 
-        d = Debug()
+        self.assertFalse(debug.enabled("flag"))
 
-        self.assertFalse(d.enabled("flag"))
-
-        d.set_flags(["flag"])
-        self.assertTrue(d.enabled("flag"))
+        debug.set_flags(["flag"])
+        self.assertTrue(debug.enabled("flag"))

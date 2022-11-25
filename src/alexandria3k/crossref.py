@@ -25,7 +25,7 @@ import sqlite3
 
 import apsw
 from common import fail
-from debug import Debug
+import debug
 from file_cache import get_file_cache
 from perf import Perf
 from tsort import tsort
@@ -750,7 +750,6 @@ class Crossref:
         self.population_columns = {}
         self.query_and_population_columns = {}
 
-        self.debug = Debug()
         self.perf = Perf()
 
         for table in tables:
@@ -763,7 +762,7 @@ class Crossref:
     def log_sql(self, statement):
         """Return the specified SQL statement. If "log-sql" is set,
         output a copy of the statement on the standard output"""
-        self.debug.print("log-sql", statement)
+        debug.print("log-sql", statement)
         return statement
 
     def get_virtual_db(self):
@@ -860,7 +859,7 @@ class Crossref:
             )
         )
         for i in self.data_source.get_file_id_iterator():
-            self.debug.print(
+            debug.print(
                 "progress",
                 f"Container {i} {self.data_source.get_file_name_by_id(i)}",
             )
@@ -1051,7 +1050,7 @@ class Crossref:
         # indexing and the file cache avoids opening, reading, decompressing,
         # and parsing each file multiple times.
         for i in self.data_source.get_file_id_iterator():
-            self.debug.print(
+            debug.print(
                 "progress",
                 f"Container {i} {self.data_source.get_file_name_by_id(i)}",
             )
@@ -1106,10 +1105,8 @@ class Crossref:
                 )
                 self.vdb.execute(self.log_sql(create))
 
-                if self.debug.enabled("dump-matched"):
-                    csv_writer = csv.writer(
-                        self.debug.get_output(), delimiter="\t"
-                    )
+                if debug.enabled("dump-matched"):
+                    csv_writer = csv.writer(debug.get_output(), delimiter="\t")
                     for rec in self.vdb.execute("SELECT * FROM temp_matched"):
                         csv_writer.writerow(rec)
 
