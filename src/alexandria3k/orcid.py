@@ -25,6 +25,7 @@ import xml.etree.ElementTree as ET
 
 import apsw
 
+import perf
 from virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN, FilesCursor
 
 # The ORCID XML namespaces in XPath format
@@ -537,9 +538,11 @@ def populate(data_path, database_path, columns, authors_only):
 
             assert orcid == orcid_xml.text
 
+            perf.print(f"Parse {orcid}")
             # Insert data to the specified tables
             for filler in table_fillers:
                 filler.add_records(element_tree, orcid)
+            perf.print(f"Populate {orcid}")
 
     for table_name in population_columns.keys():
         cursor.execute(
