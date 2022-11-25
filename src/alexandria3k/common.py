@@ -33,3 +33,10 @@ def ensure_unlinked(file_path):
     """Ensure that the file at the specified path does not exist"""
     if os.path.exists(file_path):
         os.unlink(file_path)
+
+
+def query_result(cursor, query):
+    """Return the result of executing the specified query"""
+    result_set = cursor.execute(query)
+    (result,) = result_set.fetchone()
+    return result

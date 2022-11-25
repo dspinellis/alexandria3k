@@ -27,6 +27,7 @@ sys.path.append("src/alexandria3k")
 from debug import Debug
 from perf import Perf
 
+
 class TestPerf(unittest.TestCase):
     def test_no_output(self):
 

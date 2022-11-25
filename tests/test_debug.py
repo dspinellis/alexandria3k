@@ -26,8 +26,8 @@ sys.path.append("src/alexandria3k")
 
 from debug import Debug
 
-class TestDebug(unittest.TestCase):
 
+class TestDebug(unittest.TestCase):
     def test_no_output(self):
 
         d = Debug()

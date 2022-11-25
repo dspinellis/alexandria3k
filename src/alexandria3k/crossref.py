@@ -19,6 +19,7 @@
 """Virtual database table access of Crossref data"""
 
 import abc
+import csv
 import os
 import sqlite3
 
@@ -210,6 +211,9 @@ class WorksCursor:
         if col == -1:
             return self.Rowid()
 
+        if col == 0:  # id
+            return self.Rowid()
+
         if col == CONTAINER_ID_COLUMN:
             return self.container_id()
 
@@ -348,8 +352,8 @@ class AuthorsCursor(ElementsCursor):
         if col == 0:  # id
             return self.record_id()
 
-        if col == 2:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI").lower()
+        if col == 2:  # work_id
+            return self.parent_cursor.Rowid()
 
         return super().Column(col)
 
@@ -368,8 +372,8 @@ class ReferencesCursor(ElementsCursor):
         return (self.parent_cursor.Rowid() << 20) | self.element_index
 
     def Column(self, col):
-        if col == 0:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI").lower()
+        if col == 0:  # work_id
+            return self.parent_cursor.Rowid()
         return super().Column(col)
 
 
@@ -387,8 +391,8 @@ class UpdatesCursor(ElementsCursor):
         return (self.parent_cursor.Rowid() << 20) | self.element_index
 
     def Column(self, col):
-        if col == 0:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI").lower()
+        if col == 0:  # work_id
+            return self.parent_cursor.Rowid()
         return super().Column(col)
 
 
@@ -407,8 +411,8 @@ class SubjectsCursor(ElementsCursor):
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
-        if col == 0:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI").lower()
+        if col == 0:  # work_id
+            return self.parent_cursor.Rowid()
         return super().Column(col)
 
 
@@ -430,8 +434,8 @@ class FundersCursor(ElementsCursor):
         if col == 0:  # id
             return self.record_id()
 
-        if col == 2:  # work_doi
-            return self.parent_cursor.current_row_value().get("DOI").lower()
+        if col == 2:  # work_id
+            return self.parent_cursor.Rowid()
 
         return super().Column(col)
 
@@ -483,8 +487,9 @@ tables = [
         "works",
         cursor_class=WorksCursor,
         columns=[
-            ColumnMeta("doi", lambda row: dict_value(row, "DOI").lower()),
+            ColumnMeta("id"),
             ColumnMeta("container_id"),
+            ColumnMeta("doi", lambda row: dict_value(row, "DOI").lower()),
             ColumnMeta(
                 "title", lambda row: tab_values(dict_value(row, "title"))
             ),
@@ -552,14 +557,14 @@ tables = [
     ),
     TableMeta(
         "work_authors",
-        foreign_key="work_doi",
+        foreign_key="work_id",
         parent_name="works",
-        primary_key="doi",
+        primary_key="id",
         cursor_class=AuthorsCursor,
         columns=[
             ColumnMeta("id"),
             ColumnMeta("container_id"),
-            ColumnMeta("work_doi"),
+            ColumnMeta("work_id"),
             ColumnMeta("orcid", author_orcid),
             ColumnMeta("suffix", lambda row: dict_value(row, "suffix")),
             ColumnMeta("given", lambda row: dict_value(row, "given")),
@@ -587,12 +592,12 @@ tables = [
     ),
     TableMeta(
         "work_references",
-        foreign_key="work_doi",
+        foreign_key="work_id",
         parent_name="works",
-        primary_key="doi",
+        primary_key="id",
         cursor_class=ReferencesCursor,
         columns=[
-            ColumnMeta("work_doi"),
+            ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("issn", lambda row: dict_value(row, "issn")),
             ColumnMeta(
@@ -641,12 +646,12 @@ tables = [
     ),
     TableMeta(
         "work_updates",
-        foreign_key="work_doi",
+        foreign_key="work_id",
         parent_name="works",
-        primary_key="doi",
+        primary_key="id",
         cursor_class=UpdatesCursor,
         columns=[
-            ColumnMeta("work_doi"),
+            ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("label", lambda row: dict_value(row, "label")),
             ColumnMeta(
@@ -662,26 +667,26 @@ tables = [
     ),
     TableMeta(
         "work_subjects",
-        foreign_key="work_doi",
+        foreign_key="work_id",
         parent_name="works",
-        primary_key="doi",
+        primary_key="id",
         cursor_class=SubjectsCursor,
         columns=[
-            ColumnMeta("work_doi"),
+            ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("name", lambda row: row),
         ],
     ),
     TableMeta(
         "work_funders",
-        foreign_key="work_doi",
+        foreign_key="work_id",
         parent_name="works",
-        primary_key="doi",
+        primary_key="id",
         cursor_class=FundersCursor,
         columns=[
             ColumnMeta("id"),
             ColumnMeta("container_id"),
-            ColumnMeta("work_doi"),
+            ColumnMeta("work_id"),
             ColumnMeta(
                 "doi", lambda row: lower_or_none(dict_value(row, "DOI"))
             ),
@@ -710,6 +715,19 @@ def get_table_meta_by_name(name):
     return table_dict[name]
 
 
+def tables_transitive_closure(tables, top):
+    """Return the transitive closure of all named tables
+    with all the ones required to reach the specified top
+    """
+    result = set([top])
+    for table_name in tables:
+        while table_name not in result:
+            result.add(table_name)
+            table = get_table_meta_by_name(table_name)
+            table_name = table.get_parent_name()
+    return result
+
+
 class Crossref:
     """Create a Crossref meta-data object that support queries over its
     (virtual) table and the population of an SQLite database with its
@@ -723,15 +741,14 @@ class Crossref:
         )
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
-        self.data_source = Source(
-            table_dict, crossref_directory, sample
-        )
+        self.data_source = Source(table_dict, crossref_directory, sample)
         self.vdb.createmodule("filesource", self.data_source)
 
         # Dictionaries of tables containing a set of columns required
         # for querying or populating the database
         self.query_columns = {}
         self.population_columns = {}
+        self.query_and_population_columns = {}
 
         self.debug = Debug()
         self.perf = Perf()
@@ -861,7 +878,7 @@ class Crossref:
             for table_name in self.query_columns.keys():
                 partition.execute(self.log_sql(f"DROP TABLE {table_name}"))
 
-    def populate_database(self, database_path, columns, condition):
+    def populate_database(self, database_path, columns=None, condition=None):
         """Populate the specified SQLite database.
         The database is created if it does not exist.
         If it exists, the populated tables are dropped
@@ -892,7 +909,7 @@ class Crossref:
         def set_join_columns():
             """Add columns required for joins"""
             to_add = []
-            for table_name in population_and_query_tables():
+            for table_name in query_and_population_tables():
                 while table_name:
                     table = get_table_meta_by_name(table_name)
                     parent_table_name = table.get_parent_name()
@@ -905,9 +922,11 @@ class Crossref:
                     table_name = parent_table_name
             # print("ADD COLUMNS ", to_add)
             for (table, column) in to_add:
-                Crossref.add_column(self.query_columns, table, column)
+                Crossref.add_column(
+                    self.query_and_population_columns, table, column
+                )
 
-        def population_and_query_tables():
+        def query_and_population_tables():
             """Return a sequence consisting of the tables required
             for populating and querying the data"""
             return set.union(
@@ -915,10 +934,13 @@ class Crossref:
                 set(self.query_columns.keys()),
             )
 
-        def joined_tables():
-            """Return JOIN statements for all tables to be populated."""
+        def joined_tables(table_names, rename_temp):
+            """Return JOIN statements for all specified tables.
+            If rename_temp is True, temporary tebles are renamed to
+            their virtual names (e.g. temp_workers becomes workers)."""
             result = ""
-            sorted_tables = tsort(population_and_query_tables())
+            tables_meta = [get_table_meta_by_name(t) for t in table_names]
+            sorted_tables = tsort(tables_meta, table_names)
             # print("SORTED", sorted_tables)
             for table_name in sorted_tables:
                 if table_name == "works":
@@ -927,10 +949,35 @@ class Crossref:
                 parent_table_name = table.get_parent_name()
                 primary_key = table.get_primary_key()
                 foreign_key = table.get_foreign_key()
-                result += f""" LEFT JOIN temp_{table_name} AS {table_name} ON
+                if rename_temp:
+                    rename = f"AS {table_name}"
+                    joined_table_name = table_name
+                else:
+                    rename = ""
+                    joined_table_name = f"temp_{table_name}"
+                    parent_table_name = f"temp_{parent_table_name}"
+                result += f""" LEFT JOIN temp_{table_name} {rename} ON
                     {parent_table_name}.{primary_key}
-                      = {table_name}.{foreign_key}"""
+                      = {joined_table_name}.{foreign_key}"""
             return result
+
+        def create_indexes(table_names):
+            """Create indexes for the specified table names"""
+            for table in table_names:
+                self.vdb.execute(
+                    self.log_sql("DROP INDEX IF EXISTS temp_{table}_idx")
+                )
+                self.vdb.execute(
+                    # TODO
+                    self.log_sql(
+                        f"""CREATE INDEX temp_{table}_idx
+                          ON temp_{table}(XXX)"""
+                    )
+                )
+
+        def join_to_works(table):
+            """Return temporary table join statements to join
+            the specified table to works."""
 
         def populate_table(table, partition_index, condition):
             """Populate the specified table"""
@@ -940,17 +987,11 @@ class Crossref:
             )
 
             if condition:
-                self.vdb.execute(
-                    self.log_sql("DROP INDEX IF EXISTS temp_matched_idx")
-                )
-                self.vdb.execute(
-                    self.log_sql(
-                        f"""CREATE INDEX temp_matched_idx
-                          ON temp_matched({table}_rowid)"""
-                    )
-                )
-                exists = f"""AND EXISTS (SELECT 1 FROM temp_matched
-                  WHERE {table}.rowid = temp_matched.{table}_rowid)"""
+                path = tables_transitive_closure([table], "works")
+                exists = f"""AND EXISTS (SELECT 1
+                  FROM temp_matched AS temp_works
+                  {joined_tables(path, False)}
+                  WHERE {table}.rowid = temp_{table}.rowid)"""
             else:
                 exists = ""
 
@@ -971,7 +1012,6 @@ class Crossref:
         )
 
         # By default include all tables and columns
-        global tables
         if not columns:
             columns = []
             for table in tables:
@@ -987,8 +1027,10 @@ class Crossref:
 
         # Setup the columns required for executing the query
         if condition:
-            tables = ", ".join(table_dict.keys())
-            query = f"""SELECT DISTINCT 1 FROM {tables} WHERE {condition}"""
+            table_names = ", ".join(table_dict.keys())
+            query = (
+                f"""SELECT DISTINCT 1 FROM {table_names} WHERE {condition}"""
+            )
             self.set_query_columns(query)
             set_join_columns()
             self.perf.print("Condition parsing")
@@ -1018,13 +1060,27 @@ class Crossref:
             #           WHERE update_count is not null
 
             if condition:
+                query_table_names = tables_transitive_closure(
+                    self.query_columns.keys(), "works"
+                )
+                population_table_names = tables_transitive_closure(
+                    self.population_columns.keys(), "works"
+                )
+                # create_indexes(set.union(query_table_names, population_table_names))
+
                 # Create copies of the virtual tables for fast access
-                for table in population_and_query_tables():
-                    columns = self.query_columns.get(table)
+                for table in query_and_population_tables():
+                    columns = self.query_and_population_columns.get(table)
                     if columns:
                         columns = set.union(columns, {"rowid"})
                     else:
                         columns = {"rowid"}
+
+                    # Add query columns
+                    query_columns_of_table = self.query_columns.get(table)
+                    if query_columns_of_table:
+                        columns = set.union(columns, query_columns_of_table)
+
                     column_list = ", ".join(columns)
                     self.vdb.execute(
                         self.log_sql(f"""DROP TABLE IF EXISTS temp_{table}""")
@@ -1035,30 +1091,36 @@ class Crossref:
                     self.vdb.execute(self.log_sql(create))
                 self.perf.print("Virtual table copies")
 
-                # Create the statement for the combined records
+                # Create a table containing the work ids for all works
+                # matching the query, which is execcuted in a context
+                # containing all required tables.
                 create = (
-                    "CREATE TEMP TABLE temp_matched AS SELECT "
-                    + ", ".join(
-                        [
-                            f"{table}.rowid AS {table}_rowid"
-                            for table in population_and_query_tables()
-                        ]
-                    )
-                    + " FROM temp_works AS works "
-                    + joined_tables()
+                    """CREATE TEMP TABLE temp_matched AS
+                            SELECT works.id, works.rowid
+                            FROM temp_works AS works """
+                    + joined_tables(query_table_names, True)
                     + f" WHERE ({condition})"
                 )
                 self.vdb.execute(
                     self.log_sql("DROP TABLE IF EXISTS temp_matched")
                 )
                 self.vdb.execute(self.log_sql(create))
-                self.perf.print("Combined table creation")
+
+                if self.debug.enabled("dump-matched"):
+                    csv_writer = csv.writer(
+                        self.debug.get_output(), delimiter="\t"
+                    )
+                    for rec in self.vdb.execute("SELECT * FROM temp_matched"):
+                        csv_writer.writerow(rec)
+
+                self.perf.print("Matched table creation")
 
             for table in self.population_columns:
                 populate_table(table, i, condition)
         self.perf.print("Table population")
 
         self.vdb.execute(self.log_sql("DETACH populated"))
+        self.vdb.close()
 
 
 def normalize_affiliations(pdb):

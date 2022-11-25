@@ -18,8 +18,6 @@
 #
 """Topological sort of database tables"""
 
-import crossref
-
 # Based on Kahn's algorithm;
 # see https://en.wikipedia.org/wiki/Topological_sorting
 #
@@ -40,20 +38,21 @@ import crossref
 #     return L   (a topologically sorted order)
 
 
-def tsort(table_names):
+def tsort(tables_meta, table_names):
     """Return the passed iterable of table names topologically sorted
-    based on their dependencies"""
-    tables = [crossref.get_table_meta_by_name(t) for t in table_names]
+    based on their dependencies, available through tables_meta."""
     result = []
     # Nodes with no parent
     todo = {
-        t.get_name() for t in tables if t.get_parent_name() not in table_names
+        t.get_name()
+        for t in tables_meta
+        if t.get_parent_name() not in table_names
     }
     while todo:
         current = todo.pop()
         result.append(current)
         # Now that we have added "current" we can process all of its children
-        for table in tables:
+        for table in tables_meta:
             parent = table.get_parent_name()
             if parent == current:
                 todo.add(table.get_name())
