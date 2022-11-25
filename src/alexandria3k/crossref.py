@@ -1141,7 +1141,7 @@ def normalize_affiliations(pdb):
     pdb.execute("DROP TABLE IF EXISTS affiliations_works")
     pdb.execute(
         """CREATE TABLE affiliations_works AS
-      SELECT DISTINCT affiliation_id, work_authors.work_doi
+      SELECT DISTINCT affiliation_id, work_authors.work_id
         FROM authors_affiliations
         LEFT JOIN work_authors
           ON authors_affiliations.author_id = work_authors.id"""
@@ -1163,7 +1163,7 @@ def normalize_subjects(pdb):
     pdb.execute("DROP TABLE IF EXISTS works_subjects")
     pdb.execute(
         """CREATE TABLE works_subjects AS
-            SELECT subject_names.id AS subject_id, work_doi
+            SELECT subject_names.id AS subject_id, work_id
               FROM subject_names
               INNER JOIN work_subjects ON subject_names.name
                 = work_subjects.name

@@ -320,3 +320,31 @@ class TestCrossrefQuery(unittest.TestCase):
                 ),
                 5,
             )
+
+class TestCrossrefPopulateNormalize(TestCrossrefPopulate):
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+        FileCache.file_reads = 0
+        # debug.set_flags(["log-sql", "dump-matched"])
+
+        cls.crossref = crossref.Crossref("tests/sample")
+        cls.crossref.populate_database(DATABASE_PATH)
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_normalized_affiliations(self):
+        crossref.normalize_affiliations(self.cursor)
+        self.assertEqual(self.record_count("affiliation_names"), 5)
+        self.assertEqual(self.record_count("authors_affiliations"), 13)
+        self.assertEqual(self.record_count("affiliations_works"), 6)
+
+    def test_normalized_subjects(self):
+        crossref.normalize_subjects(self.cursor)
+        self.assertEqual(self.record_count("subject_names"), 13)
+        self.assertEqual(self.record_count("works_subjects"), 13)

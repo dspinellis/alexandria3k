@@ -137,7 +137,7 @@ def database_counts(database):
 
     count = sql_value(
         database,
-        "SELECT count(*) FROM (SELECT DISTINCT work_doi FROM work_authors)",
+        "SELECT count(*) FROM (SELECT DISTINCT work_id FROM work_authors)",
     )
     print(f"{count} publication(s) with work_authors")
 
