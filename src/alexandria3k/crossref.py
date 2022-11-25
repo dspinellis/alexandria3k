@@ -1012,7 +1012,13 @@ class Crossref:
 
             if condition:
                 path = tables_transitive_closure([table], "works")
+
+                # One would think that an index on rowid is implied, but
+                # removing it increases the time required to process
+                # 3581.json.gz from the April 2022 dataset from 6.5"
+                # to 18.4".
                 self.index_manager.create_index(f"temp_{table}", "rowid")
+
                 # Putting AND in the JOIN condition, rather than WHERE
                 # improves dramatically the execution's performance time
                 exists = f"""AND EXISTS (SELECT 1
