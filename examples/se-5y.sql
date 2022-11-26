@@ -1,5 +1,10 @@
 -- SQL expression for selecting 5 years of software engineering venues
 
+-- Based on the venues given in Table 2 of the following paper.
+-- G. Mathew, A. Agrawal and T. Menzies, "Finding Trends in Software
+-- Research," in IEEE Transactions on Software Engineering,
+-- doi: 10.1109/TSE.2018.2870388.
+
 works.published_year BETWEEN 2017 AND 2021 AND (
   works.issn_print IN (
     -- Index 1
@@ -36,6 +41,10 @@ works.published_year BETWEEN 2017 AND 2021 AND (
     '00985589', -- IEEE Transactions on Software Engineering
     '1049331X' -- ACM Transactions on Software Engineering and Methodology
   )
+  -- Conferences
+  -- These are created from se-metrics.sql with the following command:
+  -- sed -n '/CASE/,/ELSE/{;s/WHEN doi/OR works.doi/;s/ THEN .* -/ -/;p;}'
+
   -- Index 1
   OR works.doi LIKE '10.1109/MODELS50736.2021.%' -- 2021
   OR works.doi LIKE '10.1145/3365438.%' -- 2020

@@ -1,6 +1,6 @@
 -- Calculate metrics of software engineering venues
 
-ATTACH '5y-se.db' AS se_data;
+ATTACH 'se-5y.db' AS se_data;
 
 CREATE TABLE works_venue AS
   SELECT doi AS doi,
