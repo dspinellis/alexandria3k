@@ -3,7 +3,7 @@
 The _alexandria3k_ package
 supplies a library and a command-line tool providing efficient relational query
 access the entire
-[Crossref dataset](https://www.nature.com/articles/d41586-022-02926-y)
+[Crossref data set](https://www.nature.com/articles/d41586-022-02926-y)
 (157 GB compressed, 1 PB uncompressed).
 This contains publication metadata from about 134 million publications from
 all major international publishers with full citation data for 60 million
@@ -15,11 +15,14 @@ of a third party relational or graph database.
 It can therefore be used out-of-the-box for performing reproducible
 publication research on the desktop.
 
-The Crossref dataset can be linked with:
-* the [ORCID summary dataset](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
+In addition,
+the Crossref data set can be linked with:
+* the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (25 GB compressed, 435 GB uuncompressed),
   containing about 15 million author records, and
-* the funder dataset
+* a data set of funder bodies corresponding to funder DOIs,
+* a data set of journal names corresponding to journal ISSNs,
+* a data set of open access journal data.
 
 ## Installation
 Currently _alexandria3k_ is considered early-beta quality,
@@ -89,13 +92,13 @@ These are the things you can do with _alexandria3k_.
 * Populate SQLite databases with Crossref, ORCID, DOAJ, and other data
   * Select a horizontal subset of Crossref records
     * Through an SQL expression
-    * By sampling a subset of the 26 thousand containers in the dataset
+    * By sampling a subset of the 26 thousand containers in the data set
   * Select a vertical subset of columns
     * Using the `Table.Column` or `Table.*` notation
 
 Populating a database can take
 minutes (for a small, e.g. experimental, subset),
-a few hours (to traverse the whole Crossref dataset and obtain a few thousands
+a few hours (to traverse the whole Crossref data set and obtain a few thousands
 of records),
 or a couple of days (to produce a large set, e.g. by selecting some columns).
 
