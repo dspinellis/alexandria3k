@@ -45,8 +45,9 @@ records and 359 million author records.
 You can obtain the data from
 [Acedemic Torrents](https://academictorrents.com/browse.php?search=crossref)
 using a torrent client of your choice.
-Below is an example of commands that download the April 2022 snapshot
-(the one on which _alexandria3k_ has been tested).
+Below is an example of commands that download the April 2022 Crossref snapshot
+(the one on which _alexandria3k_ has been tested) using the
+[aria2c](https://aria2.github.io/) download utility.
 
 ```sh
 # Download Crossref torrent file
