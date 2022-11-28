@@ -449,7 +449,7 @@ def order_columns_by_schema(table_name, column_names):
     return result
 
 
-def populate(data_path, database_path, columns, authors_only):
+def populate(data_path, database_path, columns=None, authors_only=False):
     """Populate the specified SQLite database.
     The database is created if it does not exist.
     If it exists, the populated tables are dropped
