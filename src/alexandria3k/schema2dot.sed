@@ -1,4 +1,9 @@
 #!/usr/bin/env -S sed -nf
+#
+# Create database schema through the following command
+# alexandria3k.py -L | schema2dot.sed | dot -Tsvg  -o ../../schema.svg
+#
+
 
 1 {
   r schema-head.dot
@@ -16,7 +21,7 @@
 }
 
 # Field name
-/,$/ {
+/^  / {
   # Put table fields in separate lines
   s|,$|<BR/>|
   # And append to hold space
