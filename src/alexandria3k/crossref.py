@@ -906,7 +906,7 @@ class Crossref:
             for table_name in self.query_columns.keys():
                 partition.execute(log_sql(f"DROP TABLE {table_name}"))
 
-    def populate_database(self, database_path, columns=None, condition=None):
+    def populate(self, database_path, columns=None, condition=None):
         """Populate the specified SQLite database.
         The database is created if it does not exist.
         If it exists, the populated tables are dropped

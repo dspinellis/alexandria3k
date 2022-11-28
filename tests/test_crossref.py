@@ -63,7 +63,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         # debug.set_flags(["log-sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/sample")
-        cls.crossref.populate_database(DATABASE_PATH)
+        cls.crossref.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -140,7 +140,7 @@ class TestCrossrefPopulateCondition(TestCrossrefPopulate):
         # debug.set_flags(["log-sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/sample")
-        cls.crossref.populate_database(
+        cls.crossref.populate(
             DATABASE_PATH, None, "work_authors.orcid = '0000-0002-5878-603X'"
         )
         cls.con = sqlite3.connect(DATABASE_PATH)
@@ -167,7 +167,7 @@ class TestCrossrefPopulateConditionColumns(TestCrossrefPopulate):
         FileCache.file_reads = 0
 
         cls.crossref = crossref.Crossref("tests/sample")
-        cls.crossref.populate_database(
+        cls.crossref.populate(
             DATABASE_PATH,
             ["works.doi", "work_funders.*"],
             "work_authors.family = 'Costa-Urrutia'",
@@ -206,7 +206,7 @@ class TestCrossrefPopulateMultipleConditionColumns(TestCrossrefPopulate):
         FileCache.file_reads = 0
 
         cls.crossref = crossref.Crossref("tests/sample")
-        cls.crossref.populate_database(
+        cls.crossref.populate(
             DATABASE_PATH,
             ["work_updates.label"],
             "works.doi = '10.1007/s00417-022-05677-8' AND work_authors.given='Hoang Mai' AND work_subjects.name = 'Ophthalmology'",
@@ -330,7 +330,7 @@ class TestCrossrefPopulateNormalize(TestCrossrefPopulate):
         # debug.set_flags(["log-sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/sample")
-        cls.crossref.populate_database(DATABASE_PATH)
+        cls.crossref.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 

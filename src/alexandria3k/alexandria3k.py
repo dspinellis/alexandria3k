@@ -343,7 +343,7 @@ def main():
                 args.row_selection += line
 
     if crossref_instance and args.populate_db_path:
-        crossref_instance.populate_database(
+        crossref_instance.populate(
             args.populate_db_path, args.columns, args.row_selection
         )
         debug.print("files-read", f"{FileCache.file_reads} files read")
