@@ -53,6 +53,12 @@ wget https://doi.org/10.13003/83b2gq
 aria2c 83b2gq
 ```
 
+Currently, the Crossref data set is split into about 26 thousand compressed
+files, each containing JSON data for 3000 publications (works).
+_Alexandria3k_ provides a relational view of these data, and
+also allows the sampling of a subset of the container files
+to quickly experiment with queries, before they are run on the complete set.
+
 ### ORCID data
 You can populate a database with data regarding authors (URLs, countries,
 external identifiers, education, employment, etc.) from the
@@ -127,10 +133,18 @@ cd alexandria3k
 alexandria3k.py --help
 ```
 
-### Show DOI ond title of all publications
+### Show DOI and title of all publications
 ```sh
 alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref'  \
-   --query 'SELECT DOI, title FROM works' >doi-title.csv
+   --query 'SELECT DOI, title FROM works'
+```
+
+### Save DOI and title of 2021 publications in a CSV file suitable for Excel
+```sh
+alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref'  \
+  --query 'SELECT DOI, title FROM works WHERE published_year = 2021' \
+  --output 2021.csv \
+  --output-encoding use utf-8-sig
 ```
 
 ### Count Crossref publications by year and type
@@ -159,14 +173,17 @@ SELECT type AS name, Sum(number) FROM counts
 ### Sampling
 The following command counts the number of publication that have
 or do not have an abstract in a 1% sample of the data set's containers.
-It runs in a couple of minutes, rather than hours.
+It uses a tab character ('\t') to separate the output fields.
+Through sampling the data containers it runs in a couple of minutes,
+rather than hours.
 ```sh
 alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref'  \
    --sample 'random.random() < 0.01' \
+   --field-separator $'\t' \
    --query '
 ```
 ```sql
-'SELECT works.abstract is not null AS have_abstract, Count(*)
+SELECT works.abstract is not null AS have_abstract, Count(*)
   FROM works GROUP BY have_abstract'
 ```
 
@@ -181,8 +198,7 @@ alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref'
 
 ### Publications graph
 The following command selects only a subset of columns of the complete
-Crossref data set to create a navigable graph between publications and
-their references.
+Crossref data set to create a graph between navigable entities.
 ```sh
 alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref' \
    --populate-db-path graph.db \
@@ -214,6 +230,33 @@ SELECT COUNT(*) FROM work_funders;
 SELECT COUNT(*) FROM funder_awards;
 
 SELECT COUNT(*) FROM work_references;
+```
+
+### Populate the database with author records from ORCID
+Only records of authors identified in the publications through an
+ORCID will be added.
+```sh
+alexandria3k.py --populate-db-path database.db \
+  --orcid-data ORCID_2022_10_summaries.tar.gz \
+  --linked-records
+```
+
+### Populate the database with journal names
+```sh
+alexandria3k.py  --populate-db-path database.db \
+  --journal-names http://ftp.crossref.org/titlelist/titleFile.csv
+```
+
+### Populate the database with funder names
+```sh
+alexandria3k.py  --populate-db-path database.db \
+  --funder-names https://doi.crossref.org/funderNames?mode=list
+```
+
+### Populate the database with data regarding open access journals
+```sh
+alexandria3k.py  --populate-db-path database.db \
+  --open-access-journals https://doaj.org/csv
 ```
 
 ## Command-line options reference
@@ -291,9 +334,134 @@ optional arguments:
 <!-- CLI end -->
 
 ## Python API
-Coming soon.
+After downloading the Crossref data, the functionality of _alexandria3k_
+can be access through its Python API,
+either interactively (for exploratory data analytics) or through
+Python scripts (for long-running jobs and for documenting research methods
+as repeatable processes).
 
-## Name
+### Create a Crossref object
+Crossref functionality is accessed by means of a corresponding object
+created by specifying the data directory.
+```py
+from crossref import Crossref
+
+crossref_instance = Crossref('April 2022 Public Data File from Crossref')
+```
+
+You can also add a parameter indicating how to sample the containers.
+```py
+from crossref import Crossref
+from random import random
+
+# Sample a random 1% of the containers
+crossref_instance = Crossref('April 2022 Public Data File from Crossref',
+  lambda _name: random() < 0.01)
+```
+
+### Iterate through the DOI and title of all publications
+```py
+for (doi, title) in crossref_instance.query('SELECT DOI, title FROM works'):
+    print(doi, title)
+```
+
+### Create a dictionary of which 2021 publications were funded by each body
+Here `partition=True` is passed to the `query` method in order to
+have the query run separately (and therefore efficiently) on each
+Crossref data container.
+
+```py
+from collections import defaultdict
+
+works_by_funder = defaultdict(list)
+
+for (funder_doi, work_doi) in crossref_instance.query(
+    """
+   SELECT work_funders.doi, works.doi FROM works
+       INNER JOIN work_funders on work_funders.work_id = works.id
+       WHERE published_year = 2021
+    """,
+    partition=True,
+):
+    works_by_funder[funder_doi].append(work_doi)
+```
+
+### Database of COVID research
+The following command creates an SQLite database with all Crossref data
+regarding publications that contain "COVID" in their title or abstract.
+```py
+crossref_instance.populate(
+    "covid.db", condition="title like '%COVID%' OR abstract like '%COVID%'"
+)
+```
+
+### Reference graph
+The following command populates an SQLite database by selecting only a subset
+of columns of the complete Crossref data set to create a navigable graph
+between publications and their references.
+```py
+crossref_instance.populate(
+    "references.db",
+    columns=[
+        "works.id",
+        "works.doi",
+        "work_references.work_id",
+        "work_references.doi",
+    ],
+    condition="work_references.doi is not null",
+)
+```
+
+### Populate the database from ORCID
+Add tables containing author country and education organization.
+Only records of authors identified in the publications through an
+ORCID will be added.
+```py
+import orcid
+
+orcid.populate(
+    "ORCID_2022_10_summaries.tar.gz",
+    "database.db",
+    columns=[
+        "person_countries.*",
+        "educations.orcid",
+        "educations.organization_name",
+    ],
+    authors_only=True,
+)
+```
+
+### Populate the database with journal names
+```py
+import csv_sources
+
+csv_sources.populate_journal_names(
+    "database.db",
+    "http://ftp.crossref.org/titlelist/titleFile.csv"
+)
+```
+
+### Populate the database with funder names
+```py
+import csv_sources
+
+csv_sources.populate_funder_names(
+    "database.db",
+    "https://doi.crossref.org/funderNames?mode=list"
+)
+```
+
+### Populate the database with data regarding open access journals
+```py
+import csv_sources
+
+csv_sources.populate_open_access_journals(
+    "database.db",
+    "https://doaj.org/csv"
+)
+```
+
+## Package name derivation
 The _alexandria3k_ package is named after the
 [Library of Alexandria](https://en.wikipedia.org/wiki/Library_of_Alexandria),
 indicating how publication data can be processed in the third millenium AD.
