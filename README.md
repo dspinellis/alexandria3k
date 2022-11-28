@@ -338,7 +338,7 @@ optional arguments:
 
 ## Python API
 After downloading the Crossref data, the functionality of _alexandria3k_
-can be access through its Python API,
+can be accessed through its Python API,
 either interactively (for exploratory data analytics) or through
 Python scripts (for long-running jobs and for documenting research methods
 as repeatable processes).
@@ -346,6 +346,7 @@ as repeatable processes).
 ### Create a Crossref object
 Crossref functionality is accessed by means of a corresponding object
 created by specifying the data directory.
+
 ```py
 from crossref import Crossref
 
@@ -355,9 +356,10 @@ crossref_instance = Crossref('April 2022 Public Data File from Crossref')
 You can also add a parameter indicating how to sample the containers.
 ```py
 from crossref import Crossref
-from random import random
+from random import random, seed
 
-# Sample a random 1% of the containers
+# Randomly (but deterministically) sample 1% of the containers
+seed("alexandria3k")
 crossref_instance = Crossref('April 2022 Public Data File from Crossref',
   lambda _name: random() < 0.01)
 ```
