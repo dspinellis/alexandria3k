@@ -430,8 +430,8 @@ orcid.populate(
     "database.db",
     columns=[
         "person_countries.*",
-        "educations.orcid",
-        "educations.organization_name",
+        "person_educations.orcid",
+        "person_educations.organization_name",
     ],
     authors_only=True,
 )

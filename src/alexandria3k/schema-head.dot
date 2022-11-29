@@ -24,20 +24,20 @@ digraph D {
 	"ORCID tables" [shape=box, margin="0.11,0.055"];
 	persons;
 
-	persons -> researcher_urls;
+	persons -> person_researcher_urls;
 	persons -> person_countries;
 	persons -> person_keywords;
 	persons -> person_external_identifiers;
-	persons -> distinctions;
-	persons -> educations;
-	persons -> employments;
-	persons -> invited_positions;
-	persons -> memberships;
-	persons -> qualifications;
-	persons -> services;
-	persons -> fundings;
-	persons -> peer_reviews;
-	persons -> research_resources;
+	persons -> person_distinctions;
+	persons -> person_educations;
+	persons -> person_employments;
+	persons -> person_invited_positions;
+	persons -> person_memberships;
+	persons -> person_qualifications;
+	persons -> person_services;
+	persons -> person_fundings;
+	persons -> person_peer_reviews;
+	persons -> person_research_resources;
 	persons -> person_works;
 
 	edge  [headlabel="0…1", taillabel="1"];

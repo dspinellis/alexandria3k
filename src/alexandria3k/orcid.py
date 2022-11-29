@@ -165,7 +165,7 @@ tables = [
         ],
     ),
     TableMeta(
-        "researcher_urls",
+        "person_researcher_urls",
         records_path=f"{PERSON}person/{RESEARCHER_URL}researcher-urls/{RESEARCHER_URL}researcher-url",
         columns=[
             ColumnMeta("orcid"),
@@ -200,7 +200,7 @@ tables = [
         ],
     ),
     TableMeta(
-        "distinctions",
+        "person_distinctions",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}distinctions/{ACTIVITIES}affiliation-group/{DISTINCTION}distinction-summary",
         columns=[
             ColumnMeta("orcid"),
@@ -208,7 +208,7 @@ tables = [
         + AFFILIATION,
     ),
     TableMeta(
-        "educations",
+        "person_educations",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}educations/{ACTIVITIES}affiliation-group/{EDUCATION}education-summary",
         columns=[
             ColumnMeta("orcid"),
@@ -216,7 +216,7 @@ tables = [
         + AFFILIATION,
     ),
     TableMeta(
-        "employments",
+        "person_employments",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}employments/{ACTIVITIES}affiliation-group/{EMPLOYMENT}employment-summary",
         columns=[
             ColumnMeta("orcid"),
@@ -224,7 +224,7 @@ tables = [
         + AFFILIATION,
     ),
     TableMeta(
-        "invited_positions",
+        "person_invited_positions",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}invited-positions/{ACTIVITIES}affiliation-group/{INVITED_POSITION}invited-position-summary",
         columns=[
             ColumnMeta("orcid"),
@@ -232,7 +232,7 @@ tables = [
         + AFFILIATION,
     ),
     TableMeta(
-        "memberships",
+        "person_memberships",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}memberships/{ACTIVITIES}affiliation-group/{MEMBERSHIP}membership-summary",
         columns=[
             ColumnMeta("orcid"),
@@ -240,7 +240,7 @@ tables = [
         + AFFILIATION,
     ),
     TableMeta(
-        "qualifications",
+        "person_qualifications",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}qualifications/{ACTIVITIES}affiliation-group/{QUALIFICATION}qualification-summary",
         columns=[
             ColumnMeta("orcid"),
@@ -248,7 +248,7 @@ tables = [
         + AFFILIATION,
     ),
     TableMeta(
-        "services",
+        "person_services",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}services/{ACTIVITIES}affiliation-group/{SERVICE}service-summary",
         columns=[
             ColumnMeta("orcid"),
@@ -256,7 +256,7 @@ tables = [
         + AFFILIATION,
     ),
     TableMeta(
-        "fundings",
+        "person_fundings",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}fundings/{ACTIVITIES}group/{FUNDING}funding-summary",
         # TODO external-ids, contributors
         columns=[
@@ -273,7 +273,7 @@ tables = [
         + ORGANIZATION,
     ),
     TableMeta(
-        "peer_reviews",
+        "person_peer_reviews",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}peer-reviews/{ACTIVITIES}group/{ACTIVITIES}peer-review-group/{PEER_REVIEW}peer-review-summary",
         columns=[
             ColumnMeta("orcid"),
@@ -320,7 +320,7 @@ tables = [
         ],
     ),
     TableMeta(
-        "research_resources",
+        "person_research_resources",
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}research-resources/{ACTIVITIES}group/{RESEARCH_RESOURCE}research-resource-summary",
         columns=[
             ColumnMeta("orcid"),

@@ -86,7 +86,7 @@ class TestOrcid(unittest.TestCase):
         self,
     ):
         result = TestOrcid.cursor.execute(
-            f"""SELECT name, url FROM researcher_urls
+            f"""SELECT name, url FROM person_researcher_urls
                                   WHERE orcid='0000-0003-4231-1897'"""
         )
         rows = result.fetchmany(99)
