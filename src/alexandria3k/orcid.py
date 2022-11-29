@@ -481,9 +481,10 @@ def populate(data_path, database_path, columns=None, authors_only=False):
 
     # A dictionary of columns to be populated for each table
     for col in columns:
-        (table, column) = col.split(".")
-        if not table or not column:
-            fail(f"Invalid column specification: {col}")
+        try:
+            (table, column) = col.split(".")
+        except ValueError:
+            fail(f"Invalid column specification: {col}; expected table.column or table.*")
         add_column(table, column)
 
     # Reorder columns to match the defined schema order

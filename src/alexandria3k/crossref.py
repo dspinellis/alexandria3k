@@ -1057,9 +1057,10 @@ class Crossref:
 
         # A dictionary of columns to be populated for each table
         for col in columns:
-            (table, column) = col.split(".")
-            if not table or not column:
-                fail(f"Invalid column specification: {col}")
+            try:
+                (table, column) = col.split(".")
+            except ValueError:
+                fail(f"Invalid column specification: {col}; expected table.column or table.*")
             Crossref.add_column(self.population_columns, table, column)
 
         # Setup the columns required for executing the query
