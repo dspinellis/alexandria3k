@@ -81,6 +81,11 @@ class TestDoiNormalize(unittest.TestCase):
             ),
             "10.1379/1466-1268(2001)006<0225:tefoat>2.0.co;2",
         )
+        self.assertEqual(
+            crossref.normalized_doi("10.1002/(sici)1521-4141(199906)29:06&#60;1785::aid-immu1785&#62;3.0.co;2-u"),
+            "10.1002/(sici)1521-4141(199906)29:06<1785::aid-immu1785>3.0.co;2-u",
+        )
+
 
 
 class TestCrossrefPopulate(unittest.TestCase):

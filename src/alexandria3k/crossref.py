@@ -164,6 +164,8 @@ def normalized_doi(str):
         .replace("&ndash;", "-")
         .replace("&#x003c;", "<")
         .replace("&#x003e;", ">")
+        .replace("&#60;", "<")
+        .replace("&#62;", ">")
     )
 
 
