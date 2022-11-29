@@ -357,7 +357,10 @@ table_dict = {t.get_name(): t for t in tables}
 
 def get_table_meta_by_name(name):
     """Return the metadata of the specified table"""
-    return table_dict[name]
+    try:
+        return table_dict[name]
+    except KeyError:
+        fail(f"Unknown table name: {name}")
 
 
 class TableFiller:
