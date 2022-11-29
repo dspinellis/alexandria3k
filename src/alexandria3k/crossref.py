@@ -147,12 +147,24 @@ def tab_values(array):
     return "\t".join(array)
 
 
-def normalize_doi(str):
+def normalized_doi(str):
     """
-    Return the string in lowercase with spaces removed or None if None
-    is passed
+    Return the string in lowercase with spaces removed and common HTML
+    escapes replaced (or None if None is passed)
     """
-    return str.lower().replace(" ", "") if str else None
+    if not str:
+        return None
+    normalized = str.lower().replace(" ", "")
+    if normalized.find("&") == -1:
+        return normalized
+    return (
+        normalized.replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&ndash;", "-")
+        .replace("&#x003c;", "<")
+        .replace("&#x003e;", ">")
+    )
 
 
 def lower_or_none(str):
@@ -626,7 +638,7 @@ tables = [
             ),
             ColumnMeta("isbn", lambda row: dict_value(row, "isbn")),
             ColumnMeta(
-                "doi", lambda row: normalize_doi(dict_value(row, "DOI"))
+                "doi", lambda row: normalized_doi(dict_value(row, "DOI"))
             ),
             ColumnMeta("component", lambda row: dict_value(row, "component")),
             ColumnMeta(

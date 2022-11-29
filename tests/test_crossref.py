@@ -33,6 +33,56 @@ from file_cache import FileCache
 DATABASE_PATH = "tests/tmp/crossref.db"
 
 
+class TestDoiNormalize(unittest.TestCase):
+    def test_plain(self):
+        self.assertEqual(crossref.normalized_doi(None), None)
+        self.assertEqual(
+            crossref.normalized_doi("10.1207/s15327663jcp1001&2_08"),
+            "10.1207/s15327663jcp1001&2_08",
+        )
+        self.assertEqual(
+            crossref.normalized_doi("10.2495/d&n-v1-n1-48-60"),
+            "10.2495/d&n-v1-n1-48-60",
+        )
+
+
+    def test_space(self):
+        self.assertEqual(
+            crossref.normalized_doi("10 .1207/s15327663jcp1001&2_08"),
+            "10.1207/s15327663jcp1001&2_08",
+        )
+
+    def test_named_escapes(self):
+        self.assertEqual(
+            crossref.normalized_doi(
+                "10.1038/s41596&ndash;019&ndash;0128&ndash;8"
+            ),
+            "10.1038/s41596-019-0128-8",
+        )
+        self.assertEqual(
+            crossref.normalized_doi(
+                "10.1130/0091-7613(2000)28&lt;1067:liiaed&gt;2.0.co;2"
+            ),
+            "10.1130/0091-7613(2000)28<1067:liiaed>2.0.co;2",
+        )
+
+        # Double escape!
+        self.assertEqual(
+            crossref.normalized_doi(
+                "10.1002/1097-4636(200102)54:2&amp;lt;198::aid-jbm6&amp;gt;3.0.co;2-7"
+            ),
+            "10.1002/1097-4636(200102)54:2<198::aid-jbm6>3.0.co;2-7",
+        )
+
+    def test_numbered_escapes(self):
+        self.assertEqual(
+            crossref.normalized_doi(
+                "10.1379/1466-1268(2001)006&#x003c;0225:tefoat&#x003e;2.0.co;2"
+            ),
+            "10.1379/1466-1268(2001)006<0225:tefoat>2.0.co;2",
+        )
+
+
 class TestCrossrefPopulate(unittest.TestCase):
     """Common utility methods"""
 
@@ -140,9 +190,7 @@ class TestCrossrefPopulateMasterCondition(TestCrossrefPopulate):
         # debug.set_flags(["log-sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/data/sample")
-        cls.crossref.populate(
-            DATABASE_PATH, None, "issn_print = '16191366'"
-        )
+        cls.crossref.populate(DATABASE_PATH, None, "issn_print = '16191366'")
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
