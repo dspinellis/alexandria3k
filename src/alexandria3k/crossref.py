@@ -154,7 +154,14 @@ def normalized_doi(str):
     """
     if not str:
         return None
-    normalized = str.lower().replace(" ", "")
+    normalized = str.lower()
+    if normalized.find(" ") != -1:
+        # Some DOIs appear double, separated by a space
+        (a, b) = normalized.split(" ")
+        if a == b:
+            normalized = a
+        else:
+            normalized = normalized.replace(" ", "")
     if normalized.find("&") == -1:
         return normalized
     return (
