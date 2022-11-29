@@ -987,7 +987,7 @@ class Crossref:
                     rename = ""
                     primary_table_name = f"temp_{parent_table_name}"
                     foreign_table_name = f"temp_{table_name}"
-                result += f""" LEFT JOIN temp_{table_name} {rename} ON
+                result += f""" INNER JOIN temp_{table_name} {rename} ON
                     {primary_table_name}.{primary_key}
                       = {foreign_table_name}.{foreign_key}"""
                 if not rename_temp:

@@ -132,7 +132,33 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         )
 
 
-class TestCrossrefPopulateCondition(TestCrossrefPopulate):
+class TestCrossrefPopulateMasterCondition(TestCrossrefPopulate):
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+        FileCache.file_reads = 0
+        # debug.set_flags(["log-sql", "dump-matched"])
+
+        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref.populate(
+            DATABASE_PATH, None, "issn_print = '16191366'"
+        )
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_counts(self):
+        self.assertEqual(self.record_count("works"), 1)
+        self.assertEqual(self.record_count("work_authors"), 1)
+        self.assertEqual(self.record_count("work_references"), 42)
+        self.assertEqual(FileCache.file_reads, 7)
+
+
+class TestCrossrefPopulateDetailCondition(TestCrossrefPopulate):
     @classmethod
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
