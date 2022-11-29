@@ -38,6 +38,7 @@ digraph D {
 	persons -> fundings;
 	persons -> peer_reviews;
 	persons -> research_resources;
+	persons -> person_works;
 
 	edge  [headlabel="0…1", taillabel="1"];
 	node [fillcolor="#fa9a87"];

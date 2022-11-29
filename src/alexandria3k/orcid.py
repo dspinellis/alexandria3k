@@ -73,6 +73,24 @@ def getter(path):
     path from a given tree."""
     return lambda tree: get_element(tree, path)
 
+def get_type_element(tree, path, id_type):
+    """Return the text value of <common:external-id-value> in the
+    specified element path of the given tree if <common:external-id-type>
+    is the specified id_type or None."""
+    element = tree.find(path)
+    if element is None:
+        return None
+    found_type = get_element(element, f"{COMMON}external-id-type")
+    if found_type is None or found_type != id_type:
+        return None
+
+    return get_element(element, f"{COMMON}external-id-value")
+
+def type_getter(path, id_type):
+    """Return a function to return an element with the specified
+    path and <common:external-id-type> from a given tree."""
+    return lambda tree: get_type_element(tree, path, id_type)
+
 
 # Map from XML to relational schema
 # The XML schema is described in
@@ -348,6 +366,14 @@ tables = [
                     f"{RESEARCH_RESOURCE}proposal/{COMMON}end-date/{COMMON}day"
                 ),
             ),
+        ],
+    ),
+    TableMeta(
+        "person_works",
+        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/{ACTIVITIES}group/{COMMON}external-ids",
+        columns=[
+            ColumnMeta("orcid"),
+            ColumnMeta("doi", type_getter(f"{COMMON}external-id", "doi")),
         ],
     ),
 ]

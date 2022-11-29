@@ -101,3 +101,16 @@ class TestOrcid(unittest.TestCase):
             )
             in rows
         )
+
+    def test_person_works(
+        self,
+    ):
+        result = TestOrcid.cursor.execute(
+            f"""SELECT orcid, doi FROM person_works
+                                  WHERE orcid='0000-0003-4231-1897'"""
+        )
+        rows = result.fetchmany(999)
+        self.assertEqual(len(rows), 128)
+        self.assertTrue(
+            ("0000-0003-4231-1897", "10.1109/TSE.2003.1245303") in rows
+        )
