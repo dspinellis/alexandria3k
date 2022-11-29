@@ -62,7 +62,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         FileCache.file_reads = 0
         # debug.set_flags(["log-sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref("tests/sample")
+        cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -139,7 +139,7 @@ class TestCrossrefPopulateCondition(TestCrossrefPopulate):
         FileCache.file_reads = 0
         # debug.set_flags(["log-sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref("tests/sample")
+        cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(
             DATABASE_PATH, None, "work_authors.orcid = '0000-0002-5878-603X'"
         )
@@ -166,7 +166,7 @@ class TestCrossrefPopulateConditionColumns(TestCrossrefPopulate):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
 
-        cls.crossref = crossref.Crossref("tests/sample")
+        cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(
             DATABASE_PATH,
             ["works.doi", "work_funders.*"],
@@ -205,7 +205,7 @@ class TestCrossrefPopulateMultipleConditionColumns(TestCrossrefPopulate):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
 
-        cls.crossref = crossref.Crossref("tests/sample")
+        cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(
             DATABASE_PATH,
             ["work_updates.label"],
@@ -275,7 +275,7 @@ class TestCrossrefQuery(unittest.TestCase):
 
     def setUp(self):
         FileCache.file_reads = 0
-        self.crossref = crossref.Crossref("tests/sample")
+        self.crossref = crossref.Crossref("tests/data/sample")
 
     def test_works(self):
         for partition in True, False:
@@ -329,7 +329,7 @@ class TestCrossrefPopulateNormalize(TestCrossrefPopulate):
         FileCache.file_reads = 0
         # debug.set_flags(["log-sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref("tests/sample")
+        cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
