@@ -73,21 +73,21 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         os.unlink(DATABASE_PATH)
 
     def test_counts(self):
-        self.assertEqual(self.record_count("works"), 9)
-        self.assertEqual(self.record_count("work_authors"), 60)
+        self.assertEqual(self.record_count("works"), 11)
+        self.assertEqual(self.record_count("work_authors"), 68)
         self.assertEqual(self.record_count("author_affiliations"), 13)
-        self.assertEqual(self.record_count("work_references"), 198)
+        self.assertEqual(self.record_count("work_references"), 269)
         self.assertEqual(self.record_count("work_updates"), 1)
-        self.assertEqual(self.record_count("work_subjects"), 13)
-        self.assertEqual(self.record_count("work_funders"), 2)
-        self.assertEqual(self.record_count("funder_awards"), 3)
+        self.assertEqual(self.record_count("work_subjects"), 16)
+        self.assertEqual(self.record_count("work_funders"), 4)
+        self.assertEqual(self.record_count("funder_awards"), 4)
 
         self.assertEqual(
             self.record_count(
                 """(SELECT DISTINCT orcid
           FROM work_authors WHERE orcid is not null)"""
             ),
-            7,
+            8,
         )
 
         self.assertEqual(
@@ -95,13 +95,13 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
                 """(SELECT DISTINCT work_id
           FROM work_authors)"""
             ),
-            8,
+            10,
         )
 
         self.assertEqual(
-            self.cond_count("work_references", "doi is not null"), 158
+            self.cond_count("work_references", "doi is not null"), 204
         )
-        self.assertEqual(FileCache.file_reads, 6)
+        self.assertEqual(FileCache.file_reads, 7)
 
     def test_work_countents(self):
         self.assertEqual(
@@ -155,7 +155,7 @@ class TestCrossrefPopulateCondition(TestCrossrefPopulate):
         self.assertEqual(self.record_count("works"), 2)
         self.assertEqual(self.record_count("work_authors"), 5)
         self.assertEqual(self.record_count("author_affiliations"), 5)
-        self.assertEqual(FileCache.file_reads, 6)
+        self.assertEqual(FileCache.file_reads, 7)
 
 
 class TestCrossrefPopulateConditionColumns(TestCrossrefPopulate):
@@ -186,7 +186,7 @@ class TestCrossrefPopulateConditionColumns(TestCrossrefPopulate):
         self.assertEqual(
             self.cond_count("work_funders", "doi='10.13039/501100003593'"), 1
         )
-        self.assertEqual(FileCache.file_reads, 6)
+        self.assertEqual(FileCache.file_reads, 7)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
@@ -224,7 +224,7 @@ class TestCrossrefPopulateMultipleConditionColumns(TestCrossrefPopulate):
         self.assertEqual(
             self.cond_count("work_updates", "label='Correction'"), 1
         )
-        self.assertEqual(FileCache.file_reads, 6)
+        self.assertEqual(FileCache.file_reads, 7)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
@@ -283,7 +283,7 @@ class TestCrossrefQuery(unittest.TestCase):
                 record_count(
                     self.crossref.query("SELECT * FROM works", partition)
                 ),
-                9,
+                11,
             )
 
     def test_work_authors(self):
@@ -294,7 +294,7 @@ class TestCrossrefQuery(unittest.TestCase):
                         "SELECT * FROM work_authors", partition
                     )
                 ),
-                60,
+                68,
             )
 
     def test_work_condition(self):
@@ -347,5 +347,5 @@ class TestCrossrefPopulateNormalize(TestCrossrefPopulate):
 
     def test_normalized_subjects(self):
         crossref.normalize_subjects(self.cursor)
-        self.assertEqual(self.record_count("subject_names"), 13)
-        self.assertEqual(self.record_count("works_subjects"), 13)
+        self.assertEqual(self.record_count("subject_names"), 16)
+        self.assertEqual(self.record_count("works_subjects"), 16)
