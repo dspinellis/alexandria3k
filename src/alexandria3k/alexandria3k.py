@@ -395,24 +395,21 @@ def main():
         if not args.populate_db_path:
             fail("Database path must be specified")
         csv_sources.populate_journal_names(
-            args.populate_db_path,
-            args.journal_names
+            args.populate_db_path, args.journal_names
         )
 
     if args.funder_names:
         if not args.populate_db_path:
             fail("Database path must be specified")
         csv_sources.populate_funder_names(
-            args.populate_db_path,
-            args.funder_names
+            args.populate_db_path, args.funder_names
         )
 
     if args.open_access_journals:
         if not args.populate_db_path:
             fail("Database path must be specified")
         csv_sources.populate_open_access_journals(
-            args.populate_db_path,
-            args.open_access_journals
+            args.populate_db_path, args.open_access_journals
         )
 
     if debug.enabled("populated-counts"):

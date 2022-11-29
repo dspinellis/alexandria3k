@@ -226,14 +226,17 @@ def load_csv_data(database_path, table_meta, source):
     con.commit()
     con.close()
 
+
 def populate_journal_names(database_path, data_source):
     """Populate journal names table of database with data from source"""
     load_csv_data(database_path, journals_table, data_source)
+
 
 def populate_funder_names(database_path, data_source):
     """Populate funder names table of database with data from source"""
     load_csv_data(database_path, funders_table, data_source)
 
+
 def populate_open_access_journals(database_path, data_source):
     """Populate OA journals table of database with data from source"""
-    load_csv_data(database_path, open_access_table , data_source)
+    load_csv_data(database_path, open_access_table, data_source)

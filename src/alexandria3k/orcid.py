@@ -487,7 +487,9 @@ def populate(data_path, database_path, columns=None, authors_only=False):
         try:
             (table, column) = col.split(".")
         except ValueError:
-            fail(f"Invalid column specification: {col}; expected table.column or table.*")
+            fail(
+                f"Invalid column specification: {col}; expected table.column or table.*"
+            )
         add_column(table, column)
 
     # Reorder columns to match the defined schema order

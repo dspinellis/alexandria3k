@@ -147,6 +147,14 @@ def tab_values(array):
     return "\t".join(array)
 
 
+def normalize_doi(str):
+    """
+    Return the string in lowercase with spaces removed or None if None
+    is passed
+    """
+    return str.lower().replace(" ", "") if str else None
+
+
 def lower_or_none(str):
     """Return the string in lowercase or None if None is passed"""
     return str.lower() if str else None
@@ -618,7 +626,7 @@ tables = [
             ),
             ColumnMeta("isbn", lambda row: dict_value(row, "isbn")),
             ColumnMeta(
-                "doi", lambda row: lower_or_none(dict_value(row, "DOI"))
+                "doi", lambda row: normalize_doi(dict_value(row, "DOI"))
             ),
             ColumnMeta("component", lambda row: dict_value(row, "component")),
             ColumnMeta(
@@ -1063,7 +1071,9 @@ class Crossref:
             try:
                 (table, column) = col.split(".")
             except ValueError:
-                fail(f"Invalid column specification: {col}; expected table.column or table.*")
+                fail(
+                    f"Invalid column specification: {col}; expected table.column or table.*"
+                )
             Crossref.add_column(self.population_columns, table, column)
 
         # Setup the columns required for executing the query
