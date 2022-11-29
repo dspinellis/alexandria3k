@@ -52,5 +52,5 @@ def print(message):
     relative = now - start
     global previous
     delta = now - previous
-    debug.print(PERF_FLAG, f"{relative:10} Δ={delta:10} {message}")
+    debug.print(PERF_FLAG, f"{relative:10} {delta:10} {message}")
     previous = now
