@@ -142,6 +142,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         self.assertEqual(self.record_count("work_subjects"), 16)
         self.assertEqual(self.record_count("work_funders"), 4)
         self.assertEqual(self.record_count("funder_awards"), 4)
+        self.assertEqual(self.record_count("work_links"), 19)
 
         self.assertEqual(
             self.record_count(
@@ -190,6 +191,14 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
                 "doi = '10.35609/gcbssproceeding.2022.1(2)'",
             ),
             16,
+        )
+        self.assertEqual(
+            self.cond_field(
+                "work_links",
+                "content_type",
+                "url = 'https://api.elsevier.com/content/article/PII:S2352847822000557?httpAccept=text/plain'",
+            ),
+            "text/plain",
         )
 
 
