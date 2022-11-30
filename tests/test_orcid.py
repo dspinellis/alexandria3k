@@ -25,12 +25,14 @@ import sys
 
 sys.path.append("src/alexandria3k")
 
+from common import ensure_unlinked, query_result
+import crossref
 import orcid
 
 DATABASE_PATH = "tests/tmp/orcid.db"
 
 
-class TestOrcid(unittest.TestCase):
+class TestOrcidAll(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         if os.path.exists(DATABASE_PATH):
@@ -53,7 +55,7 @@ class TestOrcid(unittest.TestCase):
     def test_import(
         self,
     ):
-        result = TestOrcid.cursor.execute(f"SELECT Count(*) from persons")
+        result = TestOrcidAll.cursor.execute(f"SELECT Count(*) from persons")
         (count,) = result.fetchone()
         # ORCID_2022_10_summaries/000/0000-0001-5078-5000.xml is an error
         # record, so 7 records remain
@@ -62,7 +64,7 @@ class TestOrcid(unittest.TestCase):
     def test_person(
         self,
     ):
-        result = TestOrcid.cursor.execute(
+        result = TestOrcidAll.cursor.execute(
             f"""SELECT given_names FROM persons
             WHERE orcid='0000-0003-4231-1897'"""
         )
@@ -72,7 +74,7 @@ class TestOrcid(unittest.TestCase):
     def test_external_identifiers(
         self,
     ):
-        result = TestOrcid.cursor.execute(
+        result = TestOrcidAll.cursor.execute(
             f"""SELECT type, value
                                   FROM person_external_identifiers
                                   WHERE orcid='0000-0003-4231-1897'"""
@@ -85,7 +87,7 @@ class TestOrcid(unittest.TestCase):
     def test_urls(
         self,
     ):
-        result = TestOrcid.cursor.execute(
+        result = TestOrcidAll.cursor.execute(
             f"""SELECT name, url FROM person_researcher_urls
                                   WHERE orcid='0000-0003-4231-1897'"""
         )
@@ -105,7 +107,7 @@ class TestOrcid(unittest.TestCase):
     def test_person_works(
         self,
     ):
-        result = TestOrcid.cursor.execute(
+        result = TestOrcidAll.cursor.execute(
             f"""SELECT orcid, doi FROM person_works
                                   WHERE orcid='0000-0003-4231-1897'"""
         )
@@ -113,4 +115,37 @@ class TestOrcid(unittest.TestCase):
         self.assertEqual(len(rows), 128)
         self.assertTrue(
             ("0000-0003-4231-1897", "10.1109/TSE.2003.1245303") in rows
+        )
+
+
+class TestOrcidAuthorsOnly(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+
+        # Add known authors
+        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref.populate(DATABASE_PATH)
+
+        orcid.populate(
+            "tests/data/ORCID_2022_10_summaries.tar.gz",
+            DATABASE_PATH,
+            None,  # All columns
+            True,  # Only author-linked records
+        )
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_import(self):
+
+        self.assertEqual(
+            query_result(
+                TestOrcidAuthorsOnly.cursor, "SELECT Count(*) from persons"
+            ),
+            1,
         )
