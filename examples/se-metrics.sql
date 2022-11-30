@@ -122,33 +122,31 @@ CREATE TABLE works_venue AS
   FROM works
   LEFT JOIN journal_names ON works.issn_print = journal_names.issn_print;
 
-.print CREATE INDEX works_doi_idx
 CREATE INDEX IF NOT EXISTS se_data.works_doi_idx ON works(doi);
-.print CREATE INDEX work_references_doi_idx
 CREATE INDEX IF NOT EXISTS se_data.work_references_doi_idx ON work_references(doi);
-.print CREATE INDEX work_references_work_id_idx
 CREATE INDEX IF NOT EXISTS se_data.work_references_work_id_idx ON work_references(work_id);
-.print CREATE INDEX works_venue_work_id_idx
 CREATE INDEX IF NOT EXISTS works_venue_work_id_idx ON works_venue(work_id);
 
-.print CREATE TABLE venue_citations
-CREATE TABLE venue_citations AS
-  SELECT cited_work.venue, COUNT(*) AS citations_number
+CREATE TABLE work_citations AS
+  SELECT doi, COUNT(*) AS citations_number
   FROM se_data.work_references
-  INNER JOIN works_venue AS published_work
-    ON work_references.work_id = published_work.work_id
-  INNER JOIN works_venue AS cited_work
-    ON work_references.doi = cited_work.doi
-  GROUP BY cited_work.venue;
+  GROUP BY doi;
 
-CREATE TABLE venue_publications AS
-  SELECT venue, COUNT(*) AS publications_number
-  FROM works_venue
+CREATE INDEX IF NOT EXISTS work_citations_doi_idx ON work_citations(doi);
+
+CREATE TABLE venue_h5 AS
+  WITH ranked_venue_citations AS (
+    SELECT venue, citations_number,
+      Row_number() OVER (
+        PARTITION BY venue ORDER BY citations_number DESC) AS row_rank
+    FROM work_citations
+    INNER JOIN works_venue ON works_venue.doi = work_citations.doi
+  ),
+  eligible_ranks AS (
+    SELECT venue, row_rank FROM ranked_venue_citations
+    WHERE row_rank <= citations_number
+  )
+  SELECT venue, Max(row_rank) AS h5_index FROM eligible_ranks
   GROUP BY venue;
 
-SELECT venue_publications.venue, publications_number FROM
-  venue_citations INNER JOIN venue_publications
-    ON venue_citations.venue = venue_publications.venue
-  WHERE venue_citations.citations_number
-    >= venue_publications.publications_number
-  ORDER BY publications_number DESC;
+SELECT * from venue_h5 ORDER BY h5_index DESC;
