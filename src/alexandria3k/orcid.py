@@ -540,6 +540,13 @@ def populate(data_path, database_path, columns=None, authors_only=False):
         # Value addition
         table_fillers.append(TableFiller(db, table_name, table_columns))
 
+    if authors_only:
+        cursor.execute(
+            """
+            CREATE INDEX IF NOT EXISTS work_authors_orcid_idx
+                ON work_authors(orcid)
+        """
+        )
     # Streaming read from compressed file
     with tarfile.open(data_path, "r|gz") as tar:
         for tar_info in tar:
