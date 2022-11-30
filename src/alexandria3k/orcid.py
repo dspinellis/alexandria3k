@@ -73,6 +73,7 @@ def getter(path):
     path from a given tree."""
     return lambda tree: get_element(tree, path)
 
+
 def get_type_element(tree, path, id_type):
     """Return the text value of <common:external-id-value> in the
     specified element path of the given tree if <common:external-id-type>
@@ -85,6 +86,7 @@ def get_type_element(tree, path, id_type):
         return None
 
     return get_element(element, f"{COMMON}external-id-value")
+
 
 def type_getter(path, id_type):
     """Return a function to return an element with the specified
@@ -551,7 +553,11 @@ def populate(data_path, database_path, columns=None, authors_only=False):
             # Skip records of non-linked authors
             if authors_only:
                 cursor.execute(
-                    "SELECT DISTINCT 1 FROM work_authors WHERE orcid = ?",
+                    """
+                    SELECT 1 WHERE EXISTS (
+                        SELECT 1 FROM work_authors WHERE orcid = ?
+                    )
+                    """,
                     (orcid,),
                 )
                 if not cursor.fetchone():
