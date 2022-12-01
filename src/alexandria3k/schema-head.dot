@@ -41,6 +41,7 @@ digraph D {
 	persons -> person_peer_reviews;
 	persons -> person_research_resources;
 	persons -> person_works;
+	works -> person_works  [headlabel="0…1", taillabel="0..1"];
 
 	edge  [headlabel="0…1", taillabel="1"];
 	node [fillcolor="#fa9a87"];
