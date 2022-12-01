@@ -143,6 +143,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         self.assertEqual(self.record_count("work_funders"), 4)
         self.assertEqual(self.record_count("funder_awards"), 4)
         self.assertEqual(self.record_count("work_links"), 19)
+        self.assertEqual(self.record_count("work_licenses"), 15)
 
         self.assertEqual(
             self.record_count(
@@ -191,6 +192,22 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
                 "doi = '10.35609/gcbssproceeding.2022.1(2)'",
             ),
             16,
+        )
+        self.assertEqual(
+            self.cond_field(
+                "work_licenses",
+                "delay_in_days",
+                "url = 'http://creativecommons.org/licenses/by-nc-nd/4.0/'",
+            ),
+            25,
+        )
+        self.assertEqual(
+            self.cond_field(
+                "work_licenses",
+                "start_timestamp",
+                "url = 'http://creativecommons.org/licenses/by-nc-nd/4.0/'",
+            ),
+            1650931200000,
         )
         self.assertEqual(
             self.cond_field(

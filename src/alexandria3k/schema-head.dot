@@ -18,6 +18,8 @@ digraph D {
 	works -> work_updates;
 	works -> work_subjects;
 	works -> work_funders;
+	works -> work_licenses;
+	works -> work_links;
 	work_funders -> funder_awards;
 
 	node [fillcolor="#a6ce39"];

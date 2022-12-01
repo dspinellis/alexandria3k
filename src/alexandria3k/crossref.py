@@ -445,6 +445,26 @@ class SubjectsCursor(ElementsCursor):
         return super().Column(col)
 
 
+class LicensesCursor(ElementsCursor):
+    """A cursor over the work items' subject data."""
+
+    def element_name(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return "license"
+
+    def Rowid(self):
+        """Return a unique id of the row along all records.
+        This allows for 1M links"""
+        return (self.parent_cursor.Rowid() << 20) | self.element_index
+
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:  # work_id
+            return self.parent_cursor.Rowid()
+        return super().Column(col)
+
+
 class LinksCursor(ElementsCursor):
     """A cursor over the work items' subject data."""
 
@@ -724,6 +744,25 @@ tables = [
             ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("name", lambda row: row),
+        ],
+    ),
+    TableMeta(
+        "work_licenses",
+        foreign_key="work_id",
+        parent_name="works",
+        primary_key="id",
+        cursor_class=LicensesCursor,
+        columns=[
+            ColumnMeta("work_id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("url", lambda row: dict_value(row, "URL")),
+            ColumnMeta(
+                "start_timestamp",
+                lambda row: dict_value(dict_value(row, "start"), "timestamp"),
+            ),
+            ColumnMeta(
+                "delay_in_days", lambda row: dict_value(row, "delay-in-days")
+            ),
         ],
     ),
     TableMeta(
