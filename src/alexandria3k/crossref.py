@@ -24,7 +24,7 @@ import os
 import sqlite3
 
 import apsw
-from common import fail
+from common import fail, set_fast_writing
 import debug
 from file_cache import get_file_cache
 import perf
@@ -1151,6 +1151,7 @@ class Crossref:
         self.vdb.execute(
             log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
         )
+        set_fast_writing(self.vdb)
 
         self.index_manager = IndexManager(self.vdb)
 

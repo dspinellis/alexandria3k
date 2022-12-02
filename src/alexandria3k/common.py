@@ -40,3 +40,23 @@ def query_result(cursor, query):
     result_set = cursor.execute(query)
     (result,) = result_set.fetchone()
     return result
+
+
+def set_fast_writing(db):
+    """
+    Very fast inserts at the risk of possible data corruption in case of a
+    crash.
+    We don't really care, because we assume the databased is
+    populated in one go from empty, and if it gets corrupted
+    the process can be repeated.
+    This increases speed in ORCID works population by 50:
+    from 845291 / 2 records in 16980 s (40 ms / record) to
+    3225659 / 2 records in 1292 s (800 μs / record).
+    It also reduces the time required to run the Crossref tests from 994 ms
+    to 372 ms.
+    See https://stackoverflow.com/a/58547438/20520 for measurements behind this
+    approach.
+    """
+    db.execute("PRAGMA synchronous = OFF")
+    db.execute("PRAGMA journal_mode = OFF")
+    db.execute("PRAGMA locking_mode = EXCLuSIVE")

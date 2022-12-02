@@ -25,6 +25,7 @@ import xml.etree.ElementTree as ET
 
 import apsw
 
+from common import set_fast_writing
 import perf
 from virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN, FilesCursor
 
@@ -529,6 +530,7 @@ def populate(data_path, database_path, columns=None, authors_only=False):
 
     # Create empty tables and their TableFiller objects
     db = apsw.Connection(database_path)
+    set_fast_writing(db)
     cursor = db.cursor()
     table_fillers = []
     for (table_name, table_columns) in population_columns.items():
