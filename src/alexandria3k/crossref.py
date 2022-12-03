@@ -24,7 +24,7 @@ import os
 import sqlite3
 
 import apsw
-from common import fail, set_fast_writing
+from common import fail, log_sql, set_fast_writing
 import debug
 from file_cache import get_file_cache
 import perf
@@ -819,13 +819,6 @@ def get_table_meta_by_name(name):
         return table_dict[name]
     except KeyError:
         fail(f"Unknown table name: {name}")
-
-
-def log_sql(statement):
-    """Return the specified SQL statement. If "log-sql" is set,
-    output a copy of the statement on the standard output"""
-    debug.print("log-sql", statement)
-    return statement
 
 
 def tables_transitive_closure(tables, top):

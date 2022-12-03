@@ -233,8 +233,8 @@ def parse_cli_arguments():
     parser.add_argument(
         "-l",
         "--linked-records",
-        action="store_true",
-        help="Only add ORCID records that link to existing ones",
+        type=str,
+        help="Only add ORCID records that link to existing <persons> or <works>",
     )
     parser.add_argument(
         "-n",
@@ -356,7 +356,8 @@ def main():
             args.orcid_data,
             args.populate_db_path,
             args.columns,
-            args.linked_records,
+            args.linked_records == "persons",
+            args.linked_records == "works",
         )
         perf.print("ORCID table population")
 

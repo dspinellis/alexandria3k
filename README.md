@@ -19,7 +19,7 @@ In addition,
 the Crossref data set can be linked with:
 * the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (25 GB compressed, 435 GB uuncompressed),
-  containing about 15 million author records, and
+  containing about 78 million author records, and
 * a data set of funder bodies corresponding to funder DOIs,
 * a data set of journal names corresponding to journal ISSNs,
 * a data set of open access journal data.
@@ -65,7 +65,7 @@ to quickly experiment with queries, before they are run on the complete set.
 
 ### ORCID data
 You can populate a database with data regarding authors (URLs, countries,
-external identifiers, education, employment, etc.) from the
+external identifiers, education, employment, works, etc.) from the
 [ORCID](https://orcid.org/) initiative.
 For this you need to download the _summary file_
 of the ORCID Public Data File (e.g. `ORCID_2022_10_summaries.tar.gz` — 25GB)
@@ -94,7 +94,9 @@ These are the things you can do with _alexandria3k_.
   * Select a horizontal subset of Crossref records
     * Through an SQL expression
     * By sampling a subset of the 26 thousand containers in the data set
-  * Select a vertical subset of columns
+  * Select a horizontal subset of ORCID records by only loading those
+    associated with already populated Crossref records
+  * Select a vertical subset of Crossref or ORCID columns
     * Using the `Table.Column` or `Table.*` notation
 
 Populating a database can take
@@ -242,7 +244,7 @@ ORCID will be added.
 ```sh
 alexandria3k.py --populate-db-path database.db \
   --orcid-data ORCID_2022_10_summaries.tar.gz \
-  --linked-records
+  --linked-records persons
 ```
 
 ### Populate the database with journal names
@@ -309,7 +311,9 @@ optional arguments:
                         Populate database with Crossref journal names from URL
                         or file
   -L, --list-schema     List the schema of the scanned database
-  -l, --linked-records  Only add ORCID records that link to existing ones
+  -l LINKED_RECORDS, --linked-records LINKED_RECORDS
+                        Only add ORCID records that link to existing <persons>
+                        or <works>
   -n, --normalize       Normalize relations in the populated Crossref database
   -O ORCID_DATA, --orcid-data ORCID_DATA
                         URL or file for obtaining ORCID author data
@@ -434,6 +438,7 @@ orcid.populate(
         "person_educations.organization_name",
     ],
     authors_only=True,
+    works_only=False
 )
 ```
 

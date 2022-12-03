@@ -42,7 +42,8 @@ class TestOrcidAll(unittest.TestCase):
             "tests/data/ORCID_2022_10_summaries.tar.gz",
             DATABASE_PATH,
             None,  # All columns
-            False,  # No linked records
+            False,  # Not only person linked records
+            False,  # Not only work linked records
         )
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -114,11 +115,15 @@ class TestOrcidAll(unittest.TestCase):
         rows = result.fetchmany(999)
         self.assertEqual(len(rows), 128)
         self.assertTrue(
-            ("0000-0003-4231-1897", "10.1109/TSE.2003.1245303") in rows
+            ("0000-0003-4231-1897", "10.1109/tse.2003.1245303") in rows
         )
 
 
 class TestOrcidAuthorsOnly(unittest.TestCase):
+    """
+    Test importing of ORCID records associated with Crossref work authors.
+    """
+
     @classmethod
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
@@ -130,8 +135,9 @@ class TestOrcidAuthorsOnly(unittest.TestCase):
         orcid.populate(
             "tests/data/ORCID_2022_10_summaries.tar.gz",
             DATABASE_PATH,
-            None,  # All columns
-            True,  # Only author-linked records
+            columns=None,  # All columns
+            authors_only=True,
+            works_only=False,
         )
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -148,4 +154,55 @@ class TestOrcidAuthorsOnly(unittest.TestCase):
                 TestOrcidAuthorsOnly.cursor, "SELECT Count(*) from persons"
             ),
             1,
+        )
+        self.assertEqual(
+            query_result(
+                TestOrcidAuthorsOnly.cursor, "SELECT family_name from persons"
+            ),
+            "Ali",
+        )
+
+
+class TestOrcidWorksOnly(unittest.TestCase):
+    """
+    Test importing of ORCID records containing works included in corresponding
+    Crossref table.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+
+        # Add known authors
+        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref.populate(DATABASE_PATH)
+
+        orcid.populate(
+            "tests/data/ORCID_2022_10_summaries.tar.gz",
+            DATABASE_PATH,
+            columns=None,  # All columns
+            authors_only=False,
+            works_only=True,
+        )
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_import(self):
+
+        self.assertEqual(
+            query_result(
+                TestOrcidWorksOnly.cursor, "SELECT Count(*) from persons"
+            ),
+            1,
+        )
+        self.assertEqual(
+            query_result(
+                TestOrcidWorksOnly.cursor, "SELECT family_name from persons"
+            ),
+            "Spinellis",
         )

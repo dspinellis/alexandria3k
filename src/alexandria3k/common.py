@@ -22,6 +22,8 @@
 import os
 import sys
 
+import debug
+
 
 def fail(message):
     """Fail the program execution with the specified error message"""
@@ -60,3 +62,10 @@ def set_fast_writing(db):
     db.execute("PRAGMA synchronous = OFF")
     db.execute("PRAGMA journal_mode = OFF")
     db.execute("PRAGMA locking_mode = EXCLuSIVE")
+
+
+def log_sql(statement):
+    """Return the specified SQL statement. If "log-sql" is set,
+    output a copy of the statement on the standard output"""
+    debug.print("log-sql", statement)
+    return statement

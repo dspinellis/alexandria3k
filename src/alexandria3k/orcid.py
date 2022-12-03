@@ -25,7 +25,7 @@ import xml.etree.ElementTree as ET
 
 import apsw
 
-from common import set_fast_writing
+from common import log_sql, set_fast_writing
 import perf
 from virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN, FilesCursor
 
@@ -75,7 +75,7 @@ def getter(path):
     return lambda tree: get_element(tree, path)
 
 
-def get_type_element(tree, path, id_type):
+def get_type_element_lower(tree, path, id_type):
     """Return the text value of <common:external-id-value> in the
     specified element path of the given tree if <common:external-id-type>
     is the specified id_type or None."""
@@ -86,13 +86,13 @@ def get_type_element(tree, path, id_type):
     if found_type is None or found_type != id_type:
         return None
 
-    return get_element(element, f"{COMMON}external-id-value")
+    return get_element(element, f"{COMMON}external-id-value").lower()
 
 
-def type_getter(path, id_type):
-    """Return a function to return an element with the specified
-    path and <common:external-id-type> from a given tree."""
-    return lambda tree: get_type_element(tree, path, id_type)
+def type_getter_lower(path, id_type):
+    """Return a function to return an element converted to lowercase
+    with the specified path and <common:external-id-type> from a given tree."""
+    return lambda tree: get_type_element_lower(tree, path, id_type)
 
 
 # Map from XML to relational schema
@@ -376,7 +376,9 @@ tables = [
         records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/{ACTIVITIES}group/{COMMON}external-ids",
         columns=[
             ColumnMeta("orcid"),
-            ColumnMeta("doi", type_getter(f"{COMMON}external-id", "doi")),
+            ColumnMeta(
+                "doi", type_getter_lower(f"{COMMON}external-id", "doi")
+            ),
         ],
     ),
 ]
@@ -481,7 +483,13 @@ def order_columns_by_schema(table_name, column_names):
     return result
 
 
-def populate(data_path, database_path, columns=None, authors_only=False):
+def populate(
+    data_path,
+    database_path,
+    columns=None,
+    authors_only=False,
+    works_only=False,
+):
     """Populate the specified SQLite database.
     The database is created if it does not exist.
     If it exists, the populated tables are dropped
@@ -489,6 +497,12 @@ def populate(data_path, database_path, columns=None, authors_only=False):
 
     columns is an array containing strings of
     table_name.column_name or table_name.*
+
+    If authors_only is True then only ORCID records of persons that exist in the
+    Crossref work_authors table will be added.
+
+    If works_only is True then only ORCID records of persons whose works
+    exist in the Crossref works table will be added.
     """
 
     population_columns = {}
@@ -521,6 +535,46 @@ def populate(data_path, database_path, columns=None, authors_only=False):
             )
         add_column(table, column)
 
+    def work_dois_in_crossref(tree):
+        """
+        Return True if any the work dois included under "works" in the tree
+        exist in the Crossref works table.
+        """
+        external_id = f"{COMMON}external-id"
+        # Person's work DOIs
+        work_dois = []
+        for record in element_tree.findall(
+            f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/{ACTIVITIES}group/{COMMON}external-ids"
+        ):
+            doi = get_type_element_lower(record, external_id, "doi")
+
+            # Include only defined DOIs and DOIs not cointaining "'",
+            # which would mess the generated SQL (shouldn't happen,
+            # but data can always contain some garbage).
+            # This also reduces the possibility of an SQLIA; not a big
+            # concern in the context of this application.
+            if doi and doi.find("'") == -1:
+                work_dois.append(f"'{doi}'")
+
+        if not work_dois:
+            return
+        doi_set = ",".join(work_dois)
+        # print(doi_set)
+
+        # For many DOIs SQLite executes OpenEphemeral and then a series of
+        # IdxInsert, which suggests it is optizing the search for all of
+        # them by creating a temporary index
+        cursor.execute(
+            log_sql(
+                f"""
+                SELECT 1 WHERE EXISTS (
+                    SELECT 1 FROM works WHERE doi IN ({doi_set})
+                )
+            """
+            ),
+        )
+        return cursor.fetchone()
+
     # Reorder columns to match the defined schema order
     # This creates deterministic schemas
     for (table_name, table_columns) in population_columns.items():
@@ -544,10 +598,12 @@ def populate(data_path, database_path, columns=None, authors_only=False):
 
     if authors_only:
         cursor.execute(
-            """
+            log_sql(
+                """
             CREATE INDEX IF NOT EXISTS work_authors_orcid_idx
                 ON work_authors(orcid)
         """
+            )
         )
     # Streaming read from compressed file
     with tarfile.open(data_path, "r|gz") as tar:
@@ -562,11 +618,13 @@ def populate(data_path, database_path, columns=None, authors_only=False):
             # Skip records of non-linked authors
             if authors_only:
                 cursor.execute(
+                    log_sql(
+                        """
+                        SELECT 1 WHERE EXISTS (
+                            SELECT 1 FROM work_authors WHERE orcid = ?
+                        )
                     """
-                    SELECT 1 WHERE EXISTS (
-                        SELECT 1 FROM work_authors WHERE orcid = ?
-                    )
-                    """,
+                    ),
                     (orcid,),
                 )
                 if not cursor.fetchone():
@@ -586,6 +644,10 @@ def populate(data_path, database_path, columns=None, authors_only=False):
             assert orcid == orcid_xml.text
 
             perf.print(f"Parse {orcid}")
+
+            if works_only and not work_dois_in_crossref(element_tree):
+                continue
+
             # Insert data to the specified tables
             for filler in table_fillers:
                 filler.add_records(element_tree, orcid)
