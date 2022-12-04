@@ -957,9 +957,11 @@ class Crossref:
         Running queries with joins without partitioning will often result
         in quadratic (or worse) algorithmic complexity."""
 
+        self.cursor = self.vdb.cursor()
+
         # Easy case
         if not partition:
-            for row in self.vdb.execute(log_sql(query)):
+            for row in self.cursor.execute(log_sql(query)):
                 yield row
             return
 
@@ -1000,10 +1002,15 @@ class Crossref:
                     WHERE virtual.{table_name}.container_id={i}"""
                     )
                 )
-            for row in partition.execute(log_sql(query)):
+            self.cursor = partition.cursor()
+            for row in self.cursor.execute(log_sql(query)):
                 yield row
             for table_name in self.query_columns.keys():
                 partition.execute(log_sql(f"DROP TABLE {table_name}"))
+
+    def get_query_column_names(self):
+        """Return the column names associated with an executing query"""
+        return [description[0] for description in self.cursor.description]
 
     def populate(self, database_path, columns=None, condition=None):
         """Populate the specified SQLite database.

@@ -210,6 +210,12 @@ def parse_cli_arguments():
         help="Character to use for separating query output fields",
     )
     parser.add_argument(
+        "-H",
+        "--header",
+        action="store_true",
+        help="Include a header in the query output",
+    )
+    parser.add_argument(
         "-i",
         "--index",
         nargs="*",
@@ -381,6 +387,9 @@ def main():
             csv_file = sys.stdout
         csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
         for rec in crossref_instance.query(args.query, args.partition):
+            if args.header:
+                csv_writer.writerow(crossref_instance.get_query_column_names())
+                args.header = False
             csv_writer.writerow(rec)
         debug.print("files-read", f"{FileCache.file_reads} files read")
 

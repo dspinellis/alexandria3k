@@ -270,11 +270,12 @@ alexandria3k.py  --populate-db-path database.db \
 ```
 usage: alexandria3k.py [-h] [-C CROSSREF_DIRECTORY] [-c COLUMNS [COLUMNS ...]]
                        [-D DEBUG [DEBUG ...]] [-A [OPEN_ACCESS_JOURNALS]]
-                       [-E OUTPUT_ENCODING] [-F FIELD_SEPARATOR]
-                       [-i [INDEX ...]] [-J [JOURNAL_NAMES]] [-L] [-l] [-n]
-                       [-O ORCID_DATA] [-o OUTPUT] [-P] [-p POPULATE_DB_PATH]
-                       [-Q QUERY_FILE] [-q QUERY] [-R ROW_SELECTION_FILE]
-                       [-r ROW_SELECTION] [-s SAMPLE] [-U [FUNDER_NAMES]]
+                       [-E OUTPUT_ENCODING] [-F FIELD_SEPARATOR] [-H]
+                       [-i [INDEX ...]] [-J [JOURNAL_NAMES]] [-L]
+                       [-l LINKED_RECORDS] [-n] [-O ORCID_DATA] [-o OUTPUT]
+                       [-P] [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
+                       [-R ROW_SELECTION_FILE] [-r ROW_SELECTION] [-s SAMPLE]
+                       [-U [FUNDER_NAMES]]
 
 alexandria3k: Publication metadata interface
 
@@ -305,6 +306,7 @@ optional arguments:
                         Excel)
   -F FIELD_SEPARATOR, --field-separator FIELD_SEPARATOR
                         Character to use for separating query output fields
+  -H, --header          Include a header in the query output
   -i [INDEX ...], --index [INDEX ...]
                         SQL expressions that select the populated rows
   -J [JOURNAL_NAMES], --journal-names [JOURNAL_NAMES]
