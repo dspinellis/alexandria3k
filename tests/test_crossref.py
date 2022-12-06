@@ -51,6 +51,10 @@ class TestDoiNormalize(unittest.TestCase):
             "10.1207/s15327663jcp1001&2_08",
         )
         self.assertEqual(
+            crossref.normalized_doi("10.2214/am j roentgenol.19.21598"),
+            "10.2214/amjroentgenol.19.21598",
+        )
+        self.assertEqual(
             crossref.normalized_doi(
                 "10.1145/2892208.2892226 10.1145/2892208.2892226"
             ),

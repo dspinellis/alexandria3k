@@ -157,9 +157,9 @@ def normalized_doi(str):
     normalized = str.lower()
     if normalized.find(" ") != -1:
         # Some DOIs appear double, separated by a space
-        (a, b) = normalized.split(" ")
-        if a == b:
-            normalized = a
+        parts = normalized.split(" ")
+        if len(parts) == 2 and parts[0] == parts[1]:
+            normalized = parts[0]
         else:
             normalized = normalized.replace(" ", "")
     if normalized.find("&") == -1:
