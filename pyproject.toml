@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "alexandria-3k"
-version = "0.0.1"
+name = "alexandria3k"
+version = "0.0.2"
 authors = [
   { name="Diomidis Spinellis", email="dds@aueb.gr" },
 ]
@@ -26,5 +26,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/dspinellis/alexandria-3k"
-"Bug Tracker" = "https://github.com/dspinellis/alexandria-3k/issues"
+"Homepage" = "https://github.com/dspinellis/alexandria3k"
+"Bug Tracker" = "https://github.com/dspinellis/alexandria3k/issues"
