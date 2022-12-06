@@ -25,6 +25,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+exclude = ["alexandria3k/data"]
+
 [project.urls]
 "Homepage" = "https://github.com/dspinellis/alexandria3k"
 "Bug Tracker" = "https://github.com/dspinellis/alexandria3k/issues"
