@@ -22,10 +22,10 @@ import io
 import sys
 import unittest
 
-sys.path.append("src/alexandria3k")
+sys.path.append("src")
 
-import debug
-import perf
+from alexandria3k import debug
+from alexandria3k import perf
 
 
 class TestPerf(unittest.TestCase):

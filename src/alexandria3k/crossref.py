@@ -24,12 +24,13 @@ import os
 import sqlite3
 
 import apsw
-from common import fail, log_sql, set_fast_writing
-import debug
-from file_cache import get_file_cache
-import perf
-from tsort import tsort
-from virtual_db import (
+
+from .common import fail, log_sql, set_fast_writing
+from . import debug
+from .file_cache import get_file_cache
+from . import perf
+from .tsort import tsort
+from .virtual_db import (
     ColumnMeta,
     TableMeta,
     CONTAINER_ID_COLUMN,

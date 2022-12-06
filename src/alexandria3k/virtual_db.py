@@ -23,7 +23,7 @@ import os
 
 import apsw
 
-from file_cache import get_file_cache
+from .file_cache import get_file_cache
 
 
 class TableMeta:

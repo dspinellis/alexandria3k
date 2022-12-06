@@ -23,9 +23,9 @@ import unittest
 import sqlite3
 import sys
 
-sys.path.append("src/alexandria3k")
+sys.path.append("src")
 
-import csv_sources
+from alexandria3k import csv_sources
 
 DATABASE_PATH = "tests/tmp/journal_names.db"
 

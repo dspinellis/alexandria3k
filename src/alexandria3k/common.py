@@ -22,7 +22,7 @@
 import os
 import sys
 
-import debug
+from . import debug
 
 
 def fail(message):

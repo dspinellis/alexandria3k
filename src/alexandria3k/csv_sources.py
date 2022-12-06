@@ -24,7 +24,7 @@ import re
 import sqlite3
 from urllib.request import urlopen
 
-from virtual_db import ColumnMeta, TableMeta
+from .virtual_db import ColumnMeta, TableMeta
 
 RE_URL = re.compile(r"\w+://")
 

@@ -25,8 +25,14 @@ the Crossref data set can be linked with:
 * a data set of open access journal data.
 
 ## Installation
-Currently _alexandria3k_ is considered early-beta quality,
-and is therefore installed and used through this repository,
+The easiest way to install _alexandria3k_ and its dependencies is through
+[PyPI](https://pypi.org/):
+```sh
+python3 -m pip install alexandria3k
+```
+
+For development purposes _alexandria3k_ can also be
+installed and used through this repository,
 rather than as a Python package.
 
 ```sh
@@ -355,15 +361,16 @@ Crossref functionality is accessed by means of a corresponding object
 created by specifying the data directory.
 
 ```py
-from crossref import Crossref
+from alexandria3k.crossref import Crossref
 
 crossref_instance = Crossref('April 2022 Public Data File from Crossref')
 ```
 
 You can also add a parameter indicating how to sample the containers.
 ```py
-from crossref import Crossref
 from random import random, seed
+
+from alexandria3k.crossref import Crossref
 
 # Randomly (but deterministically) sample 1% of the containers
 seed("alexandria3k")
@@ -429,7 +436,7 @@ Add tables containing author country and education organization.
 Only records of authors identified in the publications through an
 ORCID will be added.
 ```py
-import orcid
+from alexandria3k import orcid
 
 orcid.populate(
     "ORCID_2022_10_summaries.tar.gz",
@@ -446,7 +453,7 @@ orcid.populate(
 
 ### Populate the database with journal names
 ```py
-import csv_sources
+from alexandria3k import csv_sources
 
 csv_sources.populate_journal_names(
     "database.db",
@@ -456,7 +463,7 @@ csv_sources.populate_journal_names(
 
 ### Populate the database with funder names
 ```py
-import csv_sources
+from alexandria3k import csv_sources
 
 csv_sources.populate_funder_names(
     "database.db",
@@ -466,7 +473,7 @@ csv_sources.populate_funder_names(
 
 ### Populate the database with data regarding open access journals
 ```py
-import csv_sources
+from alexandria3k import csv_sources
 
 csv_sources.populate_open_access_journals(
     "database.db",

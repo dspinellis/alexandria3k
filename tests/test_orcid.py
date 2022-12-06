@@ -23,11 +23,11 @@ import unittest
 import sqlite3
 import sys
 
-sys.path.append("src/alexandria3k")
+sys.path.append("src")
 
-from common import ensure_unlinked, query_result
-import crossref
-import orcid
+from alexandria3k.common import ensure_unlinked, query_result
+from alexandria3k import crossref
+from alexandria3k import orcid
 
 DATABASE_PATH = "tests/tmp/orcid.db"
 

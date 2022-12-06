@@ -28,11 +28,11 @@ import sys
 
 import apsw
 
-from common import fail
+from .common import fail
 import crossref
 import csv_sources
 import debug
-from file_cache import FileCache
+from .file_cache import FileCache
 import orcid
 import perf
 

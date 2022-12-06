@@ -25,9 +25,9 @@ import xml.etree.ElementTree as ET
 
 import apsw
 
-from common import log_sql, set_fast_writing
-import perf
-from virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN, FilesCursor
+from .common import log_sql, set_fast_writing
+from . import perf
+from .virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN, FilesCursor
 
 # The ORCID XML namespaces in XPath format
 ACTIVITIES = "{http://www.orcid.org/ns/activities}"

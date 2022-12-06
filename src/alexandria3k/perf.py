@@ -30,7 +30,7 @@ perf.print("Finished another expensive task")
 import builtins
 import time
 
-import debug
+from . import debug
 
 PERF_FLAG = "perf"
 

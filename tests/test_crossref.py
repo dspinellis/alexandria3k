@@ -23,12 +23,12 @@ import unittest
 import sqlite3
 import sys
 
-sys.path.append("src/alexandria3k")
+sys.path.append("src")
 
-from common import ensure_unlinked, query_result
-import crossref
-import debug
-from file_cache import FileCache
+from alexandria3k.common import ensure_unlinked, query_result
+from alexandria3k import crossref
+from alexandria3k import debug
+from alexandria3k.file_cache import FileCache
 
 DATABASE_PATH = "tests/tmp/crossref.db"
 
