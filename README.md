@@ -4,7 +4,7 @@ The _alexandria3k_ package
 supplies a library and a command-line tool providing efficient relational query
 access the entire
 [Crossref data set](https://www.nature.com/articles/d41586-022-02926-y)
-(157 GB compressed, 1 PB uncompressed).
+(157 GB compressed, 1 TB uncompressed).
 This contains publication metadata from about 134 million publications from
 all major international publishers with full citation data for 60 million
 of them.
