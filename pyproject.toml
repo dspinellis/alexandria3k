@@ -4,17 +4,21 @@ build-backend = "hatchling.build"
 
 [project]
 name = "alexandria3k"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Diomidis Spinellis", email="dds@aueb.gr" },
 ]
-description = "Efficient relational database queries over the entire CrossRef data set"
+description = "Efficient relational database queries over the entire Crossref abnd ORCID data sets"
 readme = "README.md"
 requires-python = ">=3.7"
 
+dependencies = [
+  "apsw",
+]
+
 # See https://pypi.org/classifiers/
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
