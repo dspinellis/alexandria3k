@@ -142,18 +142,18 @@ cd alexandria3k
 
 ### Obtain list of command-line options
 ```sh
-alexandria3k.py --help
+alexandria3k --help
 ```
 
 ### Show DOI and title of all publications
 ```sh
-alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref'  \
+alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
    --query 'SELECT DOI, title FROM works'
 ```
 
 ### Save DOI and title of 2021 publications in a CSV file suitable for Excel
 ```sh
-alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref'  \
+alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
   --query 'SELECT DOI, title FROM works WHERE published_year = 2021' \
   --output 2021.csv \
   --output-encoding use utf-8-sig
@@ -189,7 +189,7 @@ It uses a tab character ('\t') to separate the output fields.
 Through sampling the data containers it runs in a couple of minutes,
 rather than hours.
 ```sh
-alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref'  \
+alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
    --sample 'random.random() < 0.01' \
    --field-separator $'\t' \
    --query '
@@ -203,7 +203,7 @@ SELECT works.abstract is not null AS have_abstract, Count(*)
 The following command creates an SQLite database with all Crossref data
 regarding publications that contain "COVID" in their title or abstract.
 ```sh
-alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref' \
+alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref' \
    --populate-db-path covid.db \
    --row-selection "title like '%COVID%' OR abstract like '%COVID%' "
 ```
@@ -212,7 +212,7 @@ alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref'
 The following command selects only a subset of columns of the complete
 Crossref data set to create a graph between navigable entities.
 ```sh
-alexandria3k.py --crossref-directory 'April 2022 Public Data File from Crossref' \
+alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref' \
    --populate-db-path graph.db \
    --columns works.doi work_references.work_id work_references.doi work_funders.id \
     work_funders.work_id work_funders.doi funder_awards.funder_id funder_awards.name \
@@ -248,40 +248,40 @@ SELECT COUNT(*) FROM work_references;
 Only records of authors identified in the publications through an
 ORCID will be added.
 ```sh
-alexandria3k.py --populate-db-path database.db \
+alexandria3k --populate-db-path database.db \
   --orcid-data ORCID_2022_10_summaries.tar.gz \
   --linked-records persons
 ```
 
 ### Populate the database with journal names
 ```sh
-alexandria3k.py  --populate-db-path database.db \
+alexandria3k  --populate-db-path database.db \
   --journal-names http://ftp.crossref.org/titlelist/titleFile.csv
 ```
 
 ### Populate the database with funder names
 ```sh
-alexandria3k.py  --populate-db-path database.db \
+alexandria3k  --populate-db-path database.db \
   --funder-names https://doi.crossref.org/funderNames?mode=list
 ```
 
 ### Populate the database with data regarding open access journals
 ```sh
-alexandria3k.py  --populate-db-path database.db \
+alexandria3k  --populate-db-path database.db \
   --open-access-journals https://doaj.org/csv
 ```
 
 ## Command-line options reference
 <!-- CLI start -->
 ```
-usage: alexandria3k.py [-h] [-C CROSSREF_DIRECTORY] [-c COLUMNS [COLUMNS ...]]
-                       [-D DEBUG [DEBUG ...]] [-A [OPEN_ACCESS_JOURNALS]]
-                       [-E OUTPUT_ENCODING] [-F FIELD_SEPARATOR] [-H]
-                       [-i [INDEX ...]] [-J [JOURNAL_NAMES]] [-L]
-                       [-l LINKED_RECORDS] [-n] [-O ORCID_DATA] [-o OUTPUT]
-                       [-P] [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
-                       [-R ROW_SELECTION_FILE] [-r ROW_SELECTION] [-s SAMPLE]
-                       [-U [FUNDER_NAMES]]
+usage: alexandria3k [-h] [-C CROSSREF_DIRECTORY] [-c COLUMNS [COLUMNS ...]]
+                    [-D DEBUG [DEBUG ...]] [-A [OPEN_ACCESS_JOURNALS]]
+                    [-E OUTPUT_ENCODING] [-F FIELD_SEPARATOR] [-H]
+                    [-i [INDEX ...]] [-J [JOURNAL_NAMES]] [-L]
+                    [-l LINKED_RECORDS] [-n] [-O ORCID_DATA] [-o OUTPUT]
+                    [-P] [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
+                    [-R ROW_SELECTION_FILE] [-r ROW_SELECTION] [-s SAMPLE]
+                    [-U [FUNDER_NAMES]]
 
 alexandria3k: Publication metadata interface
 

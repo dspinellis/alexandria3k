@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Main package module"""
+"""Command-line interface"""
 
 import argparse
 import csv
@@ -29,12 +29,12 @@ import sys
 import apsw
 
 from .common import fail
-import crossref
-import csv_sources
-import debug
+from . import crossref
+from . import csv_sources
+from . import debug
 from .file_cache import FileCache
-import orcid
-import perf
+from . import orcid
+from . import perf
 
 random.seed("alexandria3k")
 

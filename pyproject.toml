@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "alexandria3k"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
   { name="Diomidis Spinellis", email="dds@aueb.gr" },
 ]
@@ -29,8 +29,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-exclude = ["alexandria3k/data"]
-
 [project.urls]
 "Homepage" = "https://github.com/dspinellis/alexandria3k"
 "Bug Tracker" = "https://github.com/dspinellis/alexandria3k/issues"
+
+[project.scripts]
+alexandria3k = "alexandria3k.__main__:main"
