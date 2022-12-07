@@ -50,11 +50,8 @@ Below is an example of commands that download the April 2022 Crossref snapshot
 [aria2c](https://aria2.github.io/) download utility.
 
 ```sh
-# Download Crossref torrent file
-wget https://doi.org/10.13003/83b2gq
-
-# Download Crossref data (168 GB) through the torrent
-aria2c 83b2gq
+# Download Crossref data (168 GB) through the torrent link
+aria2c https://doi.org/10.13003/83b2gq
 ```
 
 Currently, the Crossref data set is split into about 26 thousand compressed
@@ -147,8 +144,9 @@ This query performs a single pass through the data set to obtain
 the number of Crossref publications by year and publication type.
 ```sh
 alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref' \
-   --query '
+   --query-file count-year-type.sql >results.csv
 ```
+where `count-year-type.sql` contains:
 ```sql
 WITH counts AS (
   SELECT
@@ -162,12 +160,13 @@ SELECT year AS name, Sum(number) FROM counts
   GROUP BY year
 UNION
 SELECT type AS name, Sum(number) FROM counts
-  GROUP BY type' >results.csv
+  GROUP BY type
 ```
 
 ### Sampling
 The following command counts the number of publication that have
-or do not have an abstract in a 1% sample of the data set's containers.
+or do not have an abstract in an approximately 1% sample
+of the data set's containers.
 It uses a tab character ('\t') to separate the output fields.
 Through sampling the data containers it runs in a couple of minutes,
 rather than hours.
@@ -175,11 +174,12 @@ rather than hours.
 alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
    --sample 'random.random() < 0.01' \
    --field-separator $'\t' \
-   --query '
+   --query-file count-no-abstract.sql
 ```
+where `count-no-abstract.sql` contains:
 ```sql
 SELECT works.abstract is not null AS have_abstract, Count(*)
-  FROM works GROUP BY have_abstract'
+  FROM works GROUP BY have_abstract
 ```
 
 ### Database of COVID research
