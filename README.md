@@ -30,15 +30,9 @@ The easiest way to install _alexandria3k_ and its dependencies is through
 ```sh
 python3 -m pip install alexandria3k
 ```
-
-For development purposes _alexandria3k_ can also be
-installed and used through this repository,
-rather than as a Python package.
-
+or
 ```sh
-git clone https://github.com/dspinellis/alexandria3k.git
-cd alexandra3k/src
-pipenv install
+pip install alexandria3k
 ```
 
 ## Data downloading
@@ -128,17 +122,6 @@ This however means that aggregation operations will not work as expected,
 because they will be run multiple times (once for every partition).
 
 ## Command line execution
-
-### Preparation
-```sh
-# While in alexandria3k/src directory
-
-# Launch a shell in the virtual environment
-pipenv shell
-
-# Navigate to the source code directory
-cd alexandria3k
-```
 
 ### Obtain list of command-line options
 ```sh
@@ -479,6 +462,43 @@ csv_sources.populate_open_access_journals(
     "database.db",
     "https://doaj.org/csv"
 )
+```
+
+## Development
+For software development purposes _alexandria3k_ can also be installed
+and used through its
+[Github repository](https://github.com/dspinellis/alexandria3k),
+rather than as a Python package.
+
+### Installation
+```sh
+git clone https://github.com/dspinellis/alexandria3k.git
+cd alexandra3k/src
+pipenv install
+```
+
+### CLI use while developing
+```sh
+# While in alexandria3k/src directory
+
+# Launch a shell in the virtual environment
+pipenv shell
+
+# Navigate to the top directory
+cd ..
+bin/alexandria3k
+```
+
+### Testing
+```sh
+# While in the top-level directory
+python3 -m unittest discover
+```
+
+### Building
+```sh
+# While in the top-level directory
+python3 -m build
 ```
 
 ## Package name derivation
