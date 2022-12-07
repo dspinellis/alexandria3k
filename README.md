@@ -486,7 +486,9 @@ pipenv shell
 
 # Navigate to the top directory
 cd ..
-bin/alexandria3k
+
+# Run the CLI
+bin/alexandria3k --help
 ```
 
 ### Testing
