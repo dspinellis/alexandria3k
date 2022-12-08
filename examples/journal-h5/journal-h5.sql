@@ -47,5 +47,5 @@ CREATE INDEX IF NOT EXISTS journal_names_iss_eprint_idx
 SELECT title, h5_index FROM issn_h5 LEFT JOIN journal_names
   ON issn_h5.issn = journal_names.issn_print
     OR issn_h5.issn = journal_names.issn_eprint
-  ORDER BY h5_index DESC
+  ORDER BY h5_index DESC, title ASC
   LIMIT 20;

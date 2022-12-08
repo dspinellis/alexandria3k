@@ -13,8 +13,8 @@ of the top-20 journals.
 
 |title|h5_index|
 |-----|--------|
-|New England Journal of Medicine|333|
 |Nature|333|
+|New England Journal of Medicine|333|
 |Science|311|
 |The Lancet|270|
 |Cell|244|
