@@ -10,7 +10,7 @@ fi
 
 # Populate database with DOIs of works and their references
 alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
-  --populate-db-path 5y.db \
+  --populate-db-path 5y.db --debug progress \
   --columns works.doi works.issn_print works.issn_electronic \
     work_references.doi \
   --row-selection 'works.published_year BETWEEN 2017 AND 2021'
