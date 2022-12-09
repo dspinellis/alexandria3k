@@ -69,3 +69,24 @@ def log_sql(statement):
     output a copy of the statement on the standard output"""
     debug.log("log-sql", statement)
     return statement
+
+
+def add_columns(columns, tables, add_column):
+    """Call add column for each specified column or for all tables if columns
+    is not defined"""
+
+    # By default include all tables and columns
+    if not columns:
+        columns = []
+        for table in tables:
+            columns.append(f"{table.get_name()}.*")
+
+    # A dictionary of columns to be populated for each table
+    for col in columns:
+        try:
+            (table, column) = col.split(".")
+        except ValueError:
+            fail(
+                f"Invalid column specification: {col}; expected table.column or table.*"
+            )
+        add_column(table, column)

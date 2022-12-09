@@ -26,7 +26,7 @@ import sqlite3
 # pylint: disable-next=import-error
 import apsw
 
-from .common import fail, log_sql, set_fast_writing
+from .common import add_columns, fail, log_sql, set_fast_writing
 from . import debug
 from . import perf
 from .tsort import tsort
@@ -1167,22 +1167,13 @@ class Crossref:
 
             self.index_manager = IndexManager(self.vdb)
 
-            # By default include all tables and columns
-            if not columns:
-                columns = []
-                for table in tables:
-                    # table_name.* will get expanded by the SQL SELECT statement
-                    columns.append(f"{table.get_name()}.*")
-
-            # A dictionary of columns to be populated for each table
-            for col in columns:
-                try:
-                    (table, column) = col.split(".")
-                except ValueError:
-                    fail(
-                        f"Invalid column specification: {col}; expected table.column or table.*"
-                    )
-                Crossref.add_column(self.population_columns, table, column)
+            add_columns(
+                columns,
+                tables,
+                lambda table, column: Crossref.add_column(
+                    self.population_columns, table, column
+                ),
+            )
 
             # Setup the columns required for executing the query
             if condition:

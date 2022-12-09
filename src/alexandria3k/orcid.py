@@ -24,7 +24,7 @@ import xml.etree.ElementTree as ET
 # pylint: disable-next=import-error
 import apsw
 
-from .common import log_sql, set_fast_writing, fail
+from .common import add_columns, fail, log_sql, set_fast_writing
 from . import perf
 from .virtual_db import ColumnMeta, TableMeta
 
@@ -561,8 +561,6 @@ def populate(
     exist in the Crossref works table will be added.
     """
 
-    population_columns = {}
-
     def add_column(table, column):
         """Add a column required for executing a query to the
         specified dictionary"""
@@ -574,22 +572,6 @@ def populate(
             population_columns[table].add(column)
         else:
             population_columns[table] = {column}
-
-    # By default include all tables and columns
-    if not columns:
-        columns = []
-        for table in tables:
-            columns.append(f"{table.get_name()}.*")
-
-    # A dictionary of columns to be populated for each table
-    for col in columns:
-        try:
-            (table, column) = col.split(".")
-        except ValueError:
-            fail(
-                f"Invalid column specification: {col}; expected table.column or table.*"
-            )
-        add_column(table, column)
 
     def work_dois_in_crossref():
         """
@@ -631,6 +613,9 @@ def populate(
             ),
         )
         return cursor.fetchone()
+
+    population_columns = {}
+    add_columns(columns, tables, add_column)
 
     # Reorder columns to match the defined schema order
     # This creates deterministic schemas
