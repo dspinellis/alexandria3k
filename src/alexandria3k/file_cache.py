@@ -26,6 +26,8 @@ class FileCache:
     """Cache the reading/decompression/parsing of a single compressed
     JSON file"""
 
+    # pylint: disable=too-few-public-methods
+
     file_reads = 0
 
     def __init__(self):
@@ -54,6 +56,7 @@ file_cache = FileCache()
 
 def set_file_cache(new_file_cache):
     """Set the file cache exported from here to the specified object"""
+    # pylint: disable-next=global-statement,invalid-name
     global file_cache
     file_cache = new_file_cache
 

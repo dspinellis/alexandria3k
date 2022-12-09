@@ -44,7 +44,7 @@ def query_result(cursor, query):
     return result
 
 
-def set_fast_writing(db):
+def set_fast_writing(database):
     """
     Very fast inserts at the risk of possible data corruption in case of a
     crash.
@@ -59,13 +59,13 @@ def set_fast_writing(db):
     See https://stackoverflow.com/a/58547438/20520 for measurements behind this
     approach.
     """
-    db.execute("PRAGMA synchronous = OFF")
-    db.execute("PRAGMA journal_mode = OFF")
-    db.execute("PRAGMA locking_mode = EXCLuSIVE")
+    database.execute("PRAGMA synchronous = OFF")
+    database.execute("PRAGMA journal_mode = OFF")
+    database.execute("PRAGMA locking_mode = EXCLuSIVE")
 
 
 def log_sql(statement):
     """Return the specified SQL statement. If "log-sql" is set,
     output a copy of the statement on the standard output"""
-    debug.print("log-sql", statement)
+    debug.log("log-sql", statement)
     return statement

@@ -23,11 +23,11 @@ import csv
 import os
 import sqlite3
 
+# pylint: disable-next=import-error
 import apsw
 
 from .common import fail, log_sql, set_fast_writing
 from . import debug
-from .file_cache import get_file_cache
 from . import perf
 from .tsort import tsort
 from .virtual_db import (
@@ -37,6 +37,11 @@ from .virtual_db import (
     FilesCursor,
     ROWID_INDEX,
 )
+
+
+# Method names coming from apsw start with uppercase
+# pylint: disable=invalid-name
+# pylint: disable=too-many-lines
 
 
 class DataFiles:
@@ -63,9 +68,9 @@ class DataFiles:
         """Return an iterator over the int identifiers of all data files"""
         return range(0, len(self.data_files))
 
-    def get_file_name_by_id(self, id):
-        """Return the name of the file corresponding to the specified id"""
-        return self.data_files[id]
+    def get_file_name_by_id(self, fid):
+        """Return the name of the file corresponding to the specified fid"""
+        return self.data_files[fid]
 
 
 def dict_value(dictionary, key):
@@ -148,14 +153,14 @@ def tab_values(array):
     return "\t".join(array)
 
 
-def normalized_doi(str):
+def normalized_doi(doi_string):
     """
     Return the string in lowercase with spaces removed and common HTML
     escapes replaced (or None if None is passed)
     """
-    if not str:
+    if not doi_string:
         return None
-    normalized = str.lower()
+    normalized = doi_string.lower()
     if normalized.find(" ") != -1:
         # Some DOIs appear double, separated by a space
         parts = normalized.split(" ")
@@ -177,9 +182,9 @@ def normalized_doi(str):
     )
 
 
-def lower_or_none(str):
+def lower_or_none(string):
     """Return the string in lowercase or None if None is passed"""
-    return str.lower() if str else None
+    return string.lower() if string else None
 
 
 class Source:
@@ -203,9 +208,9 @@ class Source:
         """Return an iterator over the data files' identifiers"""
         return self.data_files.get_file_id_iterator()
 
-    def get_file_name_by_id(self, id):
-        """Return the name of the file corresponding to the specified id"""
-        return self.data_files.get_file_name_by_id(id)
+    def get_file_name_by_id(self, fid):
+        """Return the name of the file corresponding to the specified fid"""
+        return self.data_files.get_file_name_by_id(fid)
 
 
 class WorksCursor:
@@ -550,7 +555,10 @@ class AwardsCursor(ElementsCursor):
         return super().Column(col)
 
 
-# By convention column 0 is the unique or foreign key,
+# The full schema is documented in
+# https://api.crossref.org/swagger-ui/index.html
+#
+# In this relational view, by convention column 0 is the unique or foreign key,
 # and column 1 the data's container
 tables = [
     TableMeta(
@@ -811,23 +819,25 @@ tables = [
     ),
 ]
 
-table_dict = {t.get_name(): t for t in tables}
+crossref_table_dict = {t.get_name(): t for t in tables}
 
 
 def get_table_meta_by_name(name):
     """Return the metadata of the specified table"""
     try:
-        return table_dict[name]
+        return crossref_table_dict[name]
     except KeyError:
         fail(f"Unknown table name: {name}")
+        # NOTREACHED
+        return None
 
 
-def tables_transitive_closure(tables, top):
+def tables_transitive_closure(table_list, top):
     """Return the transitive closure of all named tables
     with all the ones required to reach the specified top
     """
     result = set([top])
-    for table_name in tables:
+    for table_name in table_list:
         while table_name not in result:
             result.add(table_name)
             table = get_table_meta_by_name(table_name)
@@ -878,7 +888,9 @@ class Crossref:
         )
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
-        self.data_source = Source(table_dict, crossref_directory, sample)
+        self.data_source = Source(
+            crossref_table_dict, crossref_directory, sample
+        )
         self.vdb.createmodule("filesource", self.data_source)
 
         # Dictionaries of tables containing a set of columns required
@@ -886,6 +898,7 @@ class Crossref:
         self.query_columns = {}
         self.population_columns = {}
         self.query_and_population_columns = {}
+        self.index_manager = None
 
         for table in tables:
             self.vdb.execute(
@@ -990,12 +1003,12 @@ class Crossref:
             )
         )
         for i in self.data_source.get_file_id_iterator():
-            debug.print(
+            debug.log(
                 "progress",
                 f"Container {i} {self.data_source.get_file_name_by_id(i)}",
             )
-            for table_name in self.query_columns.keys():
-                columns = ", ".join(self.query_columns[table_name])
+            for (table_name, table_columns) in self.query_columns.items():
+                columns = ", ".join(table_columns)
                 partition.execute(
                     log_sql(
                         f"""CREATE TABLE {table_name}
@@ -1006,7 +1019,7 @@ class Crossref:
             self.cursor = partition.cursor()
             for row in self.cursor.execute(log_sql(query)):
                 yield row
-            for table_name in self.query_columns.keys():
+            for table_name in self.query_columns:
                 partition.execute(log_sql(f"DROP TABLE {table_name}"))
 
     def get_query_column_names(self):
@@ -1041,6 +1054,7 @@ class Crossref:
         not be specified.
         """
 
+        # pylint: disable=too-many-statements
         def set_join_columns():
             """Add columns required for joins"""
             to_add = []
@@ -1078,7 +1092,7 @@ class Crossref:
             result = ""
             tables_meta = [get_table_meta_by_name(t) for t in table_names]
             sorted_tables = tsort(tables_meta, table_names)
-            debug.print("sorted-tables", sorted_tables)
+            debug.log("sorted-tables", sorted_tables)
             for table_name in sorted_tables:
                 if table_name == "works":
                     continue
@@ -1105,10 +1119,6 @@ class Crossref:
                         f"temp_{table_name}", foreign_key
                     )
             return result
-
-        def join_to_works(table):
-            """Return temporary table join statements to join
-            the specified table to works."""
 
         def populate_table(table, partition_index, condition):
             """Populate the specified table"""
@@ -1142,123 +1152,123 @@ class Crossref:
                     WHERE {table}.container_id = {partition_index} {exists}
                 """
             self.vdb.execute(log_sql(statement))
-            perf.print(f"Populate {table}")
+            perf.log(f"Populate {table}")
 
-        # Create the populated database, if needed
-        if not os.path.exists(database_path):
-            pdb = sqlite3.connect(database_path)
-            pdb.close()
+        def create_database_schema(columns):
+            """Create the populated database, if needed"""
+            if not os.path.exists(database_path):
+                pdb = sqlite3.connect(database_path)
+                pdb.close()
 
-        self.vdb.execute(
-            log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
-        )
-        set_fast_writing(self.vdb)
+            self.vdb.execute(
+                log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
+            )
+            set_fast_writing(self.vdb)
 
-        self.index_manager = IndexManager(self.vdb)
+            self.index_manager = IndexManager(self.vdb)
 
-        # By default include all tables and columns
-        if not columns:
-            columns = []
-            for table in tables:
-                # table_name.* will get expanded by the SQL SELECT statement
-                columns.append(f"{table.get_name()}.*")
+            # By default include all tables and columns
+            if not columns:
+                columns = []
+                for table in tables:
+                    # table_name.* will get expanded by the SQL SELECT statement
+                    columns.append(f"{table.get_name()}.*")
 
-        # A dictionary of columns to be populated for each table
-        for col in columns:
-            try:
-                (table, column) = col.split(".")
-            except ValueError:
-                fail(
-                    f"Invalid column specification: {col}; expected table.column or table.*"
+            # A dictionary of columns to be populated for each table
+            for col in columns:
+                try:
+                    (table, column) = col.split(".")
+                except ValueError:
+                    fail(
+                        f"Invalid column specification: {col}; expected table.column or table.*"
+                    )
+                Crossref.add_column(self.population_columns, table, column)
+
+            # Setup the columns required for executing the query
+            if condition:
+                table_names = ", ".join(crossref_table_dict.keys())
+                query = f"""SELECT DISTINCT 1 FROM {table_names} WHERE {condition}"""
+                self.set_query_columns(query)
+                set_join_columns()
+                perf.log("Condition parsing")
+
+            # Create empty tables
+            for (table_name, table_columns) in self.population_columns.items():
+                table = get_table_meta_by_name(table_name)
+                self.vdb.execute(
+                    log_sql(f"DROP TABLE IF EXISTS populated.{table_name}")
                 )
-            Crossref.add_column(self.population_columns, table, column)
+                self.vdb.execute(
+                    log_sql(table.table_schema("populated.", table_columns))
+                )
+            perf.log("Table creation")
 
-        # Setup the columns required for executing the query
-        if condition:
-            table_names = ", ".join(table_dict.keys())
-            query = (
-                f"""SELECT DISTINCT 1 FROM {table_names} WHERE {condition}"""
+        def create_matched_tables():
+            """Create copies of the virtual tables for fast access"""
+            query_table_names = tables_transitive_closure(
+                self.query_columns.keys(), "works"
             )
-            self.set_query_columns(query)
-            set_join_columns()
-            perf.print("Condition parsing")
 
-        # Create empty tables
-        for (table_name, table_columns) in self.population_columns.items():
-            table = get_table_meta_by_name(table_name)
-            self.vdb.execute(
-                log_sql(f"DROP TABLE IF EXISTS populated.{table_name}")
-            )
-            self.vdb.execute(
-                log_sql(table.table_schema("populated.", table_columns))
-            )
-        perf.print("Table creation")
+            for table in query_and_population_tables():
+                columns = self.query_and_population_columns.get(table)
+                if columns:
+                    columns = set.union(columns, {"rowid"})
+                else:
+                    columns = {"rowid"}
 
+                # Add query columns
+                query_columns_of_table = self.query_columns.get(table)
+                if query_columns_of_table:
+                    columns = set.union(columns, query_columns_of_table)
+
+                column_list = ", ".join(columns)
+                self.vdb.execute(
+                    log_sql(f"""DROP TABLE IF EXISTS temp_{table}""")
+                )
+                create = f"""CREATE TEMP TABLE temp_{table} AS
+                    SELECT {column_list} FROM {table}
+                    WHERE container_id = {i}"""
+                self.vdb.execute(log_sql(create))
+            perf.log("Virtual table copies")
+
+            # Create a table containing the work ids for all works
+            # matching the query, which is executed in a context
+            # containing all required tables.
+            create = (
+                """CREATE TEMP TABLE temp_matched AS
+                        SELECT works.id, works.rowid
+                        FROM temp_works AS works """
+                + joined_tables(query_table_names, True)
+                + f" WHERE ({condition})"
+            )
+            self.vdb.execute(log_sql("DROP TABLE IF EXISTS temp_matched"))
+            self.vdb.execute(log_sql(create))
+
+            if debug.enabled("dump-matched"):
+                csv_writer = csv.writer(debug.get_output(), delimiter="\t")
+                for rec in self.vdb.execute("SELECT * FROM temp_matched"):
+                    csv_writer.writerow(rec)
+
+            perf.log("Matched table creation")
+
+        create_database_schema(columns)
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
         # indexing and the file cache avoids opening, reading, decompressing,
         # and parsing each file multiple times.
         for i in self.data_source.get_file_id_iterator():
-            debug.print(
+            debug.log(
                 "progress",
                 f"Container {i} {self.data_source.get_file_name_by_id(i)}",
             )
 
             if condition:
-                query_table_names = tables_transitive_closure(
-                    self.query_columns.keys(), "works"
-                )
-                population_table_names = tables_transitive_closure(
-                    self.population_columns.keys(), "works"
-                )
-
-                # Create copies of the virtual tables for fast access
-                for table in query_and_population_tables():
-                    columns = self.query_and_population_columns.get(table)
-                    if columns:
-                        columns = set.union(columns, {"rowid"})
-                    else:
-                        columns = {"rowid"}
-
-                    # Add query columns
-                    query_columns_of_table = self.query_columns.get(table)
-                    if query_columns_of_table:
-                        columns = set.union(columns, query_columns_of_table)
-
-                    column_list = ", ".join(columns)
-                    self.vdb.execute(
-                        log_sql(f"""DROP TABLE IF EXISTS temp_{table}""")
-                    )
-                    create = f"""CREATE TEMP TABLE temp_{table} AS
-                        SELECT {column_list} FROM {table}
-                        WHERE container_id = {i}"""
-                    self.vdb.execute(log_sql(create))
-                perf.print("Virtual table copies")
-
-                # Create a table containing the work ids for all works
-                # matching the query, which is executed in a context
-                # containing all required tables.
-                create = (
-                    """CREATE TEMP TABLE temp_matched AS
-                            SELECT works.id, works.rowid
-                            FROM temp_works AS works """
-                    + joined_tables(query_table_names, True)
-                    + f" WHERE ({condition})"
-                )
-                self.vdb.execute(log_sql("DROP TABLE IF EXISTS temp_matched"))
-                self.vdb.execute(log_sql(create))
-
-                if debug.enabled("dump-matched"):
-                    csv_writer = csv.writer(debug.get_output(), delimiter="\t")
-                    for rec in self.vdb.execute("SELECT * FROM temp_matched"):
-                        csv_writer.writerow(rec)
-
-                perf.print("Matched table creation")
+                create_matched_tables()
 
             for table in self.population_columns:
                 populate_table(table, i, condition)
             self.index_manager.drop_indexes()
-        perf.print("Table population")
+        perf.log("Table population")
 
         self.vdb.execute(log_sql("DETACH populated"))
         self.vdb.close()

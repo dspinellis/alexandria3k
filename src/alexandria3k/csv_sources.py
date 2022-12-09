@@ -33,8 +33,7 @@ def data_source(source):
     """Given a file path or a URL return a readable source for its contents"""
     if RE_URL.match(source):
         return urlopen(source)
-    else:
-        return open(source, "rb")
+    return open(source, "rb")
 
 
 def record_source(source):
@@ -108,7 +107,10 @@ open_access_table = TableMeta(
         ColumnMeta("license_terms_url", description="URL for license terms"),
         ColumnMeta(
             "license_embedded",
-            description="Machine-readable CC licensing information embedded or displayed in articles",
+            description=(
+                "Machine-readable CC licensing information embedded"
+                "or displayed in articles"
+            ),
         ),
         ColumnMeta(
             "example_license_embedded_url",
@@ -227,16 +229,16 @@ def load_csv_data(database_path, table_meta, source):
     con.close()
 
 
-def populate_journal_names(database_path, data_source):
+def populate_journal_names(database_path, source):
     """Populate journal names table of database with data from source"""
-    load_csv_data(database_path, journals_table, data_source)
+    load_csv_data(database_path, journals_table, source)
 
 
-def populate_funder_names(database_path, data_source):
+def populate_funder_names(database_path, source):
     """Populate funder names table of database with data from source"""
-    load_csv_data(database_path, funders_table, data_source)
+    load_csv_data(database_path, funders_table, source)
 
 
-def populate_open_access_journals(database_path, data_source):
+def populate_open_access_journals(database_path, source):
     """Populate OA journals table of database with data from source"""
-    load_csv_data(database_path, open_access_table, data_source)
+    load_csv_data(database_path, open_access_table, source)

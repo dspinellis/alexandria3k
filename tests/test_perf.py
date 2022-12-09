@@ -34,7 +34,7 @@ class TestPerf(unittest.TestCase):
         f = io.StringIO()
         debug.set_output(f)
 
-        perf.print("One message")
+        perf.log("One message")
         self.assertRegex(f.getvalue(), r"^$")
 
     def test_output(self):
@@ -43,5 +43,5 @@ class TestPerf(unittest.TestCase):
         f = io.StringIO()
         debug.set_output(f)
 
-        perf.print("phase 1")
+        perf.log("phase 1")
         self.assertRegex(f.getvalue(), r"phase 1")

@@ -21,21 +21,23 @@
 Use:
 import debug
 debug.set_flags(["parsing", "time"])
-debug.print("flag_name", "Some message")
+debug.log("flag_name", "Some message")
 if debug.enable("flag_name") ...
 """
 
-import builtins
 import sys
-import time
 
 
 flags = set()
+
+# Output: by default stdout, but can be set
+# pylint: disable-next=invalid-name
 output = sys.stdout
 
 
 def set_output(output_arg):
     """Direct output to the specified output target"""
+    # pylint: disable-next=global-statement,invalid-name
     global output
     output = output_arg
 
@@ -56,7 +58,7 @@ def enabled(flag):
     return flag in flags
 
 
-def print(flag, message):
+def log(flag, message):
     """Print the specified message if the corresponding flag is enabled"""
     if flag in flags:
-        builtins.print(message, file=output, flush=True)
+        print(message, file=output, flush=True)

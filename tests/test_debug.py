@@ -33,11 +33,11 @@ class TestDebug(unittest.TestCase):
         f = io.StringIO()
         debug.set_output(f)
 
-        debug.print("test", "One message")
+        debug.log("test", "One message")
         self.assertRegex(f.getvalue(), r"^$")
 
         debug.set_flags(["aflag"])
-        debug.print("test", "Second message")
+        debug.log("test", "Second message")
         self.assertRegex(f.getvalue(), r"^$")
 
     def test_output(self):
@@ -47,7 +47,7 @@ class TestDebug(unittest.TestCase):
         debug.set_output(f)
         self.assertEqual(debug.get_output(), f)
 
-        debug.print("test", "Another message")
+        debug.log("test", "Another message")
         self.assertRegex(f.getvalue(), r"^Another message\n$")
 
     def test_enabled(self):

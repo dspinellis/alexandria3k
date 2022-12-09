@@ -18,16 +18,15 @@
 #
 """Populate ORCID data tables"""
 
-import abc
-import os
 import tarfile
 import xml.etree.ElementTree as ET
 
+# pylint: disable-next=import-error
 import apsw
 
-from .common import log_sql, set_fast_writing
+from .common import log_sql, set_fast_writing, fail
 from . import perf
-from .virtual_db import ColumnMeta, TableMeta, CONTAINER_ID_COLUMN, FilesCursor
+from .virtual_db import ColumnMeta, TableMeta
 
 # The ORCID XML namespaces in XPath format
 ACTIVITIES = "{http://www.orcid.org/ns/activities}"
@@ -128,7 +127,8 @@ ORGANIZATION = [
     ColumnMeta(
         "organization_identifier",
         getter(
-            f"{COMMON}organization/{COMMON}disambiguated-organization/{COMMON}disambiguated-organization-identifier"
+            f"{COMMON}organization/{COMMON}disambiguated-organization/"
+            f"{COMMON}disambiguated-organization-identifier"
         ),
     ),
 ]
@@ -169,7 +169,10 @@ tables = [
     ),
     TableMeta(
         "person_researcher_urls",
-        records_path=f"{PERSON}person/{RESEARCHER_URL}researcher-urls/{RESEARCHER_URL}researcher-url",
+        records_path=(
+            f"{PERSON}person/{RESEARCHER_URL}researcher-urls/"
+            f"{RESEARCHER_URL}researcher-url"
+        ),
         columns=[
             ColumnMeta("orcid"),
             ColumnMeta("name", getter(f"{RESEARCHER_URL}url-name")),
@@ -194,7 +197,10 @@ tables = [
     ),
     TableMeta(
         "person_external_identifiers",
-        records_path=f"{PERSON}person/{EXTERNAL_IDENTIFIER}external-identifiers/{EXTERNAL_IDENTIFIER}external-identifier",
+        records_path=(
+            f"{PERSON}person/{EXTERNAL_IDENTIFIER}external-identifiers/"
+            f"{EXTERNAL_IDENTIFIER}external-identifier"
+        ),
         columns=[
             ColumnMeta("orcid"),
             ColumnMeta("type", getter(f"{COMMON}external-id-type")),
@@ -204,7 +210,10 @@ tables = [
     ),
     TableMeta(
         "person_distinctions",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}distinctions/{ACTIVITIES}affiliation-group/{DISTINCTION}distinction-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/{ACTIVITIES}distinctions/"
+            f"{ACTIVITIES}affiliation-group/{DISTINCTION}distinction-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
         ]
@@ -212,7 +221,10 @@ tables = [
     ),
     TableMeta(
         "person_educations",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}educations/{ACTIVITIES}affiliation-group/{EDUCATION}education-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/{ACTIVITIES}educations/"
+            f"{ACTIVITIES}affiliation-group/{EDUCATION}education-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
         ]
@@ -220,7 +232,10 @@ tables = [
     ),
     TableMeta(
         "person_employments",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}employments/{ACTIVITIES}affiliation-group/{EMPLOYMENT}employment-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/{ACTIVITIES}employments/"
+            f"{ACTIVITIES}affiliation-group/{EMPLOYMENT}employment-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
         ]
@@ -228,7 +243,12 @@ tables = [
     ),
     TableMeta(
         "person_invited_positions",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}invited-positions/{ACTIVITIES}affiliation-group/{INVITED_POSITION}invited-position-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/"
+            f"{ACTIVITIES}invited-positions/"
+            f"{ACTIVITIES}affiliation-group/"
+            f"{INVITED_POSITION}invited-position-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
         ]
@@ -236,7 +256,11 @@ tables = [
     ),
     TableMeta(
         "person_memberships",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}memberships/{ACTIVITIES}affiliation-group/{MEMBERSHIP}membership-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/"
+            f"{ACTIVITIES}memberships/{ACTIVITIES}affiliation-group/"
+            f"{MEMBERSHIP}membership-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
         ]
@@ -244,7 +268,12 @@ tables = [
     ),
     TableMeta(
         "person_qualifications",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}qualifications/{ACTIVITIES}affiliation-group/{QUALIFICATION}qualification-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/"
+            f"{ACTIVITIES}qualifications/"
+            f"{ACTIVITIES}affiliation-group/"
+            f"{QUALIFICATION}qualification-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
         ]
@@ -252,7 +281,10 @@ tables = [
     ),
     TableMeta(
         "person_services",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}services/{ACTIVITIES}affiliation-group/{SERVICE}service-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/{ACTIVITIES}services/"
+            f"{ACTIVITIES}affiliation-group/{SERVICE}service-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
         ]
@@ -260,7 +292,11 @@ tables = [
     ),
     TableMeta(
         "person_fundings",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}fundings/{ACTIVITIES}group/{FUNDING}funding-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/{ACTIVITIES}fundings/"
+            f"{ACTIVITIES}group/{FUNDING}funding-summary"
+        ),
+        # pylint: disable-next=fixme
         # TODO external-ids, contributors
         columns=[
             ColumnMeta("orcid"),
@@ -277,7 +313,12 @@ tables = [
     ),
     TableMeta(
         "person_peer_reviews",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}peer-reviews/{ACTIVITIES}group/{ACTIVITIES}peer-review-group/{PEER_REVIEW}peer-review-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/"
+            f"{ACTIVITIES}peer-reviews/{ACTIVITIES}group/"
+            f"{ACTIVITIES}peer-review-group/"
+            f"{PEER_REVIEW}peer-review-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
             ColumnMeta("reviewer_role", getter(f"{PEER_REVIEW}reviewer-role")),
@@ -305,32 +346,40 @@ tables = [
             ColumnMeta(
                 "organization_city",
                 getter(
-                    f"{PEER_REVIEW}convening-organization/{COMMON}address/{COMMON}city"
+                    f"{PEER_REVIEW}convening-organization/"
+                    f"{COMMON}address/{COMMON}city"
                 ),
             ),
             ColumnMeta(
                 "organization_region",
                 getter(
-                    f"{PEER_REVIEW}convening-organization/{COMMON}address/{COMMON}region"
+                    f"{PEER_REVIEW}convening-organization/"
+                    f"{COMMON}address/{COMMON}region"
                 ),
             ),
             ColumnMeta(
                 "organization_country",
                 getter(
-                    f"{PEER_REVIEW}convening-organization/{COMMON}address/{COMMON}country"
+                    f"{PEER_REVIEW}convening-organization/"
+                    f"{COMMON}address/{COMMON}country"
                 ),
             ),
         ],
     ),
     TableMeta(
         "person_research_resources",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}research-resources/{ACTIVITIES}group/{RESEARCH_RESOURCE}research-resource-summary",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/"
+            f"{ACTIVITIES}research-resources/{ACTIVITIES}group/"
+            f"{RESEARCH_RESOURCE}research-resource-summary"
+        ),
         columns=[
             ColumnMeta("orcid"),
             ColumnMeta(
                 "title",
                 getter(
-                    f"{RESEARCH_RESOURCE}proposal/{RESEARCH_RESOURCE}title/{COMMON}title"
+                    f"{RESEARCH_RESOURCE}proposal/{RESEARCH_RESOURCE}title/"
+                    f"{COMMON}title"
                 ),
             ),
             ColumnMeta(
@@ -342,7 +391,8 @@ tables = [
             ColumnMeta(
                 "start_month",
                 getter(
-                    f"{RESEARCH_RESOURCE}proposal/{COMMON}start-date/{COMMON}month"
+                    f"{RESEARCH_RESOURCE}proposal/{COMMON}start-date/"
+                    f"{COMMON}month"
                 ),
             ),
             ColumnMeta(
@@ -373,7 +423,10 @@ tables = [
     ),
     TableMeta(
         "person_works",
-        records_path=f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/{ACTIVITIES}group/{COMMON}external-ids",
+        records_path=(
+            f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/"
+            f"{ACTIVITIES}group/{COMMON}external-ids"
+        ),
         columns=[
             ColumnMeta("orcid"),
             ColumnMeta(
@@ -392,6 +445,8 @@ def get_table_meta_by_name(name):
         return table_dict[name]
     except KeyError:
         fail(f"Unknown table name: {name}")
+        # NOTREACHED
+        return None
 
 
 class TableFiller:
@@ -483,6 +538,7 @@ def order_columns_by_schema(table_name, column_names):
     return result
 
 
+# pylint: disable-next=too-many-locals,too-many-branches,too-many-statements
 def populate(
     data_path,
     database_path,
@@ -535,16 +591,17 @@ def populate(
             )
         add_column(table, column)
 
-    def work_dois_in_crossref(tree):
+    def work_dois_in_crossref():
         """
-        Return True if any the work dois included under "works" in the tree
+        Return True if any the work dois included under "works" in element_tree
         exist in the Crossref works table.
         """
         external_id = f"{COMMON}external-id"
         # Person's work DOIs
         work_dois = []
         for record in element_tree.findall(
-            f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/{ACTIVITIES}group/{COMMON}external-ids"
+            f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/"
+            f"{ACTIVITIES}group/{COMMON}external-ids"
         ):
             doi = get_type_element_lower(record, external_id, "doi")
 
@@ -557,7 +614,7 @@ def populate(
                 work_dois.append(f"'{doi}'")
 
         if not work_dois:
-            return
+            return False
         doi_set = ",".join(work_dois)
         # print(doi_set)
 
@@ -583,9 +640,9 @@ def populate(
         )
 
     # Create empty tables and their TableFiller objects
-    db = apsw.Connection(database_path)
-    set_fast_writing(db)
-    cursor = db.cursor()
+    database = apsw.Connection(database_path)
+    set_fast_writing(database)
+    cursor = database.cursor()
     table_fillers = []
     for (table_name, table_columns) in population_columns.items():
         # Table creation
@@ -594,7 +651,7 @@ def populate(
         cursor.execute(table.table_schema("", table_columns))
 
         # Value addition
-        table_fillers.append(TableFiller(db, table_name, table_columns))
+        table_fillers.append(TableFiller(database, table_name, table_columns))
 
     if authors_only:
         cursor.execute(
@@ -643,17 +700,17 @@ def populate(
 
             assert orcid == orcid_xml.text
 
-            perf.print(f"Parse {orcid}")
+            perf.log(f"Parse {orcid}")
 
-            if works_only and not work_dois_in_crossref(element_tree):
+            if works_only and not work_dois_in_crossref():
                 continue
 
             # Insert data to the specified tables
             for filler in table_fillers:
                 filler.add_records(element_tree, orcid)
-            perf.print(f"Populate {orcid}")
+            perf.log(f"Populate {orcid}")
 
-    for table_name in population_columns.keys():
+    for table_name in population_columns:
         cursor.execute(
             f"CREATE INDEX {table_name}_orcid_idx ON {table_name}(orcid)"
         )

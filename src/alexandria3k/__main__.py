@@ -21,12 +21,9 @@
 
 import argparse
 import csv
-import os
 import random
 import sqlite3
 import sys
-
-import apsw
 
 from .common import fail
 from . import crossref
@@ -191,6 +188,7 @@ def parse_cli_arguments():
         "-A",
         "--open-access-journals",
         nargs="?",
+        # pylint: disable-next=line-too-long
         const="https://s3.eu-west-2.amazonaws.com/doaj-data-cache/journalcsv__doaj_20221121_0635_utf8.csv",
         type=str,
         help="Populate database with DOAJ open access journal metadata from URL or file",
@@ -264,6 +262,7 @@ def parse_cli_arguments():
         "-P",
         "--partition",
         action="store_true",
+        # pylint: disable-next=line-too-long
         help="Run the query over partitioned data slices. (Warning: arguments are run per partition.)",
     )
     parser.add_argument(
@@ -313,6 +312,8 @@ def parse_cli_arguments():
 
 
 def main():
+    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-statements
     """Program entry point"""
     args = parse_cli_arguments()
 
@@ -320,7 +321,7 @@ def main():
     debug.set_flags(args.debug)
     if debug.enabled("stderr"):
         debug.set_output(sys.stderr)
-    perf.print("Start")
+    perf.log("Start")
 
     if args.list_schema:
         schema_list()
@@ -328,23 +329,23 @@ def main():
 
     crossref_instance = None
     if args.crossref_directory:
-        # pylint: disable=W0123
+        # pylint: disable-next=W0123
         sample = eval(f"lambda path: {args.sample}")
         crossref_instance = crossref.Crossref(args.crossref_directory, sample)
 
     if debug.enabled("virtual-counts"):
         # Streaming interface
         database_counts(crossref_instance.get_virtual_db())
-        debug.print("files-read", f"{FileCache.file_reads} files read")
+        debug.log("files-read", f"{FileCache.file_reads} files read")
 
     if debug.enabled("virtual-data"):
         # Streaming interface
         database_dump(crossref_instance.get_virtual_db())
-        debug.print("files-read", f"{FileCache.file_reads} files read")
+        debug.log("files-read", f"{FileCache.file_reads} files read")
 
     if args.row_selection_file:
         args.row_selection = ""
-        with open(args.row_selection_file) as query_input:
+        with open(args.row_selection_file, encoding="utf-8") as query_input:
             for line in query_input:
                 args.row_selection += line
 
@@ -352,8 +353,8 @@ def main():
         crossref_instance.populate(
             args.populate_db_path, args.columns, args.row_selection
         )
-        debug.print("files-read", f"{FileCache.file_reads} files read")
-        perf.print("Crossref table population")
+        debug.log("files-read", f"{FileCache.file_reads} files read")
+        perf.log("Crossref table population")
 
     if args.orcid_data:
         if not args.populate_db_path:
@@ -365,11 +366,11 @@ def main():
             args.linked_records == "persons",
             args.linked_records == "works",
         )
-        perf.print("ORCID table population")
+        perf.log("ORCID table population")
 
     if args.query_file:
         args.query = ""
-        with open(args.query_file) as query_input:
+        with open(args.query_file, encoding="utf-8") as query_input:
             for line in query_input:
                 args.query += line
 
@@ -378,7 +379,7 @@ def main():
             fail("Crossref data directory must be specified")
 
         if args.output:
-            # pylint: disable=R1732
+            # pylint: disable-next=R1732
             csv_file = open(
                 args.output, "w", newline="", encoding=args.output_encoding
             )
@@ -391,7 +392,8 @@ def main():
                 csv_writer.writerow(crossref_instance.get_query_column_names())
                 args.header = False
             csv_writer.writerow(rec)
-        debug.print("files-read", f"{FileCache.file_reads} files read")
+        csv_file.close()
+        debug.log("files-read", f"{FileCache.file_reads} files read")
 
     if args.normalize:
         if not args.populate_db_path:
@@ -399,7 +401,7 @@ def main():
         populated_db = sqlite3.connect(args.populate_db_path)
         crossref.normalize_affiliations(populated_db)
         crossref.normalize_subjects(populated_db)
-        perf.print("Data normalization")
+        perf.log("Data normalization")
 
     if args.journal_names:
         if not args.populate_db_path:
@@ -434,7 +436,7 @@ def main():
         populated_db = sqlite3.connect(args.populate_db_path)
         populated_reports(populated_db)
 
-    debug.print("files-read", f"{FileCache.file_reads} files read")
+    debug.log("files-read", f"{FileCache.file_reads} files read")
 
 
 if __name__ == "__main__":

@@ -22,12 +22,11 @@ Use:
 import perf
 perf.enable()
 expensive_task()
-perf.print("Finished expensive task")
+perf.log("Finished expensive task")
 another_expensive_task()
-perf.print("Finished another expensive task")
+perf.log("Finished another expensive task")
 """
 
-import builtins
 import time
 
 from . import debug
@@ -42,7 +41,7 @@ start = counter()
 previous = start
 
 
-def print(message):
+def log(message):
     """Print the specified performance figure timestamp.
     To enable this call debug.enable_flags(["perf"]).
     """
@@ -50,7 +49,8 @@ def print(message):
         return
     now = counter()
     relative = now - start
+    # pylint: disable-next=invalid-name,global-statement
     global previous
     delta = now - previous
-    debug.print(PERF_FLAG, f"{relative:10} {delta:10} {message}")
+    debug.log(PERF_FLAG, f"{relative:10} {delta:10} {message}")
     previous = now

@@ -18,9 +18,7 @@
 #
 """Virtual database table access"""
 
-import abc
-import os
-
+# pylint: disable-next=import-error
 import apsw
 
 from .file_cache import get_file_cache
@@ -29,6 +27,7 @@ from .file_cache import get_file_cache
 class TableMeta:
     """Meta-data of tables we maintain"""
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, name, **kwargs):
         self.name = name
 
@@ -162,6 +161,7 @@ class StreamingTable:
         self.table_dict = table_dict
         self.data_source = data_source
 
+    # pylint: disable-next=invalid-name
     def BestIndex(self, constraints, _orderbys):
         """Called by the Engine to determine the best available index
         for the operation at hand"""
@@ -202,9 +202,11 @@ class StreamingTable:
             )
         return None
 
+    # pylint: disable-next=invalid-name
     def Disconnect(self):
         """Called when a reference to a virtual table is no longer used"""
 
+    # pylint: disable-next=invalid-name
     Destroy = Disconnect
 
     def get_table_meta_by_name(self, name):
@@ -223,6 +225,7 @@ class StreamingTable:
         parent = self.get_table_meta_by_name(parent_name)
         return cursor_class(self, self.cursor(parent))
 
+    # pylint: disable-next=invalid-name
     def Open(self):
         """Return the table's cursor object"""
         return self.cursor(self.table_meta)
@@ -246,6 +249,7 @@ class FilesCursor:
         self.file_read = None
         self.items = None
 
+    # pylint: disable-next=invalid-name
     def Filter(self, index_number, _index_name, constraint_args):
         """Always called first to initialize an iteration to the first
         (possibly constrained) row of the table"""
@@ -262,6 +266,7 @@ class FilesCursor:
             self.file_index = constraint_args[0] - 1
         self.Next()
 
+    # pylint: disable-next=invalid-name
     def Next(self):
         """Advance reading to the next available file. Files are assumed to be
         non-empty."""
@@ -279,6 +284,7 @@ class FilesCursor:
         # The single file has been read. Set EOF in next Next call
         self.file_read = True
 
+    # pylint: disable-next=invalid-name
     def Rowid(self):
         """Return a unique id of the row along all records"""
         return self.file_index
@@ -287,10 +293,12 @@ class FilesCursor:
         """Return the current row. Not part of the apsw API."""
         return self.items
 
+    # pylint: disable-next=invalid-name
     def Eof(self):
         """Return True when the end of the table's records has been reached."""
         return self.eof
 
+    # pylint: disable-next=invalid-name
     def Close(self):
         """Cursor's destructor, used for cleanup"""
         self.items = None
