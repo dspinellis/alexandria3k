@@ -257,12 +257,12 @@ alexandria3k  --populate-db-path database.db \
 ## Command-line options reference
 <!-- CLI start -->
 ```
-usage: alexandria3k [-h] [-C CROSSREF_DIRECTORY] [-c COLUMNS [COLUMNS ...]]
-                    [-D DEBUG [DEBUG ...]] [-A [OPEN_ACCESS_JOURNALS]]
+usage: alexandria3k [-h] [-A [OPEN_ACCESS_JOURNALS]] [-C CROSSREF_DIRECTORY]
+                    [-c COLUMNS [COLUMNS ...]] [-D DEBUG [DEBUG ...]]
                     [-E OUTPUT_ENCODING] [-F FIELD_SEPARATOR] [-H]
                     [-i [INDEX ...]] [-J [JOURNAL_NAMES]] [-L]
-                    [-l LINKED_RECORDS] [-n] [-O ORCID_DATA] [-o OUTPUT]
-                    [-P] [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
+                    [-l LINKED_RECORDS] [-n] [-O ORCID_DATA] [-o OUTPUT] [-P]
+                    [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
                     [-R ROW_SELECTION_FILE] [-r ROW_SELECTION] [-s SAMPLE]
                     [-U [FUNDER_NAMES]]
 
@@ -270,6 +270,9 @@ alexandria3k: Publication metadata interface
 
 optional arguments:
   -h, --help            show this help message and exit
+  -A [OPEN_ACCESS_JOURNALS], --open-access-journals [OPEN_ACCESS_JOURNALS]
+                        Populate database with DOAJ open access journal
+                        metadata from URL or file
   -C CROSSREF_DIRECTORY, --crossref-directory CROSSREF_DIRECTORY
                         Directory storing the downloaded Crossref publication
                         data
@@ -287,9 +290,6 @@ optional arguments:
                         error; virtual-counts: Dump counts of the virtual
                         database; virtual-data: Dump the data of the virtual
                         database.
-  -A [OPEN_ACCESS_JOURNALS], --open-access-journals [OPEN_ACCESS_JOURNALS]
-                        Populate database with DOAJ open access journal
-                        metadata from URL or file
   -E OUTPUT_ENCODING, --output-encoding OUTPUT_ENCODING
                         Query output character encoding (use utf-8-sig for
                         Excel)
