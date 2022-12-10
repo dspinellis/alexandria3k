@@ -77,15 +77,15 @@ journals_table = TableMeta(
            Substr(rest, Instr(rest, '; ')+2)
          FROM split WHERE rest != ''
       )
-      SELECT journal_id, issn FROM split
+      SELECT journal_id, issn, 'A' AS issn_type FROM split
         WHERE issn != '';
 
     -- Finish populating the journals_issns table
     INSERT INTO journals_issns
-      SELECT id, issn_print FROM journal_names WHERE issn_print != '';
+      SELECT id, issn_print, 'P' FROM journal_names WHERE issn_print != '';
 
     INSERT INTO journals_issns
-      SELECT id, issn_eprint FROM journal_names WHERE issn_eprint != '';
+      SELECT id, issn_eprint, 'E' FROM journal_names WHERE issn_eprint != '';
 
     CREATE INDEX journals_issns_issn_idx ON journals_issns(issn);
     CREATE INDEX journals_issns_id_idx ON journals_issns(journal_id);

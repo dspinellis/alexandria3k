@@ -72,10 +72,13 @@ class TestOrcid(unittest.TestCase):
         self,
     ):
         result = TestOrcid.cursor.execute(
-            "SELECT Count(*) from journals_issns WHERE journal_id='50200'"
+            """
+                SELECT Count(*) from journals_issns
+                  WHERE journal_id='50200' AND issn_type = 'A'
+            """
         )
         (count,) = result.fetchone()
-        self.assertEqual(count, 4)
+        self.assertEqual(count, 3)
 
     def test_issn_id(
         self,
