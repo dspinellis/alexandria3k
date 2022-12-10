@@ -56,7 +56,7 @@ class TestOrcid(unittest.TestCase):
             f"SELECT Count(*) from journal_names"
         )
         (count,) = result.fetchone()
-        self.assertEqual(count, 19)
+        self.assertEqual(count, 20)
 
     def test_issn_name(
         self,
