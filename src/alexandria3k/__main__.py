@@ -96,6 +96,7 @@ def schema_list():
             csv_sources.open_access_table,
             csv_sources.funders_table,
             csv_sources.journals_table,
+            csv_sources.journals_issns_table,
         ]
     ):
         print(table.table_schema())

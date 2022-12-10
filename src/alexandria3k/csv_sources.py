@@ -92,6 +92,17 @@ journals_table = TableMeta(
           """,
 )
 
+journals_issns_table = TableMeta(
+    "journals_issns",
+    columns=[
+        ColumnMeta("journal_id"),
+        ColumnMeta("issn"),
+        ColumnMeta(
+            "issn_type", description="A: Additional, E: Electronic, P: Print"
+        ),
+    ],
+)
+
 # Crossref funder data https://doi.crossref.org/funderNames?mode=list
 # https://www.crossref.org/services/funder-registry/
 funders_table = TableMeta(

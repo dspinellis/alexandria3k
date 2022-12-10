@@ -205,9 +205,9 @@
 </g>
 <!-- works&#45;&gt;person_works -->
 <g id="edge25" class="edge"><title>works&#45;&gt;person_works</title>
-<path fill="none" stroke="black" d="M2426.25,-1531.68C2481.26,-1489.92 2555.41,-1422.85 2590,-1344 2627.31,-1258.94 2616.81,-601.075 2629,-509 2646.18,-379.296 2685.95,-227.645 2702.53,-167.504"/>
-<text text-anchor="middle" x="2687.03" y="-171.304" font-family="Arial" font-size="14.00">0…1</text>
-<text text-anchor="middle" x="2438.75" y="-1535.48" font-family="Arial" font-size="14.00">0..1</text>
+<path fill="none" stroke="black" d="M2426.27,-1531.69C2481.3,-1489.94 2555.46,-1422.87 2590,-1344 2627.25,-1258.93 2615.74,-601.061 2628,-509 2645.23,-379.558 2685.41,-228.376 2702.3,-167.948"/>
+<text text-anchor="middle" x="2686.8" y="-171.748" font-family="Arial" font-size="14.00">0…1</text>
+<text text-anchor="middle" x="2438.77" y="-1535.49" font-family="Arial" font-size="14.00">0..1</text>
 </g>
 <!-- open_access_journals -->
 <g id="node30" class="node"><title>open_access_journals</title>
@@ -293,9 +293,9 @@
 </g>
 <!-- works&#45;&gt;journal_names -->
 <g id="edge28" class="edge"><title>works&#45;&gt;journal_names</title>
-<path fill="none" stroke="black" d="M2426.24,-1566.96C2536.48,-1545.87 2754.15,-1487.56 2862,-1344 2937.8,-1243.1 2940.51,-1089.07 2934.21,-999.324"/>
-<text text-anchor="middle" x="2918.71" y="-1003.12" font-family="Arial" font-size="14.00">0…1</text>
-<text text-anchor="middle" x="2430.74" y="-1570.76" font-family="Arial" font-size="14.00">1</text>
+<path fill="none" stroke="black" d="M2426.07,-1566.89C2536.04,-1545.7 2753.21,-1487.24 2861,-1344 2936.91,-1243.13 2940.03,-1089.09 2933.99,-999.332"/>
+<text text-anchor="middle" x="2918.49" y="-1003.13" font-family="Arial" font-size="14.00">0…1</text>
+<text text-anchor="middle" x="2430.57" y="-1570.69" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- author_affiliations -->
 <g id="node4" class="node"><title>author_affiliations</title>
@@ -695,7 +695,7 @@
 <g id="edge23" class="edge"><title>persons&#45;&gt;person_research_resources</title>
 <path fill="none" stroke="black" d="M1606.6,-391.921C1763.72,-385.809 2280.7,-359.922 2423,-280 2451.24,-264.141 2475.08,-238.068 2493.42,-212.762"/>
 <text text-anchor="middle" x="2476.92" y="-216.562" font-family="Arial" font-size="14.00">0…N</text>
-<text text-anchor="middle" x="1611.1" y="-395.721" font-family="Arial" font-size="14.00">1</text>
+<text text-anchor="middle" x="1611.1" y="-380.721" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- persons&#45;&gt;person_works -->
 <g id="edge24" class="edge"><title>persons&#45;&gt;person_works</title>
@@ -710,5 +710,21 @@
 </g>
 <!-- DOAJ table&#45;&gt;ORCID tables -->
 <!-- Additional Crossref tables&#45;&gt;DOAJ table -->
+<!-- journals_issns -->
+<g id="node34" class="node"><title>journals_issns</title>
+<polygon fill="#3db1c8" stroke="none" points="2980.5,-429.5 2871.5,-429.5 2871.5,-359.5 2980.5,-359.5 2980.5,-429.5"/>
+<text text-anchor="start" x="2875" y="-416.3" font-family="Arial" font-weight="bold" font-size="14.00">journals_issns</text>
+<text text-anchor="start" x="2896" y="-396.3" font-family="Arial" font-size="14.00">journal_id</text>
+<text text-anchor="start" x="2896" y="-381.3" font-family="Arial" font-size="14.00">issn</text>
+<text text-anchor="start" x="2896" y="-366.3" font-family="Arial" font-size="14.00">issn_type</text>
+<polygon fill="black" stroke="black" points="2872,-409.5 2872,-409.5 2981,-409.5 2981,-409.5 2872,-409.5"/>
+<polygon fill="none" stroke="black" points="2871.5,-359.5 2871.5,-429.5 2980.5,-429.5 2980.5,-359.5 2871.5,-359.5"/>
+</g>
+<!-- journal_names&#45;&gt;journals_issns -->
+<g id="edge30" class="edge"><title>journal_names&#45;&gt;journals_issns</title>
+<path fill="none" stroke="black" d="M2926,-853.746C2926,-738.084 2926,-514.791 2926,-429.632"/>
+<text text-anchor="middle" x="2909.5" y="-433.432" font-family="Arial" font-size="14.00">1…N</text>
+<text text-anchor="middle" x="2913" y="-842.546" font-family="Arial" font-size="14.00">1..N</text>
+</g>
 </g>
 </svg>

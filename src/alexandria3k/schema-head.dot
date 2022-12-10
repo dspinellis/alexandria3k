@@ -54,6 +54,7 @@ digraph D {
 	work_funders -> funder_names;
 	works -> journal_names;
 	work_authors -> persons;
+	journal_names -> journals_issns  [headlabel="1…N", taillabel="1..N"];
 
 	edge [style="invis"];
 	"Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ORCID tables";
