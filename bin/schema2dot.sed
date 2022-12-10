@@ -1,12 +1,12 @@
 #!/usr/bin/env -S sed -nf
 #
-# Create database schema through the following command
-# alexandria3k.py -L | schema2dot.sed | dot -Tsvg  -o ../../schema.svg
+# Create database schema when called (e.g. through bin/update-schema)
+# on the output of the schema listing.
 #
 
 
 1 {
-  r schema-head.dot
+  r src/alexandria3k/schema-head.dot
   # Keep first line in pattern space to ensure schema-head.dot appears first
   N
 }
