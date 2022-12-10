@@ -23,11 +23,11 @@
 set -e
 
 TEMP=$$.md
-README=../../README.md
+README=README.md
 
 sed -n '1,/<!-- CLI start -->/p' $README >$TEMP
 echo '```' >>$TEMP
-python ./alexandria3k.py -h >>$TEMP
+bin/alexandria3k -h >>$TEMP
 echo '```' >>$TEMP
 sed -n '/<!-- CLI end -->/,$p' $README >>$TEMP
 mv $TEMP $README
