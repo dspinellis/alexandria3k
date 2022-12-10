@@ -58,9 +58,38 @@ journals_table = TableMeta(
         ColumnMeta("doi"),
         ColumnMeta("volume_info"),
     ],
-    post_population_command="""UPDATE journal_names
-        SET issn_print=REPLACE(issn_print, "-", ""),
-          issn_eprint=REPLACE(issn_eprint, "-", "")""",
+    post_population_command="""
+    -- Normalize ISSNs
+    UPDATE journal_names
+      SET issn_print=REPLACE(issn_print, "-", ""),
+        issn_eprint=REPLACE(issn_eprint, "-", ""),
+        issns_additional=REPLACE(issns_additional, "-", "");
+
+    DROP TABLE IF EXISTS journals_issns;
+
+    -- Recursively split additional ISSNs into multiple records
+    CREATE TABLE journals_issns AS
+      WITH RECURSIVE split(journal_id, issn, rest) AS (
+         SELECT id, '', issns_additional || '; ' FROM journal_names
+         UNION ALL SELECT
+           journal_id,
+           Substr(rest, 0, Instr(rest, '; ')),
+           Substr(rest, Instr(rest, '; ')+2)
+         FROM split WHERE rest != ''
+      )
+      SELECT journal_id, issn FROM split
+        WHERE issn != '';
+
+    -- Finish populating the journals_issns table
+    INSERT INTO journals_issns
+      SELECT id, issn_print FROM journal_names WHERE issn_print != '';
+
+    INSERT INTO journals_issns
+      SELECT id, issn_eprint FROM journal_names WHERE issn_eprint != '';
+
+    CREATE INDEX journals_issns_issn_idx ON journals_issns(issn);
+    CREATE INDEX journals_issns_id_idx ON journals_issns(journal_id);
+          """,
 )
 
 # Crossref funder data https://doi.crossref.org/funderNames?mode=list
@@ -224,7 +253,7 @@ def load_csv_data(database_path, table_meta, source):
     cur.executemany(table_meta.insert_statement(), record_source(source))
     post_population_command = table_meta.get_post_population_command()
     if post_population_command:
-        cur.execute(post_population_command)
+        cur.executescript(post_population_command)
     con.commit()
     con.close()
 

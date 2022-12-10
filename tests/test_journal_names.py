@@ -61,10 +61,29 @@ class TestOrcid(unittest.TestCase):
     def test_issn_name(
         self,
     ):
-        # Fetch with an ISSN that must be normalized
         result = TestOrcid.cursor.execute(
-            f"""SELECT title FROM journal_names
-            WHERE issn_print='26636085'"""
+            """SELECT title FROM journal_names
+              WHERE issn_print='26636085'"""
         )
         (title,) = result.fetchone()
         self.assertEqual(title, "Innovate Pedagogy")
+
+    def test_multiple_additional_issn(
+        self,
+    ):
+        result = TestOrcid.cursor.execute(
+            "SELECT Count(*) from journals_issns WHERE journal_id='50200'"
+        )
+        (count,) = result.fetchone()
+        self.assertEqual(count, 4)
+
+    def test_issn_id(
+        self,
+    ):
+        for issn in ["00443379", "1420911X", "03010988", "03038408"]:
+            result = TestOrcid.cursor.execute(
+                f"""SELECT journal_id FROM journals_issns
+                WHERE issn='{issn}'"""
+            )
+            (journal_id,) = result.fetchone()
+            self.assertEqual(journal_id, "50200")
