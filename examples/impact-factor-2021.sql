@@ -42,13 +42,38 @@ CREATE TABLE IF NOT EXISTS impact_factor AS
   LEFT JOIN citations ON citations.issn = publications.issn
   WHERE publications_number > 0;
 
-.print create journal name indexes
-CREATE INDEX IF NOT EXISTS journal_names_issn_print_idx ON journal_names(issn_print);
-CREATE INDEX IF NOT EXISTS journal_names_issn_eprint_idx ON journal_names(issn_eprint);
+/*
+ * Some journals, e.g. Nature Reviews Immunology are identified through
+ * their additional ISSN (14741733)
+ * In other cases the same ISSN appears as an additional one for older
+ * names of the journal, e.g. 00284793 for
+ * Boston Medical and Surgical Journal, The New England Journal of Medicine
+ * and Surgery and the Collateral Branches of Science, The New-England Medical
+ * Review and Journal, New England Journal of Medicine
+ * Use only one record, starting from Print and ending in Additional
+ */
+CREATE TABLE IF NOT EXISTS impact_factor_titles AS 
+  WITH multiple_titles AS (
+    SELECT impact_factor.issn, issn_type, title, impact_factor
+      FROM impact_factor
+      LEFT JOIN journals_issns
+        ON impact_factor.issn = journals_issns.issn
+      LEFT JOIN journal_names
+        ON journals_issns.journal_id = journal_names.id
+  ),
+  prioritized_titles AS (
+    SELECT *,
+      Row_number() OVER (PARTITION BY issn ORDER BY issn_type DESC) AS priority
+    FROM multiple_titles
+  )
+  SELECT issn, title, impact_factor FROM prioritized_titles
+    WHERE priority = 1;
 
-SELECT issn, title, impact_factor
-  FROM impact_factor
-  LEFT JOIN journal_names
-    ON impact_factor.issn = journal_names.issn_print
-      OR impact_factor.issn = journal_names.issn_eprint
-ORDER BY impact_factor DESC LIMIT 30;
+.print Top-10 impact factor journals
+SELECT * FROM impact_factor_titles
+  ORDER BY impact_factor DESC LIMIT 10;
+
+.print Top-10 impact factor (non-review) journals
+SELECT * FROM impact_factor_titles
+  WHERE NOT title LIKE '%reviews%'
+  ORDER BY impact_factor DESC LIMIT 10;
