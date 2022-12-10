@@ -481,6 +481,9 @@ pipenv install
 ```sh
 # While in alexandria3k/src directory
 
+# Install development dependencies
+pipenv install --dev
+
 # Launch a shell in the virtual environment
 pipenv shell
 
@@ -495,6 +498,18 @@ bin/alexandria3k --help
 ```sh
 # While in the top-level directory
 python3 -m unittest discover
+```
+
+### Formatting
+```sh
+# While in the top-level directory
+black -l 79 src/alexandria3k/*.py
+```
+
+### Linting
+```sh
+# While in the top-level directory
+python -m pylint src/alexandria3k/*.py
 ```
 
 ### Building
