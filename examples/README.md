@@ -6,4 +6,5 @@ that populates the databases and also runs the examples in the appropriate
 order.
 
 The following examples are complete:
-* `journal-h5`: Calculate the h-5 index of journals
+* [Calculate the 2021 h-5 index of journals](journal-h5)
+* [Obtain number of studies employing research synthesis methods published each year](research-synthesis)
