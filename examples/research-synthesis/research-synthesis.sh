@@ -9,4 +9,4 @@ if ! [ -d 'April 2022 Public Data File from Crossref' ] ; then
 fi
 
 alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref' \
-  -query-file research-synthesis.sql
+  --query-file research-synthesis.sql
