@@ -26,13 +26,16 @@ import sqlite3
 import subprocess
 import urllib.request
 
+from .common import fail
 from .virtual_db import ColumnMeta, TableMeta
 
 RE_URL = re.compile(r"\w+://")
 
+
 def is_url(url):
     """Return true if url looks like a URL"""
     return RE_URL.match(url)
+
 
 def program_version():
     """Return a string identifying the program's version"""
@@ -41,17 +44,24 @@ def program_version():
         return version("alexandria3k")
     except PackageNotFoundError:
         # Obtain development version through Git
-        res = subprocess.run(["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE)
+        res = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE
+        )
         return res.stdout.decode("utf-8").strip()
+
 
 def data_source(source):
     """Given a file path or a URL return a readable source for its contents"""
-    if is_url(source):
-        req = urllib.request.Request(
-            source, headers={"User-Agent": f"alexandria3k {program_version()}"}
-        )
-        return urllib.request.urlopen(req)
-    return open(source, "rb")
+    try:
+        if is_url(source):
+            req = urllib.request.Request(
+                source,
+                headers={"User-Agent": f"alexandria3k {program_version()}"},
+            )
+            return urllib.request.urlopen(req)
+        return open(source, "rb")
+    except Exception as e:
+        fail(f"Unable to read data from {source}: {e}")
 
 
 def record_source(source):
