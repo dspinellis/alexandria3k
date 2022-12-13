@@ -30,7 +30,6 @@ from alexandria3k import csv_sources
 
 class TestCsvSources(unittest.TestCase):
     def test_program_version(self):
-
         version = csv_sources.program_version()
         self.assertRegex(version, r"([0-9a-f]{6,})|(\d+\.\d+\.\d+)")
 
@@ -39,3 +38,8 @@ class TestCsvSources(unittest.TestCase):
         row = next(gen)
         self.assertTrue("18435912" in row)
         self.assertTrue("10.36801/apme" in row)
+
+    def is_url(self):
+        self.assertTrue(is_url("https://www.example.com/foo"))
+        self.assertFalse(is_url("foo.csv"))
+

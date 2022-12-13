@@ -30,6 +30,9 @@ from .virtual_db import ColumnMeta, TableMeta
 
 RE_URL = re.compile(r"\w+://")
 
+def is_url(url):
+    """Return true if url looks like a URL"""
+    return RE_URL.match(url)
 
 def program_version():
     """Return a string identifying the program's version"""
@@ -43,7 +46,7 @@ def program_version():
 
 def data_source(source):
     """Given a file path or a URL return a readable source for its contents"""
-    if RE_URL.match(source):
+    if is_url(source):
         req = urllib.request.Request(
             source, headers={f"User-Agent": "alexandria3k {program_version()}"}
         )
