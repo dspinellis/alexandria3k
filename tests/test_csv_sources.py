@@ -20,6 +20,7 @@
 
 import codecs
 import csv
+import re
 import sys
 import unittest
 
@@ -31,7 +32,8 @@ from alexandria3k import csv_sources
 class TestCsvSources(unittest.TestCase):
     def test_program_version(self):
         version = csv_sources.program_version()
-        self.assertRegex(version, r"([0-9a-f]{6,})|(\d+\.\d+\.\d+)")
+        expected_regex = re.compile(r"(([0-9a-f]{6,})|(\d+\.\d+\.\d+))")
+        self.assertTrue(expected_regex.fullmatch(version), f"Invalid version string [{version}]")
 
     def test_record_source(self):
         gen = csv_sources.record_source('tests/data/titleFile.csv')
@@ -39,7 +41,7 @@ class TestCsvSources(unittest.TestCase):
         self.assertTrue("18435912" in row)
         self.assertTrue("10.36801/apme" in row)
 
-    def is_url(self):
-        self.assertTrue(is_url("https://www.example.com/foo"))
-        self.assertFalse(is_url("foo.csv"))
+    def test_is_url(self):
+        self.assertTrue(csv_sources.is_url("https://www.example.com/foo"))
+        self.assertFalse(csv_sources.is_url("foo.csv"))
 

@@ -42,13 +42,13 @@ def program_version():
     except PackageNotFoundError:
         # Obtain development version through Git
         res = subprocess.run(["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE)
-        return res.stdout.decode("utf-8")
+        return res.stdout.decode("utf-8").strip()
 
 def data_source(source):
     """Given a file path or a URL return a readable source for its contents"""
     if is_url(source):
         req = urllib.request.Request(
-            source, headers={f"User-Agent": "alexandria3k {program_version()}"}
+            source, headers={"User-Agent": f"alexandria3k {program_version()}"}
         )
         return urllib.request.urlopen(req)
     return open(source, "rb")
