@@ -157,8 +157,7 @@ def parse_cli_arguments():
         "-A",
         "--open-access-journals",
         nargs="?",
-        # pylint: disable-next=line-too-long
-        const="https://s3.eu-west-2.amazonaws.com/doaj-data-cache/journalcsv__doaj_20221121_0635_utf8.csv",
+        const="https://doaj.org/csv",
         type=str,
         help="Populate database with DOAJ open access journal metadata from URL or file",
     )
