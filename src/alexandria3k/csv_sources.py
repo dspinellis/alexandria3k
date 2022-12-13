@@ -20,19 +20,34 @@
 
 import codecs
 import csv
+from importlib.metadata import PackageNotFoundError, version
 import re
 import sqlite3
-from urllib.request import urlopen
+import subprocess
+import urllib.request
 
 from .virtual_db import ColumnMeta, TableMeta
 
 RE_URL = re.compile(r"\w+://")
 
 
+def program_version():
+    """Return a string identifying the program's version"""
+    try:
+        # Installed version
+        return version("alexandria3k")
+    except PackageNotFoundError:
+        # Obtain development version through Git
+        res = subprocess.run(["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE)
+        return res.stdout.decode("utf-8")
+
 def data_source(source):
     """Given a file path or a URL return a readable source for its contents"""
     if RE_URL.match(source):
-        return urlopen(source)
+        req = urllib.request.Request(
+            source, headers={f"User-Agent": "alexandria3k {program_version()}"}
+        )
+        return urllib.request.urlopen(req)
     return open(source, "rb")
 
 
