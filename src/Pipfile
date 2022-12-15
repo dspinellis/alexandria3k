@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 apsw = "*"
+importlib-metadata = "*"
 
 [dev-packages]
 black = "*"
