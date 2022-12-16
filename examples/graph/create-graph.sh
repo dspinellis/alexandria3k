@@ -23,6 +23,7 @@ $TIME alexandria3k --crossref-directory "$CROSSREF_DIR" \
   works.published_year \
   work_references.work_id \
   work_references.doi \
+  work_references.isbn \
   work_funders.id \
   work_funders.work_id \
   work_funders.doi \
@@ -30,6 +31,7 @@ $TIME alexandria3k --crossref-directory "$CROSSREF_DIR" \
   funder_awards.name \
   author_affiliations.author_id \
   author_affiliations.name \
+  work_links.work_id \
   work_subjects.work_id \
   work_subjects.name \
   work_authors.id \

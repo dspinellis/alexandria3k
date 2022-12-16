@@ -21,6 +21,8 @@ CREATE INDEX IF NOT EXISTS author_affiliations_author_id_idx
   ON author_affiliations(author_id);
 .print CREATE INDEX work_subjects_work_id_idx
 CREATE INDEX IF NOT EXISTS work_subjects_work_id_idx ON work_subjects(work_id);
+.print CREATE INDEX work_links_work_id_idx
+CREATE INDEX IF NOT EXISTS work_links_work_id_idx ON work_links(work_id);
 .print CREATE INDEX work_authors_work_id_idx
 CREATE INDEX IF NOT EXISTS work_authors_work_id_idx ON work_authors(work_id);
 .print CREATE INDEX work_authors_id_idx
