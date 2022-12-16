@@ -7,7 +7,7 @@
 CROSSREF_DIR="${CROSSREF_DIR:-'April 2022 Public Data File from Crossref'}"
 DB_FILE="${DB_FILE:-graph.db}"
 TIME="${TIME:-time}"
-SQL_SCRIPT=$(dirname "$0")/index-normalize.sql
+INDEX_NORMALIZE=$(dirname "$0")/../common/index-normalize.sql
 
 # Download, if needed, the Crossref data through the DOI torrent link
 if ! [ -d "$CROSSREF_DIR" ] ; then
@@ -37,4 +37,4 @@ $TIME alexandria3k --crossref-directory "$CROSSREF_DIR" \
   work_authors.orcid
 
 # Normalize tables and index
-$TIME sqlite3 "$DB_FILE" <"$SQL_SCRIPT"
+$TIME sqlite3 "$DB_FILE" <"$INDEX_NORMALIZE"
