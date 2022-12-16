@@ -20,7 +20,10 @@
 
 import codecs
 import csv
-from importlib.metadata import PackageNotFoundError, version
+try:
+    from importlib import metadata
+except ImportError: # for Python<3.8
+    import importlib_metadata as metadata
 import re
 import sqlite3
 import subprocess
@@ -41,8 +44,8 @@ def program_version():
     """Return a string identifying the program's version"""
     try:
         # Installed version
-        return version("alexandria3k")
-    except PackageNotFoundError:
+        return metadata.version("alexandria3k")
+    except metadata.PackageNotFoundError:
         # Obtain development version through Git
         res = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE
