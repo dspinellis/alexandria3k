@@ -453,14 +453,3 @@ class TestCrossrefPopulateNormalize(TestCrossrefPopulate):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
-
-    def test_normalized_affiliations(self):
-        crossref.normalize_affiliations(self.cursor)
-        self.assertEqual(self.record_count("affiliation_names"), 6)
-        self.assertEqual(self.record_count("authors_affiliations"), 14)
-        self.assertEqual(self.record_count("affiliations_works"), 7)
-
-    def test_normalized_subjects(self):
-        crossref.normalize_subjects(self.cursor)
-        self.assertEqual(self.record_count("subject_names"), 16)
-        self.assertEqual(self.record_count("works_subjects"), 16)
