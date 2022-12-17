@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS work_subject_citations;
 
+.print CREATE TABLE work_subject_citations
 CREATE TABLE work_subject_citations AS
   SELECT
       citing_subjects.subject_id AS citing_subject_id,
@@ -25,6 +26,7 @@ DROP TABLE IF EXISTS subject_pair_dominance;
 -- This is what Robert Martin calls instability (Chapter 20, Agile Software
 -- Development). In our case it expresses dominance in a pair relationship:
 -- 0.5 is equality, 1 is full dominance, 0 is full subjugation
+.print CREATE TABLE subject_pair_dominance
 CREATE TABLE subject_pair_dominance AS
   SELECT
       citing.citing_subject_id, citing.cited_subject_id,
@@ -39,6 +41,7 @@ CREATE TABLE subject_pair_dominance AS
 DROP TABLE IF EXISTS subject_pair_strength;
 
 -- Relative strength of subject relationships (0-1)
+.print CREATE TABLE subject_pair_strength
 CREATE TABLE  subject_pair_strength AS
   WITH subject_pair_absolute_strength AS (
     SELECT
