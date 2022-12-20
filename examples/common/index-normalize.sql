@@ -31,7 +31,7 @@ CREATE INDEX IF NOT EXISTS work_authors_id_idx ON work_authors(id);
 CREATE INDEX IF NOT EXISTS work_authors_orcid_idx ON work_authors(orcid);
 
 -- Create affiliation_names id-name table and authors_affiliations,
--- affiliations_works many-to-many tables
+-- works_affiliations many-to-many tables
 
 DROP TABLE IF EXISTS affiliation_names;
 
@@ -58,31 +58,33 @@ CREATE INDEX authors_affiliations_affiliation_id_idx
 CREATE INDEX authors_affiliations_author_id_idx
   ON authors_affiliations(author_id);
 
-DROP TABLE IF EXISTS affiliations_works;
-.print CREATE TABLE affiliations_works
-CREATE TABLE affiliations_works AS
+DROP TABLE IF EXISTS works_affiliations;
+.print CREATE TABLE works_affiliations
+CREATE TABLE works_affiliations AS
   SELECT DISTINCT affiliation_id, work_authors.work_id
     FROM authors_affiliations
     LEFT JOIN work_authors ON authors_affiliations.author_id = work_authors.id;
 
-.print CREATE INDEX affiliations_works_affiliation_id_idx
-CREATE INDEX affiliations_works_affiliation_id_idx
-  ON affiliations_works(affiliation_id);
+.print CREATE INDEX works_affiliations_affiliation_id_idx
+CREATE INDEX works_affiliations_affiliation_id_idx
+  ON works_affiliations(affiliation_id);
 
-.print CREATE INDEX affiliations_works_work_id_idx
-CREATE INDEX affiliations_works_work_id_idx
-  ON affiliations_works(work_id);
+.print CREATE INDEX works_affiliations_work_id_idx
+CREATE INDEX works_affiliations_work_id_idx
+  ON works_affiliations(work_id);
 
+.print DROP TABLE author_affiliations
+DROP TABLE author_affiliations;
 -- Create subject_names id-name table and works_subjects many-to-many table
 
 DROP TABLE IF EXISTS subject_names;
 .print CREATE TABLE subject_names
 CREATE TABLE subject_names AS
-  SELECT row_number() OVER (ORDER BY '') AS subject_id, name
+  SELECT row_number() OVER (ORDER BY '') AS id, name
     FROM (SELECT DISTINCT name FROM work_subjects);
 
-.print CREATE INDEX subject_names_subject_id_idx
-CREATE INDEX subject_names_subject_id_idx ON subject_names(subject_id);
+.print CREATE INDEX subject_names_id_idx
+CREATE INDEX subject_names_id_idx ON subject_names(id);
 
 DROP TABLE IF EXISTS works_subjects;
 .print CREATE TABLE works_subjects
@@ -95,3 +97,6 @@ CREATE TABLE works_subjects AS
 CREATE INDEX works_subjects_subject_id_idx ON works_subjects(subject_id);
 .print CREATE INDEX works_subjects_work_id_idx
 CREATE INDEX works_subjects_work_id_idx ON works_subjects(work_id);
+
+.print DROP TABLE work_subjects
+DROP TABLE work_subjects;
