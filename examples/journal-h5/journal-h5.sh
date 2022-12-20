@@ -14,14 +14,14 @@ if ! [ -d "$CROSSREF_DIR" ] ; then
 fi
 
 # Populate database with DOIs of works and their references
-$TIME alexandria3k --crossref-directory "$CROSSREF_DIR"  \
+$TIME alexandria3k --data-source Crossref "$CROSSREF_DIR"  \
   --populate-db-path "$DB_FILE" --debug progress \
   --columns works.doi works.issn_print works.issn_electronic \
     work_references.doi \
   --row-selection 'works.published_year BETWEEN 2017 AND 2021'
 
 # Add journal names
-$TIME alexandria3k --journal-names --populate-db-path "$DB_FILE"
+$TIME alexandria3k --data-source journal-names --populate-db-path "$DB_FILE"
 
 # Calculate journal h5-index
 $TIME sqlite3 "$DB_FILE" <$SQL_SCRIPT

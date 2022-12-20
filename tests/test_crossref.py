@@ -435,21 +435,3 @@ class TestCrossrefQuery(unittest.TestCase):
                 ),
                 5,
             )
-
-
-class TestCrossrefPopulateNormalize(TestCrossrefPopulate):
-    @classmethod
-    def setUpClass(cls):
-        ensure_unlinked(DATABASE_PATH)
-        FileCache.file_reads = 0
-        # debug.set_flags(["log-sql", "dump-matched"])
-
-        cls.crossref = crossref.Crossref("tests/data/sample")
-        cls.crossref.populate(DATABASE_PATH)
-        cls.con = sqlite3.connect(DATABASE_PATH)
-        cls.cursor = cls.con.cursor()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.con.close()
-        os.unlink(DATABASE_PATH)
