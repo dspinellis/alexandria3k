@@ -25,13 +25,17 @@ import random
 import sqlite3
 import sys
 
-from .common import fail
 from . import crossref
 from . import csv_sources
 from . import debug
 from .file_cache import FileCache
 from . import orcid
 from . import perf
+
+# Default values for diverse data sources
+DOAJ_DEFAULT = "https://doaj.org/csv"
+FUNDER_NAMES_DEFAULT = "https://doi.crossref.org/funderNames?mode=list"
+JOURNAL_NAMES_DEFAULT = "http://ftp.crossref.org/titlelist/titleFile.csv"
 
 random.seed("alexandria3k")
 
@@ -147,26 +151,12 @@ def database_counts(database):
     print(f"{count} references(s) with DOI")
 
 
-def parse_cli_arguments():
-    """Parse command line arguments"""
+def parse_cli_arguments(args=None):
+    """Parse command line arguments (or args e.g. when testing)"""
     parser = argparse.ArgumentParser(
         description="alexandria3k: Publication metadata interface"
     )
 
-    parser.add_argument(
-        "-A",
-        "--open-access-journals",
-        nargs="?",
-        const="https://doaj.org/csv",
-        type=str,
-        help="Populate database with DOAJ open access journal metadata from URL or file",
-    )
-    parser.add_argument(
-        "-C",
-        "--crossref-directory",
-        type=str,
-        help="Directory storing the downloaded Crossref publication data",
-    )
     parser.add_argument(
         "-c",
         "--columns",
@@ -192,6 +182,20 @@ def parse_cli_arguments():
     virtual-counts: Dump counts of the virtual database;
     virtual-data: Dump the data of the virtual database.
 """,
+    )
+    parser.add_argument(
+        "-d",
+        "--data-source",
+        nargs="+",
+        type=str,
+        help=f"""Specify data set to be processed and its source.
+    The following data sets are supported:
+    Crossref <container-directory>;
+    DOAJ [<CSV-file> | <URL>] (defaults to {DOAJ_DEFAULT});
+    funder-names [<CSV-file> | <URL>] (defaults to {FUNDER_NAMES_DEFAULT});
+    journal-names [<CSV-file> | <URL>] (defaults to {JOURNAL_NAMES_DEFAULT});
+    ORCID <summaries.tar.gz-file>
+    """,
     )
     parser.add_argument(
         "-E",
@@ -221,14 +225,6 @@ def parse_cli_arguments():
         help="SQL expressions that select the populated rows",
     )
     parser.add_argument(
-        "-J",
-        "--journal-names",
-        nargs="?",
-        const="http://ftp.crossref.org/titlelist/titleFile.csv",
-        type=str,
-        help="Populate database with Crossref journal names from URL or file",
-    )
-    parser.add_argument(
         "-L",
         "--list-schema",
         action="store_true",
@@ -245,12 +241,6 @@ def parse_cli_arguments():
         "--normalize",
         action="store_true",
         help="Normalize relations in the populated Crossref database",
-    )
-    parser.add_argument(
-        "-O",
-        "--orcid-data",
-        type=str,
-        help="URL or file for obtaining ORCID author data",
     )
     parser.add_argument(
         "-o",
@@ -300,15 +290,59 @@ def parse_cli_arguments():
         type=str,
         help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
     )
-    parser.add_argument(
-        "-U",
-        "--funder-names",
-        nargs="?",
-        const="https://doi.crossref.org/funderNames?mode=list",
-        type=str,
-        help="Populate database with Crossref funder names from URL or file",
-    )
-    return parser.parse_args()
+
+    return expand_data_source(parser, parser.parse_args(args))
+
+
+def expand_data_source(parser, args):
+    """Return the args, expanding the data_source argument by setting an
+    entry in args named after the source and containing where the data
+    are to come from.
+    """
+
+    def required_value(error_message):
+        """Return the second data_source element or fail with the specified
+        error message."""
+        if len(args.data_source) != 2:
+            parser.error(error_message)
+        return args.data_source[1]
+
+    def optional_value(default):
+        """Return the second data_source element or the specified default"""
+        if len(args.data_source) > 2:
+            parser.error("Too many arguments in data source specification")
+        return args.data_source[1] if len(args.data_source) == 2 else default
+
+    if not args.data_source:
+        return args
+
+    if not args.populate_db_path:
+        parser.error("Database path must be specified")
+
+    args.crossref = None
+    args.doaj = None
+    args.funder_names = None
+    args.journal_names = None
+    args.orcid = None
+
+    source_name = args.data_source[0].lower()
+    if source_name == "crossref":
+        args.crossref = required_value("Missing Crossref data directory value")
+    elif source_name == "doaj":
+        args.doaj = optional_value(DOAJ_DEFAULT)
+    elif source_name == "funder-names":
+        args.funder_names = optional_value(FUNDER_NAMES_DEFAULT)
+    elif source_name == "journal-names":
+        args.journal_names = optional_value(JOURNAL_NAMES_DEFAULT)
+    elif source_name == "orcid":
+        args.orcid = required_value("Missing ORCID data file value")
+    else:
+        parser.error(f"Unknown source name {args.data_source[0]}")
+
+    if args.query and not args.crossref:
+        parser.error("Missing Crossref data directory value")
+
+    return args
 
 
 def main():
@@ -328,10 +362,10 @@ def main():
         sys.exit(0)
 
     crossref_instance = None
-    if args.crossref_directory:
+    if args.crossref:
         # pylint: disable-next=W0123
         sample = eval(f"lambda path: {args.sample}")
-        crossref_instance = crossref.Crossref(args.crossref_directory, sample)
+        crossref_instance = crossref.Crossref(args.crossref, sample)
 
     if debug.enabled("virtual-counts"):
         # Streaming interface
@@ -356,11 +390,9 @@ def main():
         debug.log("files-read", f"{FileCache.file_reads} files read")
         perf.log("Crossref table population")
 
-    if args.orcid_data:
-        if not args.populate_db_path:
-            fail("Database path must be specified")
+    if args.orcid:
         orcid.populate(
-            args.orcid_data,
+            args.orcid,
             args.populate_db_path,
             args.columns,
             args.linked_records == "persons",
@@ -375,9 +407,6 @@ def main():
                 args.query += line
 
     if args.query:
-        if not crossref_instance:
-            fail("Crossref data directory must be specified")
-
         if args.output:
             # pylint: disable-next=R1732
             csv_file = open(
@@ -395,33 +424,19 @@ def main():
         csv_file.close()
         debug.log("files-read", f"{FileCache.file_reads} files read")
 
-    if args.normalize:
-        if not args.populate_db_path:
-            fail("Database path must be specified")
-        populated_db = sqlite3.connect(args.populate_db_path)
-        crossref.normalize_affiliations(populated_db)
-        crossref.normalize_subjects(populated_db)
-        perf.log("Data normalization")
-
     if args.journal_names:
-        if not args.populate_db_path:
-            fail("Database path must be specified")
         csv_sources.populate_journal_names(
             args.populate_db_path, args.journal_names
         )
 
     if args.funder_names:
-        if not args.populate_db_path:
-            fail("Database path must be specified")
         csv_sources.populate_funder_names(
             args.populate_db_path, args.funder_names
         )
 
-    if args.open_access_journals:
-        if not args.populate_db_path:
-            fail("Database path must be specified")
+    if args.doaj:
         csv_sources.populate_open_access_journals(
-            args.populate_db_path, args.open_access_journals
+            args.populate_db_path, args.doaj
         )
 
     if debug.enabled("populated-counts"):

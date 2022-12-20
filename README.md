@@ -127,13 +127,13 @@ alexandria3k --help
 
 ### Show DOI and title of all publications
 ```sh
-alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
+alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
    --query 'SELECT DOI, title FROM works'
 ```
 
 ### Save DOI and title of 2021 publications in a CSV file suitable for Excel
 ```sh
-alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
+alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
   --query 'SELECT DOI, title FROM works WHERE published_year = 2021' \
   --output 2021.csv \
   --output-encoding use utf-8-sig
@@ -143,7 +143,7 @@ alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
 This query performs a single pass through the data set to obtain
 the number of Crossref publications by year and publication type.
 ```sh
-alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref' \
+alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
    --query-file count-year-type.sql >results.csv
 ```
 where `count-year-type.sql` contains:
@@ -171,7 +171,7 @@ It uses a tab character ('\t') to separate the output fields.
 Through sampling the data containers it runs in a couple of minutes,
 rather than hours.
 ```sh
-alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref'  \
+alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref'  \
    --sample 'random.random() < 0.01' \
    --field-separator $'\t' \
    --query-file count-no-abstract.sql
@@ -186,7 +186,7 @@ SELECT works.abstract is not null AS have_abstract, Count(*)
 The following command creates an SQLite database with all Crossref data
 regarding publications that contain "COVID" in their title or abstract.
 ```sh
-alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref' \
+alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
    --populate-db-path covid.db \
    --row-selection "title like '%COVID%' OR abstract like '%COVID%' "
 ```
@@ -195,7 +195,7 @@ alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref' \
 The following command selects only a subset of columns of the complete
 Crossref data set to create a graph between navigable entities.
 ```sh
-alexandria3k --crossref-directory 'April 2022 Public Data File from Crossref' \
+alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
    --populate-db-path graph.db \
    --columns works.doi work_references.work_id work_references.doi work_funders.id \
     work_funders.work_id work_funders.doi funder_awards.funder_id funder_awards.name \
@@ -232,50 +232,42 @@ Only records of authors identified in the publications through an
 ORCID will be added.
 ```sh
 alexandria3k --populate-db-path database.db \
-  --orcid-data ORCID_2022_10_summaries.tar.gz \
+  --data-source ORCID ORCID_2022_10_summaries.tar.gz \
   --linked-records persons
 ```
 
 ### Populate the database with journal names
 ```sh
 alexandria3k  --populate-db-path database.db \
-  --journal-names http://ftp.crossref.org/titlelist/titleFile.csv
+  --data-source journal-names http://ftp.crossref.org/titlelist/titleFile.csv
 ```
 
 ### Populate the database with funder names
 ```sh
 alexandria3k  --populate-db-path database.db \
-  --funder-names https://doi.crossref.org/funderNames?mode=list
+  --data-source funder-names https://doi.crossref.org/funderNames?mode=list
 ```
 
 ### Populate the database with data regarding open access journals
 ```sh
 alexandria3k  --populate-db-path database.db \
-  --open-access-journals https://doaj.org/csv
+  --data-source doaj https://doaj.org/csv
 ```
 
 ## Command-line options reference
 <!-- CLI start -->
 ```
-usage: alexandria3k [-h] [-A [OPEN_ACCESS_JOURNALS]] [-C CROSSREF_DIRECTORY]
-                    [-c COLUMNS [COLUMNS ...]] [-D DEBUG [DEBUG ...]]
-                    [-E OUTPUT_ENCODING] [-F FIELD_SEPARATOR] [-H]
-                    [-i [INDEX ...]] [-J [JOURNAL_NAMES]] [-L]
-                    [-l LINKED_RECORDS] [-n] [-O ORCID_DATA] [-o OUTPUT] [-P]
+usage: alexandria3k [-h] [-c COLUMNS [COLUMNS ...]] [-D DEBUG [DEBUG ...]]
+                    [-d DATA_SOURCE [DATA_SOURCE ...]] [-E OUTPUT_ENCODING]
+                    [-F FIELD_SEPARATOR] [-H] [-i [INDEX ...]] [-L]
+                    [-l LINKED_RECORDS] [-n] [-o OUTPUT] [-P]
                     [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
                     [-R ROW_SELECTION_FILE] [-r ROW_SELECTION] [-s SAMPLE]
-                    [-U [FUNDER_NAMES]]
 
 alexandria3k: Publication metadata interface
 
 optional arguments:
   -h, --help            show this help message and exit
-  -A [OPEN_ACCESS_JOURNALS], --open-access-journals [OPEN_ACCESS_JOURNALS]
-                        Populate database with DOAJ open access journal
-                        metadata from URL or file
-  -C CROSSREF_DIRECTORY, --crossref-directory CROSSREF_DIRECTORY
-                        Directory storing the downloaded Crossref publication
-                        data
   -c COLUMNS [COLUMNS ...], --columns COLUMNS [COLUMNS ...]
                         Columns to populate using table.column or table.*
   -D DEBUG [DEBUG ...], --debug DEBUG [DEBUG ...]
@@ -290,6 +282,16 @@ optional arguments:
                         error; virtual-counts: Dump counts of the virtual
                         database; virtual-data: Dump the data of the virtual
                         database.
+  -d DATA_SOURCE [DATA_SOURCE ...], --data-source DATA_SOURCE [DATA_SOURCE ...]
+                        Specify data set to be processed and its source. The
+                        following data sets are supported. Crossref
+                        <container-directory> DOAJ [<CSV-file> | <URL>]
+                        (defaults to https://doaj.org/csv) funder-names [<CSV-
+                        file> | <URL>] (defaults to
+                        https://doi.crossref.org/funderNames?mode=list)
+                        journal-names [<CSV-file> | <URL>] (defaults to
+                        http://ftp.crossref.org/titlelist/titleFile.csv) ORCID
+                        <summaries.tar.gz-file>
   -E OUTPUT_ENCODING, --output-encoding OUTPUT_ENCODING
                         Query output character encoding (use utf-8-sig for
                         Excel)
@@ -298,16 +300,11 @@ optional arguments:
   -H, --header          Include a header in the query output
   -i [INDEX ...], --index [INDEX ...]
                         SQL expressions that select the populated rows
-  -J [JOURNAL_NAMES], --journal-names [JOURNAL_NAMES]
-                        Populate database with Crossref journal names from URL
-                        or file
   -L, --list-schema     List the schema of the scanned database
   -l LINKED_RECORDS, --linked-records LINKED_RECORDS
                         Only add ORCID records that link to existing <persons>
                         or <works>
   -n, --normalize       Normalize relations in the populated Crossref database
-  -O ORCID_DATA, --orcid-data ORCID_DATA
-                        URL or file for obtaining ORCID author data
   -o OUTPUT, --output OUTPUT
                         Output file for query results
   -P, --partition       Run the query over partitioned data slices. (Warning:
@@ -326,9 +323,6 @@ optional arguments:
   -s SAMPLE, --sample SAMPLE
                         Python expression to sample the Crossref tables (e.g.
                         random.random() < 0.0002)
-  -U [FUNDER_NAMES], --funder-names [FUNDER_NAMES]
-                        Populate database with Crossref funder names from URL
-                        or file
 ```
 <!-- CLI end -->
 
