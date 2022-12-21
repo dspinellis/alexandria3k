@@ -316,8 +316,14 @@ def expand_data_source(parser, args):
     if not args.data_source:
         return args
 
-    if not args.populate_db_path:
-        parser.error("Database path must be specified")
+    source_name = args.data_source[0].lower()
+
+    if source_name == "crossref":
+        if not args.populate_db_path and not args.query:
+            parser.error("Database path or query must be specified")
+    else:
+        if not args.populate_db_path:
+            parser.error("Database path must be specified")
 
     args.crossref = None
     args.doaj = None
@@ -325,7 +331,6 @@ def expand_data_source(parser, args):
     args.journal_names = None
     args.orcid = None
 
-    source_name = args.data_source[0].lower()
     if source_name == "crossref":
         args.crossref = required_value("Missing Crossref data directory value")
     elif source_name == "doaj":
