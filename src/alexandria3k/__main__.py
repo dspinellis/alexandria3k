@@ -319,7 +319,7 @@ def expand_data_source(parser, args):
     source_name = args.data_source[0].lower()
 
     if source_name == "crossref":
-        if not args.populate_db_path and not args.query:
+        if not (args.populate_db_path or args.query or args.query_file):
             parser.error("Database path or query must be specified")
     else:
         if not args.populate_db_path:
