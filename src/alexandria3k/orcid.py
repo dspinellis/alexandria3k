@@ -149,6 +149,7 @@ tables = [
     TableMeta(
         "persons",
         columns=[
+            ColumnMeta("id", rowid=True),
             ColumnMeta(
                 "orcid", getter(f"{COMMON}orcid-identifier/{COMMON}path")
             ),
@@ -179,7 +180,7 @@ tables = [
             f"{RESEARCHER_URL}researcher-url"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
             ColumnMeta("name", getter(f"{RESEARCHER_URL}url-name")),
             ColumnMeta("url", getter(f"{RESEARCHER_URL}url")),
         ],
@@ -190,7 +191,7 @@ tables = [
             f"{PERSON}person/{ADDRESS}addresses/{ADDRESS}address"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
             ColumnMeta("country", getter(f"{ADDRESS}country")),
         ],
     ),
@@ -200,7 +201,7 @@ tables = [
             f"{PERSON}person/{KEYWORD}keywords/{KEYWORD}keyword"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
             ColumnMeta("keyword", getter(f"{KEYWORD}content")),
         ],
     ),
@@ -211,7 +212,7 @@ tables = [
             f"{EXTERNAL_IDENTIFIER}external-identifier"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
             ColumnMeta("type", getter(f"{COMMON}external-id-type")),
             ColumnMeta("value", getter(f"{COMMON}external-id-value")),
             ColumnMeta("url", getter(f"{COMMON}external-id-url")),
@@ -224,7 +225,7 @@ tables = [
             f"{ACTIVITIES}affiliation-group/{DISTINCTION}distinction-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
         ]
         + AFFILIATION,
     ),
@@ -235,7 +236,7 @@ tables = [
             f"{ACTIVITIES}affiliation-group/{EDUCATION}education-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
         ]
         + AFFILIATION,
     ),
@@ -246,7 +247,7 @@ tables = [
             f"{ACTIVITIES}affiliation-group/{EMPLOYMENT}employment-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
         ]
         + AFFILIATION,
     ),
@@ -259,7 +260,7 @@ tables = [
             f"{INVITED_POSITION}invited-position-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
         ]
         + AFFILIATION,
     ),
@@ -271,7 +272,7 @@ tables = [
             f"{MEMBERSHIP}membership-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
         ]
         + AFFILIATION,
     ),
@@ -284,7 +285,7 @@ tables = [
             f"{QUALIFICATION}qualification-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
         ]
         + AFFILIATION,
     ),
@@ -295,7 +296,7 @@ tables = [
             f"{ACTIVITIES}affiliation-group/{SERVICE}service-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
         ]
         + AFFILIATION,
     ),
@@ -308,7 +309,7 @@ tables = [
         # pylint: disable-next=fixme
         # TODO external-ids, contributors
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
             ColumnMeta("title", getter(f"{FUNDING}funding-title")),
             ColumnMeta("type", getter(f"{FUNDING}funding-type")),
             ColumnMeta(
@@ -329,7 +330,7 @@ tables = [
             f"{PEER_REVIEW}peer-review-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
             ColumnMeta("reviewer_role", getter(f"{PEER_REVIEW}reviewer-role")),
             ColumnMeta("review_type", getter(f"{PEER_REVIEW}review-type")),
             ColumnMeta("subject_type", getter(f"{PEER_REVIEW}subject-type")),
@@ -383,7 +384,7 @@ tables = [
             f"{RESEARCH_RESOURCE}research-resource-summary"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
             ColumnMeta(
                 "title",
                 getter(
@@ -437,7 +438,7 @@ tables = [
             f"{ACTIVITIES}group/{COMMON}external-ids"
         ),
         columns=[
-            ColumnMeta("orcid"),
+            ColumnMeta("person_id"),
             ColumnMeta(
                 "doi", type_getter_lower(f"{COMMON}external-id", "doi")
             ),
@@ -467,6 +468,19 @@ def order_columns_by_schema(table_name, column_names):
     for column in all_column_names:
         if column in column_names:
             result.append(column)
+    return result
+
+
+def order_column_definitions_by_schema(table, column_names):
+    """Return the passed set of columns as an iterable of column creation
+    DDL statements, ordered in the same order as that in which columns are
+    defined in the table's schema"""
+    all_columns = table.get_columns()
+    all_column_names = map(lambda c: c.get_name(), all_columns)
+    result = []
+    for column in all_column_names:
+        if column in column_names:
+            result.append(table.get_column_definition_by_name(column))
     return result
 
 
@@ -564,11 +578,16 @@ def populate(
     for (table_name, table_columns) in population_columns.items():
         # Table creation
         table = get_table_meta_by_name(table_name)
-        cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
-        cursor.execute(table.table_schema("", table_columns))
+        cursor.execute(log_sql(f"DROP TABLE IF EXISTS {table_name}"))
+        column_definitions = order_column_definitions_by_schema(
+            table, table_columns
+        )
+        cursor.execute(log_sql(table.table_schema("", column_definitions)))
 
         # Value addition
-        table_fillers.append(TableFiller(database, table, table_columns))
+        is_master = table_name == "persons"
+        filler = TableFiller(database, table, table_columns, is_master)
+        table_fillers.append(filler)
 
     if authors_only:
         cursor.execute(
@@ -623,11 +642,20 @@ def populate(
                 continue
 
             # Insert data to the specified tables
+            person_id = None
             for filler in table_fillers:
-                filler.add_records(element_tree, "orcid", orcid)
+                if filler.get_table_name() == "persons":
+                    person_id = filler.add_records(
+                        element_tree, "person_id", person_id
+                    )
+                else:
+                    filler.add_records(element_tree, "person_id", person_id)
             perf.log(f"Populate {orcid}")
 
     for table_name in population_columns:
-        cursor.execute(
-            f"CREATE INDEX {table_name}_orcid_idx ON {table_name}(orcid)"
-        )
+        if table_name != "persons":
+            cursor.execute(
+                f"""CREATE INDEX {table_name}_person_id_idx
+                    ON {table_name}(person_id)"""
+            )
+    cursor.execute("CREATE INDEX persons_orcid_idx ON persons(orcid)")

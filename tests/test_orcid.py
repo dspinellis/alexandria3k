@@ -78,6 +78,8 @@ class TestOrcidAll(unittest.TestCase):
         result = TestOrcidAll.cursor.execute(
             f"""SELECT type, value
                                   FROM person_external_identifiers
+                                  INNER JOIN persons ON persons.id
+                                    == person_external_identifiers.person_id
                                   WHERE orcid='0000-0003-4231-1897'"""
         )
         rows = result.fetchmany(100)
@@ -90,7 +92,9 @@ class TestOrcidAll(unittest.TestCase):
     ):
         result = TestOrcidAll.cursor.execute(
             f"""SELECT name, url FROM person_researcher_urls
-                                  WHERE orcid='0000-0003-4231-1897'"""
+                INNER JOIN persons ON persons.id
+                    == person_researcher_urls.person_id
+                WHERE orcid='0000-0003-4231-1897'"""
         )
         rows = result.fetchmany(99)
         self.assertEqual(len(rows), 2)
@@ -110,7 +114,8 @@ class TestOrcidAll(unittest.TestCase):
     ):
         result = TestOrcidAll.cursor.execute(
             f"""SELECT orcid, doi FROM person_works
-                                  WHERE orcid='0000-0003-4231-1897'"""
+                INNER JOIN persons ON persons.id == person_works.person_id
+                WHERE orcid='0000-0003-4231-1897'"""
         )
         rows = result.fetchmany(999)
         self.assertEqual(len(rows), 128)

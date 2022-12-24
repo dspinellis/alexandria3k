@@ -114,6 +114,10 @@ class TableMeta:
         """Return defined value extraction function for column name"""
         return self.columns_by_name[name].get_value_extractor()
 
+    def get_column_definition_by_name(self, name):
+        """Return defined column definition DDL for column name"""
+        return self.columns_by_name[name].get_definition()
+
     def creation_tuple(self, table_dict, data_source):
         """Return the tuple required by the apsw.Source.Create method:
         the table's schema and the virtual table class."""
