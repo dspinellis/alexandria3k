@@ -79,7 +79,10 @@ the URL from which it will directly stream the data to populate the database.
 
 * [Crossref journal data](http://ftp.crossref.org/titlelist/titleFile.csv)
 * [Crossref funder data](https://doi.crossref.org/funderNames?mode=list)
-* [Open access journal metadata](https://doaj.org/csv) from the [https://doaj.org/](directory of open access journals)
+* [Open access journal metadata](https://doaj.org/csv)
+  from the [https://doaj.org/](directory of open access journals)
+* [Research organization data](https://doi.org/10.5281/zenodo.7448410)
+  from the [https://ror.org/](Research Organization Registry — ROR)
 
 ## Use overview
 After downloading the Crossref data you can use _alexandria3k_ through its
@@ -284,14 +287,16 @@ optional arguments:
                         database.
   -d DATA_SOURCE [DATA_SOURCE ...], --data-source DATA_SOURCE [DATA_SOURCE ...]
                         Specify data set to be processed and its source. The
-                        following data sets are supported. Crossref
-                        <container-directory> DOAJ [<CSV-file> | <URL>]
-                        (defaults to https://doaj.org/csv) funder-names [<CSV-
-                        file> | <URL>] (defaults to
-                        https://doi.crossref.org/funderNames?mode=list)
+                        following data sets are supported: Crossref
+                        <container-directory>; DOAJ [<CSV-file> | <URL>]
+                        (defaults to https://doaj.org/csv); funder-names
+                        [<CSV-file> | <URL>] (defaults to
+                        https://doi.crossref.org/funderNames?mode=list);
                         journal-names [<CSV-file> | <URL>] (defaults to
-                        http://ftp.crossref.org/titlelist/titleFile.csv) ORCID
-                        <summaries.tar.gz-file>
+                        http://ftp.crossref.org/titlelist/titleFile.csv);
+                        ORCID <summaries.tar.gz-file> ROR [<zip-file> | <URL>]
+                        (defaults to https://zenodo.org/record/7448410/files/v
+                        1.17.1-2022-12-16-ror-data.zip?download=1);
   -E OUTPUT_ENCODING, --output-encoding OUTPUT_ENCODING
                         Query output character encoding (use utf-8-sig for
                         Excel)

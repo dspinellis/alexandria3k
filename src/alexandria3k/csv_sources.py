@@ -20,51 +20,10 @@
 
 import codecs
 import csv
-try:
-    from importlib import metadata
-except ImportError: # for Python<3.8
-    import importlib_metadata as metadata
-import re
 import sqlite3
-import subprocess
-import urllib.request
 
-from .common import fail
+from .common import data_source
 from .virtual_db import ColumnMeta, TableMeta
-
-RE_URL = re.compile(r"\w+://")
-
-
-def is_url(url):
-    """Return true if url looks like a URL"""
-    return RE_URL.match(url)
-
-
-def program_version():
-    """Return a string identifying the program's version"""
-    try:
-        # Installed version
-        return metadata.version("alexandria3k")
-    except metadata.PackageNotFoundError:
-        # Obtain development version through Git
-        res = subprocess.run(
-            ["git", "rev-parse", "--short", "HEAD"], stdout=subprocess.PIPE
-        )
-        return res.stdout.decode("utf-8").strip()
-
-
-def data_source(source):
-    """Given a file path or a URL return a readable source for its contents"""
-    try:
-        if is_url(source):
-            req = urllib.request.Request(
-                source,
-                headers={"User-Agent": f"alexandria3k {program_version()}"},
-            )
-            return urllib.request.urlopen(req)
-        return open(source, "rb")
-    except Exception as e:
-        fail(f"Unable to read data from {source}: {e}")
 
 
 def record_source(source):

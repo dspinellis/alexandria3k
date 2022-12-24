@@ -16,22 +16,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""csv_sources module test"""
+"""common module test"""
 
-import codecs
-import csv
 import re
 import sys
 import unittest
 
 sys.path.append("src")
 
-from alexandria3k import csv_sources
+from alexandria3k import common
 
 
-class TestCsvSources(unittest.TestCase):
-    def test_record_source(self):
-        gen = csv_sources.record_source('tests/data/titleFile.csv')
-        row = next(gen)
-        self.assertTrue("18435912" in row)
-        self.assertTrue("10.36801/apme" in row)
+class TestCommon(unittest.TestCase):
+    def test_program_version(self):
+        version = common.program_version()
+        expected_regex = re.compile(r"(([0-9a-f]{6,})|(\d+\.\d+\.\d+))")
+        self.assertTrue(expected_regex.fullmatch(version), f"Invalid version string [{version}]")
+
+    def test_is_url(self):
+        self.assertTrue(common.is_url("https://www.example.com/foo"))
+        self.assertFalse(common.is_url("foo.csv"))
+

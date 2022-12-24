@@ -30,12 +30,14 @@ from . import csv_sources
 from . import debug
 from .file_cache import FileCache
 from . import orcid
+from . import ror
 from . import perf
 
 # Default values for diverse data sources
 DOAJ_DEFAULT = "https://doaj.org/csv"
 FUNDER_NAMES_DEFAULT = "https://doi.crossref.org/funderNames?mode=list"
 JOURNAL_NAMES_DEFAULT = "http://ftp.crossref.org/titlelist/titleFile.csv"
+ROR_DEFAULT = "https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"
 
 random.seed("alexandria3k")
 
@@ -95,13 +97,14 @@ def schema_list():
 
     for table in (
         crossref.tables
-        + orcid.tables
         + [
             csv_sources.open_access_table,
             csv_sources.funders_table,
             csv_sources.journals_table,
             csv_sources.journals_issns_table,
         ]
+        + orcid.tables
+        + ror.tables
     ):
         print(table.table_schema())
 
@@ -195,6 +198,7 @@ def parse_cli_arguments(args=None):
     funder-names [<CSV-file> | <URL>] (defaults to {FUNDER_NAMES_DEFAULT});
     journal-names [<CSV-file> | <URL>] (defaults to {JOURNAL_NAMES_DEFAULT});
     ORCID <summaries.tar.gz-file>
+    ROR [<zip-file> | <URL>] (defaults to {ROR_DEFAULT});
     """,
     )
     parser.add_argument(
@@ -330,6 +334,7 @@ def expand_data_source(parser, args):
     args.funder_names = None
     args.journal_names = None
     args.orcid = None
+    args.ror = None
 
     if source_name == "crossref":
         args.crossref = required_value("Missing Crossref data directory value")
@@ -341,6 +346,8 @@ def expand_data_source(parser, args):
         args.journal_names = optional_value(JOURNAL_NAMES_DEFAULT)
     elif source_name == "orcid":
         args.orcid = required_value("Missing ORCID data file value")
+    elif source_name == "ror":
+        args.ror = optional_value(ROR_DEFAULT)
     else:
         parser.error(f"Unknown source name {args.data_source[0]}")
 
@@ -404,6 +411,10 @@ def main():
             args.linked_records == "works",
         )
         perf.log("ORCID table population")
+
+    if args.ror:
+        ror.populate(args.ror, args.populate_db_path)
+        perf.log("ROR table population")
 
     if args.query_file:
         args.query = ""

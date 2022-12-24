@@ -19,10 +19,20 @@
 #
 """Functions common to multiple modules"""
 
+try:
+    from importlib import metadata
+except ImportError:  # for Python<3.8
+    import importlib_metadata as metadata
 import os
+import re
+import subprocess
 import sys
+import urllib.request
 
 from . import debug
+
+
+RE_URL = re.compile(r"\w+://")
 
 
 def fail(message):
@@ -90,3 +100,40 @@ def add_columns(columns, tables, add_column):
                 f"Invalid column specification: {col}; expected table.column or table.*"
             )
         add_column(table, column)
+
+
+def program_version():
+    """Return a string identifying the program's version"""
+    try:
+        # Installed version
+        return metadata.version("alexandria3k")
+    except metadata.PackageNotFoundError:
+        # Obtain development version through Git
+        res = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            stdout=subprocess.PIPE,
+            check=True,
+        )
+        return res.stdout.decode("utf-8").strip()
+
+
+def is_url(url):
+    """Return true if url looks like a URL"""
+    return RE_URL.match(url)
+
+
+def data_source(source):
+    """Given a file path or a URL return a readable source for its contents"""
+    try:
+        if is_url(source):
+            req = urllib.request.Request(
+                source,
+                headers={"User-Agent": f"alexandria3k {program_version()}"},
+            )
+            return urllib.request.urlopen(req)
+        return open(source, "rb")
+    # pylint: disable-next=broad-except
+    except Exception as exception:
+        fail(f"Unable to read data from {source}: {exception}")
+        # NOTREACHED
+        return None

@@ -39,7 +39,7 @@ class TableMeta:
         self.primary_key = kwargs.get("primary_key")
 
         self.cursor_class = kwargs.get("cursor_class")
-        self.records_path = kwargs.get("records_path")
+        self.extract_multiple = kwargs.get("extract_multiple")
         self.columns = kwargs["columns"]
         self.post_population_command = kwargs.get("post_population_command")
 
@@ -54,7 +54,7 @@ class TableMeta:
         optional specified prefix.
         A columns array can be used to specify which columns to include."""
         if not columns or "*" in columns:
-            columns = [f"  {c.get_name()}" for c in self.columns]
+            columns = [f"  {c.get_definition()}" for c in self.columns]
         # A comma-separated list of the table's columns
         column_list = ",\n".join(columns)
         return f"CREATE TABLE {prefix}{self.name}(\n" + column_list + "\n);\n"
@@ -86,9 +86,9 @@ class TableMeta:
         """Return our column that refers to the parent table's primary key"""
         return self.foreign_key
 
-    def get_records_path(self):
-        """Return the XML path for obtaining multiple records"""
-        return self.records_path
+    def get_extract_multiple(self):
+        """Return the function for obtaining multiple records"""
+        return self.extract_multiple
 
     def get_post_population_command(self):
         """Return the SQL command to run after the table is populated"""
@@ -129,9 +129,19 @@ class ColumnMeta:
         self.name = name
         self.value_extractor = value_extractor
         self.description = kwargs.get("description")
+        self.rowid = kwargs.get("rowid")
 
     def get_name(self):
         """Return column's name"""
+        return self.name
+
+    def get_definition(self):
+        """Return column's DDL definition"""
+        if self.rowid:
+            # Special SQLite name and definition that makes rowid a
+            # visible and stable row identifier.
+            # See https://sqlite.org/forum/info/f78ca38d8d6bf67f
+            return f"{self.name} INTEGER PRIMARY KEY"
         return self.name
 
     def get_description(self):
@@ -302,3 +312,97 @@ class FilesCursor:
     def Close(self):
         """Cursor's destructor, used for cleanup"""
         self.items = None
+
+
+class TableFiller:
+    """An object for adding records to a table"""
+
+    def __init__(self, database, table, column_names, is_master=False):
+        # A filler on an is_master table can only be called to insert
+        # a single record returning its rowid
+
+        # One cursor per object to allow caching the SQL statement
+        self.cursor = database.cursor()
+
+        # {title, isbn, rating} → ":title, :isbn, :rating"
+        values = ",".join(map(lambda n: f":{n}", column_names))
+        ret = " RETURNING rowid" if is_master else ""
+        self.is_master = is_master
+        self.statement = f"""
+            INSERT INTO {table.get_name()} VALUES({values}) {ret}"""
+
+        # Create a dictionary of functions to extract the record values for
+        # the specified columns
+        self.extractors = {}
+        self.extract_multiple = table.get_extract_multiple()
+        for cname in column_names:
+            self.extractors[cname] = table.get_value_extractor_by_name(cname)
+        self.table_name = table.get_name()
+
+    def add_records(self, data_source, id_name, id_value):
+        """Add to the table the required values from the specified data
+        source (e.g. XML element tree or JSON tree.
+        When a single record is added return its rowid.
+        """
+        if self.extract_multiple:
+            self.add_multiple_records(data_source, id_name, id_value)
+            return None
+        return self.add_single_record(data_source, id_name, id_value)
+
+    def add_single_record(self, data_source, id_name, id_value):
+        """Add to the table the required values from the provided data source"""
+        # Create dictionary of names/values to insert
+        values = {}
+        not_null_values = 0
+        for (column_name, extractor) in self.extractors.items():
+            if column_name == id_name:
+                values[column_name] = id_value
+            elif extractor:
+                value = extractor(data_source)
+                values[column_name] = value
+                if value is not None:
+                    not_null_values += 1
+
+        # No insertion if all non-key values are NULL
+        if not_null_values == 0:
+            return None
+
+        self.cursor.execute(
+            self.statement,
+            values,
+            prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
+        )
+        if not self.is_master:
+            return None
+        (rowid,) = self.cursor.fetchone()
+        return rowid
+
+    def add_multiple_records(self, data_source, id_name, id_value):
+        """Add to the table the required values from the XML element tree"""
+        records = []
+        for record in self.extract_multiple(data_source):
+            # Create dictionary of names/values to insert
+            values = {}
+            not_null_values = 0
+            for (column_name, extractor) in self.extractors.items():
+                if column_name == id_name:
+                    values[column_name] = id_value
+                else:
+                    value = extractor(record)
+                    values[column_name] = value
+                    if value is not None:
+                        not_null_values += 1
+
+            # No insertion if all non-key values are NULL
+            if not_null_values > 0:
+                records.append(values)
+
+        self.cursor.executemany(
+            self.statement,
+            records,
+            prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
+        )
+
+    def get_table_name(self):
+        """Return the name of the filled table"""
+        return self.table_name

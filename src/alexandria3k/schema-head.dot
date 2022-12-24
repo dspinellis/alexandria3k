@@ -43,6 +43,24 @@ digraph D {
 	persons -> person_works;
 	works -> person_works  [headlabel="0…1", taillabel="0..1"];
 
+	node [fillcolor="#53baa1"];
+	"ROR tables" [shape=box, margin="0.11,0.055"];
+
+	research_organizations;
+	edge  [headlabel="1…N", taillabel="1"];
+	research_organizations -> ror_types;
+	edge  [headlabel="0…N", taillabel="1"];
+	research_organizations -> ror_links;
+	research_organizations -> ror_aliases;
+	research_organizations -> ror_acronyms;
+	research_organizations -> ror_relationships;
+	research_organizations -> ror_addresses;
+	research_organizations -> ror_funder_ids;
+	research_organizations -> ror_wikidata_ids;
+	research_organizations -> ror_isnis;
+
+	persons -> person_researcher_urls;
+
 	edge  [headlabel="0…1", taillabel="1"];
 	node [fillcolor="#fa9a87"];
 	"DOAJ table" [shape=box, margin="0.11,0.055"];
@@ -52,9 +70,10 @@ digraph D {
 	"Additional Crossref tables" [shape=box, margin="0.11,0.055"];
 	works -> open_access_journals;
 	work_funders -> funder_names;
-	works -> journal_names;
+	work_funders -> ror_funder_ids;
 	work_authors -> persons;
 	journal_names -> journals_issns  [headlabel="1…N", taillabel="1..N"];
+	works -> journals_issns;
 
 	edge [style="invis"];
-	"Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ORCID tables";
+	{ rank = source; "Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ROR tables" -> "ORCID tables"; }

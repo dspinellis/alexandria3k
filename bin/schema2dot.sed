@@ -22,6 +22,7 @@
 
 # Field name
 /^  / {
+  s/ INTEGER PRIMARY KEY//
   # Put table fields in separate lines
   s|,$|<BR/>|
   # And append to hold space

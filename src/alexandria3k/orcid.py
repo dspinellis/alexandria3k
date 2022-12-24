@@ -26,7 +26,7 @@ import apsw
 
 from .common import add_columns, fail, log_sql, set_fast_writing
 from . import perf
-from .virtual_db import ColumnMeta, TableMeta
+from .virtual_db import ColumnMeta, TableFiller, TableMeta
 
 # The ORCID XML namespaces in XPath format
 ACTIVITIES = "{http://www.orcid.org/ns/activities}"
@@ -92,6 +92,11 @@ def type_getter_lower(path, id_type):
     """Return a function to return an element converted to lowercase
     with the specified path and <common:external-id-type> from a given tree."""
     return lambda tree: get_type_element_lower(tree, path, id_type)
+
+
+def all_getter(path):
+    """Return all elements from the specified path"""
+    return lambda tree: tree.findall(path)
 
 
 # Map from XML to relational schema
@@ -169,7 +174,7 @@ tables = [
     ),
     TableMeta(
         "person_researcher_urls",
-        records_path=(
+        extract_multiple=all_getter(
             f"{PERSON}person/{RESEARCHER_URL}researcher-urls/"
             f"{RESEARCHER_URL}researcher-url"
         ),
@@ -181,7 +186,9 @@ tables = [
     ),
     TableMeta(
         "person_countries",
-        records_path=f"{PERSON}person/{ADDRESS}addresses/{ADDRESS}address",
+        extract_multiple=all_getter(
+            f"{PERSON}person/{ADDRESS}addresses/{ADDRESS}address"
+        ),
         columns=[
             ColumnMeta("orcid"),
             ColumnMeta("country", getter(f"{ADDRESS}country")),
@@ -189,7 +196,9 @@ tables = [
     ),
     TableMeta(
         "person_keywords",
-        records_path=f"{PERSON}person/{KEYWORD}keywords/{KEYWORD}keyword",
+        extract_multiple=all_getter(
+            f"{PERSON}person/{KEYWORD}keywords/{KEYWORD}keyword"
+        ),
         columns=[
             ColumnMeta("orcid"),
             ColumnMeta("keyword", getter(f"{KEYWORD}content")),
@@ -197,7 +206,7 @@ tables = [
     ),
     TableMeta(
         "person_external_identifiers",
-        records_path=(
+        extract_multiple=all_getter(
             f"{PERSON}person/{EXTERNAL_IDENTIFIER}external-identifiers/"
             f"{EXTERNAL_IDENTIFIER}external-identifier"
         ),
@@ -210,7 +219,7 @@ tables = [
     ),
     TableMeta(
         "person_distinctions",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}distinctions/"
             f"{ACTIVITIES}affiliation-group/{DISTINCTION}distinction-summary"
         ),
@@ -221,7 +230,7 @@ tables = [
     ),
     TableMeta(
         "person_educations",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}educations/"
             f"{ACTIVITIES}affiliation-group/{EDUCATION}education-summary"
         ),
@@ -232,7 +241,7 @@ tables = [
     ),
     TableMeta(
         "person_employments",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}employments/"
             f"{ACTIVITIES}affiliation-group/{EMPLOYMENT}employment-summary"
         ),
@@ -243,7 +252,7 @@ tables = [
     ),
     TableMeta(
         "person_invited_positions",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
             f"{ACTIVITIES}invited-positions/"
             f"{ACTIVITIES}affiliation-group/"
@@ -256,7 +265,7 @@ tables = [
     ),
     TableMeta(
         "person_memberships",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
             f"{ACTIVITIES}memberships/{ACTIVITIES}affiliation-group/"
             f"{MEMBERSHIP}membership-summary"
@@ -268,7 +277,7 @@ tables = [
     ),
     TableMeta(
         "person_qualifications",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
             f"{ACTIVITIES}qualifications/"
             f"{ACTIVITIES}affiliation-group/"
@@ -281,7 +290,7 @@ tables = [
     ),
     TableMeta(
         "person_services",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}services/"
             f"{ACTIVITIES}affiliation-group/{SERVICE}service-summary"
         ),
@@ -292,7 +301,7 @@ tables = [
     ),
     TableMeta(
         "person_fundings",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}fundings/"
             f"{ACTIVITIES}group/{FUNDING}funding-summary"
         ),
@@ -313,7 +322,7 @@ tables = [
     ),
     TableMeta(
         "person_peer_reviews",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
             f"{ACTIVITIES}peer-reviews/{ACTIVITIES}group/"
             f"{ACTIVITIES}peer-review-group/"
@@ -368,7 +377,7 @@ tables = [
     ),
     TableMeta(
         "person_research_resources",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
             f"{ACTIVITIES}research-resources/{ACTIVITIES}group/"
             f"{RESEARCH_RESOURCE}research-resource-summary"
@@ -423,7 +432,7 @@ tables = [
     ),
     TableMeta(
         "person_works",
-        records_path=(
+        extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/"
             f"{ACTIVITIES}group/{COMMON}external-ids"
         ),
@@ -447,83 +456,6 @@ def get_table_meta_by_name(name):
         fail(f"Unknown table name: {name}")
         # NOTREACHED
         return None
-
-
-class TableFiller:
-    """An object for adding records to a table"""
-
-    def __init__(self, database, table_name, column_names):
-        # One cursor per object to allow caching the SQL statement
-        self.cursor = database.cursor()
-
-        # {title, isbn, rating} → ":title, :isbn, :rating"
-        values = ",".join(map(lambda n: f":{n}", column_names))
-        self.statement = f"INSERT INTO {table_name} VALUES({values})"
-
-        # Create a dictionary of functions to extract the record values for
-        # the specified columns
-        self.extractors = {}
-        table = get_table_meta_by_name(table_name)
-        self.records_path = table.get_records_path()
-        for cname in column_names:
-            self.extractors[cname] = table.get_value_extractor_by_name(cname)
-
-    def add_records(self, element_tree, orcid):
-        """Add to the table the required values from the XML element tree"""
-        if self.records_path:
-            self.add_multiple_records(element_tree, orcid)
-        else:
-            self.add_single_record(element_tree, orcid)
-
-    def add_single_record(self, element_tree, orcid):
-        """Add to the table the required values from the XML element tree"""
-        # Create dictionary of names/values to insert
-        values = {}
-        not_null_values = 0
-        for (column_name, extractor) in self.extractors.items():
-            if column_name == "orcid":
-                values[column_name] = orcid
-            else:
-                value = extractor(element_tree)
-                values[column_name] = value
-                if value is not None:
-                    not_null_values += 1
-
-        # No insertion if all non-key values are NULL
-        if not_null_values == 0:
-            return
-
-        self.cursor.execute(
-            self.statement,
-            values,
-            prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
-        )
-
-    def add_multiple_records(self, element_tree, orcid):
-        """Add to the table the required values from the XML element tree"""
-        records = []
-        for record in element_tree.findall(self.records_path):
-            # Create dictionary of names/values to insert
-            values = {}
-            not_null_values = 0
-            for (column_name, extractor) in self.extractors.items():
-                if column_name == "orcid":
-                    values[column_name] = orcid
-                else:
-                    value = extractor(record)
-                    values[column_name] = value
-                    if value is not None:
-                        not_null_values += 1
-
-            # No insertion if all non-key values are NULL
-            if not_null_values > 0:
-                records.append(values)
-
-        self.cursor.executemany(
-            self.statement,
-            records,
-            prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
-        )
 
 
 def order_columns_by_schema(table_name, column_names):
@@ -618,7 +550,7 @@ def populate(
     add_columns(columns, tables, add_column)
 
     # Reorder columns to match the defined schema order
-    # This creates deterministic schemas
+    # This creates schemas with a deterministic column order
     for (table_name, table_columns) in population_columns.items():
         population_columns[table_name] = order_columns_by_schema(
             table_name, population_columns[table_name]
@@ -636,7 +568,7 @@ def populate(
         cursor.execute(table.table_schema("", table_columns))
 
         # Value addition
-        table_fillers.append(TableFiller(database, table_name, table_columns))
+        table_fillers.append(TableFiller(database, table, table_columns))
 
     if authors_only:
         cursor.execute(
@@ -692,7 +624,7 @@ def populate(
 
             # Insert data to the specified tables
             for filler in table_fillers:
-                filler.add_records(element_tree, orcid)
+                filler.add_records(element_tree, "orcid", orcid)
             perf.log(f"Populate {orcid}")
 
     for table_name in population_columns:
