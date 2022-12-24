@@ -42,6 +42,7 @@ class TableMeta:
         self.extract_multiple = kwargs.get("extract_multiple")
         self.columns = kwargs["columns"]
         self.post_population_command = kwargs.get("post_population_command")
+        self.without_rowid = kwargs.get("without_rowid")
 
         # Create dictionary of columns by name
         self.columns_by_name = {}
@@ -57,7 +58,12 @@ class TableMeta:
             columns = [f"  {c.get_definition()}" for c in self.columns]
         # A comma-separated list of the table's columns
         column_list = ",\n".join(columns)
-        return f"CREATE TABLE {prefix}{self.name}(\n" + column_list + "\n);\n"
+        without_rowid = " WITHOUT ROWID" if self.without_rowid else ""
+        return f"""
+CREATE TABLE {prefix}{self.name}(
+{column_list}
+){without_rowid};
+"""
 
     def insert_statement(self):
         """Return an SQL command to insert data into the table"""
@@ -134,6 +140,7 @@ class ColumnMeta:
         self.value_extractor = value_extractor
         self.description = kwargs.get("description")
         self.rowid = kwargs.get("rowid")
+        self.type_constraint = kwargs.get("type_constraint")
 
     def get_name(self):
         """Return column's name"""
@@ -146,6 +153,8 @@ class ColumnMeta:
             # visible and stable row identifier.
             # See https://sqlite.org/forum/info/f78ca38d8d6bf67f
             return f"{self.name} INTEGER PRIMARY KEY"
+        elif self.type_constraint:
+            return f"{self.name} {self.type_constraint}"
         return self.name
 
     def get_description(self):

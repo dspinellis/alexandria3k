@@ -564,8 +564,9 @@ tables = [
     TableMeta(
         "works",
         cursor_class=WorksCursor,
+        without_rowid=True,
         columns=[
-            ColumnMeta("id"),
+            ColumnMeta("id", type_constraint="INTEGER PRIMARY KEY"),
             ColumnMeta("container_id"),
             ColumnMeta("doi", lambda row: dict_value(row, "DOI").lower()),
             ColumnMeta(
@@ -639,8 +640,9 @@ tables = [
         parent_name="works",
         primary_key="id",
         cursor_class=AuthorsCursor,
+        without_rowid=True,
         columns=[
-            ColumnMeta("id"),
+            ColumnMeta("id", type_constraint="INTEGER PRIMARY KEY"),
             ColumnMeta("container_id"),
             ColumnMeta("work_id"),
             ColumnMeta("orcid", author_orcid),
@@ -795,8 +797,9 @@ tables = [
         parent_name="works",
         primary_key="id",
         cursor_class=FundersCursor,
+        without_rowid=True,
         columns=[
-            ColumnMeta("id"),
+            ColumnMeta("id", type_constraint="INTEGER PRIMARY KEY"),
             ColumnMeta("container_id"),
             ColumnMeta("work_id"),
             ColumnMeta(
