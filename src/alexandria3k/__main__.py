@@ -317,6 +317,13 @@ def expand_data_source(parser, args):
             parser.error("Too many arguments in data source specification")
         return args.data_source[1] if len(args.data_source) == 2 else default
 
+    args.crossref = None
+    args.doaj = None
+    args.funder_names = None
+    args.journal_names = None
+    args.orcid = None
+    args.ror = None
+
     if not args.data_source:
         return args
 
@@ -328,13 +335,6 @@ def expand_data_source(parser, args):
     else:
         if not args.populate_db_path:
             parser.error("Database path must be specified")
-
-    args.crossref = None
-    args.doaj = None
-    args.funder_names = None
-    args.journal_names = None
-    args.orcid = None
-    args.ror = None
 
     if source_name == "crossref":
         args.crossref = required_value("Missing Crossref data directory value")
