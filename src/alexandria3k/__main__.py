@@ -37,7 +37,6 @@ from . import perf
 DOAJ_DEFAULT = "https://doaj.org/csv"
 FUNDER_NAMES_DEFAULT = "https://doi.crossref.org/funderNames?mode=list"
 JOURNAL_NAMES_DEFAULT = "http://ftp.crossref.org/titlelist/titleFile.csv"
-ROR_DEFAULT = "https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"
 
 random.seed("alexandria3k")
 
@@ -199,7 +198,7 @@ def parse_cli_arguments(args=None):
     funder-names [<CSV-file> | <URL>] (defaults to {FUNDER_NAMES_DEFAULT});
     journal-names [<CSV-file> | <URL>] (defaults to {JOURNAL_NAMES_DEFAULT});
     ORCID <summaries.tar.gz-file>
-    ROR [<zip-file> | <URL>] (defaults to {ROR_DEFAULT});
+    ROR <zip-file>;
     """,
     )
     parser.add_argument(
@@ -354,7 +353,7 @@ def expand_data_source(parser, args):
     elif source_name == "orcid":
         args.orcid = required_value("Missing ORCID data file value")
     elif source_name == "ror":
-        args.ror = optional_value(ROR_DEFAULT)
+        args.ror = required_value("Missing ROR zip file value")
     else:
         parser.error(f"Unknown source name {args.data_source[0]}")
 

@@ -260,8 +260,13 @@ alexandria3k  --populate-db-path database.db \
 ### Populate the database with the names of research organizations
 Populate the research organization registry (ROR) tables.
 ```sh
-alexandria3k  --populate-db-path database.db \
-  --data-source ror "https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"
+# Fetch the ROR data file (~21 MB)
+wget -O ror-v1.17.1.zip \
+  "https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"
+
+# Populate the database
+alexandria3k --populate-db-path database.db \
+  --data-source ror ror-v1.17.1.zip
 ```
 
 ### Link author affiliations with research organization names
@@ -510,7 +515,7 @@ from alexandria3k import ror
 
 ror.populate(
     "database.db",
-    "https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"
+    "v1.17.1-2022-12-16-ror-data.zip"
 )
 ```
 
