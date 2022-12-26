@@ -24,10 +24,14 @@ try:
 except ImportError:  # for Python<3.8
     import importlib_metadata as metadata
 import os
+import sqlite3
 import re
 import subprocess
 import sys
 import urllib.request
+
+# pylint: disable-next=import-error
+import apsw
 
 from . import debug
 
@@ -52,6 +56,22 @@ def query_result(cursor, query):
     result_set = cursor.execute(query)
     (result,) = result_set.fetchone()
     return result
+
+
+def table_exists(cursor, table_name):
+    """Return True if the specified table exists"""
+    try:
+        cursor.execute(f"SELECT Count(*) FROM {table_name}")
+        return True
+    except (sqlite3.OperationalError, apsw.SQLError):
+        return False
+
+
+def ensure_table_exists(cursor, table_name):
+    """Terminate the program with an error message if the specified table
+    does not exist"""
+    if not table_exists(cursor, table_name):
+        fail(f"The required table {table_name} is not populated")
 
 
 def set_fast_writing(database):

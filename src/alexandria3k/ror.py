@@ -20,11 +20,13 @@
 
 import json
 import zipfile
+import ahocorasick
 
 # pylint: disable-next=import-error
 import apsw
 
-from .common import log_sql, set_fast_writing
+from .common import ensure_table_exists, log_sql, set_fast_writing
+from . import debug
 from . import perf
 from .virtual_db import ColumnMeta, TableFiller, TableMeta
 
@@ -141,6 +143,14 @@ tables = [
             ColumnMeta("isni", lambda value: value),
         ],
     ),
+    # No extractors; filled by link_author_affiliations
+    TableMeta(
+        "work_authors_rors",
+        columns=[
+            ColumnMeta("ror_id"),
+            ColumnMeta("work_author_id"),
+        ],
+    ),
 ]
 
 table_dict = {t.get_name(): t for t in tables}
@@ -173,10 +183,12 @@ def populate(data_path, database_path):
             column_names = [c.get_name() for c in columns]
             cursor.execute(log_sql(f"DROP TABLE IF EXISTS {table_name}"))
             cursor.execute(log_sql(table.table_schema()))
+
             # Value addition
             is_master = table_name == "research_organizations"
             filler = TableFiller(database, table, column_names, is_master)
-            fillers.append(filler)
+            if filler.have_extractors():
+                fillers.append(filler)
         return fillers
 
     table_fillers = create_tables()
@@ -188,3 +200,68 @@ def populate(data_path, database_path):
             perf.log("Parse ROR")
             add_org_records(data)
             perf.log("Add ROR")
+
+
+def add_words(automaton, source):
+    """Add the words from the specified source to the AC automaton"""
+    for (ror_id, word) in source:
+        automaton.add_word(word, (ror_id, len(word)))
+
+
+def link_author_affiliations(database_path):
+    """Create an work_authors_rors table that links each work author to the
+    identified Research Organization Record"""
+    database = apsw.Connection(database_path)
+    database.execute(log_sql("DELETE FROM work_authors_rors"))
+    set_fast_writing(database)
+    select_cursor = database.cursor()
+    ensure_table_exists(select_cursor, "research_organizations")
+    ensure_table_exists(select_cursor, "author_affiliations")
+    ensure_table_exists(select_cursor, "work_authors_rors")
+
+    # Create an automaton with all ROR identifying names
+    automaton = ahocorasick.Automaton()
+    add_words(
+        automaton,
+        select_cursor.execute("SELECT id, name FROM research_organizations"),
+    )
+    perf.log("Automaton add names")
+    add_words(
+        automaton,
+        select_cursor.execute("SELECT ror_id, alias FROM ror_aliases"),
+    )
+    perf.log("Automaton add aliases")
+    add_words(
+        automaton,
+        select_cursor.execute("SELECT ror_id, acronym FROM ror_acronyms"),
+    )
+    perf.log("Automaton add acronyms")
+    automaton.make_automaton()
+    perf.log("Automaton build")
+
+    insert_cursor = database.cursor()
+    for (author_id, affiliation_name) in select_cursor.execute(
+        "SELECT author_id, name FROM author_affiliations"
+    ):
+
+        if not affiliation_name:
+            continue
+        best_ror_id = None
+        best_length = 0
+        # Find all ROR names in affiliation_name
+        for _, (ror_id, length) in automaton.iter(affiliation_name):
+            if length > best_length:
+                best_length = length
+                best_ror_id = ror_id
+        if best_ror_id:
+            debug.log(
+                "link", f"Identified {affiliation_name} as {best_ror_id}"
+            )
+            insert_cursor.execute(
+                "INSERT INTO work_authors_rors VALUES(?, ?)",
+                (best_ror_id, author_id),
+                prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
+            )
+    select_cursor.close()
+    insert_cursor.close()
+    perf.log("Link")

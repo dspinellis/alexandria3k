@@ -175,6 +175,7 @@ def parse_cli_arguments(args=None):
         default=[],
         help="""Output debuggging information as specfied by the arguments.
     files-read: Output counts of data files read;
+    link: Record linking operations;
     log-sql: Output executed SQL statements;
     perf: Output performance timings;
     populated-counts: Dump counts of the populated database;
@@ -293,6 +294,12 @@ def parse_cli_arguments(args=None):
         default="True",
         type=str,
         help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
+    )
+    parser.add_argument(
+        "-x",
+        "--execute",
+        type=str,
+        help="Operation to execute on the data; one of: link-ror-aa",
     )
 
     return expand_data_source(parser, parser.parse_args(args))
@@ -454,6 +461,8 @@ def main():
         csv_sources.populate_open_access_journals(
             args.populate_db_path, args.doaj
         )
+    if args.execute == "link-ror-aa":
+        ror.link_author_affiliations(args.populate_db_path)
 
     if debug.enabled("populated-counts"):
         populated_db = sqlite3.connect(args.populate_db_path)

@@ -20,25 +20,26 @@
 
 import os
 import unittest
-import sqlite3
+import apsw
 import sys
 
 sys.path.append("src")
 
 from alexandria3k.common import ensure_unlinked, query_result
-from alexandria3k import ror
+from alexandria3k import ror, crossref
 
 DATABASE_PATH = "tests/tmp/ror.db"
 
 
-class TestOrcidAll(unittest.TestCase):
+class TestRorPopulate(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
         ror.populate("tests/data/ror.zip", DATABASE_PATH)
-        cls.con = sqlite3.connect(DATABASE_PATH)
+
+        cls.con = apsw.Connection(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
     @classmethod
@@ -47,14 +48,14 @@ class TestOrcidAll(unittest.TestCase):
         os.unlink(DATABASE_PATH)
 
     def test_import(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT Count(*) from research_organizations"
         )
         (count,) = result.fetchone()
         self.assertEqual(count, 27)
 
     def test_organization(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT * FROM research_organizations WHERE ror_path='019wvm592'"
         )
         (
@@ -73,57 +74,57 @@ class TestOrcidAll(unittest.TestCase):
         self.assertEqual(country_code, "AU")
 
     def test_funder_ids(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT funder_id FROM ror_funder_ids WHERE ror_id=2"
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 6)
         self.assertTrue(("501100001779",) in rows)
         self.assertTrue(("501100006532",) in rows)
 
     def test_ror_types(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT type FROM ror_types WHERE ror_id=2"
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 1)
         self.assertTrue(("Education",) in rows)
 
     def test_ror_links(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT link FROM ror_links WHERE ror_id=2"
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 1)
         self.assertTrue(("http://www.monash.edu/",) in rows)
 
     def test_ror_aliases(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             """SELECT alias FROM research_organizations
                 INNER JOIN ror_aliases on research_organizations.rowid =
                   ror_aliases.ror_id
                 WHERE ror_path='03r8z3t63'"""
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 1)
         self.assertTrue(("University of New South Wales",) in rows)
 
     def test_ror_acronyms(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             """SELECT acronym FROM research_organizations
                 INNER JOIN ror_acronyms on research_organizations.rowid =
                   ror_acronyms.ror_id
                 WHERE ror_path='03r8z3t63'"""
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 1)
         self.assertTrue(("UNSW",) in rows)
 
     def test_ror_relationships(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT type, ror_path FROM ror_relationships WHERE ror_id=2"
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 13)
         self.assertTrue(
             (
@@ -141,10 +142,10 @@ class TestOrcidAll(unittest.TestCase):
         )
 
     def test_ror_addresses(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT * FROM ror_addresses WHERE ror_id=2"
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 1)
         self.assertTrue(
             (
@@ -159,17 +160,92 @@ class TestOrcidAll(unittest.TestCase):
         )
 
     def test_ror_wikidata_ids(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT wikidata_id FROM ror_wikidata_ids WHERE ror_id=2"
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 1)
         self.assertTrue(("Q598841",) in rows)
 
     def test_ror_isnis(self):
-        result = TestOrcidAll.cursor.execute(
+        result = TestRorPopulate.cursor.execute(
             "SELECT isni FROM ror_isnis WHERE ror_id=2"
         )
-        rows = result.fetchmany(100)
+        rows = list(result)
         self.assertEqual(len(rows), 1)
         self.assertTrue(("0000 0004 1936 7857",) in rows)
+
+class TestRorLink(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if os.path.exists(DATABASE_PATH):
+            os.unlink(DATABASE_PATH)
+
+        ror.populate("tests/data/ror.zip", DATABASE_PATH)
+
+        # Needed to test author-ror linking
+        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref.populate(DATABASE_PATH)
+
+        cls.con = apsw.Connection(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+        result = cls.cursor.execute(
+            "SELECT Max(author_id) FROM author_affiliations"
+        )
+        (cls.author_id,) = result.fetchone()
+
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def get_ror_id_by_name(self, name):
+        """Return the ROR id associated with the given name"""
+        result = TestRorLink.cursor.execute(
+            "SELECT id FROM research_organizations WHERE name = ?", [name]
+        )
+        return list(result)[0][0]
+
+    def test_same(self):
+        result = TestRorLink.cursor.execute(
+            """DELETE FROM author_affiliations;
+            INSERT INTO author_affiliations VALUES (?, ?, ?)""",
+            (self.author_id, 1, "Swinburne University of Technology")
+        )
+        ror.link_author_affiliations(DATABASE_PATH)
+        rows = list(TestRorLink.cursor.execute(
+            "SELECT ror_id, work_author_id FROM work_authors_rors"
+        ))
+        self.assertEqual(len(rows), 1)
+        sut_id = self.get_ror_id_by_name("Swinburne University of Technology")
+        self.assertEqual(rows[0], (sut_id, self.author_id))
+
+    def test_similar(self):
+        result = TestRorLink.cursor.execute(
+            """DELETE FROM author_affiliations;
+            INSERT INTO author_affiliations VALUES (?, ?, ?)""",
+            (self.author_id, 1, "Department of Computing, Swinburne University of Technology, Australia")
+        )
+        ror.link_author_affiliations(DATABASE_PATH)
+        rows = list(TestRorLink.cursor.execute(
+            "SELECT ror_id, work_author_id FROM work_authors_rors"
+        ))
+        self.assertEqual(len(rows), 1)
+        sut_id = self.get_ror_id_by_name("Swinburne University of Technology")
+        self.assertEqual(rows[0], (sut_id, self.author_id))
+
+    def test_longest(self):
+        result = TestRorLink.cursor.execute(
+            """DELETE FROM author_affiliations;
+            INSERT INTO author_affiliations VALUES (?, ?, ?)""",
+            (self.author_id, 1, "VU Lab, Swinburne University of Technology, Australia")
+        )
+        ror.link_author_affiliations(DATABASE_PATH)
+        rows = list(TestRorLink.cursor.execute(
+            "SELECT ror_id, work_author_id FROM work_authors_rors"
+        ))
+        self.assertEqual(len(rows), 1)
+        sut_id = self.get_ror_id_by_name("Swinburne University of Technology")
+        self.assertEqual(rows[0], (sut_id, self.author_id))

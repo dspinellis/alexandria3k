@@ -18,16 +18,33 @@
 #
 """common module test"""
 
+import os
 import re
+import sqlite3
 import sys
 import unittest
 
 sys.path.append("src")
 
-from alexandria3k import common
+from alexandria3k import common, ror
 
+DATABASE_PATH = "tests/tmp/ror.db"
 
 class TestCommon(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if os.path.exists(DATABASE_PATH):
+            os.unlink(DATABASE_PATH)
+
+        ror.populate("tests/data/ror.zip", DATABASE_PATH)
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
     def test_program_version(self):
         version = common.program_version()
         expected_regex = re.compile(r"(([0-9a-f]{6,})|(\d+\.\d+\.\d+))")
@@ -37,3 +54,6 @@ class TestCommon(unittest.TestCase):
         self.assertTrue(common.is_url("https://www.example.com/foo"))
         self.assertFalse(common.is_url("foo.csv"))
 
+    def test_table_exists(self):
+        self.assertTrue(common.table_exists(self.cursor, "ror_links"))
+        self.assertFalse(common.table_exists(self.cursor, "xyzzy"))

@@ -47,8 +47,12 @@ digraph D {
 	"ROR tables" [shape=box, margin="0.11,0.055"];
 
 	research_organizations;
-	edge  [headlabel="1…N", taillabel="1"];
-	research_organizations -> ror_types;
+
+	edge  [headlabel="0…N", taillabel="0…N"];
+	research_organizations -> work_authors_rors;
+	work_authors_rors -> work_authors;
+
+	research_organizations -> ror_types [headlabel="1…N", taillabel="1"];
 	edge  [headlabel="0…N", taillabel="1"];
 	research_organizations -> ror_links;
 	research_organizations -> ror_aliases;
@@ -58,8 +62,6 @@ digraph D {
 	research_organizations -> ror_funder_ids;
 	research_organizations -> ror_wikidata_ids;
 	research_organizations -> ror_isnis;
-
-	persons -> person_researcher_urls;
 
 	edge  [headlabel="0…1", taillabel="1"];
 	node [fillcolor="#fa9a87"];

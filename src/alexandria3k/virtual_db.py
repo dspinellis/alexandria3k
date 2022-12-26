@@ -343,6 +343,10 @@ class TableFiller:
             self.extractors[cname] = table.get_value_extractor_by_name(cname)
         self.table_name = table.get_name()
 
+    def have_extractors(self):
+        """Return True if the table has at least one extractor"""
+        return len(self.extractors) > 0
+
     def add_records(self, data_source, id_name, id_value):
         """Add to the table the required values from the specified data
         source (e.g. XML element tree or JSON tree.

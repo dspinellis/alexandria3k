@@ -257,6 +257,44 @@ alexandria3k  --populate-db-path database.db \
   --data-source doaj https://doaj.org/csv
 ```
 
+### Populate the database with the names of research organizations
+Populate the research organization registry (ROR) tables.
+```sh
+alexandria3k  --populate-db-path database.db \
+  --data-source ror "https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"
+```
+
+### Link author affiliations with research organization names
+Given a database already populated with work author affiliations
+and the research organization registry fill-in the table `work_authors_rors`
+linking the two.
+```sh
+alexandria3k  --populate-db-path database.db --execute link-ror-aa
+```
+
+After linking, the results' quality can be verified with queries
+such as the following.
+```sql
+-- Display affiliation matches
+SELECT author_affiliations.name, research_organizations.name FROM
+  work_authors
+  INNER JOIN author_affiliations
+    ON work_authors.id = author_affiliations.author_id
+  INNER JOIN work_authors_rors
+    ON work_authors_rors.work_author_id = work_authors.id
+  INNER JOIN research_organizations
+    ON research_organizations.id = work_authors_rors.ror_id;
+
+-- Display unmatched affiliations
+SELECT author_affiliations.name FROM
+  work_authors
+  INNER JOIN author_affiliations
+    ON work_authors.id = author_affiliations.author_id
+  LEFT JOIN work_authors_rors
+    ON work_authors_rors.work_author_id = work_authors.id
+  WHERE work_authors_rors.ror_id is null;
+```
+
 ## Command-line options reference
 <!-- CLI start -->
 ```
@@ -266,6 +304,7 @@ usage: alexandria3k [-h] [-c COLUMNS [COLUMNS ...]] [-D DEBUG [DEBUG ...]]
                     [-l LINKED_RECORDS] [-n] [-o OUTPUT] [-P]
                     [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
                     [-R ROW_SELECTION_FILE] [-r ROW_SELECTION] [-s SAMPLE]
+                    [-x EXECUTE]
 
 alexandria3k: Publication metadata interface
 
@@ -276,15 +315,15 @@ optional arguments:
   -D DEBUG [DEBUG ...], --debug DEBUG [DEBUG ...]
                         Output debuggging information as specfied by the
                         arguments. files-read: Output counts of data files
-                        read; log-sql: Output executed SQL statements; perf:
-                        Output performance timings; populated-counts: Dump
-                        counts of the populated database; populated-data: Dump
-                        the data of the populated database; populated-reports:
-                        Output query results from the populated database;
-                        progress: Report progress; stderr: Log to standard
-                        error; virtual-counts: Dump counts of the virtual
-                        database; virtual-data: Dump the data of the virtual
-                        database.
+                        read; link: Record linking operations; log-sql: Output
+                        executed SQL statements; perf: Output performance
+                        timings; populated-counts: Dump counts of the
+                        populated database; populated-data: Dump the data of
+                        the populated database; populated-reports: Output
+                        query results from the populated database; progress:
+                        Report progress; stderr: Log to standard error;
+                        virtual-counts: Dump counts of the virtual database;
+                        virtual-data: Dump the data of the virtual database.
   -d DATA_SOURCE [DATA_SOURCE ...], --data-source DATA_SOURCE [DATA_SOURCE ...]
                         Specify data set to be processed and its source. The
                         following data sets are supported: Crossref
@@ -328,6 +367,8 @@ optional arguments:
   -s SAMPLE, --sample SAMPLE
                         Python expression to sample the Crossref tables (e.g.
                         random.random() < 0.0002)
+  -x EXECUTE, --execute EXECUTE
+                        Operation to execute on the data; one of: link-ror-aa
 ```
 <!-- CLI end -->
 
@@ -461,6 +502,23 @@ csv_sources.populate_open_access_journals(
     "database.db",
     "https://doaj.org/csv"
 )
+```
+
+### Populate the database with the names of research organizations
+```py
+from alexandria3k import ror
+
+ror.populate(
+    "database.db",
+    "https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"
+)
+```
+
+### Link author affiliations with research organization names
+```py
+from alexandria3k import ror
+
+ror.link_author_affiliations(args.populate_db_path)
 ```
 
 ## Development
