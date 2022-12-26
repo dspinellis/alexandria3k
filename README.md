@@ -30,11 +30,11 @@ and research organizations.
 The easiest way to install _alexandria3k_ and its dependencies is through
 [PyPI](https://pypi.org/):
 ```sh
-python3 -m pip install alexandria3k
+python3 -m pip install --use-pep517 alexandria3k
 ```
 or
 ```sh
-pip install alexandria3k
+pip install --use-pep517 alexandria3k
 ```
 
 ## Data downloading
