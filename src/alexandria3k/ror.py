@@ -237,15 +237,18 @@ def link_author_affiliations(database_path):
     )
     perf.log("Automaton add acronyms")
     automaton.make_automaton()
-    perf.log("Automaton build")
+    size = automaton.get_stats()["total_size"]
+    perf.log(f"Automaton build len={len(automaton)} size={size}")
 
     insert_cursor = database.cursor()
+    affiliations_number = 0
     for (author_id, affiliation_name) in select_cursor.execute(
         "SELECT author_id, name FROM author_affiliations"
     ):
 
         if not affiliation_name:
             continue
+        affiliations_number += 1
         best_ror_id = None
         best_length = 0
         # Find all ROR names in affiliation_name
@@ -264,4 +267,4 @@ def link_author_affiliations(database_path):
             )
     select_cursor.close()
     insert_cursor.close()
-    perf.log("Link")
+    perf.log(f"Link {affiliations_number} affiliations")
