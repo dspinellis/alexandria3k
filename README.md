@@ -16,13 +16,15 @@ It can therefore be used out-of-the-box for performing reproducible
 publication research on the desktop.
 
 In addition,
-the Crossref data set can be linked with:
-* the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
+the Crossref data set can be linked with
+the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (25 GB compressed, 435 GB uuncompressed),
-  containing about 78 million author records, and
-* a data set of funder bodies corresponding to funder DOIs,
-* a data set of journal names corresponding to journal ISSNs,
-* a data set of open access journal data.
+  containing about 78 million author records, as well as
+data sets of
+funder bodies,
+journal names,
+open access journals,
+and research organizations.
 
 ## Installation
 The easiest way to install _alexandria3k_ and its dependencies is through
@@ -78,11 +80,15 @@ or, because the data sets are relatively small, you can provide _alexandria3k_
 the URL from which it will directly stream the data to populate the database.
 
 * [Crossref journal data](http://ftp.crossref.org/titlelist/titleFile.csv)
+  (109k records)
 * [Crossref funder data](https://doi.crossref.org/funderNames?mode=list)
+  (21k records)
 * [Open access journal metadata](https://doaj.org/csv)
-  from the [https://doaj.org/](directory of open access journals)
+  from the [directory of open access journals](https://doaj.org/)
+  (19k records)
 * [Research organization data](https://doi.org/10.5281/zenodo.7448410)
-  from the [https://ror.org/](Research Organization Registry — ROR)
+  from the [Research Organization Registry — ROR](https://ror.org/)
+  (595k records)
 
 ## Use overview
 After downloading the Crossref data you can use _alexandria3k_ through its
