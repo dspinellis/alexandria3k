@@ -16,7 +16,8 @@ Code;Field;Subject area
 1201;Arts and Humanities (miscellaneous);Social Sciences & Humanities
 1202;History;Social Sciences & Humanities
 1203;Language and Linguistics;Social Sciences & Humanities
-1204;Archeology (arts and humanities);Social Sciences & Humanities
+1204;Archaeology;Social Sciences & Humanities
+1204;Archeology;Social Sciences & Humanities
 1205;Classics;Social Sciences & Humanities
 1206;Conservation;Social Sciences & Humanities
 1207;History and Philosophy of Science;Social Sciences & Humanities
@@ -24,7 +25,7 @@ Code;Field;Subject area
 1209;Museology;Social Sciences & Humanities
 1210;Music;Social Sciences & Humanities
 1211;Philosophy;Social Sciences & Humanities
-1212;Religious Studies;Social Sciences & Humanities
+1212;Religious studies;Social Sciences & Humanities
 1213;Visual Arts and Performing Arts;Social Sciences & Humanities
 1300;General Biochemistry, Genetics and Molecular Biology;Life Sciences
 1301;Biochemistry, Genetics and Molecular Biology (miscellaneous);Life Sciences
@@ -52,7 +53,7 @@ Code;Field;Subject area
 1407;Organizational Behavior and Human Resource Management;Social Sciences & Humanities
 1408;Strategy and Management;Social Sciences & Humanities
 1409;Tourism, Leisure and Hospitality Management;Social Sciences & Humanities
-1410;Industrial Relations;Social Sciences & Humanities
+1410;Industrial relations;Social Sciences & Humanities
 1500;General Chemical Engineering;Physical Sciences
 1501;Chemical Engineering (miscellaneous);Physical Sciences
 1502;Bioengineering;Physical Sciences
@@ -180,16 +181,19 @@ Code;Field;Subject area
 2704;Biochemistry (medical);Health Sciences
 2705;Cardiology and Cardiovascular Medicine;Health Sciences
 2706;Critical Care and Intensive Care Medicine;Health Sciences
-2707;Complementary and Alternative Medicine;Health Sciences
+2706;Critical Care;Health Sciences
+2707;Complementary and alternative medicine;Health Sciences
 2708;Dermatology;Health Sciences
 2709;Drug Guides;Health Sciences
 2710;Embryology;Health Sciences
 2711;Emergency Medicine;Health Sciences
+2711;Emergency;Health Sciences
 2712;Endocrinology, Diabetes and Metabolism;Health Sciences
 2713;Epidemiology;Health Sciences
 2714;Family Practice;Health Sciences
 2715;Gastroenterology;Health Sciences
 2716;Genetics (clinical);Health Sciences
+2716;Genetics(clinical);Health Sciences
 2717;Geriatrics and Gerontology;Health Sciences
 2718;Health Informatics;Health Sciences
 2719;Health Policy;Health Sciences
@@ -202,19 +206,23 @@ Code;Field;Subject area
 2726;Microbiology (medical);Health Sciences
 2727;Nephrology;Health Sciences
 2728;Neurology (clinical);Health Sciences
+2728;Clinical Neurology;Health Sciences
 2729;Obstetrics and Gynecology;Health Sciences
+2729;Obstetrics and Gynaecology;Health Sciences
 2730;Oncology;Health Sciences
 2731;Ophthalmology;Health Sciences
 2732;Orthopedics and Sports Medicine;Health Sciences
 2733;Otorhinolaryngology;Health Sciences
 2734;Pathology and Forensic Medicine;Health Sciences
 2735;Pediatrics, Perinatology and Child Health;Health Sciences
+2735;Pediatrics, Perinatology, and Child Health;Health Sciences
 2736;Pharmacology (medical);Health Sciences
 2737;Physiology (medical);Health Sciences
-2738;Psychiatry and Mental Health;Health Sciences
+2738;Psychiatry and Mental health;Health Sciences
 2739;Public Health, Environmental and Occupational Health;Health Sciences
 2740;Pulmonary and Respiratory Medicine;Health Sciences
-2741;Radiology, Nuclear Medicine and Imaging;Health Sciences
+2741;Radiology, Nuclear Medicine and imaging;Health Sciences
+2741;Radiology Nuclear Medicine and imaging;Health Sciences
 2742;Rehabilitation;Health Sciences
 2743;Reproductive Medicine;Health Sciences
 2744;Reviews and References (medical);Health Sciences
@@ -240,20 +248,20 @@ Code;Field;Subject area
 2905;Community and Home Care;Health Sciences
 2906;Critical Care Nursing;Health Sciences
 2907;Emergency Nursing;Health Sciences
-2908;Fundamentals and Skills;Health Sciences
+2908;Fundamentals and skills;Health Sciences
 2909;Gerontology;Health Sciences
-2910;Issues, Ethics and Legal Aspects;Health Sciences
+2910;Issues, ethics and legal aspects;Health Sciences
 2911;Leadership and Management;Health Sciences
 2912;LPN and LVN;Health Sciences
 2913;Maternity and Midwifery;Health Sciences
-2914;Medical and Surgical Nursing;Health Sciences
+2914;Medical–Surgical Nursing;Health Sciences
 2915;Nurse Assisting;Health Sciences
 2916;Nutrition and Dietetics;Health Sciences
 2917;Oncology (nursing);Health Sciences
 2918;Pathophysiology;Health Sciences
 2919;Pediatrics;Health Sciences
 2920;Pharmacology (nursing);Health Sciences
-2921;Psychiatric Mental Health;Health Sciences
+2921;Pshychiatric Mental Health;Health Sciences
 2922;Research and Theory;Health Sciences
 2923;Review and Exam Preparation;Health Sciences
 3000;General Pharmacology, Toxicology and Pharmaceutics;Life Sciences
@@ -283,7 +291,7 @@ Code;Field;Subject area
 3207;Social Psychology;Social Sciences & Humanities
 3300;General Social Sciences;Social Sciences & Humanities
 3301;Social Sciences (miscellaneous);Social Sciences & Humanities
-3302;Archeology;Social Sciences & Humanities
+3302;Archeology (social sciences);Social Sciences & Humanities
 3303;Development;Social Sciences & Humanities
 3304;Education;Social Sciences & Humanities
 3305;Geography, Planning and Development;Social Sciences & Humanities
