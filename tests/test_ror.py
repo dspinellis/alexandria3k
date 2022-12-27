@@ -52,7 +52,7 @@ class TestRorPopulate(unittest.TestCase):
             "SELECT Count(*) from research_organizations"
         )
         (count,) = result.fetchone()
-        self.assertEqual(count, 27)
+        self.assertEqual(count, 28)
 
     def test_organization(self):
         result = TestRorPopulate.cursor.execute(

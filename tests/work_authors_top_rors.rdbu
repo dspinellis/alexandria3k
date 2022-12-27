@@ -1,0 +1,51 @@
+#
+# Alexandria3k Crossref bibliographic metadata processing
+# Copyright (C) 2022  Diomidis Spinellis
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# rdbunit test for mapping work authors to their top organizations
+#
+
+BEGIN SETUP
+work_authors_rors:
+ror_id	work_author_id
+1	10
+2	20
+
+research_organizations:
+id	name	ror_path
+1	O1	P1
+2	O2	P2
+3	O3	P3
+4	O4	P4
+5	O5	P5
+
+ror_relationships:
+ror_id	type	ror_path
+2	Parent	P3
+3	Parent	P4
+3	Related	P5
+
+END
+
+INCLUDE CREATE src/alexandria3k/sql/work-authors-top-rors.sql
+
+BEGIN RESULT
+work_authors_rors:
+ror_id	work_author_id
+1	10
+4	20
+END

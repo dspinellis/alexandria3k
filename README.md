@@ -344,9 +344,7 @@ optional arguments:
                         https://doi.crossref.org/funderNames?mode=list);
                         journal-names [<CSV-file> | <URL>] (defaults to
                         http://ftp.crossref.org/titlelist/titleFile.csv);
-                        ORCID <summaries.tar.gz-file> ROR [<zip-file> | <URL>]
-                        (defaults to https://zenodo.org/record/7448410/files/v
-                        1.17.1-2022-12-16-ror-data.zip?download=1);
+                        ORCID <summaries.tar.gz-file> ROR <zip-file>;
   -E OUTPUT_ENCODING, --output-encoding OUTPUT_ENCODING
                         Query output character encoding (use utf-8-sig for
                         Excel)
@@ -379,7 +377,11 @@ optional arguments:
                         Python expression to sample the Crossref tables (e.g.
                         random.random() < 0.0002)
   -x EXECUTE, --execute EXECUTE
-                        Operation to execute on the data; one of: link-ror-aa
+                        Operation to execute on the data. This can be one of:
+                        link-base-ror-aa (link base-level research
+                        organizations with author affiliations); link-top-ror-
+                        aa (link top-level research organizations with author
+                        affiliations)
 ```
 <!-- CLI end -->
 
@@ -563,9 +565,18 @@ bin/alexandria3k --help
 ```
 
 ### Testing
+#### Python unit and integration tests
 ```sh
 # While in the top-level directory
 python3 -m unittest discover
+```
+
+#### SQL unit tests
+To run SQL unit tests install [rdbunit](https://github.com/dspinellis/rdbunit)
+and the [SQLite](https://www.sqlite.org/index.html) command-line tool.
+```sh
+# While in the top-level directory
+for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
 ```
 
 ### Formatting

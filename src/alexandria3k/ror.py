@@ -20,12 +20,18 @@
 
 import json
 import zipfile
+
 import ahocorasick
 
 # pylint: disable-next=import-error
 import apsw
 
-from .common import ensure_table_exists, log_sql, set_fast_writing
+from .common import (
+    ensure_table_exists,
+    get_string_resource,
+    log_sql,
+    set_fast_writing,
+)
 from . import debug
 from . import perf
 from .virtual_db import ColumnMeta, TableFiller, TableMeta
@@ -208,7 +214,7 @@ def add_words(automaton, source):
         automaton.add_word(word, (ror_id, len(word)))
 
 
-def link_author_affiliations(database_path):
+def link_author_affiliations(database_path, link_to_top):
     """Create an work_authors_rors table that links each work author to the
     identified Research Organization Record"""
     database = apsw.Connection(database_path)
@@ -268,3 +274,11 @@ def link_author_affiliations(database_path):
     select_cursor.close()
     insert_cursor.close()
     perf.log(f"Link {affiliations_number} affiliations")
+    if not link_to_top:
+        return
+
+    # Link each work author to the identified topmost parent Research
+    # Organization Record
+    statement = get_string_resource("sql/work-authors-top-rors.sql")
+    database.execute(log_sql(statement))
+    perf.log("Link top-level affiliations")

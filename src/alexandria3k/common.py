@@ -24,8 +24,9 @@ try:
 except ImportError:  # for Python<3.8
     import importlib_metadata as metadata
 import os
-import sqlite3
+import pkgutil
 import re
+import sqlite3
 import subprocess
 import sys
 import urllib.request
@@ -157,3 +158,9 @@ def data_source(source):
         fail(f"Unable to read data from {source}: {exception}")
         # NOTREACHED
         return None
+
+
+def get_string_resource(file_path):
+    """Return the contents of the named file relative to the package's
+    source code directory"""
+    return str(pkgutil.get_data(__name__, file_path), "utf-8")

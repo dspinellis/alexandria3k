@@ -298,7 +298,12 @@ def parse_cli_arguments(args=None):
         "-x",
         "--execute",
         type=str,
-        help="Operation to execute on the data; one of: link-ror-aa",
+        help="""Operation to execute on the data. This can be one of:
+link-base-ror-aa (link base-level research organizations with author
+affiliations);
+link-top-ror-aa (link top-level research organizations with author
+affiliations)
+        """,
     )
 
     return expand_data_source(parser, parser.parse_args(args))
@@ -460,8 +465,10 @@ def main():
         csv_sources.populate_open_access_journals(
             args.populate_db_path, args.doaj
         )
-    if args.execute == "link-ror-aa":
-        ror.link_author_affiliations(args.populate_db_path)
+    if args.execute == "link-base-ror-aa":
+        ror.link_author_affiliations(args.populate_db_path, link_to_top=False)
+    elif args.execute == "link-top-ror-aa":
+        ror.link_author_affiliations(args.populate_db_path, link_to_top=True)
 
     if debug.enabled("populated-counts"):
         populated_db = sqlite3.connect(args.populate_db_path)
