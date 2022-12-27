@@ -214,7 +214,7 @@ class TestRorLink(unittest.TestCase):
             INSERT INTO author_affiliations VALUES (?, ?, ?)""",
             (self.author_id, 1, "Swinburne University of Technology")
         )
-        ror.link_author_affiliations(DATABASE_PATH)
+        ror.link_author_affiliations(DATABASE_PATH, link_to_top=False)
         rows = list(TestRorLink.cursor.execute(
             "SELECT ror_id, work_author_id FROM work_authors_rors"
         ))
@@ -228,7 +228,7 @@ class TestRorLink(unittest.TestCase):
             INSERT INTO author_affiliations VALUES (?, ?, ?)""",
             (self.author_id, 1, "Department of Computing, Swinburne University of Technology, Australia")
         )
-        ror.link_author_affiliations(DATABASE_PATH)
+        ror.link_author_affiliations(DATABASE_PATH, link_to_top=False)
         rows = list(TestRorLink.cursor.execute(
             "SELECT ror_id, work_author_id FROM work_authors_rors"
         ))
@@ -242,7 +242,7 @@ class TestRorLink(unittest.TestCase):
             INSERT INTO author_affiliations VALUES (?, ?, ?)""",
             (self.author_id, 1, "VU Lab, Swinburne University of Technology, Australia")
         )
-        ror.link_author_affiliations(DATABASE_PATH)
+        ror.link_author_affiliations(DATABASE_PATH, link_to_top=False)
         rows = list(TestRorLink.cursor.execute(
             "SELECT ror_id, work_author_id FROM work_authors_rors"
         ))
