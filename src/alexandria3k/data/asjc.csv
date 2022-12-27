@@ -1,0 +1,335 @@
+Code;Field;Subject area
+1000;Multidisciplinary;Multidisciplinary
+1100;General Agricultural and Biological Sciences;Life Sciences
+1101;Agricultural and Biological Sciences (miscellaneous);Life Sciences
+1102;Agronomy and Crop Science;Life Sciences
+1103;Animal Science and Zoology;Life Sciences
+1104;Aquatic Science;Life Sciences
+1105;Ecology, Evolution, Behavior and Systematics;Life Sciences
+1106;Food Science;Life Sciences
+1107;Forestry;Life Sciences
+1108;Horticulture;Life Sciences
+1109;Insect Science;Life Sciences
+1110;Plant Science;Life Sciences
+1111;Soil Science;Life Sciences
+1200;General Arts and Humanities;Social Sciences & Humanities
+1201;Arts and Humanities (miscellaneous);Social Sciences & Humanities
+1202;History;Social Sciences & Humanities
+1203;Language and Linguistics;Social Sciences & Humanities
+1204;Archeology (arts and humanities);Social Sciences & Humanities
+1205;Classics;Social Sciences & Humanities
+1206;Conservation;Social Sciences & Humanities
+1207;History and Philosophy of Science;Social Sciences & Humanities
+1208;Literature and Literary Theory;Social Sciences & Humanities
+1209;Museology;Social Sciences & Humanities
+1210;Music;Social Sciences & Humanities
+1211;Philosophy;Social Sciences & Humanities
+1212;Religious Studies;Social Sciences & Humanities
+1213;Visual Arts and Performing Arts;Social Sciences & Humanities
+1300;General Biochemistry, Genetics and Molecular Biology;Life Sciences
+1301;Biochemistry, Genetics and Molecular Biology (miscellaneous);Life Sciences
+1302;Aging;Life Sciences
+1303;Biochemistry;Life Sciences
+1304;Biophysics;Life Sciences
+1305;Biotechnology;Life Sciences
+1306;Cancer Research;Life Sciences
+1307;Cell Biology;Life Sciences
+1308;Clinical Biochemistry;Life Sciences
+1309;Developmental Biology;Life Sciences
+1310;Endocrinology;Life Sciences
+1311;Genetics;Life Sciences
+1312;Molecular Biology;Life Sciences
+1313;Molecular Medicine;Life Sciences
+1314;Physiology;Life Sciences
+1315;Structural Biology;Life Sciences
+1400;General Business, Management and Accounting;Social Sciences & Humanities
+1401;Business, Management and Accounting (miscellaneous);Social Sciences & Humanities
+1402;Accounting;Social Sciences & Humanities
+1403;Business and International Management;Social Sciences & Humanities
+1404;Management Information Systems;Social Sciences & Humanities
+1405;Management of Technology and Innovation;Social Sciences & Humanities
+1406;Marketing;Social Sciences & Humanities
+1407;Organizational Behavior and Human Resource Management;Social Sciences & Humanities
+1408;Strategy and Management;Social Sciences & Humanities
+1409;Tourism, Leisure and Hospitality Management;Social Sciences & Humanities
+1410;Industrial Relations;Social Sciences & Humanities
+1500;General Chemical Engineering;Physical Sciences
+1501;Chemical Engineering (miscellaneous);Physical Sciences
+1502;Bioengineering;Physical Sciences
+1503;Catalysis;Physical Sciences
+1504;Chemical Health and Safety;Physical Sciences
+1505;Colloid and Surface Chemistry;Physical Sciences
+1506;Filtration and Separation;Physical Sciences
+1507;Fluid Flow and Transfer Processes;Physical Sciences
+1508;Process Chemistry and Technology;Physical Sciences
+1600;General Chemistry;Physical Sciences
+1601;Chemistry (miscellaneous);Physical Sciences
+1602;Analytical Chemistry;Physical Sciences
+1603;Electrochemistry;Physical Sciences
+1604;Inorganic Chemistry;Physical Sciences
+1605;Organic Chemistry;Physical Sciences
+1606;Physical and Theoretical Chemistry;Physical Sciences
+1607;Spectroscopy;Physical Sciences
+1700;General Computer Science;Physical Sciences
+1701;Computer Science (miscellaneous);Physical Sciences
+1702;Artificial Intelligence;Physical Sciences
+1703;Computational Theory and Mathematics;Physical Sciences
+1704;Computer Graphics and Computer-Aided Design;Physical Sciences
+1705;Computer Networks and Communications;Physical Sciences
+1706;Computer Science Applications;Physical Sciences
+1707;Computer Vision and Pattern Recognition;Physical Sciences
+1708;Hardware and Architecture;Physical Sciences
+1709;Human-Computer Interaction;Physical Sciences
+1710;Information Systems;Physical Sciences
+1711;Signal Processing;Physical Sciences
+1712;Software;Physical Sciences
+1800;General Decision Sciences;Social Sciences & Humanities
+1801;Decision Sciences (miscellaneous);Social Sciences & Humanities
+1802;Information Systems and Management;Social Sciences & Humanities
+1803;Management Science and Operations Research;Social Sciences & Humanities
+1804;Statistics, Probability and Uncertainty;Social Sciences & Humanities
+1900;General Earth and Planetary Sciences;Physical Sciences
+1901;Earth and Planetary Sciences (miscellaneous);Physical Sciences
+1902;Atmospheric Science;Physical Sciences
+1903;Computers in Earth Sciences;Physical Sciences
+1904;Earth-Surface Processes;Physical Sciences
+1905;Economic Geology;Physical Sciences
+1906;Geochemistry and Petrology;Physical Sciences
+1907;Geology;Physical Sciences
+1908;Geophysics;Physical Sciences
+1909;Geotechnical Engineering and Engineering Geology;Physical Sciences
+1910;Oceanography;Physical Sciences
+1911;Paleontology;Physical Sciences
+1912;Space and Planetary Science;Physical Sciences
+1913;Stratigraphy;Physical Sciences
+2000;General Economics, Econometrics and Finance;Social Sciences & Humanities
+2001;Economics, Econometrics and Finance (miscellaneous);Social Sciences & Humanities
+2002;Economics and Econometrics;Social Sciences & Humanities
+2003;Finance;Social Sciences & Humanities
+2100;General Energy;Physical Sciences
+2101;Energy (miscellaneous);Physical Sciences
+2102;Energy Engineering and Power Technology;Physical Sciences
+2103;Fuel Technology;Physical Sciences
+2104;Nuclear Energy and Engineering;Physical Sciences
+2105;Renewable Energy, Sustainability and the Environment;Physical Sciences
+2200;General Engineering;Physical Sciences
+2201;Engineering (miscellaneous);Physical Sciences
+2202;Aerospace Engineering;Physical Sciences
+2203;Automotive Engineering;Physical Sciences
+2204;Biomedical Engineering;Physical Sciences
+2205;Civil and Structural Engineering;Physical Sciences
+2206;Computational Mechanics;Physical Sciences
+2207;Control and Systems Engineering;Physical Sciences
+2208;Electrical and Electronic Engineering;Physical Sciences
+2209;Industrial and Manufacturing Engineering;Physical Sciences
+2210;Mechanical Engineering;Physical Sciences
+2211;Mechanics of Materials;Physical Sciences
+2212;Ocean Engineering;Physical Sciences
+2213;Safety, Risk, Reliability and Quality;Physical Sciences
+2214;Media Technology;Physical Sciences
+2215;Building and Construction;Physical Sciences
+2216;Architecture;Physical Sciences
+2300;General Environmental Science;Physical Sciences
+2301;Environmental Science (miscellaneous);Physical Sciences
+2302;Ecological Modeling;Physical Sciences
+2303;Ecology;Physical Sciences
+2304;Environmental Chemistry;Physical Sciences
+2305;Environmental Engineering;Physical Sciences
+2306;Global and Planetary Change;Physical Sciences
+2307;Health, Toxicology and Mutagenesis;Physical Sciences
+2308;Management, Monitoring, Policy and Law;Physical Sciences
+2309;Nature and Landscape Conservation;Physical Sciences
+2310;Pollution;Physical Sciences
+2311;Waste Management and Disposal;Physical Sciences
+2312;Water Science and Technology;Physical Sciences
+2400;General Immunology and Microbiology;Life Sciences
+2401;Immunology and Microbiology (miscellaneous);Life Sciences
+2402;Applied Microbiology and Biotechnology;Life Sciences
+2403;Immunology;Life Sciences
+2404;Microbiology;Life Sciences
+2405;Parasitology;Life Sciences
+2406;Virology;Life Sciences
+2500;General Materials Science;Physical Sciences
+2501;Materials Science (miscellaneous);Physical Sciences
+2502;Biomaterials;Physical Sciences
+2503;Ceramics and Composites;Physical Sciences
+2504;Electronic, Optical and Magnetic Materials;Physical Sciences
+2505;Materials Chemistry;Physical Sciences
+2506;Metals and Alloys;Physical Sciences
+2507;Polymers and Plastics;Physical Sciences
+2508;Surfaces, Coatings and Films;Physical Sciences
+2600;General Mathematics;Physical Sciences
+2601;Mathematics (miscellaneous);Physical Sciences
+2602;Algebra and Number Theory;Physical Sciences
+2603;Analysis;Physical Sciences
+2604;Applied Mathematics;Physical Sciences
+2605;Computational Mathematics;Physical Sciences
+2606;Control and Optimization;Physical Sciences
+2607;Discrete Mathematics and Combinatorics;Physical Sciences
+2608;Geometry and Topology;Physical Sciences
+2609;Logic;Physical Sciences
+2610;Mathematical Physics;Physical Sciences
+2611;Modeling and Simulation;Physical Sciences
+2612;Numerical Analysis;Physical Sciences
+2613;Statistics and Probability;Physical Sciences
+2614;Theoretical Computer Science;Physical Sciences
+2700;General Medicine;Health Sciences
+2701;Medicine (miscellaneous);Health Sciences
+2702;Anatomy;Health Sciences
+2703;Anesthesiology and Pain Medicine;Health Sciences
+2704;Biochemistry (medical);Health Sciences
+2705;Cardiology and Cardiovascular Medicine;Health Sciences
+2706;Critical Care and Intensive Care Medicine;Health Sciences
+2707;Complementary and Alternative Medicine;Health Sciences
+2708;Dermatology;Health Sciences
+2709;Drug Guides;Health Sciences
+2710;Embryology;Health Sciences
+2711;Emergency Medicine;Health Sciences
+2712;Endocrinology, Diabetes and Metabolism;Health Sciences
+2713;Epidemiology;Health Sciences
+2714;Family Practice;Health Sciences
+2715;Gastroenterology;Health Sciences
+2716;Genetics (clinical);Health Sciences
+2717;Geriatrics and Gerontology;Health Sciences
+2718;Health Informatics;Health Sciences
+2719;Health Policy;Health Sciences
+2720;Hematology;Health Sciences
+2721;Hepatology;Health Sciences
+2722;Histology;Health Sciences
+2723;Immunology and Allergy;Health Sciences
+2724;Internal Medicine;Health Sciences
+2725;Infectious Diseases;Health Sciences
+2726;Microbiology (medical);Health Sciences
+2727;Nephrology;Health Sciences
+2728;Neurology (clinical);Health Sciences
+2729;Obstetrics and Gynecology;Health Sciences
+2730;Oncology;Health Sciences
+2731;Ophthalmology;Health Sciences
+2732;Orthopedics and Sports Medicine;Health Sciences
+2733;Otorhinolaryngology;Health Sciences
+2734;Pathology and Forensic Medicine;Health Sciences
+2735;Pediatrics, Perinatology and Child Health;Health Sciences
+2736;Pharmacology (medical);Health Sciences
+2737;Physiology (medical);Health Sciences
+2738;Psychiatry and Mental Health;Health Sciences
+2739;Public Health, Environmental and Occupational Health;Health Sciences
+2740;Pulmonary and Respiratory Medicine;Health Sciences
+2741;Radiology, Nuclear Medicine and Imaging;Health Sciences
+2742;Rehabilitation;Health Sciences
+2743;Reproductive Medicine;Health Sciences
+2744;Reviews and References (medical);Health Sciences
+2745;Rheumatology;Health Sciences
+2746;Surgery;Health Sciences
+2747;Transplantation;Health Sciences
+2748;Urology;Health Sciences
+2800;General Neuroscience;Life Sciences
+2801;Neuroscience (miscellaneous);Life Sciences
+2802;Behavioral Neuroscience;Life Sciences
+2803;Biological Psychiatry;Life Sciences
+2804;Cellular and Molecular Neuroscience;Life Sciences
+2805;Cognitive Neuroscience;Life Sciences
+2806;Developmental Neuroscience;Life Sciences
+2807;Endocrine and Autonomic Systems;Life Sciences
+2808;Neurology;Life Sciences
+2809;Sensory Systems;Life Sciences
+2900;General Nursing;Health Sciences
+2901;Nursing (miscellaneous);Health Sciences
+2902;Advanced and Specialized Nursing;Health Sciences
+2903;Assessment and Diagnosis;Health Sciences
+2904;Care Planning;Health Sciences
+2905;Community and Home Care;Health Sciences
+2906;Critical Care Nursing;Health Sciences
+2907;Emergency Nursing;Health Sciences
+2908;Fundamentals and Skills;Health Sciences
+2909;Gerontology;Health Sciences
+2910;Issues, Ethics and Legal Aspects;Health Sciences
+2911;Leadership and Management;Health Sciences
+2912;LPN and LVN;Health Sciences
+2913;Maternity and Midwifery;Health Sciences
+2914;Medical and Surgical Nursing;Health Sciences
+2915;Nurse Assisting;Health Sciences
+2916;Nutrition and Dietetics;Health Sciences
+2917;Oncology (nursing);Health Sciences
+2918;Pathophysiology;Health Sciences
+2919;Pediatrics;Health Sciences
+2920;Pharmacology (nursing);Health Sciences
+2921;Psychiatric Mental Health;Health Sciences
+2922;Research and Theory;Health Sciences
+2923;Review and Exam Preparation;Health Sciences
+3000;General Pharmacology, Toxicology and Pharmaceutics;Life Sciences
+3001;Pharmacology, Toxicology and Pharmaceutics (miscellaneous);Life Sciences
+3002;Drug Discovery;Life Sciences
+3003;Pharmaceutical Science;Life Sciences
+3004;Pharmacology;Life Sciences
+3005;Toxicology;Life Sciences
+3100;General Physics and Astronomy;Physical Sciences
+3101;Physics and Astronomy (miscellaneous);Physical Sciences
+3102;Acoustics and Ultrasonics;Physical Sciences
+3103;Astronomy and Astrophysics;Physical Sciences
+3104;Condensed Matter Physics;Physical Sciences
+3105;Instrumentation;Physical Sciences
+3106;Nuclear and High Energy Physics;Physical Sciences
+3107;Atomic and Molecular Physics, and Optics;Physical Sciences
+3108;Radiation;Physical Sciences
+3109;Statistical and Nonlinear Physics;Physical Sciences
+3110;Surfaces and Interfaces;Physical Sciences
+3200;General Psychology;Social Sciences & Humanities
+3201;Psychology (miscellaneous);Social Sciences & Humanities
+3202;Applied Psychology;Social Sciences & Humanities
+3203;Clinical Psychology;Social Sciences & Humanities
+3204;Developmental and Educational Psychology;Social Sciences & Humanities
+3205;Experimental and Cognitive Psychology;Social Sciences & Humanities
+3206;Neuropsychology and Physiological Psychology;Social Sciences & Humanities
+3207;Social Psychology;Social Sciences & Humanities
+3300;General Social Sciences;Social Sciences & Humanities
+3301;Social Sciences (miscellaneous);Social Sciences & Humanities
+3302;Archeology;Social Sciences & Humanities
+3303;Development;Social Sciences & Humanities
+3304;Education;Social Sciences & Humanities
+3305;Geography, Planning and Development;Social Sciences & Humanities
+3306;Health (social science);Social Sciences & Humanities
+3307;Human Factors and Ergonomics;Social Sciences & Humanities
+3308;Law;Social Sciences & Humanities
+3309;Library and Information Sciences;Social Sciences & Humanities
+3310;Linguistics and Language;Social Sciences & Humanities
+3311;Safety Research;Social Sciences & Humanities
+3312;Sociology and Political Science;Social Sciences & Humanities
+3313;Transportation;Social Sciences & Humanities
+3314;Anthropology;Social Sciences & Humanities
+3315;Communication;Social Sciences & Humanities
+3316;Cultural Studies;Social Sciences & Humanities
+3317;Demography;Social Sciences & Humanities
+3318;Gender Studies;Social Sciences & Humanities
+3319;Life-span and Life-course Studies;Social Sciences & Humanities
+3320;Political Science and International Relations;Social Sciences & Humanities
+3321;Public Administration;Social Sciences & Humanities
+3322;Urban Studies;Social Sciences & Humanities
+3400;General Veterinary;Health Sciences
+3401;Veterinary (miscellaneous);Health Sciences
+3402;Equine;Health Sciences
+3403;Food Animals;Health Sciences
+3404;Small Animals;Health Sciences
+3500;General Dentistry;Health Sciences
+3501;Dentistry (miscellaneous);Health Sciences
+3502;Dental Assisting;Health Sciences
+3503;Dental Hygiene;Health Sciences
+3504;Oral Surgery;Health Sciences
+3505;Orthodontics;Health Sciences
+3506;Periodontics;Health Sciences
+3600;General Health Professions;Health Sciences
+3601;Health Professions (miscellaneous);Health Sciences
+3602;Chiropractics;Health Sciences
+3603;Complementary and Manual Therapy;Health Sciences
+3604;Emergency Medical Services;Health Sciences
+3605;Health Information Management;Health Sciences
+3606;Medical Assisting and Transcription;Health Sciences
+3607;Medical Laboratory Technology;Health Sciences
+3608;Medical Terminology;Health Sciences
+3609;Occupational Therapy;Health Sciences
+3610;Optometry;Health Sciences
+3611;Pharmacy;Health Sciences
+3612;Physical Therapy, Sports Therapy and Rehabilitation;Health Sciences
+3613;Podiatry;Health Sciences
+3614;Radiological and Ultrasound Technology;Health Sciences
+3615;Respiratory Care;Health Sciences
+3616;Speech and Hearing;Health Sciences
