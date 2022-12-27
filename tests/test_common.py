@@ -57,3 +57,9 @@ class TestCommon(unittest.TestCase):
     def test_table_exists(self):
         self.assertTrue(common.table_exists(self.cursor, "ror_links"))
         self.assertFalse(common.table_exists(self.cursor, "xyzzy"))
+
+    def test_resource_data_source(self):
+        line = common.data_source("resource:data/asjc.csv").readline()
+
+        self.assertTrue(common.table_exists(self.cursor, "ror_links"))
+        self.assertEqual(line, b"Code;Field;Subject area\n")

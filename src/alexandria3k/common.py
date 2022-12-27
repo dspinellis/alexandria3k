@@ -23,6 +23,7 @@ try:
     from importlib import metadata
 except ImportError:  # for Python<3.8
     import importlib_metadata as metadata
+from io import BytesIO
 import os
 import pkgutil
 import re
@@ -144,7 +145,11 @@ def is_url(url):
 
 
 def data_source(source):
-    """Given a file path or a URL return a readable source for its contents"""
+    """Given a file path, a URL, or this package's resource path
+    return a readable source for its contents"""
+    if source.startswith("resource:"):
+        (_, file_path) = source.split(":")
+        return BytesIO(pkgutil.get_data(__name__, file_path))
     try:
         if is_url(source):
             req = urllib.request.Request(

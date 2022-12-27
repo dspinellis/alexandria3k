@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Populate journal, funder, OA data tables"""
+"""Populate subject, journal, funder, OA data tables"""
 
 import codecs
 import csv
@@ -26,10 +26,12 @@ from .common import data_source
 from .virtual_db import ColumnMeta, TableMeta
 
 
-def record_source(source):
+def record_source(source, delimiter):
     """Given a file path or a URL return a record source for its contents"""
     with data_source(source) as raw_input:
-        reader = csv.reader(codecs.iterdecode(raw_input, "utf-8"))
+        reader = csv.reader(
+            codecs.iterdecode(raw_input, "utf-8"), delimiter=delimiter
+        )
         next(reader, None)  # Skip header row
         for i in reader:
             yield i
@@ -244,19 +246,37 @@ open_access_table = TableMeta(
     ],
 )
 
+# Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
+# https://service.elsevier.com/app/answers/detail/a_id/15181/supporthub/scopus/
+asjc_table = TableMeta(
+    "asjc",
+    columns=[
+        ColumnMeta("id"),
+        ColumnMeta("field"),
+        ColumnMeta("subject_area"),
+    ],
+)
 
-def load_csv_data(database_path, table_meta, source):
+
+def load_csv_data(database_path, table_meta, source, delimiter=","):
     """Populate specified table of database with data from source"""
     con = sqlite3.connect(database_path)
     cur = con.cursor()
     cur.execute(f"DROP TABLE IF EXISTS {table_meta.get_name()}")
     cur.execute(table_meta.table_schema())
-    cur.executemany(table_meta.insert_statement(), record_source(source))
+    cur.executemany(
+        table_meta.insert_statement(), record_source(source, delimiter)
+    )
     post_population_command = table_meta.get_post_population_command()
     if post_population_command:
         cur.executescript(post_population_command)
     con.commit()
     con.close()
+
+
+def populate_asjc(database_path, source):
+    """Populate ASJC table of database with data from source"""
+    load_csv_data(database_path, asjc_table, source, delimiter=";")
 
 
 def populate_journal_names(database_path, source):

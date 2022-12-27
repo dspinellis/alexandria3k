@@ -6,6 +6,7 @@ digraph D {
 	node [shape=plaintext, style="filled", fontname="Arial", margin=0];
 	edge [arrowhead=none,fontname="Arial"];
 	rankdir = "TB";
+	asjc;
 	node [fillcolor="#ffc62c"];
 	"Main Crossref tables" [shape=box, margin="0.11,0.055"];
 	works;
@@ -21,6 +22,8 @@ digraph D {
 	works -> work_licenses;
 	works -> work_links;
 	work_funders -> funder_awards;
+
+	work_subjects -> asjc  [headlabel="1", taillabel="1"];
 
 	node [fillcolor="#a6ce39"];
 	"ORCID tables" [shape=box, margin="0.11,0.055"];

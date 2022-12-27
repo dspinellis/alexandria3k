@@ -31,7 +31,7 @@ from alexandria3k import csv_sources
 
 class TestCsvSources(unittest.TestCase):
     def test_record_source(self):
-        gen = csv_sources.record_source('tests/data/titleFile.csv')
+        gen = csv_sources.record_source('tests/data/titleFile.csv', ",")
         row = next(gen)
         self.assertTrue("18435912" in row)
         self.assertTrue("10.36801/apme" in row)

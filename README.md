@@ -247,20 +247,25 @@ alexandria3k --populate-db-path database.db \
 
 ### Populate the database with journal names
 ```sh
-alexandria3k  --populate-db-path database.db \
+alexandria3k --populate-db-path database.db \
   --data-source journal-names http://ftp.crossref.org/titlelist/titleFile.csv
 ```
 
 ### Populate the database with funder names
 ```sh
-alexandria3k  --populate-db-path database.db \
+alexandria3k --populate-db-path database.db \
   --data-source funder-names https://doi.crossref.org/funderNames?mode=list
+```
+
+### Populate the database with Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
+```sh
+alexandria3k --populate-db-path database.db --data-source ASJC
 ```
 
 ### Populate the database with data regarding open access journals
 ```sh
-alexandria3k  --populate-db-path database.db \
-  --data-source doaj https://doaj.org/csv
+alexandria3k --populate-db-path database.db \
+  --data-source DOAJ https://doaj.org/csv
 ```
 
 ### Populate the database with the names of research organizations
@@ -272,7 +277,7 @@ wget -O ror-v1.17.1.zip \
 
 # Populate the database
 alexandria3k --populate-db-path database.db \
-  --data-source ror ror-v1.17.1.zip
+  --data-source ROR ror-v1.17.1.zip
 ```
 
 ### Link author affiliations with research organization names
@@ -280,7 +285,7 @@ Given a database already populated with work author affiliations
 and the research organization registry fill-in the table `work_authors_rors`
 linking the two.
 ```sh
-alexandria3k  --populate-db-path database.db --execute link-ror-aa
+alexandria3k --populate-db-path database.db --execute link-ror-aa
 ```
 
 After linking, the results' quality can be verified with queries
@@ -337,7 +342,8 @@ optional arguments:
                         virtual-data: Dump the data of the virtual database.
   -d DATA_SOURCE [DATA_SOURCE ...], --data-source DATA_SOURCE [DATA_SOURCE ...]
                         Specify data set to be processed and its source. The
-                        following data sets are supported: Crossref
+                        following data sets are supported: ASJC [<CSV-file> |
+                        <URL>] (defaults to internal table); Crossref
                         <container-directory>; DOAJ [<CSV-file> | <URL>]
                         (defaults to https://doaj.org/csv); funder-names
                         [<CSV-file> | <URL>] (defaults to
@@ -515,6 +521,13 @@ csv_sources.populate_open_access_journals(
     "database.db",
     "https://doaj.org/csv"
 )
+```
+
+### Populate the database with Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
+```py
+from alexandria3k import csv_sources
+
+csv_sources.populate_asjc("database.db", "resource:data/asjc.csv")
 ```
 
 ### Populate the database with the names of research organizations

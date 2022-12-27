@@ -37,6 +37,7 @@ from . import perf
 DOAJ_DEFAULT = "https://doaj.org/csv"
 FUNDER_NAMES_DEFAULT = "https://doi.crossref.org/funderNames?mode=list"
 JOURNAL_NAMES_DEFAULT = "http://ftp.crossref.org/titlelist/titleFile.csv"
+ASJC_DEFAULT = "resource:data/asjc.csv"
 
 random.seed("alexandria3k")
 
@@ -97,10 +98,11 @@ def schema_list():
     for table in (
         crossref.tables
         + [
-            csv_sources.open_access_table,
+            csv_sources.asjc_table,
             csv_sources.funders_table,
             csv_sources.journals_table,
             csv_sources.journals_issns_table,
+            csv_sources.open_access_table,
         ]
         + orcid.tables
         + ror.tables
@@ -193,6 +195,7 @@ def parse_cli_arguments(args=None):
         type=str,
         help=f"""Specify data set to be processed and its source.
     The following data sets are supported:
+    ASJC [<CSV-file> | <URL>] (defaults to internal table);
     Crossref <container-directory>;
     DOAJ [<CSV-file> | <URL>] (defaults to {DOAJ_DEFAULT});
     funder-names [<CSV-file> | <URL>] (defaults to {FUNDER_NAMES_DEFAULT});
@@ -310,6 +313,7 @@ affiliations)
 
 
 def expand_data_source(parser, args):
+    # pylint: disable=too-many-branches
     """Return the args, expanding the data_source argument by setting an
     entry in args named after the source and containing where the data
     are to come from.
@@ -329,6 +333,7 @@ def expand_data_source(parser, args):
         return args.data_source[1] if len(args.data_source) == 2 else default
 
     args.crossref = None
+    args.asjc = None
     args.doaj = None
     args.funder_names = None
     args.journal_names = None
@@ -347,7 +352,9 @@ def expand_data_source(parser, args):
         if not args.populate_db_path:
             parser.error("Database path must be specified")
 
-    if source_name == "crossref":
+    if source_name == "asjc":
+        args.asjc = optional_value(ASJC_DEFAULT)
+    elif source_name == "crossref":
         args.crossref = required_value("Missing Crossref data directory value")
     elif source_name == "doaj":
         args.doaj = optional_value(DOAJ_DEFAULT)
@@ -451,20 +458,21 @@ def main():
         csv_file.close()
         debug.log("files-read", f"{FileCache.file_reads} files read")
 
+    if args.asjc:
+        csv_sources.populate_asjc(args.populate_db_path, args.asjc)
+    if args.doaj:
+        csv_sources.populate_open_access_journals(
+            args.populate_db_path, args.doaj
+        )
+    if args.funder_names:
+        csv_sources.populate_funder_names(
+            args.populate_db_path, args.funder_names
+        )
     if args.journal_names:
         csv_sources.populate_journal_names(
             args.populate_db_path, args.journal_names
         )
 
-    if args.funder_names:
-        csv_sources.populate_funder_names(
-            args.populate_db_path, args.funder_names
-        )
-
-    if args.doaj:
-        csv_sources.populate_open_access_journals(
-            args.populate_db_path, args.doaj
-        )
     if args.execute == "link-base-ror-aa":
         ror.link_author_affiliations(args.populate_db_path, link_to_top=False)
     elif args.execute == "link-top-ror-aa":
