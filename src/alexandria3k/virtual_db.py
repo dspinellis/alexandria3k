@@ -41,7 +41,7 @@ class TableMeta:
         self.cursor_class = kwargs.get("cursor_class")
         self.extract_multiple = kwargs.get("extract_multiple")
         self.columns = kwargs["columns"]
-        self.post_population_command = kwargs.get("post_population_command")
+        self.post_population_script = kwargs.get("post_population_script")
 
         # Create dictionary of columns by name
         self.columns_by_name = {}
@@ -90,9 +90,9 @@ class TableMeta:
         """Return the function for obtaining multiple records"""
         return self.extract_multiple
 
-    def get_post_population_command(self):
+    def get_post_population_script(self):
         """Return the SQL command to run after the table is populated"""
-        return self.post_population_command
+        return self.post_population_script
 
     def get_parent_name(self):
         """Return the name of the main table of which this has details"""

@@ -22,7 +22,7 @@ import codecs
 import csv
 import sqlite3
 
-from .common import data_source
+from .common import data_source, get_string_resource
 from .virtual_db import ColumnMeta, TableMeta
 
 
@@ -50,38 +50,7 @@ journals_table = TableMeta(
         ColumnMeta("doi"),
         ColumnMeta("volume_info"),
     ],
-    post_population_command="""
-    -- Normalize ISSNs
-    UPDATE journal_names
-      SET issn_print=REPLACE(issn_print, "-", ""),
-        issn_eprint=REPLACE(issn_eprint, "-", ""),
-        issns_additional=REPLACE(issns_additional, "-", "");
-
-    DROP TABLE IF EXISTS journals_issns;
-
-    -- Recursively split additional ISSNs into multiple records
-    CREATE TABLE journals_issns AS
-      WITH RECURSIVE split(journal_id, issn, rest) AS (
-         SELECT id, '', issns_additional || '; ' FROM journal_names
-         UNION ALL SELECT
-           journal_id,
-           Substr(rest, 0, Instr(rest, '; ')),
-           Substr(rest, Instr(rest, '; ')+2)
-         FROM split WHERE rest != ''
-      )
-      SELECT journal_id, issn, 'A' AS issn_type FROM split
-        WHERE issn != '';
-
-    -- Finish populating the journals_issns table
-    INSERT INTO journals_issns
-      SELECT id, issn_print, 'P' FROM journal_names WHERE issn_print != '';
-
-    INSERT INTO journals_issns
-      SELECT id, issn_eprint, 'E' FROM journal_names WHERE issn_eprint != '';
-
-    CREATE INDEX journals_issns_issn_idx ON journals_issns(issn);
-    CREATE INDEX journals_issns_id_idx ON journals_issns(journal_id);
-          """,
+    post_population_script="sql/normalize-issns.sql",
 )
 
 journals_issns_table = TableMeta(
@@ -267,9 +236,10 @@ def load_csv_data(database_path, table_meta, source, delimiter=","):
     cur.executemany(
         table_meta.insert_statement(), record_source(source, delimiter)
     )
-    post_population_command = table_meta.get_post_population_command()
-    if post_population_command:
-        cur.executescript(post_population_command)
+    post_population_script = table_meta.get_post_population_script()
+    if post_population_script:
+        script = get_string_resource(post_population_script)
+        cur.executescript(script)
     con.commit()
     con.close()
 
