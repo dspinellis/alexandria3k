@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * rdbunit test for mapping work authors to their top organizations
+ * Map work authors to their top organizations
  */
 
 DROP TABLE IF EXISTS work_authors_top_rors;
