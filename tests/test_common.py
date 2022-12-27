@@ -62,4 +62,4 @@ class TestCommon(unittest.TestCase):
         line = common.data_source("resource:data/asjc.csv").readline()
 
         self.assertTrue(common.table_exists(self.cursor, "ror_links"))
-        self.assertEqual(line, b"Code;Field;Subject area\n")
+        self.assertEqual(line, b"Code;Field;Subject area;General field id\n")

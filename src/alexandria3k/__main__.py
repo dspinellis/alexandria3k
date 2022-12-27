@@ -99,6 +99,7 @@ def schema_list():
         crossref.tables
         + [
             csv_sources.asjc_table,
+            csv_sources.asjc_general_fields_table,
             csv_sources.funders_table,
             csv_sources.journals_table,
             csv_sources.journals_issns_table,

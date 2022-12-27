@@ -223,6 +223,16 @@ asjc_table = TableMeta(
         ColumnMeta("id"),
         ColumnMeta("field"),
         ColumnMeta("subject_area"),
+        ColumnMeta("general_field_id"),
+    ],
+    post_population_script="sql/normalize-asjc.sql",
+)
+
+asjc_general_fields_table = TableMeta(
+    "asjc_general_fields",
+    columns=[
+        ColumnMeta("id"),
+        ColumnMeta("name"),
     ],
 )
 
