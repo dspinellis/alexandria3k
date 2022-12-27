@@ -211,7 +211,39 @@ def populate(data_path, database_path):
 def add_words(automaton, source):
     """Add the words from the specified source to the AC automaton"""
     for (ror_id, word) in source:
-        automaton.add_word(word, (ror_id, len(word)))
+        automaton.add_word(word, (ror_id, len(word), word))
+
+
+def keep_unique_entries(automaton):
+    """Adjust the passed automaton so that is will not contain any entries
+    that can match other entries.
+    For example, if the input is ["Ministry of Foreign Affairs", "ai"],
+    remove the "ai" entry.
+    """
+    to_remove = []
+    for name in automaton:
+        for _, (_, _, match) in automaton.iter(name):
+            if match != name:
+                to_remove.append(match)
+
+    # Remove entries in a separate step to avoid damaging the iterator
+    for non_unique in to_remove:
+        automaton.remove_word(non_unique)
+
+
+def unique_entries(table, id_field, name_field, condition=""):
+    """Return an SQL statement that will provide the specified
+    name and id of entries whose name exists only once in the
+    table"""
+    return f"""
+        WITH same_count AS (
+          SELECT {id_field} AS id, {name_field} AS name,
+            Count() OVER (PARTITION BY {name_field}) AS number
+          FROM {table}
+          {condition}
+        )
+        SELECT id, name from same_count WHERE number == 1;
+    """
 
 
 def link_author_affiliations(database_path, link_to_top):
@@ -229,22 +261,40 @@ def link_author_affiliations(database_path, link_to_top):
     automaton = ahocorasick.Automaton()
     add_words(
         automaton,
-        select_cursor.execute("SELECT id, name FROM research_organizations"),
+        # Uniquely identifiable organizations
+        # (E.g. avoid the 53 "Ministry of Health" ones)
+        select_cursor.execute(
+            unique_entries(
+                "research_organizations",
+                "id",
+                "name",
+                "WHERE status != 'withdrawn'",
+            )
+        ),
     )
     perf.log("Automaton add names")
     add_words(
         automaton,
-        select_cursor.execute("SELECT ror_id, alias FROM ror_aliases"),
+        select_cursor.execute(
+            unique_entries("ror_aliases", "ror_id", "alias")
+        ),
     )
     perf.log("Automaton add aliases")
     add_words(
         automaton,
-        select_cursor.execute("SELECT ror_id, acronym FROM ror_acronyms"),
+        select_cursor.execute(
+            unique_entries("ror_acronyms", "ror_id", "acronym")
+        ),
     )
     perf.log("Automaton add acronyms")
+
     automaton.make_automaton()
     size = automaton.get_stats()["total_size"]
     perf.log(f"Automaton build len={len(automaton)} size={size}")
+    keep_unique_entries(automaton)
+    perf.log("Automaton keep unique entries")
+    automaton.make_automaton()
+    perf.log(f"Automaton rebuild len={len(automaton)}")
 
     insert_cursor = database.cursor()
     affiliations_number = 0
@@ -258,7 +308,7 @@ def link_author_affiliations(database_path, link_to_top):
         best_ror_id = None
         best_length = 0
         # Find all ROR names in affiliation_name
-        for _, (ror_id, length) in automaton.iter(affiliation_name):
+        for _, (ror_id, length, _) in automaton.iter(affiliation_name):
             if length > best_length:
                 best_length = length
                 best_ror_id = ror_id

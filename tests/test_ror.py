@@ -19,9 +19,11 @@
 """ROR import integration tests"""
 
 import os
-import unittest
-import apsw
 import sys
+import unittest
+
+import ahocorasick
+import apsw
 
 sys.path.append("src")
 
@@ -175,6 +177,7 @@ class TestRorPopulate(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertTrue(("0000 0004 1936 7857",) in rows)
 
+
 class TestRorLink(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -195,7 +198,6 @@ class TestRorLink(unittest.TestCase):
         )
         (cls.author_id,) = result.fetchone()
 
-
     @classmethod
     def tearDownClass(cls):
         cls.con.close()
@@ -212,12 +214,14 @@ class TestRorLink(unittest.TestCase):
         result = TestRorLink.cursor.execute(
             """DELETE FROM author_affiliations;
             INSERT INTO author_affiliations VALUES (?, ?, ?)""",
-            (self.author_id, 1, "Swinburne University of Technology")
+            (self.author_id, 1, "Swinburne University of Technology"),
         )
         ror.link_author_affiliations(DATABASE_PATH, link_to_top=False)
-        rows = list(TestRorLink.cursor.execute(
-            "SELECT ror_id, work_author_id FROM work_authors_rors"
-        ))
+        rows = list(
+            TestRorLink.cursor.execute(
+                "SELECT ror_id, work_author_id FROM work_authors_rors"
+            )
+        )
         self.assertEqual(len(rows), 1)
         sut_id = self.get_ror_id_by_name("Swinburne University of Technology")
         self.assertEqual(rows[0], (sut_id, self.author_id))
@@ -226,12 +230,18 @@ class TestRorLink(unittest.TestCase):
         result = TestRorLink.cursor.execute(
             """DELETE FROM author_affiliations;
             INSERT INTO author_affiliations VALUES (?, ?, ?)""",
-            (self.author_id, 1, "Department of Computing, Swinburne University of Technology, Australia")
+            (
+                self.author_id,
+                1,
+                "Department of Computing, Swinburne University of Technology, Australia",
+            ),
         )
         ror.link_author_affiliations(DATABASE_PATH, link_to_top=False)
-        rows = list(TestRorLink.cursor.execute(
-            "SELECT ror_id, work_author_id FROM work_authors_rors"
-        ))
+        rows = list(
+            TestRorLink.cursor.execute(
+                "SELECT ror_id, work_author_id FROM work_authors_rors"
+            )
+        )
         self.assertEqual(len(rows), 1)
         sut_id = self.get_ror_id_by_name("Swinburne University of Technology")
         self.assertEqual(rows[0], (sut_id, self.author_id))
@@ -240,12 +250,18 @@ class TestRorLink(unittest.TestCase):
         result = TestRorLink.cursor.execute(
             """DELETE FROM author_affiliations;
             INSERT INTO author_affiliations VALUES (?, ?, ?)""",
-            (self.author_id, 1, "VU Lab, Swinburne University of Technology, Australia")
+            (
+                self.author_id,
+                1,
+                "VU Lab, Swinburne University of Technology, Australia",
+            ),
         )
         ror.link_author_affiliations(DATABASE_PATH, link_to_top=False)
-        rows = list(TestRorLink.cursor.execute(
-            "SELECT ror_id, work_author_id FROM work_authors_rors"
-        ))
+        rows = list(
+            TestRorLink.cursor.execute(
+                "SELECT ror_id, work_author_id FROM work_authors_rors"
+            )
+        )
         self.assertEqual(len(rows), 1)
         sut_id = self.get_ror_id_by_name("Swinburne University of Technology")
         self.assertEqual(rows[0], (sut_id, self.author_id))
@@ -254,12 +270,14 @@ class TestRorLink(unittest.TestCase):
         result = TestRorLink.cursor.execute(
             """DELETE FROM author_affiliations;
             INSERT INTO author_affiliations VALUES (?, ?, ?)""",
-            (self.author_id, 1, "Mount Stromlo Observatory")
+            (self.author_id, 1, "Mount Stromlo Observatory"),
         )
         ror.link_author_affiliations(DATABASE_PATH, link_to_top=False)
-        rows = list(TestRorLink.cursor.execute(
-            "SELECT ror_id, work_author_id FROM work_authors_rors"
-        ))
+        rows = list(
+            TestRorLink.cursor.execute(
+                "SELECT ror_id, work_author_id FROM work_authors_rors"
+            )
+        )
         self.assertEqual(len(rows), 1)
         mso_id = self.get_ror_id_by_name("Mount Stromlo Observatory")
         self.assertEqual(rows[0], (mso_id, self.author_id))
@@ -268,12 +286,49 @@ class TestRorLink(unittest.TestCase):
         result = TestRorLink.cursor.execute(
             """DELETE FROM author_affiliations;
             INSERT INTO author_affiliations VALUES (?, ?, ?)""",
-            (self.author_id, 1, "Mount Stromlo Observatory")
+            (self.author_id, 1, "Mount Stromlo Observatory"),
         )
         ror.link_author_affiliations(DATABASE_PATH, link_to_top=True)
-        rows = list(TestRorLink.cursor.execute(
-            "SELECT ror_id, work_author_id FROM work_authors_rors"
-        ))
+        rows = list(
+            TestRorLink.cursor.execute(
+                "SELECT ror_id, work_author_id FROM work_authors_rors"
+            )
+        )
         self.assertEqual(len(rows), 1)
         anu_id = self.get_ror_id_by_name("Australian National University")
         self.assertEqual(rows[0], (anu_id, self.author_id))
+
+
+class TestUniqueEntries(unittest.TestCase):
+    def test_unique_entries(self):
+        def automaton_matches(automaton, name):
+            """Return True if the automaton matches the specified name"""
+            for i in automaton.iter(name):
+                return True
+            return False
+
+        automaton = ahocorasick.Automaton()
+        ror.add_words(
+            automaton,
+            [
+                (1, "ai"),
+                (2, "Ministry of Foreign Affairs"),
+                (3, "Ministry of Health"),
+            ],
+        )
+        automaton.make_automaton()
+
+        # Before unique
+        self.assertTrue(automaton_matches(automaton, "The ai Institute"))
+        self.assertTrue(
+            automaton_matches(automaton, "Ministry of Foreign Affairs")
+        )
+
+        ror.keep_unique_entries(automaton)
+        automaton.make_automaton()
+
+        # After unique
+        self.assertFalse(automaton_matches(automaton, "The ai Institute"))
+        self.assertTrue(
+            automaton_matches(automaton, "Ministry of Foreign Affairs")
+        )
