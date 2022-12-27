@@ -249,3 +249,31 @@ class TestRorLink(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         sut_id = self.get_ror_id_by_name("Swinburne University of Technology")
         self.assertEqual(rows[0], (sut_id, self.author_id))
+
+    def test_base_link(self):
+        result = TestRorLink.cursor.execute(
+            """DELETE FROM author_affiliations;
+            INSERT INTO author_affiliations VALUES (?, ?, ?)""",
+            (self.author_id, 1, "Mount Stromlo Observatory")
+        )
+        ror.link_author_affiliations(DATABASE_PATH, link_to_top=False)
+        rows = list(TestRorLink.cursor.execute(
+            "SELECT ror_id, work_author_id FROM work_authors_rors"
+        ))
+        self.assertEqual(len(rows), 1)
+        mso_id = self.get_ror_id_by_name("Mount Stromlo Observatory")
+        self.assertEqual(rows[0], (mso_id, self.author_id))
+
+    def test_top_link(self):
+        result = TestRorLink.cursor.execute(
+            """DELETE FROM author_affiliations;
+            INSERT INTO author_affiliations VALUES (?, ?, ?)""",
+            (self.author_id, 1, "Mount Stromlo Observatory")
+        )
+        ror.link_author_affiliations(DATABASE_PATH, link_to_top=True)
+        rows = list(TestRorLink.cursor.execute(
+            "SELECT ror_id, work_author_id FROM work_authors_rors"
+        ))
+        self.assertEqual(len(rows), 1)
+        anu_id = self.get_ror_id_by_name("Australian National University")
+        self.assertEqual(rows[0], (anu_id, self.author_id))
