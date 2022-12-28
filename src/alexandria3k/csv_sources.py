@@ -228,7 +228,7 @@ asjc_import_table = TableMeta(
 )
 
 asjc_table = TableMeta(
-    "asjc",
+    "asjcs",
     columns=[
         ColumnMeta("id"),
         ColumnMeta("field"),

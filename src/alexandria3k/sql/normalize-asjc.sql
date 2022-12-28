@@ -35,9 +35,9 @@ CREATE TABLE asjc_subject_areas AS
     ORDER BY subject_area
   );
 
--- Create asjc table with ids to subject areas and general fields
-DROP TABLE IF EXISTS asjc;
-CREATE TABLE asjc AS
+-- Create asjcs table with ids to subject areas and general fields
+DROP TABLE IF EXISTS asjcs;
+CREATE TABLE asjcs AS
 SELECT asjc_import.id, field,
   asjc_subject_areas.id AS subject_area_id,
   (asjc_import.id / 100) * 100 AS general_field_id

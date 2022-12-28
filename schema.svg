@@ -14,10 +14,10 @@
 <polygon fill="lightgrey" stroke="black" points="1849,-2051 1709,-2051 1709,-2015 1849,-2015 1849,-2051"/>
 <text text-anchor="middle" x="1779" y="-2029.3" font-family="Arial" font-size="14.00">Alexandria3k tables</text>
 </g>
-<!-- asjc -->
-<g id="node2" class="node"><title>asjc</title>
+<!-- asjcs -->
+<g id="node2" class="node"><title>asjcs</title>
 <polygon fill="lightgrey" stroke="none" points="460.5,-444.5 351.5,-444.5 351.5,-359.5 460.5,-359.5 460.5,-444.5"/>
-<text text-anchor="start" x="392" y="-430.8" font-family="Arial" font-weight="bold" font-size="14.00">asjc</text>
+<text text-anchor="start" x="388" y="-430.8" font-family="Arial" font-weight="bold" font-size="14.00">asjcs</text>
 <text text-anchor="start" x="355" y="-410.8" font-family="Arial" font-size="14.00">id</text>
 <text text-anchor="start" x="355" y="-395.8" font-family="Arial" font-size="14.00">field</text>
 <text text-anchor="start" x="355" y="-380.8" font-family="Arial" font-size="14.00">subject_area_id</text>
@@ -34,8 +34,8 @@
 <polygon fill="black" stroke="black" points="495,-147 495,-147 637,-147 637,-147 495,-147"/>
 <polygon fill="none" stroke="black" points="495,-112.5 495,-167.5 637,-167.5 637,-112.5 495,-112.5"/>
 </g>
-<!-- asjc&#45;&gt;asjc_general_fields -->
-<g id="edge11" class="edge"><title>asjc&#45;&gt;asjc_general_fields</title>
+<!-- asjcs&#45;&gt;asjc_general_fields -->
+<g id="edge11" class="edge"><title>asjcs&#45;&gt;asjc_general_fields</title>
 <path fill="none" stroke="black" d="M434.413,-359.414C449.999,-336.26 469.46,-306.784 486,-280 509.773,-241.503 535.6,-195.872 551.294,-167.676"/>
 <text text-anchor="middle" x="546.794" y="-171.476" font-family="Arial" font-size="14.00">1</text>
 <text text-anchor="middle" x="450.913" y="-348.214" font-family="Arial" font-size="14.00">1…N</text>
@@ -49,8 +49,8 @@
 <polygon fill="black" stroke="black" points="335,-147 335,-147 477,-147 477,-147 335,-147"/>
 <polygon fill="none" stroke="black" points="335,-112.5 335,-167.5 477,-167.5 477,-112.5 335,-112.5"/>
 </g>
-<!-- asjc&#45;&gt;asjc_subject_areas -->
-<g id="edge12" class="edge"><title>asjc&#45;&gt;asjc_subject_areas</title>
+<!-- asjcs&#45;&gt;asjc_subject_areas -->
+<g id="edge12" class="edge"><title>asjcs&#45;&gt;asjc_subject_areas</title>
 <path fill="none" stroke="black" d="M406,-359.227C406,-305.253 406,-212.862 406,-167.588"/>
 <text text-anchor="middle" x="401.5" y="-171.388" font-family="Arial" font-size="14.00">1</text>
 <text text-anchor="middle" x="389.5" y="-348.027" font-family="Arial" font-size="14.00">1…N</text>
@@ -387,8 +387,8 @@
 <text text-anchor="middle" x="1009.15" y="-449.378" font-family="Arial" font-size="14.00">0…1</text>
 <text text-anchor="middle" x="1253.71" y="-834.887" font-family="Arial" font-size="14.00">1</text>
 </g>
-<!-- work_subjects&#45;&gt;asjc -->
-<g id="edge10" class="edge"><title>work_subjects&#45;&gt;asjc</title>
+<!-- work_subjects&#45;&gt;asjcs -->
+<g id="edge10" class="edge"><title>work_subjects&#45;&gt;asjcs</title>
 <path fill="none" stroke="black" d="M406,-906.469C406,-812.2 406,-547.865 406,-444.847"/>
 <text text-anchor="middle" x="401.5" y="-448.647" font-family="Arial" font-size="14.00">1</text>
 <text text-anchor="middle" x="401.5" y="-895.269" font-family="Arial" font-size="14.00">1</text>

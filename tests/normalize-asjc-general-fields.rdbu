@@ -32,11 +32,9 @@ END
 INCLUDE CREATE src/alexandria3k/sql/normalize-asjc.sql
 
 BEGIN RESULT
-asjcs:
-id	field			subject_area_id		general_field_id
-1000	Multidisciplinary	2			1000
-1100	"General Agricultural"	1			1100
-1101	"Biological Sciences"	1			1100
-1102	"Agronomy"		1			1100
+asjc_general_fields:
+id	name
+1000	Multidisciplinary
+1100	Agricultural
 
 END

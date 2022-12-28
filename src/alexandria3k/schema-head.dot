@@ -9,7 +9,7 @@ digraph D {
 
 	// Our own tables
 	"Alexandria3k tables" [shape=box, margin="0.11,0.055"];
-	asjc;
+	asjcs;
 	asjc_general_fields;
 	asjc_subject_areas;
 	work_authors_rors;
@@ -30,11 +30,11 @@ digraph D {
 	works -> work_links;
 	work_funders -> funder_awards;
 
-	work_subjects -> asjc [headlabel="1", taillabel="1"];
+	work_subjects -> asjcs [headlabel="1", taillabel="1"];
 
 	edge [taillabel="1…N", headlabel="1"];
-	asjc -> asjc_general_fields;
-	asjc -> asjc_subject_areas;
+	asjcs -> asjc_general_fields;
+	asjcs -> asjc_subject_areas;
 
 	node [fillcolor="#a6ce39"];
 	"ORCID tables" [shape=box, margin="0.11,0.055"];
