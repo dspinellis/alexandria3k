@@ -19,16 +19,28 @@
  * Normalize ASJC general fields
  */
 
--- Create general fields table
+-- Create general fields table from ids ending in 00
 DROP TABLE IF EXISTS asjc_general_fields;
-CREATE TABLE asjc_general_fields AS 
+CREATE TABLE asjc_general_fields AS
   SELECT Cast(id AS INTEGER) AS id, Replace(field, "General ", "") AS name
-  FROM asjc
+  FROM asjc_import
   WHERE id % 100 == 0
 ;
 
--- Set the asjc asjc_general_fields field
-UPDATE asjc SET general_field_id=(
-  SELECT id FROM asjc_general_fields
-  WHERE asjc_general_fields.id = (asjc.id / 100) * 100
-);
+-- Create general fields table with own-generated ids
+DROP TABLE IF EXISTS asjc_subject_areas;
+CREATE TABLE asjc_subject_areas AS
+  SELECT row_number() OVER (ORDER BY '') AS id, name FROM (
+    SELECT DISTINCT subject_area AS name FROM asjc_import
+    ORDER BY subject_area
+  );
+
+-- Create asjc table with ids to subject areas and general fields
+DROP TABLE IF EXISTS asjc;
+CREATE TABLE asjc AS
+SELECT asjc_import.id, field,
+  asjc_subject_areas.id AS subject_area_id,
+  (asjc_import.id / 100) * 100 AS general_field_id
+FROM asjc_import
+INNER JOIN asjc_subject_areas
+  ON asjc_subject_areas.name = asjc_import.subject_area;

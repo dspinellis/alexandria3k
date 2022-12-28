@@ -217,12 +217,22 @@ open_access_table = TableMeta(
 
 # Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
 # https://service.elsevier.com/app/answers/detail/a_id/15181/supporthub/scopus/
+asjc_import_table = TableMeta(
+    "asjc_import",
+    columns=[
+        ColumnMeta("id"),
+        ColumnMeta("field"),
+        ColumnMeta("subject_area"),
+    ],
+    post_population_script="sql/normalize-asjc.sql",
+)
+
 asjc_table = TableMeta(
     "asjc",
     columns=[
         ColumnMeta("id"),
         ColumnMeta("field"),
-        ColumnMeta("subject_area"),
+        ColumnMeta("subject_area_id"),
         ColumnMeta("general_field_id"),
     ],
     post_population_script="sql/normalize-asjc.sql",
@@ -236,9 +246,18 @@ asjc_general_fields_table = TableMeta(
     ],
 )
 
+asjc_subject_areas_table = TableMeta(
+    "asjc_subject_areas",
+    columns=[
+        ColumnMeta("id"),
+        ColumnMeta("name"),
+    ],
+)
+
 tables = [
     asjc_table,
     asjc_general_fields_table,
+    asjc_subject_areas_table,
     funders_table,
     journals_table,
     journals_issns_table,
@@ -265,7 +284,7 @@ def load_csv_data(database_path, table_meta, source, delimiter=","):
 
 def populate_asjc(database_path, source):
     """Populate ASJC table of database with data from source"""
-    load_csv_data(database_path, asjc_table, source, delimiter=";")
+    load_csv_data(database_path, asjc_import_table, source, delimiter=";")
 
 
 def populate_journal_names(database_path, source):
