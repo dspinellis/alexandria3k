@@ -236,6 +236,15 @@ asjc_general_fields_table = TableMeta(
     ],
 )
 
+tables = [
+    asjc_table,
+    asjc_general_fields_table,
+    funders_table,
+    journals_table,
+    journals_issns_table,
+    open_access_table,
+]
+
 
 def load_csv_data(database_path, table_meta, source, delimiter=","):
     """Populate specified table of database with data from source"""

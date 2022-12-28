@@ -96,17 +96,7 @@ def schema_list():
     """Print the full database schema"""
 
     for table in (
-        crossref.tables
-        + [
-            csv_sources.asjc_table,
-            csv_sources.asjc_general_fields_table,
-            csv_sources.funders_table,
-            csv_sources.journals_table,
-            csv_sources.journals_issns_table,
-            csv_sources.open_access_table,
-        ]
-        + orcid.tables
-        + ror.tables
+        crossref.tables + csv_sources.tables + orcid.tables + ror.tables
     ):
         print(table.table_schema())
 
