@@ -30,51 +30,6 @@ CREATE INDEX IF NOT EXISTS work_authors_id_idx ON work_authors(id);
 .print CREATE INDEX work_authors_orcid_idx
 CREATE INDEX IF NOT EXISTS work_authors_orcid_idx ON work_authors(orcid);
 
--- Create affiliation_names id-name table and authors_affiliations,
--- works_affiliations many-to-many tables
-
-DROP TABLE IF EXISTS affiliation_names;
-
-.print CREATE TABLE affiliation_names
-CREATE TABLE affiliation_names AS
-  SELECT row_number() OVER (ORDER BY '') AS id, name
-  FROM (SELECT DISTINCT name FROM author_affiliations);
-
-.print CREATE INDEX affiliation_names_id_idx
-CREATE INDEX affiliation_names_id_idx ON affiliation_names(id);
-
-DROP TABLE IF EXISTS authors_affiliations;
-.print CREATE TABLE authors_affiliations
-CREATE TABLE authors_affiliations AS
-  SELECT affiliation_names.id AS affiliation_id,
-    author_affiliations.author_id
-    FROM affiliation_names INNER JOIN author_affiliations
-      ON affiliation_names.name = author_affiliations.name;
-
-.print CREATE INDEX authors_affiliations_affiliation_id_idx
-CREATE INDEX authors_affiliations_affiliation_id_idx
-  ON authors_affiliations(affiliation_id);
-.print CREATE INDEX authors_affiliations_author_id_idx
-CREATE INDEX authors_affiliations_author_id_idx
-  ON authors_affiliations(author_id);
-
-DROP TABLE IF EXISTS works_affiliations;
-.print CREATE TABLE works_affiliations
-CREATE TABLE works_affiliations AS
-  SELECT DISTINCT affiliation_id, work_authors.work_id
-    FROM authors_affiliations
-    LEFT JOIN work_authors ON authors_affiliations.author_id = work_authors.id;
-
-.print CREATE INDEX works_affiliations_affiliation_id_idx
-CREATE INDEX works_affiliations_affiliation_id_idx
-  ON works_affiliations(affiliation_id);
-
-.print CREATE INDEX works_affiliations_work_id_idx
-CREATE INDEX works_affiliations_work_id_idx
-  ON works_affiliations(work_id);
-
-.print DROP TABLE author_affiliations
-DROP TABLE author_affiliations;
 -- Create subject_names id-name table and works_subjects many-to-many table
 
 DROP TABLE IF EXISTS subject_names;
