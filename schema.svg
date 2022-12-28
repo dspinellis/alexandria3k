@@ -40,8 +40,41 @@
 <text text-anchor="middle" x="336.5" y="-171.388" font-family="Arial" font-size="14.00">1</text>
 <text text-anchor="middle" x="324.5" y="-348.027" font-family="Arial" font-size="14.00">1…N</text>
 </g>
+<!-- work_authors_rors -->
+<g id="node4" class="node"><title>work_authors_rors</title>
+<polygon fill="lightgrey" stroke="none" points="988.5,-1621 847.5,-1621 847.5,-1566 988.5,-1566 988.5,-1621"/>
+<text text-anchor="start" x="851" y="-1607.3" font-family="Arial" font-weight="bold" font-size="14.00">work_authors_rors</text>
+<text text-anchor="start" x="870" y="-1587.3" font-family="Arial" font-size="14.00">ror_id</text>
+<text text-anchor="start" x="870" y="-1572.3" font-family="Arial" font-size="14.00">work_author_id</text>
+<polygon fill="black" stroke="black" points="848,-1600.5 848,-1600.5 989,-1600.5 989,-1600.5 848,-1600.5"/>
+<polygon fill="none" stroke="black" points="847.5,-1566 847.5,-1621 988.5,-1621 988.5,-1566 847.5,-1566"/>
+</g>
+<!-- work_authors -->
+<g id="node7" class="node"><title>work_authors</title>
+<polygon fill="#ffc62c" stroke="none" points="1379,-1036.5 1249,-1036.5 1249,-846.5 1379,-846.5 1379,-1036.5"/>
+<text text-anchor="start" x="1265.5" y="-1023.3" font-family="Arial" font-weight="bold" font-size="14.00">work_authors</text>
+<text text-anchor="start" x="1252" y="-1003.3" font-family="Arial" font-size="14.00">id</text>
+<text text-anchor="start" x="1252" y="-988.3" font-family="Arial" font-size="14.00">container_id</text>
+<text text-anchor="start" x="1252" y="-973.3" font-family="Arial" font-size="14.00">work_id</text>
+<text text-anchor="start" x="1252" y="-958.3" font-family="Arial" font-size="14.00">orcid</text>
+<text text-anchor="start" x="1252" y="-943.3" font-family="Arial" font-size="14.00">suffix</text>
+<text text-anchor="start" x="1252" y="-928.3" font-family="Arial" font-size="14.00">given</text>
+<text text-anchor="start" x="1252" y="-913.3" font-family="Arial" font-size="14.00">family</text>
+<text text-anchor="start" x="1252" y="-898.3" font-family="Arial" font-size="14.00">name</text>
+<text text-anchor="start" x="1252" y="-883.3" font-family="Arial" font-size="14.00">authenticated_orcid</text>
+<text text-anchor="start" x="1252" y="-868.3" font-family="Arial" font-size="14.00">prefix</text>
+<text text-anchor="start" x="1252" y="-853.3" font-family="Arial" font-size="14.00">sequence</text>
+<polygon fill="black" stroke="black" points="1249,-1016.5 1249,-1016.5 1379,-1016.5 1379,-1016.5 1249,-1016.5"/>
+<polygon fill="none" stroke="black" points="1249,-846.5 1249,-1036.5 1379,-1036.5 1379,-846.5 1249,-846.5"/>
+</g>
+<!-- work_authors_rors&#45;&gt;work_authors -->
+<g id="edge29" class="edge"><title>work_authors_rors&#45;&gt;work_authors</title>
+<path fill="none" stroke="black" d="M924.163,-1565.78C933.802,-1529.94 955.864,-1466.7 998,-1431 1081.99,-1359.84 1161.45,-1440.91 1235,-1359 1313.8,-1271.24 1324.9,-1130.15 1322.18,-1036.88"/>
+<text text-anchor="middle" x="1305.68" y="-1040.68" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="907.663" y="-1554.58" font-family="Arial" font-size="14.00">0…N</text>
+</g>
 <!-- Main Crossref tables -->
-<g id="node4" class="node"><title>Main Crossref tables</title>
+<g id="node5" class="node"><title>Main Crossref tables</title>
 <polygon fill="#ffc62c" stroke="black" points="1417.5,-2051 1270.5,-2051 1270.5,-2015 1417.5,-2015 1417.5,-2051"/>
 <text text-anchor="middle" x="1344" y="-2029.3" font-family="Arial" font-size="14.00">Main Crossref tables</text>
 </g>
@@ -52,7 +85,7 @@
 </g>
 <!-- Main Crossref tables&#45;&gt;Additional Crossref tables -->
 <!-- works -->
-<g id="node5" class="node"><title>works</title>
+<g id="node6" class="node"><title>works</title>
 <polygon fill="#ffc62c" stroke="none" points="291,-1756 157,-1756 157,-1431 291,-1431 291,-1756"/>
 <text text-anchor="start" x="202.5" y="-1742.3" font-family="Arial" font-weight="bold" font-size="14.00">works</text>
 <text text-anchor="start" x="160" y="-1722.3" font-family="Arial" font-size="14.00">id,id</text>
@@ -78,32 +111,14 @@
 <polygon fill="black" stroke="black" points="157,-1735.5 157,-1735.5 291,-1735.5 291,-1735.5 157,-1735.5"/>
 <polygon fill="none" stroke="black" points="157,-1431 157,-1756 291,-1756 291,-1431 157,-1431"/>
 </g>
-<!-- work_authors -->
-<g id="node6" class="node"><title>work_authors</title>
-<polygon fill="#ffc62c" stroke="none" points="1379,-1036.5 1249,-1036.5 1249,-846.5 1379,-846.5 1379,-1036.5"/>
-<text text-anchor="start" x="1265.5" y="-1023.3" font-family="Arial" font-weight="bold" font-size="14.00">work_authors</text>
-<text text-anchor="start" x="1252" y="-1003.3" font-family="Arial" font-size="14.00">id</text>
-<text text-anchor="start" x="1252" y="-988.3" font-family="Arial" font-size="14.00">container_id</text>
-<text text-anchor="start" x="1252" y="-973.3" font-family="Arial" font-size="14.00">work_id</text>
-<text text-anchor="start" x="1252" y="-958.3" font-family="Arial" font-size="14.00">orcid</text>
-<text text-anchor="start" x="1252" y="-943.3" font-family="Arial" font-size="14.00">suffix</text>
-<text text-anchor="start" x="1252" y="-928.3" font-family="Arial" font-size="14.00">given</text>
-<text text-anchor="start" x="1252" y="-913.3" font-family="Arial" font-size="14.00">family</text>
-<text text-anchor="start" x="1252" y="-898.3" font-family="Arial" font-size="14.00">name</text>
-<text text-anchor="start" x="1252" y="-883.3" font-family="Arial" font-size="14.00">authenticated_orcid</text>
-<text text-anchor="start" x="1252" y="-868.3" font-family="Arial" font-size="14.00">prefix</text>
-<text text-anchor="start" x="1252" y="-853.3" font-family="Arial" font-size="14.00">sequence</text>
-<polygon fill="black" stroke="black" points="1249,-1016.5 1249,-1016.5 1379,-1016.5 1379,-1016.5 1249,-1016.5"/>
-<polygon fill="none" stroke="black" points="1249,-846.5 1249,-1036.5 1379,-1036.5 1379,-846.5 1249,-846.5"/>
-</g>
 <!-- works&#45;&gt;work_authors -->
 <g id="edge1" class="edge"><title>works&#45;&gt;work_authors</title>
 <path fill="none" stroke="black" d="M291.181,-1437.8C294.004,-1435.39 296.942,-1433.12 300,-1431 465.356,-1316.58 1047.41,-1487.6 1202,-1359 1295.83,-1280.95 1315.58,-1133.44 1317.55,-1036.56"/>
-<text text-anchor="middle" x="1301.05" y="-1040.36" font-family="Arial" font-size="14.00">1…N</text>
+<text text-anchor="middle" x="1334.05" y="-1040.36" font-family="Arial" font-size="14.00">1…N</text>
 <text text-anchor="middle" x="295.681" y="-1426.6" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- work_references -->
-<g id="node8" class="node"><title>work_references</title>
+<g id="node9" class="node"><title>work_references</title>
 <polygon fill="#ffc62c" stroke="none" points="783,-1126.5 647,-1126.5 647,-756.5 783,-756.5 783,-1126.5"/>
 <text text-anchor="start" x="656" y="-1113.3" font-family="Arial" font-weight="bold" font-size="14.00">work_references</text>
 <text text-anchor="start" x="650" y="-1093.3" font-family="Arial" font-size="14.00">work_id</text>
@@ -139,7 +154,7 @@
 <text text-anchor="middle" x="295.738" y="-1442.45" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- work_updates -->
-<g id="node9" class="node"><title>work_updates</title>
+<g id="node10" class="node"><title>work_updates</title>
 <polygon fill="#ffc62c" stroke="none" points="907,-991.5 801,-991.5 801,-891.5 907,-891.5 907,-991.5"/>
 <text text-anchor="start" x="804" y="-978.3" font-family="Arial" font-weight="bold" font-size="14.00">work_updates</text>
 <text text-anchor="start" x="815" y="-958.3" font-family="Arial" font-size="14.00">work_id</text>
@@ -157,7 +172,7 @@
 <text text-anchor="middle" x="286.53" y="-1427.18" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- work_subjects -->
-<g id="node10" class="node"><title>work_subjects</title>
+<g id="node11" class="node"><title>work_subjects</title>
 <polygon fill="#ffc62c" stroke="none" points="395.5,-976.5 286.5,-976.5 286.5,-906.5 395.5,-906.5 395.5,-976.5"/>
 <text text-anchor="start" x="290" y="-963.3" font-family="Arial" font-weight="bold" font-size="14.00">work_subjects</text>
 <text text-anchor="start" x="302.5" y="-943.3" font-family="Arial" font-size="14.00">work_id</text>
@@ -173,7 +188,7 @@
 <text text-anchor="middle" x="257.767" y="-1419.57" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- work_funders -->
-<g id="node11" class="node"><title>work_funders</title>
+<g id="node12" class="node"><title>work_funders</title>
 <polygon fill="#ffc62c" stroke="none" points="1066.5,-991.5 963.5,-991.5 963.5,-891.5 1066.5,-891.5 1066.5,-991.5"/>
 <text text-anchor="start" x="967" y="-978.3" font-family="Arial" font-weight="bold" font-size="14.00">work_funders</text>
 <text text-anchor="start" x="976.5" y="-958.3" font-family="Arial" font-size="14.00">id</text>
@@ -191,7 +206,7 @@
 <text text-anchor="middle" x="295.771" y="-1441.73" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- work_licenses -->
-<g id="node12" class="node"><title>work_licenses</title>
+<g id="node13" class="node"><title>work_licenses</title>
 <polygon fill="#ffc62c" stroke="none" points="1193,-991.5 1085,-991.5 1085,-891.5 1193,-891.5 1193,-991.5"/>
 <text text-anchor="start" x="1088.5" y="-978.3" font-family="Arial" font-weight="bold" font-size="14.00">work_licenses</text>
 <text text-anchor="start" x="1088" y="-958.3" font-family="Arial" font-size="14.00">work_id</text>
@@ -209,7 +224,7 @@
 <text text-anchor="middle" x="286.719" y="-1441.65" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- work_links -->
-<g id="node13" class="node"><title>work_links</title>
+<g id="node14" class="node"><title>work_links</title>
 <polygon fill="#ffc62c" stroke="none" points="268,-984 180,-984 180,-899 268,-899 268,-984"/>
 <text text-anchor="start" x="186" y="-970.3" font-family="Arial" font-weight="bold" font-size="14.00">work_links</text>
 <text text-anchor="start" x="183" y="-950.3" font-family="Arial" font-size="14.00">work_id</text>
@@ -226,7 +241,7 @@
 <text text-anchor="middle" x="219.5" y="-1419.79" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_works -->
-<g id="node31" class="node"><title>person_works</title>
+<g id="node32" class="node"><title>person_works</title>
 <polygon fill="#a6ce39" stroke="none" points="537.5,-167.5 430.5,-167.5 430.5,-112.5 537.5,-112.5 537.5,-167.5"/>
 <text text-anchor="start" x="434" y="-153.8" font-family="Arial" font-weight="bold" font-size="14.00">person_works</text>
 <text text-anchor="start" x="452.5" y="-133.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -324,7 +339,7 @@
 <text text-anchor="middle" x="286.642" y="-1426.54" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- author_affiliations -->
-<g id="node7" class="node"><title>author_affiliations</title>
+<g id="node8" class="node"><title>author_affiliations</title>
 <polygon fill="#ffc62c" stroke="none" points="969,-437 837,-437 837,-367 969,-367 969,-437"/>
 <text text-anchor="start" x="840" y="-423.8" font-family="Arial" font-weight="bold" font-size="14.00">author_affiliations</text>
 <text text-anchor="start" x="864" y="-403.8" font-family="Arial" font-size="14.00">author_id</text>
@@ -340,7 +355,7 @@
 <text text-anchor="middle" x="1318.07" y="-834.993" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- persons -->
-<g id="node16" class="node"><title>persons</title>
+<g id="node17" class="node"><title>persons</title>
 <polygon fill="#a6ce39" stroke="none" points="1078.5,-452 987.5,-452 987.5,-352 1078.5,-352 1078.5,-452"/>
 <text text-anchor="start" x="1004.5" y="-438.8" font-family="Arial" font-weight="bold" font-size="14.00">persons</text>
 <text text-anchor="start" x="991" y="-418.8" font-family="Arial" font-size="14.00">id</text>
@@ -364,7 +379,7 @@
 <text text-anchor="middle" x="336.5" y="-895.269" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- funder_awards -->
-<g id="node14" class="node"><title>funder_awards</title>
+<g id="node15" class="node"><title>funder_awards</title>
 <polygon fill="#ffc62c" stroke="none" points="564,-437 452,-437 452,-367 564,-367 564,-437"/>
 <text text-anchor="start" x="455" y="-423.8" font-family="Arial" font-weight="bold" font-size="14.00">funder_awards</text>
 <text text-anchor="start" x="469" y="-403.8" font-family="Arial" font-size="14.00">funder_id</text>
@@ -411,13 +426,13 @@
 <text text-anchor="middle" x="1018.1" y="-895.282" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- ORCID tables -->
-<g id="node15" class="node"><title>ORCID tables</title>
+<g id="node16" class="node"><title>ORCID tables</title>
 <polygon fill="#a6ce39" stroke="black" points="1958,-2051 1852,-2051 1852,-2015 1958,-2015 1958,-2051"/>
 <text text-anchor="middle" x="1905" y="-2029.3" font-family="Arial" font-size="14.00">ORCID tables</text>
 </g>
 <!-- ORCID tables&#45;&gt;Alexandria3k tables -->
 <!-- person_researcher_urls -->
-<g id="node17" class="node"><title>person_researcher_urls</title>
+<g id="node18" class="node"><title>person_researcher_urls</title>
 <polygon fill="#a6ce39" stroke="none" points="2516,-175 2340,-175 2340,-105 2516,-105 2516,-175"/>
 <text text-anchor="start" x="2343" y="-161.8" font-family="Arial" font-weight="bold" font-size="14.00">person_researcher_urls</text>
 <text text-anchor="start" x="2396" y="-141.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -433,7 +448,7 @@
 <text text-anchor="middle" x="1083.33" y="-402.807" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_countries -->
-<g id="node18" class="node"><title>person_countries</title>
+<g id="node19" class="node"><title>person_countries</title>
 <polygon fill="#a6ce39" stroke="none" points="2664,-167.5 2534,-167.5 2534,-112.5 2664,-112.5 2664,-167.5"/>
 <text text-anchor="start" x="2537" y="-153.8" font-family="Arial" font-weight="bold" font-size="14.00">person_countries</text>
 <text text-anchor="start" x="2567" y="-133.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -448,7 +463,7 @@
 <text text-anchor="middle" x="1083.09" y="-388.683" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_keywords -->
-<g id="node19" class="node"><title>person_keywords</title>
+<g id="node20" class="node"><title>person_keywords</title>
 <polygon fill="#a6ce39" stroke="none" points="2815.5,-167.5 2682.5,-167.5 2682.5,-112.5 2815.5,-112.5 2815.5,-167.5"/>
 <text text-anchor="start" x="2686" y="-153.8" font-family="Arial" font-weight="bold" font-size="14.00">person_keywords</text>
 <text text-anchor="start" x="2717.5" y="-133.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -463,7 +478,7 @@
 <text text-anchor="middle" x="1083.38" y="-404.006" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_external_identifiers -->
-<g id="node20" class="node"><title>person_external_identifiers</title>
+<g id="node21" class="node"><title>person_external_identifiers</title>
 <polygon fill="#a6ce39" stroke="none" points="3032,-182.5 2834,-182.5 2834,-97.5 3032,-97.5 3032,-182.5"/>
 <text text-anchor="start" x="2837" y="-168.8" font-family="Arial" font-weight="bold" font-size="14.00">person_external_identifiers</text>
 <text text-anchor="start" x="2901" y="-148.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -480,7 +495,7 @@
 <text text-anchor="middle" x="1074" y="-403.941" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_distinctions -->
-<g id="node21" class="node"><title>person_distinctions</title>
+<g id="node22" class="node"><title>person_distinctions</title>
 <polygon fill="#a6ce39" stroke="none" points="700.5,-257.5 555.5,-257.5 555.5,-22.5 700.5,-22.5 700.5,-257.5"/>
 <text text-anchor="start" x="559" y="-243.8" font-family="Arial" font-weight="bold" font-size="14.00">person_distinctions</text>
 <text text-anchor="start" x="559" y="-223.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -507,7 +522,7 @@
 <text text-anchor="middle" x="982.83" y="-361.475" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_educations -->
-<g id="node22" class="node"><title>person_educations</title>
+<g id="node23" class="node"><title>person_educations</title>
 <polygon fill="#a6ce39" stroke="none" points="863.5,-257.5 718.5,-257.5 718.5,-22.5 863.5,-22.5 863.5,-257.5"/>
 <text text-anchor="start" x="723.5" y="-243.8" font-family="Arial" font-weight="bold" font-size="14.00">person_educations</text>
 <text text-anchor="start" x="722" y="-223.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -534,7 +549,7 @@
 <text text-anchor="middle" x="982.957" y="-348.446" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_employments -->
-<g id="node23" class="node"><title>person_employments</title>
+<g id="node24" class="node"><title>person_employments</title>
 <polygon fill="#a6ce39" stroke="none" points="1040,-257.5 882,-257.5 882,-22.5 1040,-22.5 1040,-257.5"/>
 <text text-anchor="start" x="885" y="-243.8" font-family="Arial" font-weight="bold" font-size="14.00">person_employments</text>
 <text text-anchor="start" x="891.5" y="-223.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -561,7 +576,7 @@
 <text text-anchor="middle" x="1014.87" y="-340.59" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_invited_positions -->
-<g id="node24" class="node"><title>person_invited_positions</title>
+<g id="node25" class="node"><title>person_invited_positions</title>
 <polygon fill="#a6ce39" stroke="none" points="1242,-257.5 1058,-257.5 1058,-22.5 1242,-22.5 1242,-257.5"/>
 <text text-anchor="start" x="1061" y="-243.8" font-family="Arial" font-weight="bold" font-size="14.00">person_invited_positions</text>
 <text text-anchor="start" x="1080.5" y="-223.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -588,7 +603,7 @@
 <text text-anchor="middle" x="1050.64" y="-340.59" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_memberships -->
-<g id="node25" class="node"><title>person_memberships</title>
+<g id="node26" class="node"><title>person_memberships</title>
 <polygon fill="#a6ce39" stroke="none" points="1420,-257.5 1260,-257.5 1260,-22.5 1420,-22.5 1420,-257.5"/>
 <text text-anchor="start" x="1263" y="-243.8" font-family="Arial" font-weight="bold" font-size="14.00">person_memberships</text>
 <text text-anchor="start" x="1270.5" y="-223.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -615,7 +630,7 @@
 <text text-anchor="middle" x="1083.42" y="-372.255" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_qualifications -->
-<g id="node26" class="node"><title>person_qualifications</title>
+<g id="node27" class="node"><title>person_qualifications</title>
 <polygon fill="#a6ce39" stroke="none" points="1595.5,-257.5 1438.5,-257.5 1438.5,-22.5 1595.5,-22.5 1595.5,-257.5"/>
 <text text-anchor="start" x="1442" y="-243.8" font-family="Arial" font-weight="bold" font-size="14.00">person_qualifications</text>
 <text text-anchor="start" x="1448" y="-223.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -642,7 +657,7 @@
 <text text-anchor="middle" x="1083.1" y="-386.137" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_services -->
-<g id="node27" class="node"><title>person_services</title>
+<g id="node28" class="node"><title>person_services</title>
 <polygon fill="#a6ce39" stroke="none" points="1758.5,-257.5 1613.5,-257.5 1613.5,-22.5 1758.5,-22.5 1758.5,-257.5"/>
 <text text-anchor="start" x="1627.5" y="-243.8" font-family="Arial" font-weight="bold" font-size="14.00">person_services</text>
 <text text-anchor="start" x="1617" y="-223.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -669,7 +684,7 @@
 <text text-anchor="middle" x="1074.42" y="-384.913" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_fundings -->
-<g id="node28" class="node"><title>person_fundings</title>
+<g id="node29" class="node"><title>person_fundings</title>
 <polygon fill="#a6ce39" stroke="none" points="1921.5,-280 1776.5,-280 1776.5,-0 1921.5,-0 1921.5,-280"/>
 <text text-anchor="start" x="1789.5" y="-266.8" font-family="Arial" font-weight="bold" font-size="14.00">person_fundings</text>
 <text text-anchor="start" x="1780" y="-246.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -699,7 +714,7 @@
 <text text-anchor="middle" x="1083.14" y="-387.318" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_peer_reviews -->
-<g id="node29" class="node"><title>person_peer_reviews</title>
+<g id="node30" class="node"><title>person_peer_reviews</title>
 <polygon fill="#a6ce39" stroke="none" points="2098,-257.5 1940,-257.5 1940,-22.5 2098,-22.5 2098,-257.5"/>
 <text text-anchor="start" x="1943" y="-243.8" font-family="Arial" font-weight="bold" font-size="14.00">person_peer_reviews</text>
 <text text-anchor="start" x="1954" y="-223.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -726,7 +741,7 @@
 <text text-anchor="middle" x="1074.11" y="-403.662" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_research_resources -->
-<g id="node30" class="node"><title>person_research_resources</title>
+<g id="node31" class="node"><title>person_research_resources</title>
 <polygon fill="#a6ce39" stroke="none" points="2322,-212.5 2116,-212.5 2116,-67.5 2322,-67.5 2322,-212.5"/>
 <text text-anchor="start" x="2119" y="-198.8" font-family="Arial" font-weight="bold" font-size="14.00">person_research_resources</text>
 <text text-anchor="start" x="2181.5" y="-178.8" font-family="Arial" font-size="14.00">person_id</text>
@@ -753,13 +768,13 @@
 <text text-anchor="middle" x="991.683" y="-345.899" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- ROR tables -->
-<g id="node32" class="node"><title>ROR tables</title>
+<g id="node33" class="node"><title>ROR tables</title>
 <polygon fill="#53baa1" stroke="black" points="1833.5,-2051 1742.5,-2051 1742.5,-2015 1833.5,-2015 1833.5,-2051"/>
 <text text-anchor="middle" x="1788" y="-2029.3" font-family="Arial" font-size="14.00">ROR tables</text>
 </g>
 <!-- ROR tables&#45;&gt;ORCID tables -->
 <!-- research_organizations -->
-<g id="node33" class="node"><title>research_organizations</title>
+<g id="node34" class="node"><title>research_organizations</title>
 <polygon fill="#53baa1" stroke="none" points="172,-1943 0,-1943 0,-1828 172,-1828 172,-1943"/>
 <text text-anchor="start" x="3" y="-1929.3" font-family="Arial" font-weight="bold" font-size="14.00">research_organizations</text>
 <text text-anchor="start" x="42.5" y="-1909.3" font-family="Arial" font-size="14.00">id</text>
@@ -770,15 +785,6 @@
 <text text-anchor="start" x="42.5" y="-1834.3" font-family="Arial" font-size="14.00">country_code</text>
 <polygon fill="black" stroke="black" points="0,-1922.5 0,-1922.5 172,-1922.5 172,-1922.5 0,-1922.5"/>
 <polygon fill="none" stroke="black" points="0,-1828 0,-1943 172,-1943 172,-1828 0,-1828"/>
-</g>
-<!-- work_authors_rors -->
-<g id="node34" class="node"><title>work_authors_rors</title>
-<polygon fill="#53baa1" stroke="none" points="988.5,-1621 847.5,-1621 847.5,-1566 988.5,-1566 988.5,-1621"/>
-<text text-anchor="start" x="851" y="-1607.3" font-family="Arial" font-weight="bold" font-size="14.00">work_authors_rors</text>
-<text text-anchor="start" x="870" y="-1587.3" font-family="Arial" font-size="14.00">ror_id</text>
-<text text-anchor="start" x="870" y="-1572.3" font-family="Arial" font-size="14.00">work_author_id</text>
-<polygon fill="black" stroke="black" points="848,-1600.5 848,-1600.5 989,-1600.5 989,-1600.5 848,-1600.5"/>
-<polygon fill="none" stroke="black" points="847.5,-1566 847.5,-1621 988.5,-1621 988.5,-1566 847.5,-1566"/>
 </g>
 <!-- research_organizations&#45;&gt;work_authors_rors -->
 <g id="edge28" class="edge"><title>research_organizations&#45;&gt;work_authors_rors</title>
@@ -916,12 +922,6 @@
 <path fill="none" stroke="black" d="M172.196,-1878.98C332.519,-1866.97 667.861,-1833.12 751,-1756 788.711,-1721.02 795.309,-1657.21 795.789,-1621.15"/>
 <text text-anchor="middle" x="779.289" y="-1624.95" font-family="Arial" font-size="14.00">0…N</text>
 <text text-anchor="middle" x="167.696" y="-1882.78" font-family="Arial" font-size="14.00">1</text>
-</g>
-<!-- work_authors_rors&#45;&gt;work_authors -->
-<g id="edge29" class="edge"><title>work_authors_rors&#45;&gt;work_authors</title>
-<path fill="none" stroke="black" d="M924.163,-1565.78C933.802,-1529.94 955.864,-1466.7 998,-1431 1081.99,-1359.84 1161.45,-1440.91 1235,-1359 1313.8,-1271.24 1324.9,-1130.15 1322.18,-1036.88"/>
-<text text-anchor="middle" x="1338.68" y="-1040.68" font-family="Arial" font-size="14.00">0…N</text>
-<text text-anchor="middle" x="907.663" y="-1554.58" font-family="Arial" font-size="14.00">0…N</text>
 </g>
 <!-- DOAJ table -->
 <g id="node44" class="node"><title>DOAJ table</title>

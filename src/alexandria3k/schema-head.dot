@@ -11,6 +11,7 @@ digraph D {
 	"Alexandria3k tables" [shape=box, margin="0.11,0.055"];
 	asjc;
 	asjc_general_fields;
+	work_authors_rors;
 
 	node [fillcolor="#ffc62c"];
 	"Main Crossref tables" [shape=box, margin="0.11,0.055"];
