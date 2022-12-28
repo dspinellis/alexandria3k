@@ -227,7 +227,7 @@ asjc_import_table = TableMeta(
     post_population_script="sql/normalize-asjc.sql",
 )
 
-asjc_table = TableMeta(
+asjcs_table = TableMeta(
     "asjcs",
     columns=[
         ColumnMeta("id"),
@@ -255,7 +255,7 @@ asjc_subject_areas_table = TableMeta(
 )
 
 tables = [
-    asjc_table,
+    asjcs_table,
     asjc_general_fields_table,
     asjc_subject_areas_table,
     funders_table,
