@@ -289,7 +289,11 @@ Given a database already populated with work author affiliations
 and the research organization registry fill-in the table `work_authors_rors`
 linking the two.
 ```sh
-alexandria3k --populate-db-path database.db --execute link-ror-aa
+# Link affiliations with best match
+alexandria3k --populate-db-path database.db --execute link-aa-base-ror
+
+# Link affiliations with top parent of best match
+alexandria3k --populate-db-path database.db --execute link-aa-top-ror
 ```
 
 After linking, the results' quality can be verified with queries
@@ -388,10 +392,10 @@ optional arguments:
                         random.random() < 0.0002)
   -x EXECUTE, --execute EXECUTE
                         Operation to execute on the data. This can be one of:
-                        link-base-ror-aa (link base-level research
-                        organizations with author affiliations); link-top-ror-
-                        aa (link top-level research organizations with author
-                        affiliations); link-works-asjcs (link works with
+                        link-aa-base-ror (link author affiliations to base-
+                        level research organizations); link-aa-top-ror (link
+                        author affiliations to top-level research
+                        organizations); link-works-asjcs (link works with
                         Scopus All Science Journal Classification Codes —
                         ASJCs).
 ```

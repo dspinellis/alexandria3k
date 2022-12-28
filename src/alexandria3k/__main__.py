@@ -290,10 +290,9 @@ def parse_cli_arguments(parser, args=None):
         "--execute",
         type=str,
         help="""Operation to execute on the data. This can be one of:
-link-base-ror-aa (link base-level research organizations with author
-affiliations);
-link-top-ror-aa (link top-level research organizations with author
-affiliations);
+link-aa-base-ror (link author affiliations to base-level research
+organizations);
+link-aa-top-ror (link author affiliations to top-level research organizations);
 link-works-asjcs (link works with Scopus All Science Journal Classification Codes — ASJCs).
         """,
     )
@@ -465,9 +464,9 @@ def main():
             args.populate_db_path, args.journal_names
         )
 
-    if args.execute == "link-base-ror-aa":
+    if args.execute == "link-aa-base-ror":
         ror.link_author_affiliations(args.populate_db_path, link_to_top=False)
-    elif args.execute == "link-top-ror-aa":
+    elif args.execute == "link-aa-top-ror":
         ror.link_author_affiliations(args.populate_db_path, link_to_top=True)
     elif args.execute == "link-works-asjcs":
         csv_sources.link_works_asjcs(args.populate_db_path)
