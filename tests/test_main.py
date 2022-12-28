@@ -18,6 +18,7 @@
 #
 """main module test"""
 
+import argparse
 import sys
 import unittest
 
@@ -28,13 +29,20 @@ from alexandria3k.__main__ import parse_cli_arguments, DOAJ_DEFAULT
 
 class TestMain(unittest.TestCase):
     def test_expand_orcid_ok(self):
-        args = parse_cli_arguments(["-d", "orcid", "od.tar.gz", "-p" "x.db"])
+        args = parse_cli_arguments(
+            argparse.ArgumentParser(),
+            ["-d", "orcid", "od.tar.gz", "-p" "x.db"],
+        )
         self.assertEqual(args.orcid, "od.tar.gz")
 
     def test_expand_doaj_ok(self):
-        args = parse_cli_arguments(["-d", "doaj", "doaj.csv", "-p" "x.db"])
+        args = parse_cli_arguments(
+            argparse.ArgumentParser(), ["-d", "doaj", "doaj.csv", "-p" "x.db"]
+        )
         self.assertEqual(args.doaj, "doaj.csv")
 
     def test_expand_doaj_defalt(self):
-        args = parse_cli_arguments(["-d", "doaj", "-p" "x.db"])
+        args = parse_cli_arguments(
+            argparse.ArgumentParser(), ["-d", "doaj", "-p" "x.db"]
+        )
         self.assertEqual(args.doaj, DOAJ_DEFAULT)

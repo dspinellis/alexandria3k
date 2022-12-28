@@ -257,9 +257,13 @@ alexandria3k --populate-db-path database.db \
   --data-source funder-names https://doi.crossref.org/funderNames?mode=list
 ```
 
-### Populate the database with Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
+### Work with Scopus All Science Journal Classification Codes (ASJC)
 ```sh
+# Populate database with ASJCs
 alexandria3k --populate-db-path database.db --data-source ASJC
+
+# Link the (sometime previously populated works table) with ASJCs
+alexandria3k --populate-db-path database.db --execute link-works-asjcs
 ```
 
 ### Populate the database with data regarding open access journals
@@ -387,7 +391,9 @@ optional arguments:
                         link-base-ror-aa (link base-level research
                         organizations with author affiliations); link-top-ror-
                         aa (link top-level research organizations with author
-                        affiliations)
+                        affiliations); link-works-asjcs (link works with
+                        Scopus All Science Journal Classification Codes —
+                        ASJCs).
 ```
 <!-- CLI end -->
 
@@ -523,11 +529,15 @@ csv_sources.populate_open_access_journals(
 )
 ```
 
-### Populate the database with Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
+### Work with Scopus All Science Journal Classification Codes (ASJC)
 ```py
 from alexandria3k import csv_sources
 
+# Populate database with ASJCs
 csv_sources.populate_asjc("database.db", "resource:data/asjc.csv")
+
+# Link the (sometime previously populated works table) with ASJCs
+csv_sources.link_works_asjcs("database.db")
 ```
 
 ### Populate the database with the names of research organizations
@@ -544,7 +554,11 @@ ror.populate(
 ```py
 from alexandria3k import ror
 
-ror.link_author_affiliations(args.populate_db_path)
+# Link affiliations with best match
+ror.link_author_affiliations(args.populate_db_path, link_to_top=False)
+
+# Link affiliations with top parent of best match
+ror.link_author_affiliations(args.populate_db_path, link_to_top=True)
 ```
 
 ## Development

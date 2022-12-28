@@ -10,6 +10,7 @@ digraph D {
 	// Our own tables
 	"Alexandria3k tables" [shape=box, margin="0.11,0.055"];
 	asjcs;
+	works_asjcs;
 	asjc_general_fields;
 	asjc_subject_areas;
 	work_authors_rors;
@@ -29,6 +30,9 @@ digraph D {
 	works -> work_licenses;
 	works -> work_links;
 	work_funders -> funder_awards;
+
+	works -> works_asjcs [taillabel="1" headlabel="0…N"];
+	works_asjcs -> asjcs [taillabel="0…N" headlabel="1"];
 
 	work_subjects -> asjcs [headlabel="1", taillabel="1"];
 
@@ -62,9 +66,8 @@ digraph D {
 
 	research_organizations;
 
-	edge  [headlabel="0…N", taillabel="0…N"];
-	research_organizations -> work_authors_rors;
-	work_authors_rors -> work_authors;
+	research_organizations -> work_authors_rors [taillabel="1" headlabel="0…N"];
+	work_authors_rors -> work_authors [taillabel="0…N" headlabel="1"];
 
 	research_organizations -> ror_types [headlabel="1…N", taillabel="1"];
 	edge  [headlabel="0…N", taillabel="1"];

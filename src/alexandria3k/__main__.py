@@ -146,11 +146,8 @@ def database_counts(database):
     print(f"{count} references(s) with DOI")
 
 
-def parse_cli_arguments(args=None):
+def parse_cli_arguments(parser, args=None):
     """Parse command line arguments (or args e.g. when testing)"""
-    parser = argparse.ArgumentParser(
-        description="alexandria3k: Publication metadata interface"
-    )
 
     parser.add_argument(
         "-c",
@@ -296,7 +293,8 @@ def parse_cli_arguments(args=None):
 link-base-ror-aa (link base-level research organizations with author
 affiliations);
 link-top-ror-aa (link top-level research organizations with author
-affiliations)
+affiliations);
+link-works-asjcs (link works with Scopus All Science Journal Classification Codes — ASJCs).
         """,
     )
 
@@ -370,7 +368,10 @@ def main():
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     """Program entry point"""
-    args = parse_cli_arguments()
+    parser = argparse.ArgumentParser(
+        description="alexandria3k: Publication metadata interface"
+    )
+    args = parse_cli_arguments(parser)
 
     # Setup debug logging and performance monitoring
     debug.set_flags(args.debug)
@@ -468,6 +469,10 @@ def main():
         ror.link_author_affiliations(args.populate_db_path, link_to_top=False)
     elif args.execute == "link-top-ror-aa":
         ror.link_author_affiliations(args.populate_db_path, link_to_top=True)
+    elif args.execute == "link-works-asjcs":
+        csv_sources.link_works_asjcs(args.populate_db_path)
+    elif args.execute:
+        parser.error(f"Unknown execution argument: {args.execute}")
 
     if debug.enabled("populated-counts"):
         populated_db = sqlite3.connect(args.populate_db_path)

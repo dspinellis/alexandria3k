@@ -23,6 +23,7 @@ import csv
 import sqlite3
 
 from .common import data_source, get_string_resource
+from . import perf
 from .virtual_db import ColumnMeta, TableMeta
 
 
@@ -254,14 +255,23 @@ asjc_subject_areas_table = TableMeta(
     ],
 )
 
+works_asjcs_table = TableMeta(
+    "works_asjcs",
+    columns=[
+        ColumnMeta("work_id"),
+        ColumnMeta("asjc_id"),
+    ],
+)
+
 tables = [
-    asjcs_table,
     asjc_general_fields_table,
     asjc_subject_areas_table,
+    asjcs_table,
     funders_table,
-    journals_table,
     journals_issns_table,
+    journals_table,
     open_access_table,
+    works_asjcs_table,
 ]
 
 
@@ -274,10 +284,12 @@ def load_csv_data(database_path, table_meta, source, delimiter=","):
     cur.executemany(
         table_meta.insert_statement(), record_source(source, delimiter)
     )
+    perf.log("Load CSV data")
     post_population_script = table_meta.get_post_population_script()
     if post_population_script:
         script = get_string_resource(post_population_script)
         cur.executescript(script)
+        perf.log(f"Run {post_population_script}")
     con.commit()
     con.close()
 
@@ -300,3 +312,13 @@ def populate_funder_names(database_path, source):
 def populate_open_access_journals(database_path, source):
     """Populate OA journals table of database with data from source"""
     load_csv_data(database_path, open_access_table, source)
+
+
+def link_works_asjcs(database_path):
+    """Create a many to many table linking works with Scopus
+    All Science Journal Classification Codes — ASJCs"""
+    con = sqlite3.connect(database_path)
+    cur = con.cursor()
+    script = get_string_resource("sql/link-works-asjcs.sql")
+    cur.executescript(script)
+    perf.log("link_works_asjcs")

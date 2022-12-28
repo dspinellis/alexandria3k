@@ -1,0 +1,53 @@
+#
+# Alexandria3k Crossref bibliographic metadata processing
+# Copyright (C) 2022  Diomidis Spinellis
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# rdbunit test for normalizing ASJC contents
+#
+
+BEGIN SETUP
+asjcs:
+id	field
+1000	Multidisciplinary
+1100	"General Agricultural"
+1101	"Biological Sciences"
+1102	"Agronomy"
+
+work_subjects:
+work_id	name
+1	Agronomy
+2	"Biological Sciences"
+3	Agronomy
+4	Astrology
+4	"General Agricultural"
+4	Multidisciplinary
+5	"Circus Sciences"
+
+END
+
+INCLUDE CREATE src/alexandria3k/sql/link-works-asjcs.sql
+
+BEGIN RESULT
+works_asjcs:
+work_id asjc_id
+1	1102
+2	1101
+3	1102
+4	1100
+4	1000
+
+END
