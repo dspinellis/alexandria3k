@@ -1,0 +1,45 @@
+BEGIN SETUP
+works:
+id	doi
+1	d1
+2	d2
+3	d3
+4	d4
+5	d5
+6	d6
+7	d7
+
+work_references:
+work_id	doi
+1	d2
+1	d3
+1	d4
+1	NULL
+5	d1
+5	d2
+6	d2
+7	d6
+
+works_asjcs:
+work_id	asjc_id
+1	10
+2	20
+3	20
+4	20
+5	30
+5	40
+6	10
+7	30
+END
+
+INCLUDE CREATE work_subject_citations.sql
+
+BEGIN RESULT
+work_subject_citations:
+citing_subject_id	cited_subject_id	citations_number
+10			20			4
+30			10			2
+30			20			1
+40			10			1
+40			20			1
+END
