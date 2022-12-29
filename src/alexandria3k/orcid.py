@@ -454,7 +454,7 @@ def get_table_meta_by_name(name):
     try:
         return table_dict[name]
     except KeyError:
-        fail(f"Unknown table name: {name}")
+        fail(f"Unknown table name: '{name}'.")
         # NOTREACHED
         return None
 

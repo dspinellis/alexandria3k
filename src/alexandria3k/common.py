@@ -74,7 +74,7 @@ def ensure_table_exists(connection, table_name):
     does not exist"""
     cursor = connection.cursor()
     if not table_exists(cursor, table_name):
-        fail(f"The required table {table_name} is not populated")
+        fail(f"The required table '{table_name}' is not populated.")
 
 
 def set_fast_writing(database):
@@ -120,7 +120,7 @@ def add_columns(columns, tables, add_column):
             (table, column) = col.split(".")
         except ValueError:
             fail(
-                f"Invalid column specification: {col}; expected table.column or table.*"
+                f"Invalid column specification: '{col}'; expected table.column or table.*."
             )
         add_column(table, column)
 
@@ -161,7 +161,7 @@ def data_source(source):
         return open(source, "rb")
     # pylint: disable-next=broad-except
     except Exception as exception:
-        fail(f"Unable to read data from {source}: {exception}")
+        fail(f"Unable to read data from '{source}': {exception}.")
         # NOTREACHED
         return None
 
