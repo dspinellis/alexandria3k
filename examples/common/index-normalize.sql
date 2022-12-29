@@ -43,10 +43,6 @@ CREATE INDEX subject_names_id_idx ON subject_names(id);
 
 DROP TABLE IF EXISTS works_subjects;
 .print CREATE TABLE works_subjects
-CREATE TABLE works_subjects AS
-  SELECT subject_names.id AS subject_id, work_id
-    FROM subject_names
-    INNER JOIN work_subjects ON subject_names.name = work_subjects.name;
 
 .print CREATE INDEX works_subjects_subject_id_idx
 CREATE INDEX works_subjects_subject_id_idx ON works_subjects(subject_id);
