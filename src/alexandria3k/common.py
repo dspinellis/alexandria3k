@@ -69,9 +69,10 @@ def table_exists(cursor, table_name):
         return False
 
 
-def ensure_table_exists(cursor, table_name):
+def ensure_table_exists(connection, table_name):
     """Terminate the program with an error message if the specified table
     does not exist"""
+    cursor = connection.cursor()
     if not table_exists(cursor, table_name):
         fail(f"The required table {table_name} is not populated")
 

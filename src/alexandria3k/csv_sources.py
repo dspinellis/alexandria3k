@@ -22,7 +22,7 @@ import codecs
 import csv
 import sqlite3
 
-from .common import data_source, get_string_resource
+from .common import data_source, ensure_table_exists, get_string_resource
 from . import perf
 from .virtual_db import ColumnMeta, TableMeta
 
@@ -317,8 +317,10 @@ def populate_open_access_journals(database_path, source):
 def link_works_asjcs(database_path):
     """Create a many to many table linking works with Scopus
     All Science Journal Classification Codes — ASJCs"""
-    con = sqlite3.connect(database_path)
-    cur = con.cursor()
+    connection = sqlite3.connect(database_path)
+    ensure_table_exists(connection, "work_subjects")
+    ensure_table_exists(connection, "asjcs")
     script = get_string_resource("sql/link-works-asjcs.sql")
-    cur.executescript(script)
+    cursor = connection.cursor()
+    cursor.executescript(script)
     perf.log("link_works_asjcs")

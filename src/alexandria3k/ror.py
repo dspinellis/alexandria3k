@@ -252,12 +252,12 @@ def link_author_affiliations(database_path, link_to_top):
     database = apsw.Connection(database_path)
     database.execute(log_sql("DELETE FROM work_authors_rors"))
     set_fast_writing(database)
-    select_cursor = database.cursor()
-    ensure_table_exists(select_cursor, "research_organizations")
-    ensure_table_exists(select_cursor, "author_affiliations")
-    ensure_table_exists(select_cursor, "work_authors_rors")
+    ensure_table_exists(database, "research_organizations")
+    ensure_table_exists(database, "author_affiliations")
+    ensure_table_exists(database, "work_authors_rors")
 
     # Create an automaton with all ROR identifying names
+    select_cursor = database.cursor()
     automaton = ahocorasick.Automaton()
     add_words(
         automaton,
