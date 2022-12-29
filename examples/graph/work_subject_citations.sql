@@ -1,5 +1,23 @@
-DROP TABLE IF EXISTS work_subject_citations;
+.print CREATE INDEX works_doi_idx
+CREATE INDEX IF NOT EXISTS works_doi_idx ON works(doi);
 
+.print CREATE INDEX works_id_idx
+CREATE INDEX IF NOT EXISTS works_id_idx ON works(id);
+
+.print CREATE INDEX work_references_doi_idx
+CREATE INDEX IF NOT EXISTS work_references_doi_idx ON work_references(doi);
+
+.print CREATE INDEX work_references_work_id_idx
+CREATE INDEX IF NOT EXISTS work_references_work_id_idx ON work_references(work_id);
+
+.print CREATE INDEX works_asjcs_work_id_idx
+CREATE INDEX IF NOT EXISTS works_asjcs_work_id_idx ON works_asjcs(work_id);
+
+.print CREATE INDEX works_asjcs_asjc_id_idx
+CREATE INDEX IF NOT EXISTS works_asjcs_asjc_id_idx ON works_asjcs(asjc_id);
+
+
+.print CREATE TABLE work_subject_citations
 CREATE TABLE work_subject_citations AS
   SELECT
       citing_subjects.asjc_id AS citing_subject_id,
