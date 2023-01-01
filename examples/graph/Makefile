@@ -6,7 +6,7 @@ export RDBMS?=sqlite
 export MAINDB?=graph
 # Subject-hierarchy
 export ROLAPDB?=sh
-export DEPENDENCIES=populate asjcs link-works-asjcs
+export DEPENDENCIES=populate asjcs link-works-asjcs rors link-aa-base-ror
 
 CROSSREF_DIR?=../common/Crossref-April-2022
 TIME?=time
@@ -55,6 +55,15 @@ asjcs: populate
 
 link-works-asjcs: asjcs populate
 	$(TIME) alexandria3k --execute link-works-asjcs \
+	  --populate "$(MAINDB).db"
+	touch $@
+
+rors: populate
+	$(TIME) alexandria3k --data-source ROR ../common/ror-v1.17.1-2022-12-16.zip --populate "$(MAINDB).db"
+	touch $@
+
+link-aa-base-ror: rors populate
+	$(TIME) alexandria3k --execute link-aa-base-ror \
 	  --populate "$(MAINDB).db"
 	touch $@
 
