@@ -1,5 +1,7 @@
 -- Calculate approximate number of study authors
 
+CREATE INDEX IF NOT EXISTS work_authors_orcid_idx ON work_authors(orcid);
+
 WITH orcid_authors AS (
   SELECT count(*) AS n FROM (SELECT DISTINCT orcid FROM work_authors)
 ),
