@@ -43,5 +43,11 @@ link-aa-top-ror: rors populate
 	  --populate "$(MAINDB).db"
 	touch $@
 
+# Add journal names
+journal-names:
+	$(TIME) alexandria3k --data-source journal-names \
+	  --populate-db-path "$(MAINDB).db"
+	touch $@
+
 simple-rolap/Makefile:
 	git clone https://github.com/dspinellis/simple-rolap
