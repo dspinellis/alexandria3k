@@ -28,13 +28,13 @@ ror_name_work_counts AS (
 
 -- Match works with unidentified author affiliations
 unmatched_work_affiliations AS (
-  SELECT DISTINCT work_id, author_affiliations.name FROM
-    work_authors
-    INNER JOIN author_affiliations
-      ON work_authors.id = author_affiliations.author_id
-    LEFT JOIN work_authors_rors
-      ON work_authors_rors.work_author_id = work_authors.id
-    WHERE work_authors_rors.ror_id is null
+  SELECT DISTINCT work_id, author_affiliations.name
+  FROM work_authors
+  INNER JOIN author_affiliations
+    ON work_authors.id = author_affiliations.author_id
+  LEFT JOIN work_authors_rors
+    ON work_authors_rors.work_author_id = work_authors.id
+  WHERE work_authors_rors.ror_id is null
 ),
 
 -- Count works by unidentified author affiliations
