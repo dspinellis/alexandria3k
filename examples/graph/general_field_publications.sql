@@ -7,7 +7,7 @@ CREATE INDEX IF NOT EXISTS works_asjcs_asjc_id_idx ON works_asjcs(asjc_id);
 CREATE INDEX IF NOT EXISTS asjc_general_fields_id_idx ON
   asjc_general_fields(id);
 
-CREATE TABLE sh.general_field_publications AS
+CREATE TABLE rolap.general_field_publications AS
   WITH general_field_id_publications AS (
     SELECT
         asjcs.general_field_id, works.published_year, Count(*) AS number

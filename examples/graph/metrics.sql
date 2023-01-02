@@ -1,4 +1,4 @@
--- Metrics of a normalized (and hopefully indexed) graph view
+-- Metrics of the graph view
 
 CREATE INDEX IF NOT EXISTS works_id_idx ON works(id);
 

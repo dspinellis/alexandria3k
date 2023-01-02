@@ -1,3 +1,4 @@
+-- Number of citations for each field pair
 CREATE INDEX IF NOT EXISTS works_doi_idx ON works(doi);
 
 CREATE INDEX IF NOT EXISTS works_id_idx ON works(id);
@@ -11,7 +12,7 @@ CREATE INDEX IF NOT EXISTS works_asjcs_work_id_idx ON works_asjcs(work_id);
 
 CREATE INDEX IF NOT EXISTS works_asjcs_asjc_id_idx ON works_asjcs(asjc_id);
 
-CREATE TABLE sh.work_subject_citations AS
+CREATE TABLE rolap.work_subject_citations AS
   SELECT
       citing_subjects.asjc_id AS citing_subject_id,
       cited_subjects.asjc_id AS cited_subject_id,

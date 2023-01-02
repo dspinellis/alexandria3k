@@ -1,8 +1,9 @@
+-- Generate a list of evolution in general field publications per year
 WITH numbers_1950 AS (
-  SELECT * FROM general_field_publications WHERE published_year = 1950
+  SELECT * FROM rolap.general_field_publications WHERE published_year = 1950
 ),
 numbers_2021 AS (
-  SELECT * FROM general_field_publications WHERE published_year = 2021
+  SELECT * FROM rolap.general_field_publications WHERE published_year = 2021
 ),
 total_1950 AS (
   SELECT Cast(Count(*) AS FLOAT) FROM works WHERE published_year = 1950
@@ -34,7 +35,7 @@ top_and_others AS (
       ELSE "Others"
     END name,
     number, published_year
-  FROM general_field_publications
+  FROM rolap.general_field_publications
   WHERE published_year between 1950 and 2021
 )
 

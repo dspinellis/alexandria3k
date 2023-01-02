@@ -1,5 +1,10 @@
 -- Affiliations associated with works on COVID research
 
+CREATE INDEX IF NOT EXISTS works_id_idx ON works(id);
+CREATE INDEX IF NOT EXISTS work_authors_rors_work_author_id_idx
+  ON work_authors_rors(work_author_id);
+CREATE INDEX IF NOT EXISTS work_authors_id_idx ON work_authors(id);
+
 -- Match works with identified authors' affiliations
 WITH work_rors AS (
   -- Works and participating RORs
