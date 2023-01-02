@@ -191,6 +191,10 @@ SELECT works.abstract is not null AS have_abstract, Count(*)
   FROM works GROUP BY have_abstract
 ```
 
+For quick experiments, e.g. for verifying the queries of a full run,
+consider sampling just three containers with
+`--sample 'random.random() < 0.0002'`.
+
 ### Database of COVID research
 The following command creates an SQLite database with all Crossref data
 regarding publications that contain "COVID" in their title or abstract.
