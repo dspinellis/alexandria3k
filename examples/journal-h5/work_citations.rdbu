@@ -1,0 +1,17 @@
+BEGIN SETUP
+work_references:
+doi
+d1
+d1
+d2
+null
+END
+
+INCLUDE CREATE work_citations.sql
+
+BEGIN RESULT
+work_citations:
+doi	citations_number
+d1	2
+d2	1
+END

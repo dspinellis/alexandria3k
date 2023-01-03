@@ -1,0 +1,39 @@
+BEGIN SETUP
+
+# ip1 is bound by publications (1)
+# ip2 is bound by citations (2)
+# ip3 is bound by both (2)
+
+rolap.work_citations:
+doi	citations_number
+d1.1	2
+d2.1	5
+d2.2	2
+d2.3	2
+d3.1	3
+d3.2	15
+d3.3	5
+
+rolap.works_issn:
+doi	issn
+d1.1	ip1
+d1.2	ip1
+d2.1	ip2
+d2.2	ip2
+d2.3	ip2
+d3.1	ie3
+d3.2	ie3
+d3.3	ie3
+d4	ip4
+
+END
+
+INCLUDE CREATE issn_h5.sql
+
+BEGIN RESULT
+issn_h5:
+issn	h5_index
+ip1	1
+ip2	2
+ie3	3
+END

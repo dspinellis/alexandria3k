@@ -1,0 +1,18 @@
+BEGIN SETUP
+works:
+doi	issn_print	issn_electronic
+d1	ip1		ie1
+d2	ip2		null
+d3	null		ie3
+d4	null		null
+END
+
+INCLUDE CREATE works_issn.sql
+
+BEGIN RESULT
+works_issn:
+doi	issn
+d1	ip1
+d2	ip2
+d3	ie3
+END
