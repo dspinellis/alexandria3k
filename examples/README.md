@@ -8,4 +8,5 @@ order.
 The following examples are complete:
 * [Calculate the 2021 journal impact factor](impact)
 * [Calculate the 2021 h-5 index of journals](journal-h5)
+* [Measures associated with COVID-19 research](covid)
 * [Obtain number of studies employing research synthesis methods published each year](research-synthesis)

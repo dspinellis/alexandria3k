@@ -1,0 +1,70 @@
+#
+# Alexandria3k Crossref bibliographic metadata processing
+# Copyright (C) 2022  Diomidis Spinellis
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# rdbunit test for affiliations of COVID publications
+#
+
+BEGIN SETUP
+work_authors_rors:
+work_author_id	ror_id
+10		1
+20		2
+21		2
+30		1
+30		2
+30		3
+31		3
+
+research_organizations:
+id	name
+1	O1
+2	O2
+3	O3
+
+work_authors:
+id	work_id
+10	100
+10	101
+10	102
+20	200
+21	200
+21	100
+30	300
+31	301
+40	400
+41	400
+
+author_affiliations:
+author_id	name
+10		O1
+20		O2
+30		O3
+40		O4
+41		O4
+
+END
+
+INCLUDE SELECT work-affiliations.sql
+
+BEGIN RESULT
+rank	number	name
+1	4	O1
+2	3	O2
+3	2	O3
+4	1	O4
+END
