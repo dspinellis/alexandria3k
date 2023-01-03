@@ -5,4 +5,3 @@ SELECT doi, Count(*)
   GROUP BY doi
   ORDER BY count(*) DESC
   LIMIT 10;
-

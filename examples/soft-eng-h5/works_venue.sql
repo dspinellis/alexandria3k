@@ -1,10 +1,10 @@
--- Calculate metrics of software engineering venues
+-- Associate DOIs with SE venues
 
-ATTACH 'se-5y.db' AS se_data;
+CREATE INDEX IF NOT EXISTS works_issn_print_idx ON works(issn_print);
+CREATE INDEX IF NOT EXISTS journal_names_issn_print_idx
+  ON journal_names(issn_print);
 
-DROP TABLE IF EXISTS works_venue;
-
-CREATE TABLE works_venue AS
+CREATE TABLE rolap.works_venue AS
   SELECT works.doi AS doi, works.id as work_id,
   -- Most proceedings are easily found at https://dl.acm.org/proceedings
   CASE
@@ -121,32 +121,3 @@ CREATE TABLE works_venue AS
   END venue
   FROM works
   LEFT JOIN journal_names ON works.issn_print = journal_names.issn_print;
-
-CREATE INDEX IF NOT EXISTS se_data.works_doi_idx ON works(doi);
-CREATE INDEX IF NOT EXISTS se_data.work_references_doi_idx ON work_references(doi);
-CREATE INDEX IF NOT EXISTS se_data.work_references_work_id_idx ON work_references(work_id);
-CREATE INDEX IF NOT EXISTS works_venue_work_id_idx ON works_venue(work_id);
-
-CREATE TABLE work_citations AS
-  SELECT doi, COUNT(*) AS citations_number
-  FROM se_data.work_references
-  GROUP BY doi;
-
-CREATE INDEX IF NOT EXISTS work_citations_doi_idx ON work_citations(doi);
-
-CREATE TABLE venue_h5 AS
-  WITH ranked_venue_citations AS (
-    SELECT venue, citations_number,
-      Row_number() OVER (
-        PARTITION BY venue ORDER BY citations_number DESC) AS row_rank
-    FROM work_citations
-    INNER JOIN works_venue ON works_venue.doi = work_citations.doi
-  ),
-  eligible_ranks AS (
-    SELECT venue, row_rank FROM ranked_venue_citations
-    WHERE row_rank <= citations_number
-  )
-  SELECT venue, Max(row_rank) AS h5_index FROM eligible_ranks
-  GROUP BY venue;
-
-SELECT * from venue_h5 ORDER BY h5_index DESC;
