@@ -1,0 +1,25 @@
+BEGIN SETUP
+works:
+id	doi
+1	d1
+2	d2
+3	d3
+
+work_authors:
+work_id	orcid
+1	o1.1
+1	o1.2
+2	o1.2
+2	null
+3	null
+END
+
+INCLUDE CREATE works_orcid.sql
+
+BEGIN RESULT
+works_orcid:
+doi	orcid
+d1	o1.1
+d1	o1.2
+d2	o1.2
+END
