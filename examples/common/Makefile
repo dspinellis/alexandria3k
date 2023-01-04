@@ -7,6 +7,8 @@ export RDBMS?=sqlite
 export ROLAPDB?=rolap
 
 CROSSREF_DIR?=../common/Crossref-April-2022
+ORCID_SUMMARIES?=../common/ORCID_2022_10_summaries.tar.gz
+
 V?=1
 TIME?=time
 export SQLITE_TMPDIR?=.
@@ -17,6 +19,9 @@ $(CROSSREF_DIR):
 	cd ../common && \
 	aria2c https://doi.org/10.13003/83b2gq && \
 	mv 'April 2022 Public Data File from Crossref' Crossref-April-2022
+
+$(ORCID_SUMMARIES):
+	curl -L https://orcid.figshare.com/ndownloader/files/37635374 >$@
 
 # TODO: Add rule in including Makefile to populate database with required data
 
