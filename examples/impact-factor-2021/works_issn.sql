@@ -1,6 +1,6 @@
 -- Create table linking citable works to single ISSN
 
-CREATE TABLE IF NOT EXISTS rolap.works_issn AS
+CREATE TABLE rolap.works_issn AS
   SELECT id, doi,
     Coalesce(issn_print, issn_electronic) AS issn, published_year
   FROM works

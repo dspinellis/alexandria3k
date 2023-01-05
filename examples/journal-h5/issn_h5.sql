@@ -4,7 +4,7 @@ CREATE INDEX IF NOT EXISTS rolap.works_issn_doi_idx ON works_issn(doi);
 CREATE INDEX IF NOT EXISTS rolap.works_issn_issn_idx ON works_issn(issn);
 CREATE INDEX IF NOT EXISTS rolap.work_citations_doi_idx ON work_citations(doi);
 
-CREATE TABLE IF NOT EXISTS rolap.issn_h5 AS
+CREATE TABLE rolap.issn_h5 AS
   WITH ranked_issn_citations AS (
     SELECT issn, citations_number,
       Row_number() OVER (

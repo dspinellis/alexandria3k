@@ -3,7 +3,7 @@ CREATE INDEX IF NOT EXISTS rolap.works_orcid_doi_idx ON works_orcid(doi);
 CREATE INDEX IF NOT EXISTS rolap.works_orcid_orcid_idx ON works_orcid(orcid);
 CREATE INDEX IF NOT EXISTS rolap.work_citations_doi_idx ON work_citations(doi);
 
-CREATE TABLE IF NOT EXISTS rolap.orcid_h5 AS
+CREATE TABLE rolap.orcid_h5 AS
   WITH ranked_orcid_citations AS (
     SELECT orcid, citations_number,
       Row_number() OVER (

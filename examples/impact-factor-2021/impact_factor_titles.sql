@@ -8,7 +8,7 @@
  * Review and Journal, New England Journal of Medicine
  * Use only one record, starting from Print and ending in Additional
  */
-CREATE TABLE IF NOT EXISTS rolap.impact_factor_titles AS
+CREATE TABLE rolap.impact_factor_titles AS
   WITH multiple_titles AS (
     SELECT impact_factor.issn, issn_type, title, impact_factor
       FROM rolap.impact_factor

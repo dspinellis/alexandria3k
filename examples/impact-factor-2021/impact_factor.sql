@@ -1,6 +1,6 @@
 -- Calculate the impact factor
 
-CREATE TABLE IF NOT EXISTS rolap.impact_factor AS
+CREATE TABLE rolap.impact_factor AS
   SELECT Replace(publications.issn, '-', '') AS issn,
     citations_number, publications_number,
     Cast(Coalesce(citations_number, 0) AS FLOAT) / publications_number
