@@ -1,0 +1,51 @@
+BEGIN SETUP
+rolap.orcid_h5:
+orcid	h5_index
+o77	77
+o50	50
+o12	12
+o2	2
+o27	27
+o55	55
+
+work_authors:
+orcid	work_id
+o77	771
+null	771
+o2	771
+o27	771
+o77	772
+o50	501
+o50	502
+o12	121
+o55	551
+o55	552
+
+works:
+id	doi
+771	d771
+772	d772
+501	d501
+502	d502
+121	d121
+552	d552
+
+rolap.work_citations:
+doi	citations_number
+d771	150
+d501	60
+d502	3
+d552	55
+
+END
+
+INCLUDE CREATE random_top_works.sql
+
+BEGIN RESULT
+rolap.random_top_works:
+id	citations_number
+771	150
+501	60
+552	55
+
+END

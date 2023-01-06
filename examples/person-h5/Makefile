@@ -16,6 +16,7 @@ populate: $(CROSSREF_DIR)
 	  --columns works.id \
 	    works.doi \
 	    work_references.doi \
+	    work_references.work_id \
 	    work_authors.work_id \
 	    work_authors.orcid \
 	  --row-selection 'works.published_year BETWEEN 2017 AND 2021'
