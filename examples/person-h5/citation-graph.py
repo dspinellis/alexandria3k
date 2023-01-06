@@ -25,7 +25,7 @@ def add_citation_edges(connection, graph, start, depth):
     cursor = connection.cursor()
 
     # Outgoing references
-    print('START', start, depth)
+    print('START', start, depth, flush=True)
     cursor.execute("""SELECT id FROM work_references
         INNER JOIN works ON work_references.doi = works.doi
         WHERE work_references.work_id = ?""", (start,))
@@ -73,5 +73,5 @@ graph_properties(rolap_connection, graph_connection,
                  "reports/graph-top.txt")
 
 graph_properties(rolap_connection, graph_connection,
-                 "SELECT other_work_id FROM random_other_works ",
+                 "SELECT id FROM random_other_works ",
                  "reports/graph-other.txt")
