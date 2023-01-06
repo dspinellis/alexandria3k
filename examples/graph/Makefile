@@ -7,7 +7,7 @@
 
 export MAINDB?=graph
 export DEPENDENCIES=populate asjcs link-works-asjcs rors link-aa-base-ror \
-  reports/crossref-metrics.txt
+  reports/work-metrics.txt
 
 include ../common/Makefile
 
@@ -37,7 +37,7 @@ populate: $(CROSSREF_DIR)
 	  work_authors.orcid
 	touch $@
 
-reports/crossref-metrics.txt: $(CROSSREF_DIR)
+reports/work-metrics.txt: $(CROSSREF_DIR)
 	mkdir -p reports
 	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
-	  --query-file crossref-metrics.sql >$@
+	  --query-file work-metrics.sql >$@

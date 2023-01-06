@@ -1,4 +1,4 @@
--- Obtain metrics not available from the graph
+-- Obtain work-record metrics not available from the graph
 WITH counts AS (
   -- Get all measures in a single pass
   SELECT type, abstract is not null AS have_abstract,
