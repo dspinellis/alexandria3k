@@ -2,11 +2,11 @@ BEGIN SETUP
 rolap.orcid_h5:
 orcid	h5_index
 o77	77
-o50	50
+o50	51
 o12	12
 o2	2
-o27	27
-o55	55
+o27	52
+o55	85
 
 work_authors:
 orcid	work_id
@@ -35,7 +35,7 @@ doi	citations_number
 d771	150
 d501	60
 d502	3
-d552	55
+d552	86
 
 END
 
@@ -46,6 +46,6 @@ rolap.random_top_works:
 id	citations_number
 771	150
 501	60
-552	55
+552	86
 
 END

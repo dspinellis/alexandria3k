@@ -2,7 +2,7 @@ CREATE INDEX IF NOT EXISTS work_authors_orcid_idx ON work_authors(orcid);
 
 CREATE TABLE rolap.random_top_works AS
   WITH top_orcids AS (
-    SELECT orcid, h5_index FROM rolap.orcid_h5 WHERE h5_index > 25
+    SELECT orcid, h5_index FROM rolap.orcid_h5 WHERE h5_index > 50
   ),
   top_author_works AS (
     SELECT DISTINCT works.doi, h5_index FROM top_orcids
