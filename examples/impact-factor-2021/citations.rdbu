@@ -1,0 +1,29 @@
+BEGIN SETUP
+
+# Citations given in 2021 to publications in 2020 and 2019
+rolap.works_issn:
+id	doi	page	issn	published_year
+1	d1	12-15	i1	2020
+2	d2	12-15	i2	2019
+3	d3	12-15	i3	2021
+4	d4	12-15	i3	2021
+5	d5	12-15	i3	2021
+6	d6	12-15	i3	2019
+
+rolap.work_references:
+work_id	doi
+3	d1
+4	d1
+6	d1
+4	d2
+
+END
+
+INCLUDE CREATE citations.sql
+
+BEGIN RESULT
+rolap.citations:
+issn	citations_number
+i1	2
+i2	1
+END

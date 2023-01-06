@@ -12,11 +12,10 @@ CREATE INDEX IF NOT EXISTS work_references_doi_idx ON work_references(doi);
 CREATE TABLE rolap.citations AS
   SELECT cited_work.issn, COUNT(*) AS citations_number
   FROM work_references
-  INNER JOIN rolap.works_issn AS published_work
-    ON work_references.work_id = published_work.id
+  INNER JOIN rolap.works_issn AS citing_work
+    ON work_references.work_id = citing_work.id
   INNER JOIN rolap.works_issn AS cited_work
     ON work_references.doi = cited_work.doi
-  WHERE published_work.published_year = 2021
+  WHERE citing_work.published_year = 2021
     AND cited_work.published_year BETWEEN 2019 AND 2020
   GROUP BY cited_work.issn;
-

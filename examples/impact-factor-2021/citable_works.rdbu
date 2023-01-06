@@ -1,0 +1,18 @@
+BEGIN SETUP
+rolap.works_issn:
+id	doi	page	issn	published_year
+1	d1	null	ip1	2020
+2	d2	12-13	ie2	2019
+3	d3	12-14	ip3	2019
+4	d3	k156	ip4	2019
+END
+
+INCLUDE CREATE citable_works.sql
+
+BEGIN RESULT
+citable_works:
+id	doi	page	issn	published_year
+1	d1	null	ip1	2020
+3	d3	12-14	ip3	2019
+4	d3	k156	ip4	2019
+END

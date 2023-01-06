@@ -1,0 +1,36 @@
+BEGIN SETUP
+
+rolap.impact_factor:
+issn	impact_factor
+i1	1
+i2	2
+i3	3
+i4e	4
+i5a1	5
+
+journals_issns:
+journal_id	issn	issn_type
+1		i1	P
+1		i1.1	E
+2		i2	P
+3		i1	A
+3		i3	P
+4		i4e	E
+4		i4p	P
+5		i5a1	A
+5		i5a2	A
+END
+
+INCLUDE SELECT impact-factor-all.sql
+
+BEGIN RESULT
+issn	impact_factor
+i1	1
+i1.1	1
+i2	2
+i3	3
+i4e	4
+i4p	4
+i5a1	5
+i5a2	5
+END
