@@ -8,9 +8,6 @@ This index is a journal productivity measure based on article citations,
 indicating the number of articles _h_ published over the period
 that have received at least _h_ citations over the same period.
 
-Running the `journal-h5.sh` shell script will produce the following table
-of the top-20 journals.
-
 |title|h5_index|
 |-----|--------|
 |Nature|333|
