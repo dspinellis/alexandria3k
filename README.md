@@ -128,6 +128,10 @@ This however means that aggregation operations will not work as expected,
 because they will be run multiple times (once for every partition).
 
 ## Command line execution
+You can find many example of studies conducted with command-line
+invocations in the [examples](examples) directory.
+Consider using the [hello world](examples/hello-world) example
+as a starting point.
 
 ### Obtain list of command-line options
 ```sh
