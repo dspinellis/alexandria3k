@@ -35,3 +35,4 @@ The following examples are available.
 * [Calculate the h5-index of software engineering research venues](soft-eng-h5)
 * [Calculate h5-index of persons and study their citation graph](person-h5)
 * [Hello world minimal example](hello-world)
+* [Fully-indexed Crossref database sample](sample)
