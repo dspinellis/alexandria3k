@@ -1,7 +1,7 @@
 # Journal h5-index
 
-The files here calculate the five-year
-[h-index](https://en.wikipedia.org/wiki/H-index)
+Calculate the five-year
+[h5-index](https://en.wikipedia.org/wiki/H-index)
 of journals based on the number of articles published and cited over the
 period 2017–2021.
 This index is a journal productivity measure based on article citations,
