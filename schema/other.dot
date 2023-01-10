@@ -1,0 +1,64 @@
+	// Alexandria3k tables
+	node [fillcolor="#d3d3d3"];
+	"Alexandria3k tables" [shape=box, margin="0.11,0.055"];
+	asjcs;
+	works_asjcs;
+	asjc_general_fields;
+	asjc_subject_areas;
+	work_authors_rors;
+
+	// Shape tables not comming from schema
+	node [shape=box, margin="0.11,0.055"];
+
+	// Crossref
+	node [fillcolor="#ffc62c"];
+	"Main Crossref tables" [shape=box, margin="0.11,0.055"];
+	works;
+	work_authors;
+	work_subjects;
+	work_funders;
+
+	// ORCID
+	node [fillcolor="#a6ce39"];
+	"ORCID tables" [shape=box, margin="0.11,0.055"];
+	persons;
+	person_works;
+
+	// ROR
+	node [fillcolor="#53baa1"];
+	"ROR tables" [shape=box, margin="0.11,0.055"];
+	research_organizations;
+	ror_funder_ids;
+
+	// Shape schema tables
+	node [shape=plaintext,  margin=0];
+
+	edge [taillabel="1…N", headlabel="1"];
+	asjcs -> asjc_general_fields;
+	asjcs -> asjc_subject_areas;
+
+
+	edge  [headlabel="0…1", taillabel="1"];
+	node [fillcolor="#fa9a87"];
+	"DOAJ table" [shape=box, margin="0.11,0.055"];
+	open_access_journals;
+
+	node [fillcolor="#3db1c8"];
+	"Additional Crossref tables" [shape=box, margin="0.11,0.055"];
+	works -> open_access_journals;
+	work_funders -> funder_names;
+	work_funders -> ror_funder_ids;
+	work_authors -> persons;
+	journal_names -> journals_issns  [headlabel="1…N", taillabel="1..N"];
+	works -> journals_issns;
+
+	// Relationships between databases
+	work_authors_rors -> work_authors [taillabel="0…N" headlabel="1"];
+	research_organizations -> work_authors_rors [taillabel="1" headlabel="0…N"];
+	works -> person_works  [headlabel="0…1", taillabel="0..1"];
+	works -> works_asjcs [taillabel="1" headlabel="0…N"];
+	works_asjcs -> asjcs [taillabel="0…N" headlabel="1"];
+	work_subjects -> asjcs [headlabel="1", taillabel="1"];
+
+	edge [style="invis"];
+	{ rank = source; "Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ROR tables" -> "ORCID tables" -> "Alexandria3k tables"; }

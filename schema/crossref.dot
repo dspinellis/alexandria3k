@@ -1,0 +1,14 @@
+	node [fillcolor="#ffc62c"];
+	works;
+	work_authors;
+	works -> work_authors [headlabel="1…N", taillabel="1"];
+	work_authors  -> author_affiliations [headlabel="1…N", taillabel="1"];
+
+	edge  [headlabel="0…N", taillabel="1"];
+	works -> work_references;
+	works -> work_updates;
+	works -> work_subjects;
+	works -> work_funders;
+	works -> work_licenses;
+	works -> work_links;
+	work_funders -> funder_awards;

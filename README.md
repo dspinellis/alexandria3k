@@ -116,10 +116,12 @@ SQL queries often run in seconds.
 
 ## Relational schema
 The complete schema of a fully-populated database appears below.
-(Follow the linked image to the "Raw" file to see it in full size.)
+Through [this link](schema/README.md)
+you can see the schemata of individual data sets.
+You can also follow the linked image to the "Raw" file to see it in full size.
 Direct SQL queries can also be performed on the Crossref data set.
 
-![Database schema](./schema.svg)
+![Database schema](./schema/all.svg)
 
 Queries involving multiple scans of the tables (e.g. relational joins)
 should be performed by directing _alexandria3k_ to perform them separately
@@ -332,8 +334,8 @@ SELECT author_affiliations.name FROM
 ```
 usage: alexandria3k [-h] [-c COLUMNS [COLUMNS ...]] [-D DEBUG [DEBUG ...]]
                     [-d DATA_SOURCE [DATA_SOURCE ...]] [-E OUTPUT_ENCODING]
-                    [-F FIELD_SEPARATOR] [-H] [-i [INDEX ...]] [-L]
-                    [-l LINKED_RECORDS] [-n] [-o OUTPUT] [-P]
+                    [-F FIELD_SEPARATOR] [-H] [-i [INDEX ...]]
+                    [-L LIST_SCHEMA] [-l LINKED_RECORDS] [-n] [-o OUTPUT] [-P]
                     [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
                     [-R ROW_SELECTION_FILE] [-r ROW_SELECTION] [-s SAMPLE]
                     [-x EXECUTE]
@@ -375,7 +377,10 @@ optional arguments:
   -H, --header          Include a header in the query output
   -i [INDEX ...], --index [INDEX ...]
                         SQL expressions that select the populated rows
-  -L, --list-schema     List the schema of the scanned database
+  -L LIST_SCHEMA, --list-schema LIST_SCHEMA
+                        List the schema of the specified database. The
+                        following names are supported: Crossref, ORCID, ROR,
+                        other, all
   -l LINKED_RECORDS, --linked-records LINKED_RECORDS
                         Only add ORCID records that link to existing <persons>
                         or <works>

@@ -1,0 +1,8 @@
+// Complete schema created by running alexandria3k.py -L all | schema2dot.sed
+// SVG file can be created by piping the output to:
+// dot -Tsvg  -o ../../schema.svg
+digraph D {
+	ranksep=1;
+	node [shape=plaintext, style="filled", fontname="Arial", margin=0];
+	edge [arrowhead=none,fontname="Arial"];
+	rankdir = "TB";

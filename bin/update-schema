@@ -1,4 +1,20 @@
 #!/bin/sh
-bin/alexandria3k --list-schema all |
-bin/schema2dot.sed |
-dot -Tsvg  -o schema.svg
+#
+# Create individual and combined schema diagrams
+#
+
+for format in svg pdf ; do
+  # Create individual schema diagrams
+  for schema in crossref orcid ror other ; do
+    (
+      cat schema/schema-head.dot schema/$schema.dot
+      bin/alexandria3k --list-schema $schema | bin/schema2dot.sed
+    ) | dot -T$format  -o schema/$schema.$format
+  done
+
+  # Create combined schema diagram
+  (
+    ( cd schema ; cat schema-head.dot crossref.dot orcid.dot ror.dot other.dot )
+    bin/alexandria3k --list-schema all | bin/schema2dot.sed
+  ) | dot -T$format  -o schema/all.$format
+done

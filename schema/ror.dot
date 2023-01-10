@@ -1,0 +1,13 @@
+	node [fillcolor="#53baa1"];
+	research_organizations;
+
+	research_organizations -> ror_types [headlabel="1…N", taillabel="1"];
+	edge  [headlabel="0…N", taillabel="1"];
+	research_organizations -> ror_links;
+	research_organizations -> ror_aliases;
+	research_organizations -> ror_acronyms;
+	research_organizations -> ror_relationships;
+	research_organizations -> ror_addresses;
+	research_organizations -> ror_funder_ids;
+	research_organizations -> ror_wikidata_ids;
+	research_organizations -> ror_isnis;

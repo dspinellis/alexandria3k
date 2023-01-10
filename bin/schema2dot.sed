@@ -4,13 +4,6 @@
 # on the output of the schema listing.
 #
 
-
-1 {
-  r src/alexandria3k/schema-head.dot
-  # Keep first line in pattern space to ensure schema-head.dot appears first
-  N
-}
-
 /CREATE TABLE/ {
   # Create table and line
   s|CREATE TABLE \([^\n]*\)(|\1 [label=<<TABLE BORDER="1" CELLSPACING="0" CELLBORDER="0">\n<TR><TD><B>\1</B></TD></TR><HR/>\n<TR ALIGN="LEFT"><TD  BALIGN="LEFT">|
@@ -48,4 +41,3 @@ $ {
   a}
   p
 }
-
