@@ -92,13 +92,29 @@ def populated_reports(pdb):
         print(rec)
 
 
-def schema_list():
-    """Print the full database schema"""
+def schema_list(parser, arg):
+    """Print the specified database schema"""
 
-    for table in (
-        crossref.tables + csv_sources.tables + orcid.tables + ror.tables
-    ):
-        print(table.table_schema())
+    def tables_list(tables):
+        """List the schema of the specified tables"""
+        for table in tables:
+            print(table.table_schema())
+
+    name = arg.lower()
+    if name == "all":
+        tables_list(
+            crossref.tables + csv_sources.tables + orcid.tables + ror.tables
+        )
+    elif name == "crossref":
+        tables_list(crossref.tables)
+    elif name == "orcid":
+        tables_list(orcid.tables)
+    elif name == "ror":
+        tables_list(ror.tables)
+    elif name == "other":
+        tables_list(csv_sources.tables)
+    else:
+        parser.error(f"Unknown source name {arg}")
 
 
 def database_dump(database):
@@ -222,8 +238,9 @@ def parse_cli_arguments(parser, args=None):
     parser.add_argument(
         "-L",
         "--list-schema",
-        action="store_true",
-        help="List the schema of the scanned database",
+        type=str,
+        help="""List the schema of the specified database.  The following
+    names are supported: Crossref, ORCID, ROR, other, all""",
     )
     parser.add_argument(
         "-l",
@@ -379,7 +396,7 @@ def main():
     perf.log("Start")
 
     if args.list_schema:
-        schema_list()
+        schema_list(parser, args.list_schema)
         sys.exit(0)
 
     crossref_instance = None

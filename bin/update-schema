@@ -1,4 +1,4 @@
 #!/bin/sh
-bin/alexandria3k -L |
+bin/alexandria3k --list-schema all |
 bin/schema2dot.sed |
 dot -Tsvg  -o schema.svg
