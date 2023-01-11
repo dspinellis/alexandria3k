@@ -6,6 +6,7 @@ CREATE INDEX IF NOT EXISTS works_id_idx ON works(id);
 WITH number_of_authors AS (
   SELECT Count(*) AS number FROM works
     LEFT JOIN work_authors ON works.id = work_authors.work_id
+    WHERE published_year >= 2020
     GROUP BY works.id
 ),
 quartiles AS (
