@@ -6,7 +6,7 @@ ALL=reports/research-synthesis.txt reports/total.txt reports/first-year.txt
 
 include ../common/Makefile
 
-reports/research-synthesis.txt: $(CROSSREF_DIR)
+reports/research-synthesis.txt: $(CROSSREF_DIR) research-synthesis.sql
 	mkdir -p reports
 	alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
 	  --query-file research-synthesis.sql >$@
