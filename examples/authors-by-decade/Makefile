@@ -1,5 +1,6 @@
 #
 # Minimal application of Alexandria3k
+# Report the average number of work authors per decade
 #
 
 export MAINDB?=hello
@@ -13,7 +14,8 @@ populate: $(CROSSREF_DIR)
 	 --populate "$(MAINDB).db" \
 	  --debug progress \
 	  --sample 'random.random() < 0.0002' \
-	  --columns works.doi \
-	    works.title \
-	    works.abstract
+	  --columns works.id \
+	    works.published_year \
+	    work_authors.work_id \
+	  --row-selection 'works.published_year >= 1940'
 	touch $@

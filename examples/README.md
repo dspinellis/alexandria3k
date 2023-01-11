@@ -27,6 +27,7 @@ of all other studies.
 
 The following examples are available.
 
+* ["Hello world" example: number of authors by decade](authors-by-decade)
 * [Tally number of research synthesis studies](research-synthesis)
 * [Generate and study the entities' graph structure](graph)
 * [Obtain measures associated with COVID-19 research](covid)
@@ -34,5 +35,4 @@ The following examples are available.
 * [Calculate the h5-index of journals](journal-h5)
 * [Calculate the h5-index of software engineering research venues](soft-eng-h5)
 * [Calculate h5-index of persons and study their citation graph](person-h5)
-* [Hello world minimal example](hello-world)
 * [Fully-indexed Crossref database sample](sample)
