@@ -1,0 +1,38 @@
+BEGIN SETUP
+rolap.year_range:
+first_year	last_year
+2001		2002
+
+works:
+id	published_year
+10	2001
+11	2001
+12	2001
+20	2002
+21	2002
+22	2002
+
+work_authors:
+orcid	work_id	
+o1	10
+o1	11
+o1	20
+o1	21
+o1	22
+o2	12
+o2	20
+o3	22
+
+END
+
+INCLUDE CREATE author_year_works.sql
+
+BEGIN RESULT
+rolap.author_year_works:
+orcid	year	articles
+o1	2001	2
+o1	2002	3
+o2	2001	1
+o2	2002	1
+o3	2002	1
+END

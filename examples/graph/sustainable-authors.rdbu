@@ -1,0 +1,42 @@
+BEGIN SETUP
+rolap.author_year_works:
+orcid	year	articles
+o1	1999	3
+o1	2001	3
+o1	2002	2
+o1	2004	1
+o1	2005	1
+o1	2006	1
+o1	2007	1
+o1	2008	1
+o1	2009	1
+o1	2010	1
+o1	2012	1
+o1	2013	1
+o1	2014	1
+o1	2015	1
+o2	2001	1
+o2	2003	1
+o3	2000	1
+o3	2001	1
+o3	2003	1
+o3	2004	1
+o3	2005	1
+o3	2006	1
+o3	2007	1
+o3	2008	1
+o3	2009	1
+o3	2010	1
+o3	2011	1
+o3	2012	1
+o3	2013	1
+o3	2020	1
+o3	2021	1
+END
+
+INCLUDE SELECT sustainable-authors.sql
+
+BEGIN RESULT
+orcid	streak	starting_year
+o3	11	2003
+END
