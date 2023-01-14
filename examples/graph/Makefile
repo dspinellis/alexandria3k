@@ -41,3 +41,8 @@ reports/work-metrics.txt: $(CROSSREF_DIR)
 	mkdir -p reports
 	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
 	  --query-file work-metrics.sql >$@
+
+reports/yearly-journals.txt: $(CROSSREF_DIR)
+	mkdir -p reports
+	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
+	  --query-file yearly-journals.sql >$@
