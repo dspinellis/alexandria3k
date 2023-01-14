@@ -1,0 +1,38 @@
+BEGIN SETUP
+works:
+id	doi	published_year
+10	d1.0	1951
+11	d1.1	1951
+12	d1.2	1951
+20	d2	1952
+30	d3.0	1953
+31	d3.1	1953
+40	d4	1954
+50	d5	1955
+60	d6	1956
+
+work_references:
+work_id	doi
+30	d1.0
+30	d1.1
+30	d1.2
+31	d1.0
+40	d1.0
+40	d1.1
+40	d3.0
+
+rolap.yearly_works_all:
+published_year	n
+1930		3
+1953		5
+1954		4
+
+END
+
+INCLUDE SELECT yearly-citations-per-paper.sql
+
+BEGIN RESULT
+year	n
+1953	0.5
+1954	0.25
+END
