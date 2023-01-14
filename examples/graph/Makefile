@@ -7,7 +7,7 @@
 
 export MAINDB?=graph
 export DEPENDENCIES=populate asjcs link-works-asjcs rors link-aa-base-ror \
-  reports/work-metrics.txt
+  reports/work-metrics.txt reports/yearly-journals.txt
 
 include ../common/Makefile
 
