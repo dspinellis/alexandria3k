@@ -1,0 +1,29 @@
+BEGIN SETUP
+
+rolap.works:
+id	doi	published_year
+1	d1	2020
+2	d2	2019
+3	d3	2021
+4	d4	2021
+5	d5	2021
+6	d6	2019
+
+rolap.work_references:
+work_id	doi
+1	d2
+3	d1
+4	d1
+6	d1
+4	d2
+
+END
+
+INCLUDE CREATE two_year_citations.sql
+
+BEGIN RESULT
+rolap.two_year_citations:
+year	citations_number
+2020	1
+2021	3
+END
