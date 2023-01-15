@@ -5,7 +5,8 @@
 
 CREATE INDEX IF NOT EXISTS works_id_idx ON works(id);
 
-CREATE INDEX IF NOT EXISTS work_references_doi_idx ON work_references(doi);
+CREATE INDEX IF NOT EXISTS work_references_work_id_idx
+  ON work_references(work_id);
 
 WITH
   total_works_by_year AS (
