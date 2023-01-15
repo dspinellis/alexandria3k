@@ -37,12 +37,12 @@ populate: $(CROSSREF_DIR)
 	  work_authors.orcid
 	touch $@
 
-reports/work-metrics.txt: $(CROSSREF_DIR)
+reports/work-metrics.txt: work-metrics.sql $(CROSSREF_DIR)
 	mkdir -p reports
 	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
 	  --query-file work-metrics.sql >$@
 
-reports/yearly-journals.txt: $(CROSSREF_DIR)
+reports/yearly-journals.txt: yearly-journals.sql $(CROSSREF_DIR)
 	mkdir -p reports
 	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
 	  --query-file yearly-journals.sql >$@
