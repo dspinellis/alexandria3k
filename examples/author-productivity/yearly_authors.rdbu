@@ -1,0 +1,26 @@
+BEGIN SETUP
+works:
+id	published_year
+0	1930
+1	1951
+2	1951
+3	2020
+
+work_authors:
+work_id	given	family
+0	A	Einstein
+1	null	Tang
+1	John	Smith
+2	J.	Smith
+2	K.	Zhu	
+3	D	Spinellis
+END
+
+INCLUDE CREATE yearly_authors.sql
+
+BEGIN RESULT
+yearly_authors:
+year    n
+1951    3
+2020    1
+END
