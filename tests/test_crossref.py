@@ -273,7 +273,7 @@ class TestCrossrefPopulateDetailCondition(TestCrossrefPopulate):
         self.assertEqual(FileCache.file_reads, 8)
 
 
-class TestCrossrefPopulateRootTable(TestCrossrefPopulate):
+class TestCrossrefPopulateMasterColumnNoCondition(TestCrossrefPopulate):
     """Verify column specification and population of root table"""
 
     @classmethod
@@ -304,7 +304,7 @@ class TestCrossrefPopulateRootTable(TestCrossrefPopulate):
         with self.assertRaises(sqlite3.OperationalError):
             self.cond_field("work_authors", "family", "true")
 
-class TestCrossrefPopulateConditionsRootTable(TestCrossrefPopulate):
+class TestCrossrefPopulateMasterColumnCondition(TestCrossrefPopulate):
     """Verify column specification and population of single table"""
 
     @classmethod
@@ -340,7 +340,7 @@ class TestCrossrefPopulateConditionsRootTable(TestCrossrefPopulate):
             self.cond_field("work_authors", "family", "true")
 
 
-class TestCrossrefPopulateConditionColumns(TestCrossrefPopulate):
+class TestCrossrefPopulateDetailConditionColumns(TestCrossrefPopulate):
     """Verify column specification and population of sibling tables"""
 
     @classmethod
