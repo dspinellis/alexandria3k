@@ -111,11 +111,15 @@ def schema_list(parser, arg):
         tables_list(orcid.tables)
     elif name == "ror":
         # Exclude table we generate
-        ror_tables = [x for x in ror.tables if x.get_name() != "work_authors_rors"]
+        ror_tables = [
+            x for x in ror.tables if x.get_name() != "work_authors_rors"
+        ]
         tables_list(ror_tables)
     elif name == "other":
         # Include table we generate
-        work_authors_rors = [x for x in ror.tables if x.get_name() == "work_authors_rors"]
+        work_authors_rors = [
+            x for x in ror.tables if x.get_name() == "work_authors_rors"
+        ]
         tables_list(csv_sources.tables + work_authors_rors)
     else:
         parser.error(f"Unknown source name {arg}")
