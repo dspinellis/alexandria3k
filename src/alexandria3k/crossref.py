@@ -1120,6 +1120,27 @@ class Crossref:
                     )
             return result
 
+        def populate_only_root_table(table, partition_index, condition):
+            """Populate the root table, when no other tables will be needed"""
+
+            columns = ", ".join(
+                [f"{table}.{col}" for col in self.population_columns[table]]
+            )
+            if not condition:
+                condition = "true"
+            # No need for temp table matching at the root
+            self.vdb.execute(
+                log_sql(
+                    f"""
+                INSERT INTO populated.{table}
+                SELECT {columns} FROM {table}
+                WHERE {table}.container_id = {partition_index}
+                  AND {condition}
+            """
+                )
+            )
+            perf.log(f"Populate {table}")
+
         def populate_table(table, partition_index, condition):
             """Populate the specified table"""
 
@@ -1194,13 +1215,9 @@ class Crossref:
                 )
             perf.log("Table creation")
 
-        def create_matched_tables():
+        def create_matched_tables(matched_tables):
             """Create copies of the virtual tables for fast access"""
-            query_table_names = tables_transitive_closure(
-                self.query_columns.keys(), "works"
-            )
-
-            for table in query_and_population_tables():
+            for table in matched_tables:
                 columns = self.query_and_population_columns.get(table)
                 if columns:
                     columns = set.union(columns, {"rowid"})
@@ -1225,6 +1242,9 @@ class Crossref:
             # Create a table containing the work ids for all works
             # matching the query, which is executed in a context
             # containing all required tables.
+            query_table_names = tables_transitive_closure(
+                self.query_columns.keys(), "works"
+            )
             create = (
                 """CREATE TEMP TABLE temp_matched AS
                         SELECT works.id, works.rowid
@@ -1247,18 +1267,23 @@ class Crossref:
         # This improves the locality of reference and through the constraint
         # indexing and the file cache avoids opening, reading, decompressing,
         # and parsing each file multiple times.
+        matched_tables = query_and_population_tables()
         for i in self.data_source.get_file_id_iterator():
             debug.log(
                 "progress",
                 f"Container {i} {self.data_source.get_file_name_by_id(i)}",
             )
 
-            if condition:
-                create_matched_tables()
+            if len(matched_tables) == 1:
+                (table,) = self.population_columns
+                populate_only_root_table(table, i, condition)
+            else:
+                if condition:
+                    create_matched_tables(matched_tables)
 
-            for table in self.population_columns:
-                populate_table(table, i, condition)
-            self.index_manager.drop_indexes()
+                for table in self.population_columns:
+                    populate_table(table, i, condition)
+                self.index_manager.drop_indexes()
         perf.log("Table population")
 
         self.vdb.execute(log_sql("DETACH populated"))

@@ -273,6 +273,73 @@ class TestCrossrefPopulateDetailCondition(TestCrossrefPopulate):
         self.assertEqual(FileCache.file_reads, 8)
 
 
+class TestCrossrefPopulateRootTable(TestCrossrefPopulate):
+    """Verify column specification and population of root table"""
+
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+        FileCache.file_reads = 0
+
+        # debug.set_flags(["log-sql"])
+        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref.populate( DATABASE_PATH, ["works.doi"])
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_counts(self):
+        self.assertEqual(self.record_count("works"), 12)
+        self.assertEqual(FileCache.file_reads, 8)
+
+    def test_no_extra_fields(self):
+        with self.assertRaises(sqlite3.OperationalError):
+            self.cond_field("works", "title", "true")
+
+    def test_no_extra_tables(self):
+        with self.assertRaises(sqlite3.OperationalError):
+            self.cond_field("work_authors", "family", "true")
+
+class TestCrossrefPopulateConditionsRootTable(TestCrossrefPopulate):
+    """Verify column specification and population of single table"""
+
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+        FileCache.file_reads = 0
+
+        # debug.set_flags(["log-sql"])
+        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref.populate(
+            DATABASE_PATH,
+            ["works.doi"],
+            "works.published_year BETWEEN 1970 AND 2020",
+        )
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_counts(self):
+        self.assertEqual(self.record_count("works"), 4)
+        self.assertEqual(FileCache.file_reads, 8)
+
+    def test_no_extra_fields(self):
+        with self.assertRaises(sqlite3.OperationalError):
+            self.cond_field("works", "title", "true")
+
+    def test_no_extra_tables(self):
+        with self.assertRaises(sqlite3.OperationalError):
+            self.cond_field("work_authors", "family", "true")
+
+
 class TestCrossrefPopulateConditionColumns(TestCrossrefPopulate):
     """Verify column specification and population of sibling tables"""
 
@@ -281,6 +348,7 @@ class TestCrossrefPopulateConditionColumns(TestCrossrefPopulate):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
 
+        # debug.set_flags(["log-sql"])
         cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(
             DATABASE_PATH,
