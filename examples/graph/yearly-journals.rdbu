@@ -1,0 +1,22 @@
+BEGIN SETUP
+works:
+published_year	issn_print	issn_electronic
+1951		10		null
+1952		null		20
+1952		21		null
+1953		30		null
+1953		31		null
+1953		31		null
+1953		31		null
+1953		32		null
+
+END
+
+INCLUDE SELECT yearly-journals.sql
+
+BEGIN RESULT
+year	n
+1951	1
+1952	2
+1953	3
+END
