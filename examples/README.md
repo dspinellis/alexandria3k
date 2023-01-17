@@ -37,4 +37,5 @@ The following examples are available.
 * [Calculate the h5-index of software engineering research venues](soft-eng-h5)
 * [Calculate h5-index of persons and study their citation graph](person-h5)
 * [Calculate relative yearly author productivity](author-productivity)
+* [Calculate the average size of an article's pages each year](yearly-numpages)
 * [Fully-indexed Crossref database sample](sample)
