@@ -1,0 +1,36 @@
+BEGIN SETUP
+rolap.yearly_works_all:
+published_year	n
+1891		1
+1891		2
+1893		3
+1896		6
+1951		4
+1952		16
+
+works:
+id	doi	published_year
+91	d91	1891
+92	d92	1891
+93	d93	1893
+10	d10	1951
+20	d20	1952
+21	d21	1952
+
+work_references:
+work_id	doi
+10	d91
+20	d91
+20	d92
+21	d92
+21	d93
+21	d20
+END
+
+INCLUDE SELECT yearly-proportion-of-cited-papers.sql
+
+BEGIN RESULT
+year	n
+1951	0.0625
+1952	0.125
+END
