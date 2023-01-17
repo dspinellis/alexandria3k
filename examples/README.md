@@ -38,4 +38,5 @@ The following examples are available.
 * [Calculate h5-index of persons and study their citation graph](person-h5)
 * [Calculate relative yearly author productivity](author-productivity)
 * [Calculate the average size of an article's pages each year](yearly-numpages)
+* [Calculate the works' CD-5 index using the Python API or a pre-populated database](cdindex)
 * [Fully-indexed Crossref database sample](sample)
