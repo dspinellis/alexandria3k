@@ -1,0 +1,39 @@
+BEGIN SETUP
+rolap.yearly_works_all:
+published_year	n
+1941	1
+1942	2
+1943	3
+1944	4
+1945	5
+1946	6
+1947	7
+1948	8
+1949	9
+1950	10
+1951	11
+1952	12
+1953	13
+1954	14
+END
+
+INCLUDE CREATE ten_year_publications.sql
+
+BEGIN RESULT
+rolap.ten_year_publications:
+year	n
+1941	0
+1942	1
+1943	3
+1944	6
+1945	10
+1946	15
+1947	21
+1948	28
+1949	36
+1950	45
+1951	55
+1952	66
+1953	77
+1954	88
+END

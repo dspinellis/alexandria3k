@@ -9,7 +9,7 @@ CREATE INDEX IF NOT EXISTS work_references_doi_idx ON work_references(doi);
 CREATE INDEX IF NOT EXISTS work_references_work_id_idx
   ON work_references(work_id);
 
-CREATE TABLE rolap.two_year_citations AS
+CREATE TABLE rolap.twenty_year_citations AS
   SELECT citing_work.published_year AS year, COUNT(*) AS citations_number
   FROM work_references
   INNER JOIN works AS citing_work
@@ -17,6 +17,6 @@ CREATE TABLE rolap.two_year_citations AS
   INNER JOIN works AS cited_work
     ON work_references.doi = cited_work.doi
   WHERE citing_work.published_year BETWEEN 1950 and 2021
-    AND cited_work.published_year BETWEEN citing_work.published_year - 2
+    AND cited_work.published_year BETWEEN citing_work.published_year - 20
       AND citing_work.published_year - 1
   GROUP BY year;
