@@ -10,23 +10,22 @@ WITH
     FROM works
     INNER JOIN work_references ON works.id = work_references.work_id
     WHERE published_year BETWEEN 1950 and 2021
-      AND work_id is not null
   ),
   papers_with_references AS (
     SELECT DISTINCT id, published_year
     FROM works_references
   ),
   yearly_papers_with_references AS (
-    SELECT published_year, Count(*) AS n 
+    SELECT published_year, Count(*) AS n
     FROM papers_with_references
     GROUP BY published_year
   ),
   yearly_references AS (
-    SELECT published_year, Count(*) AS n 
+    SELECT published_year, Count(*) AS n
     FROM works_references
     GROUP BY published_year
   )
-SELECT yearly_papers_with_references.published_year, 
+SELECT yearly_papers_with_references.published_year,
   Cast(yearly_references.n AS float) / yearly_papers_with_references.n
 FROM yearly_references
 INNER JOIN yearly_papers_with_references

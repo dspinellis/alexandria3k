@@ -1,0 +1,32 @@
+BEGIN SETUP
+works:
+id	published_year
+10	1951
+11	1951
+20	1952
+21	1952
+30	1953
+
+# Publication 21 should not be counted in the denominator, because it lacks
+# a reference list
+work_references:
+work_id	doi
+10	d1.0
+10	d1.1
+10	d1.2
+11	d1.0
+20	d2.0
+20	d2.1
+30	d3.0
+30	d3.1
+30	d3.2
+END
+
+INCLUDE SELECT yearly-references-per-paper.sql
+
+BEGIN RESULT
+year	n
+1951	2.0
+1952	2.0
+1953	3.0
+END
