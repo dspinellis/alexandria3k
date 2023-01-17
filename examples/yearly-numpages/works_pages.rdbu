@@ -1,0 +1,18 @@
+BEGIN SETUP
+works:
+published_year	page
+1930		12-40
+1951		12-15
+1951		p120-150
+1951		2-
+1951		-30
+1951		345
+END
+
+INCLUDE CREATE works_pages.sql
+
+BEGIN RESULT
+works_pages:
+year	page	num_pages
+1951	12-15	4
+END
