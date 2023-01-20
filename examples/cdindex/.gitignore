@@ -1,6 +1,7 @@
 .depend
 .depend.all
 nohup.out
+populate
 reports
 rolap
 simple-rolap
