@@ -4,7 +4,6 @@
 # from a previously populated database
 #
 
-import csv
 import datetime
 import sqlite3
 import sys
@@ -40,8 +39,17 @@ for (source_doi, target_doi) in db.execute(
     except ValueError:
         # It can happen that an unknown DOI is cited
         pass
+db.close()
 
-# Calculate and output the CD5 index for all works in the graph
-csv_writer = csv.writer(sys.stdout)
+db = sqlite3.connect("rolap.db")
+# Calculate and add to the database the CD5 index for all works in the graph
+db.execute("DROP TABLE IF EXISTS cdindex")
+db.execute("CREATE TABLE cdindex(doi, timestamp, cdindex)")
+cursor = db.cursor()
 for doi in graph.vertices():
-    csv_writer.writerow((doi, graph.timestamp(doi), graph.cdindex(doi, DELTA)))
+    cursor.execute(
+        "INSERT INTO cdindex VALUES(?, ?, ?)",
+        (doi, graph.timestamp(doi), graph.cdindex(doi, DELTA)),
+    )
+db.commit()
+db.close()

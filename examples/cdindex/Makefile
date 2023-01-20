@@ -3,8 +3,8 @@
 #
 
 export MAINDB?=cdindex
-#export DEPENDENCIES=reports/cdindex-otf.csv
-export DEPENDENCIES=populate reports/cdindex-db.csv
+#export DEPENDENCIES=reports/yearly-cdindex-otf.txt
+export DEPENDENCIES=populate tables/cdindex
 
 include ../common/Makefile
 
@@ -12,6 +12,7 @@ include ../common/Makefile
 populate: $(CROSSREF_DIR)
 	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
 	  --populate "$(MAINDB).db" \
+	  --sample 'random.random() < 0.0002' \
 	  --debug progress \
 	  --columns works.id \
 	    works.doi \
@@ -22,10 +23,12 @@ populate: $(CROSSREF_DIR)
 	    work_references.doi
 	touch $@
 
-reports/cdindex-otf.csv: $(CROSSREF_DIR) cdindex-otf.py
+reports/cdindex-otf.txt: $(CROSSREF_DIR) cdindex-otf.py
 	mkdir -p reports
 	$(TIME) python cdindex-otf.py "$(CROSSREF_DIR)" >$@
 
-reports/cdindex-db.csv: populate cdindex-db.py
-	mkdir -p reports
+tables/cdindex: populate cdindex-db.py
+	mkdir -p tables
 	$(TIME) python cdindex-db.py  "$(MAINDB).db" >$@
+
+reports/yearly-cdindex.txt: tables/cdindex
