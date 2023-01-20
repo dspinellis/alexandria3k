@@ -3,7 +3,8 @@
 Determine relative author productivity in terms of works authored
 per year.  The productivity should be assessed in relative terms (adjusting
 1950 == 1), because authors with same names increase its absolute
-value.  However, given that their ration in the population does not
+value.
+However, assuming that the ratio of clashing names in the population does not
 change, the effect of duplicate names on the relative productivity
 measurements is cancelled out.
 
