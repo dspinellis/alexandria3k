@@ -12,7 +12,6 @@ include ../common/Makefile
 populate: $(CROSSREF_DIR)
 	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
 	  --populate "$(MAINDB).db" \
-	  --sample 'random.random() < 0.0002' \
 	  --debug progress \
 	  --columns works.id \
 	    works.doi \
