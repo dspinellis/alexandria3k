@@ -29,5 +29,3 @@ reports/cdindex-otf.txt: $(CROSSREF_DIR) cdindex-otf.py
 tables/cdindex: populate cdindex-db.py
 	mkdir -p tables
 	$(TIME) python cdindex-db.py  "$(MAINDB).db" >$@
-
-reports/yearly-cdindex.txt: tables/cdindex
