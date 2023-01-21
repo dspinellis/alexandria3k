@@ -22,7 +22,7 @@ for (doi, year, month, day) in db.execute(
         SELECT doi, published_year,
           Coalesce(published_month, 1),
           Coalesce(published_day, 1)
-        FROM works WHERE published_year BETWEEN 1945 and 2010"""
+        FROM works WHERE published_year BETWEEN 1945 and 2021"""
 ):
     dt = datetime.datetime(year, month, day)
     graph.add_vertex(doi, cdindex.timestamp_from_datetime(dt))
