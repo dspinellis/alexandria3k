@@ -17,7 +17,7 @@ WITH
     SELECT published_year, Count(*) AS n
     FROM works
     INNER JOIN work_references ON works.id = work_references.work_id
-    WHERE published_year BETWEEN 1950 and 2021
+    WHERE published_year BETWEEN 1945 and 2021
     GROUP BY published_year
   )
 SELECT references_by_year.published_year, 

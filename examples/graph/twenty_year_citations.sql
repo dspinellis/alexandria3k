@@ -16,7 +16,7 @@ CREATE TABLE rolap.twenty_year_citations AS
     ON work_references.work_id = citing_work.id
   INNER JOIN works AS cited_work
     ON work_references.doi = cited_work.doi
-  WHERE citing_work.published_year BETWEEN 1950 and 2021
+  WHERE citing_work.published_year BETWEEN 1945 and 2021
     AND cited_work.published_year BETWEEN citing_work.published_year - 20
       AND citing_work.published_year - 1
   GROUP BY year;

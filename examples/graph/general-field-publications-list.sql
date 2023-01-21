@@ -1,26 +1,26 @@
 -- Generate a list of evolution in general field publications per year
-WITH numbers_1950 AS (
-  SELECT * FROM rolap.general_field_publications WHERE published_year = 1950
+WITH numbers_1945 AS (
+  SELECT * FROM rolap.general_field_publications WHERE published_year = 1945
 ),
 numbers_2021 AS (
   SELECT * FROM rolap.general_field_publications WHERE published_year = 2021
 ),
-total_1950 AS (
-  SELECT Cast(Count(*) AS FLOAT) FROM works WHERE published_year = 1950
+total_1945 AS (
+  SELECT Cast(Count(*) AS FLOAT) FROM works WHERE published_year = 1945
 ),
 total_2021 AS (
   SELECT Cast(Count(*)AS FLOAT) FROM works WHERE published_year = 2021
 ),
 difference AS (
   SELECT numbers_2021.name,
-    numbers_2021.number AS n2021, numbers_1950.number AS n1950,
+    numbers_2021.number AS n2021, numbers_1945.number AS n1945,
     numbers_2021.number / (SELECT * FROM total_2021) * 100 AS percentage_2021,
     (numbers_2021.number / (SELECT * FROM total_2021)
-      - numbers_1950.number / (SELECT * FROM total_1950))
-      / (numbers_1950.number / (SELECT * FROM total_1950))
+      - numbers_1945.number / (SELECT * FROM total_1945))
+      / (numbers_1945.number / (SELECT * FROM total_1945))
     AS change
-  FROM numbers_1950
-  INNER JOIN numbers_2021 ON numbers_1950.name = numbers_2021.name
+  FROM numbers_1945
+  INNER JOIN numbers_2021 ON numbers_1945.name = numbers_2021.name
 ),
 top_changing_names AS (
   SELECT name FROM difference
@@ -36,7 +36,7 @@ top_and_others AS (
     END name,
     number, published_year
   FROM rolap.general_field_publications
-  WHERE published_year between 1950 and 2021
+  WHERE published_year between 1945 and 2021
 )
 
 SELECT published_year, name, Sum(number)

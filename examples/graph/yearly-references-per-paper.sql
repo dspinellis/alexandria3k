@@ -9,7 +9,7 @@ WITH
     SELECT id, published_year
     FROM works
     INNER JOIN work_references ON works.id = work_references.work_id
-    WHERE published_year BETWEEN 1950 and 2021
+    WHERE published_year BETWEEN 1945 and 2021
   ),
   papers_with_references AS (
     SELECT DISTINCT id, published_year

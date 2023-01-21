@@ -16,20 +16,20 @@ WITH
       END name
     FROM work_authors
     INNER JOIN works on work_authors.work_id = works.id
-    WHERE published_year IN (1950, 2021)
+    WHERE published_year IN (1945, 2021)
   ),
-  common_1950 AS (
-    SELECT 1950 AS year, name, Count(*) AS n
+  common_1945 AS (
+    SELECT 1945 AS year, name, Count(*) AS n
     FROM author_activity
-    WHERE published_year = 1950
+    WHERE published_year = 1945
     GROUP BY name
     ORDER BY n DESC
     LIMIT 10
   ),
-  all_1950 AS (
-    SELECT 1950 AS year, 'All' AS name, Count(*) AS n
+  all_1945 AS (
+    SELECT 1945 AS year, 'All' AS name, Count(*) AS n
     FROM author_activity
-    WHERE published_year = 1950
+    WHERE published_year = 1945
   ),
   common_2021 AS (
     SELECT 2021 AS year, name, Count(*) AS n
@@ -45,9 +45,9 @@ WITH
     WHERE published_year = 2021
   )
 
-SELECT * FROM common_1950
+SELECT * FROM common_1945
 UNION
-SELECT * FROM all_1950
+SELECT * FROM all_1945
 UNION
 SELECT * FROM common_2021
 UNION

@@ -3,7 +3,7 @@ WITH
   issns AS (
     SELECT published_year, Coalesce(issn_print, issn_electronic) AS issn
     FROM works
-    WHERE published_year BETWEEN 1950 and 2021
+    WHERE published_year BETWEEN 1945 and 2021
       AND issn is not null
   ),
   issns_by_year AS (

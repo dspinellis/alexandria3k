@@ -19,5 +19,5 @@ populate: $(CROSSREF_DIR)
 	    work_authors.work_id \
 	    work_authors.given \
 	    work_authors.family \
-	  --row-selection 'works.published_year BETWEEN 1950 and 2021'
+	  --row-selection 'works.published_year BETWEEN 1945 and 2021'
 	touch $@

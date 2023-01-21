@@ -22,7 +22,7 @@ WITH
       ON cited_works.doi = work_references.doi
     INNER JOIN works AS citing_works
       ON citing_works.id = work_references.work_id
-    WHERE citing_works.published_year BETWEEN 1950 and 2021
+    WHERE citing_works.published_year BETWEEN 1945 and 2021
   ),
   referenced_papers_by_year AS (
     SELECT year, Count(*) AS n

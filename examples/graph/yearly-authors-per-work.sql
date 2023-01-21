@@ -8,7 +8,7 @@ WITH
   work_author_year AS (
     SELECT published_year, n from work_author_number
     LEFT JOIN works on work_author_number.work_id = works.id
-    WHERE published_year BETWEEN 1950 and 2021
+    WHERE published_year BETWEEN 1945 and 2021
   )
 SELECT published_year, Avg(n)
 FROM work_author_year

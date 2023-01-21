@@ -14,7 +14,7 @@ CREATE TABLE rolap.yearly_authors AS
         END name
       FROM work_authors
       INNER JOIN works on work_authors.work_id = works.id
-      WHERE published_year BETWEEN 1950 and 2021
+      WHERE published_year BETWEEN 1945 and 2021
     ),
     distinct_author_activity AS (
       SELECT DISTINCT * FROM author_activity
