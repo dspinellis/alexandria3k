@@ -3,6 +3,7 @@
 #
 
 export MAINDB?=cdindex
+
 #export DEPENDENCIES=reports/yearly-cdindex-otf.txt
 export DEPENDENCIES=populate tables/cdindex
 
@@ -28,4 +29,4 @@ reports/cdindex-otf.txt: $(CROSSREF_DIR) cdindex-otf.py
 
 tables/cdindex: populate cdindex-db.py
 	mkdir -p tables
-	$(TIME) python cdindex-db.py  "$(MAINDB).db" >$@
+	$(TIME) python cdindex-db.py  "$(MAINDB).db" "$(ROLAPDB).db" >$@

@@ -43,7 +43,7 @@ for (source_doi, target_doi) in db.execute(
         pass
 db.close()
 
-db = sqlite3.connect("rolap.db")
+db = sqlite3.connect(sys.argv[2])
 # Calculate and add to the database the CD5 index for all works in the graph
 db.execute("DROP TABLE IF EXISTS cdindex")
 db.execute("CREATE TABLE cdindex(doi, timestamp, cdindex)")
