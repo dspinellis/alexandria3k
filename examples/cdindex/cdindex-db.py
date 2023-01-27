@@ -31,10 +31,6 @@ debug.set_output(sys.stderr)
 db.execute("CREATE INDEX IF NOT EXISTS works_id_idx ON works(id)")
 perf.log("CREATE INDEX works_id_idx")
 
-db.execute("""CREATE INDEX IF NOT EXISTS works_published_year_idx
-  ON works(published_year)""")
-perf.log("CREATE INDEX works_published_year_idx")
-
 db.execute("""CREATE INDEX IF NOT EXISTS work_references_work_id_idx
   ON work_references(work_id)""")
 perf.log("CREATE INDEX work_references_work_id_idx")
