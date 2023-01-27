@@ -1,27 +1,35 @@
 #!/usr/bin/env python
 #
-# Calculate the CD5 index of Crossref works published 1945-2010
+# Calculate the CD5 index of Crossref works published 1945-2021
 # from a previously populated database
 #
 
+import concurrent.futures
 import datetime
+from more_itertools import chunked
 import sqlite3
 import sys
+from threading import Lock
 
 from fast_cdindex import cdindex, timestamp_from_datetime
 
 # Five years, for calculating the CD_5 index
 DELTA = int(datetime.timedelta(days=365 * 5).total_seconds())
 
+BATCH_SIZE = 10000
+
+RANGE = "published_year BETWEEN 1945 and 2021"
+
 graph = cdindex.Graph()
 
 db = sqlite3.connect(sys.argv[1])
 
 db.execute("CREATE INDEX IF NOT EXISTS works_id_idx ON works(id)")
+db.execute("""CREATE INDEX IF NOT EXISTS works_published_year_idx
+  ON works(published_year)""")
 db.execute("""CREATE INDEX IF NOT EXISTS work_references_work_id_idx
   ON work_references(work_id)""")
 
-RANGE = "published_year BETWEEN 1945 and 2021"
 
 def progress_output(phase, counter):
     """Report the progress of the specified phase and count"""
@@ -60,19 +68,28 @@ for (source_doi, target_doi) in db.execute(
     counter += 1
 db.close()
 
-db = sqlite3.connect(sys.argv[2])
+db = sqlite3.connect(sys.argv[2], check_same_thread=False)
 # Calculate and add to the database the CD5 index for all works in the graph
 db.execute("DROP TABLE IF EXISTS cdindex")
 db.execute("CREATE TABLE cdindex(doi, timestamp, cdindex)")
-cursor = db.cursor()
-counter = 0
-for doi in graph.vertices():
-    cursor.execute(
-        "INSERT INTO cdindex VALUES(?, ?, ?)",
-        (doi, graph.timestamp(doi), graph.cdindex(doi, DELTA)),
-    )
-    if counter % 1000 == 0:
-        progress_output("C", counter);
-    counter += 1
-db.commit()
+
+lock = Lock()
+
+def process_batch(doi_list):
+    results = []
+    for doi in doi_list:
+        results.append((doi, graph.timestamp(doi), graph.cdindex(doi, DELTA)))
+    with lock:
+        try:
+            db.execute("BEGIN EXCLUSIVE")
+            db.executemany("INSERT INTO cdindex VALUES(?, ?, ?)", results)
+            db.commit()
+        except Exception as e:
+            print(e)
+    progress_output("C", "");
+
+
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    executor.map(process_batch, chunked(graph.vertices(), BATCH_SIZE))
+
 db.close()
