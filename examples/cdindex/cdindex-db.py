@@ -8,7 +8,7 @@ import datetime
 import sqlite3
 import sys
 
-from fast_cdindex import cdindex
+from fast_cdindex import cdindex, timestamp_from_datetime
 
 # Five years, for calculating the CD_5 index
 DELTA = int(datetime.timedelta(days=365 * 5).total_seconds())
@@ -28,7 +28,7 @@ for (doi, year, month, day) in db.execute(
         FROM works WHERE {RANGE}"""
 ):
     dt = datetime.datetime(year, month, day)
-    graph.add_vertex(doi, cdindex.timestamp_from_datetime(dt))
+    graph.add_vertex(doi, timestamp_from_datetime(dt))
     if counter % 100000 == 0:
         print(f"N {counter}", file=sys.stderr, flush=True)
     counter += 1
