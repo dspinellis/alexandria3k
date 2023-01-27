@@ -17,6 +17,10 @@ graph = cdindex.Graph()
 
 db = sqlite3.connect(sys.argv[1])
 
+db.execute("CREATE INDEX IF NOT EXISTS works_id_idx ON works(id)")
+db.execute("""CREATE INDEX IF NOT EXISTS work_references_work_id_idx
+  ON work_references(work_id)""")
+
 RANGE = "published_year BETWEEN 1945 and 2021"
 
 def progress_output(phase, counter):
