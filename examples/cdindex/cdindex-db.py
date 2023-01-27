@@ -8,7 +8,7 @@ import datetime
 import sqlite3
 import sys
 
-import cdindex
+from fast_cdindex import cdindex
 
 # Five years, for calculating the CD_5 index
 DELTA = int(datetime.timedelta(days=365 * 5).total_seconds())
@@ -17,22 +17,24 @@ graph = cdindex.Graph()
 
 db = sqlite3.connect(sys.argv[1])
 
+RANGE = "published_year BETWEEN 1945 and 2021"
+
 for (doi, year, month, day) in db.execute(
-    """
+    f"""
         SELECT doi, published_year,
           Coalesce(published_month, 1),
           Coalesce(published_day, 1)
-        FROM works WHERE published_year BETWEEN 1945 and 2021"""
+        FROM works WHERE {RANGE}"""
 ):
     dt = datetime.datetime(year, month, day)
     graph.add_vertex(doi, cdindex.timestamp_from_datetime(dt))
 
 for (source_doi, target_doi) in db.execute(
-    """
+    f"""
     SELECT works.doi, work_references.doi
       FROM works
       INNER JOIN work_references on works.id = work_references.work_id
-      WHERE work_references.doi is not null"""
+      WHERE work_references.doi is not null AND {RANGE}"""
 ):
     try:
         graph.add_edge(source_doi, target_doi)
