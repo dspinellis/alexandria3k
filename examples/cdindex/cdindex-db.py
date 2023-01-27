@@ -28,8 +28,8 @@ db = sqlite3.connect(sys.argv[1])
 debug.set_flags(["perf"])
 debug.set_output(sys.stderr)
 
-db.execute("CREATE INDEX IF NOT EXISTS works_id_idx")
-perf.log("CREATE INDEX works_id_idx ON works(id)")
+db.execute("CREATE INDEX IF NOT EXISTS works_id_idx ON works(id)")
+perf.log("CREATE INDEX works_id_idx")
 
 db.execute("""CREATE INDEX IF NOT EXISTS works_published_year_idx
   ON works(published_year)""")
@@ -80,6 +80,9 @@ for (source_doi, target_doi) in db.execute(
     counter += 1
 perf.log("Create edges")
 db.close()
+
+graph.prepare_for_searching()
+perf.log("Prepare graph for searching")
 
 db = sqlite3.connect(sys.argv[2], check_same_thread=False)
 # Calculate and add to the database the CD5 index for all works in the graph
