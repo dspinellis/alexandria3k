@@ -11,6 +11,7 @@ import sqlite3
 import sys
 from threading import Lock
 
+from alexandria3k import perf, debug
 from fast_cdindex import cdindex, timestamp_from_datetime
 
 # Five years, for calculating the CD_5 index
@@ -24,11 +25,19 @@ graph = cdindex.Graph()
 
 db = sqlite3.connect(sys.argv[1])
 
-db.execute("CREATE INDEX IF NOT EXISTS works_id_idx ON works(id)")
+debug.set_flags(["perf"])
+debug.set_output(sys.stderr)
+
+db.execute("CREATE INDEX IF NOT EXISTS works_id_idx")
+perf.log("CREATE INDEX works_id_idx ON works(id)")
+
 db.execute("""CREATE INDEX IF NOT EXISTS works_published_year_idx
   ON works(published_year)""")
+perf.log("CREATE INDEX works_published_year_idx")
+
 db.execute("""CREATE INDEX IF NOT EXISTS work_references_work_id_idx
   ON work_references(work_id)""")
+perf.log("CREATE INDEX work_references_work_id_idx")
 
 
 def progress_output(phase, counter):
@@ -49,6 +58,7 @@ for (doi, year, month, day) in db.execute(
     if counter % 1000000 == 0:
         progress_output("N", counter);
     counter += 1
+perf.log("Create vertices")
 
 counter = 0
 for (source_doi, target_doi) in db.execute(
@@ -56,8 +66,10 @@ for (source_doi, target_doi) in db.execute(
     SELECT works.doi, work_references.doi
       FROM works
       INNER JOIN work_references on works.id = work_references.work_id
-      WHERE work_references.doi is not null AND {RANGE}"""
+      WHERE work_references.doi is not null"""
 ):
+    if counter == 0:
+        perf.log("Obtain first edge")
     try:
         graph.add_edge(source_doi, target_doi)
     except ValueError:
@@ -66,6 +78,7 @@ for (source_doi, target_doi) in db.execute(
     if counter % 100000 == 0:
         progress_output("E", counter);
     counter += 1
+perf.log("Create edges")
 db.close()
 
 db = sqlite3.connect(sys.argv[2], check_same_thread=False)
@@ -92,4 +105,5 @@ def process_batch(doi_list):
 with concurrent.futures.ThreadPoolExecutor() as executor:
     executor.map(process_batch, chunked(graph.vertices(), BATCH_SIZE))
 
+perf.log("Calculate CD index")
 db.close()
