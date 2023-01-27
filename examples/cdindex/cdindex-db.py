@@ -19,6 +19,11 @@ db = sqlite3.connect(sys.argv[1])
 
 RANGE = "published_year BETWEEN 1945 and 2021"
 
+def progress_output(phase, counter):
+    """Report the progress of the specified phase and count"""
+    timestamp = datetime.datetime.now().isoformat()
+    print(f"{timestamp} {phase} {counter}", file=sys.stderr, flush=True)
+
 counter = 0
 for (doi, year, month, day) in db.execute(
     f"""
@@ -29,8 +34,8 @@ for (doi, year, month, day) in db.execute(
 ):
     dt = datetime.datetime(year, month, day)
     graph.add_vertex(doi, timestamp_from_datetime(dt))
-    if counter % 100000 == 0:
-        print(f"N {counter}", file=sys.stderr, flush=True)
+    if counter % 1000000 == 0:
+        progress_output("N", counter);
     counter += 1
 
 counter = 0
@@ -47,7 +52,7 @@ for (source_doi, target_doi) in db.execute(
         # It can happen that an unknown DOI is cited
         pass
     if counter % 100000 == 0:
-        print(f"E {counter}", file=sys.stderr, flush=True)
+        progress_output("E", counter);
     counter += 1
 db.close()
 
@@ -63,7 +68,7 @@ for doi in graph.vertices():
         (doi, graph.timestamp(doi), graph.cdindex(doi, DELTA)),
     )
     if counter % 1000 == 0:
-        print(f"C {counter}", file=sys.stderr, flush=True)
+        progress_output("C", counter);
     counter += 1
 db.commit()
 db.close()
