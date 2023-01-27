@@ -19,6 +19,7 @@ db = sqlite3.connect(sys.argv[1])
 
 RANGE = "published_year BETWEEN 1945 and 2021"
 
+counter = 0
 for (doi, year, month, day) in db.execute(
     f"""
         SELECT doi, published_year,
@@ -28,7 +29,11 @@ for (doi, year, month, day) in db.execute(
 ):
     dt = datetime.datetime(year, month, day)
     graph.add_vertex(doi, cdindex.timestamp_from_datetime(dt))
+    if counter % 100000 == 0:
+        print(f"N {counter}", file=sys.stderr, flush=True)
+    counter += 1
 
+counter = 0
 for (source_doi, target_doi) in db.execute(
     f"""
     SELECT works.doi, work_references.doi
@@ -41,6 +46,9 @@ for (source_doi, target_doi) in db.execute(
     except ValueError:
         # It can happen that an unknown DOI is cited
         pass
+    if counter % 100000 == 0:
+        print(f"E {counter}", file=sys.stderr, flush=True)
+    counter += 1
 db.close()
 
 db = sqlite3.connect(sys.argv[2])
@@ -48,10 +56,14 @@ db = sqlite3.connect(sys.argv[2])
 db.execute("DROP TABLE IF EXISTS cdindex")
 db.execute("CREATE TABLE cdindex(doi, timestamp, cdindex)")
 cursor = db.cursor()
+counter = 0
 for doi in graph.vertices():
     cursor.execute(
         "INSERT INTO cdindex VALUES(?, ?, ?)",
         (doi, graph.timestamp(doi), graph.cdindex(doi, DELTA)),
     )
+    if counter % 1000 == 0:
+        print(f"C {counter}", file=sys.stderr, flush=True)
+    counter += 1
 db.commit()
 db.close()
