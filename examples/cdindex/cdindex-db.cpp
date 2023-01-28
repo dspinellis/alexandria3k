@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <atomic>
 #include <cstdlib>
 #include <ctime>
 #include <execution>
@@ -17,7 +18,7 @@ using namespace  sqlite;
 using namespace std;
 
 const bool use_random_values = false;
-const int RANDOM_POPULATION_SIZE = 1000000;
+const int RANDOM_POPULATION_SIZE = 10000000;
 
 const int BATCH_SIZE = 10000;
 
@@ -38,6 +39,8 @@ static s2v_type s2v;
 
 typedef pair<s2v_type::iterator, s2v_type::iterator> work_type;
 
+static atomic<unsigned long long> work_counter = 0;
+
 /*
  * Calculate CD-index along the passed begin/end range and store it in
  * the vertice's data
@@ -47,6 +50,9 @@ worker(work_type &be)
 {
     for (auto v = be.first; v != be.second; v++)
 	s2v.at(v->first).cdindex = cdindex(v->second.vi, DELTA);
+    work_counter += BATCH_SIZE;
+    if (work_counter % 1000000 == 0)
+	cerr << "C " << work_counter << endl;
 }
 
 // Return the timestamp associated with the specified date
