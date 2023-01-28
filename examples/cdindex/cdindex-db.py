@@ -4,10 +4,7 @@
 # from a previously populated database
 #
 
-import concurrent.futures
 import datetime
-from more_itertools import chunked
-import multiprocessing as mp
 import random
 import sqlite3
 import sys
@@ -21,7 +18,7 @@ DELTA = int(datetime.timedelta(days=365 * 5).total_seconds())
 BATCH_SIZE = 10000
 
 # Set to true to create a random population
-random_population = False
+random_population = True
 RANDOM_POPULATION_SIZE = 1000000
 random.seed("xyzzy")
 
@@ -135,21 +132,14 @@ if __name__ == '__main__':
     db.execute("CREATE TABLE cdindex(doi, timestamp, cdindex)")
 
     counter = 0
-    with concurrent.futures.ProcessPoolExecutor(mp_context=mp.get_context('fork')) as executor:
-        futures = []
-        for start in range(0, len(vertices_list), BATCH_SIZE):
-            future = executor.submit(process_batch, start)
-            futures += [future]
-            progress_output("S", counter);
-            counter += 1
-    perf.log("Submit work")
-
-    counter = 0
     cursor = db.cursor()
-    for future in concurrent.futures.as_completed(futures):
-        results = future.result()
-        cursor.executemany("INSERT INTO cdindex VALUES(?, ?, ?)", results)
-        progress_output("R", counter);
+    for doi in graph.vertices():
+        cursor.execute(
+            "INSERT INTO cdindex VALUES(?, ?, ?)",
+            (doi, graph.timestamp(doi), graph.cdindex(doi, DELTA)),
+        )
+        if counter % 1000000 == 0:
+            progress_output("S", counter);
         counter += 1
     perf.log("Calculate CD index")
 
