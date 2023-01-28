@@ -27,9 +27,9 @@ reports/cdindex-otf.txt: $(CROSSREF_DIR) cdindex-otf.py
 	mkdir -p reports
 	$(TIME) python cdindex-otf.py "$(CROSSREF_DIR)" >$@
 
-tables/cdindex: populate cdindex-db.py
+tables/cdindex: populate cdindex-db
 	mkdir -p tables
-	$(TIME) python cdindex-db.py  "$(MAINDB).db" "$(ROLAPDB).db" >$@
+	$(TIME) ./cdindex-db "$(MAINDB).db" "$(ROLAPDB).db" >$@
 
 # Note: dev branch required for iterator access
 # https://github.com/SqliteModernCpp/sqlite_modern_cpp/pull/126
