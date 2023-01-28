@@ -30,3 +30,14 @@ reports/cdindex-otf.txt: $(CROSSREF_DIR) cdindex-otf.py
 tables/cdindex: populate cdindex-db.py
 	mkdir -p tables
 	$(TIME) python cdindex-db.py  "$(MAINDB).db" "$(ROLAPDB).db" >$@
+
+# Note: dev branch required for iterator access
+# https://github.com/SqliteModernCpp/sqlite_modern_cpp/pull/126
+sqlite_modern_cpp:
+	git clone -b dev https://github.com/SqliteModernCpp/sqlite_modern_cpp.git
+
+fast-cdindex:
+	git clone https://github.com/dspinellis/fast-cdindex.git
+
+cdindex-db: cdindex-db.cpp sqlite_modern_cpp fast-cdindex
+	g++ -std=c++17 -I sqlite_modern_cpp/hdr -I fast-cdindex/src -o $@ cdindex-db.cpp fast-cdindex/src/cdindex.cpp -lsqlite3 -ltbb -ggdb3 -O3
