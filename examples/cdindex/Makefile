@@ -4,7 +4,7 @@
 
 export MAINDB?=cdindex
 
-export DEPENDENCIES=populate tables/cdindex tables/cs_works
+export DEPENDENCIES=populate tables/cdindex
 
 include ../common/Makefile
 
@@ -40,11 +40,3 @@ fast-cdindex:
 
 cdindex-db: cdindex-db.cpp sqlite_modern_cpp fast-cdindex
 	g++ -std=c++17 -I sqlite_modern_cpp/hdr -I fast-cdindex/src -o $@ cdindex-db.cpp fast-cdindex/src/cdindex.cpp -lsqlite3 -ltbb -ggdb3 -O3
-
-dblp.xml.gz:
-	wget https://dblp.org/xml/dblp.xml.gz
-
-tables/cs_works: dblp.xml.gz cs_works.sed
-	mkdir -p tables
-	zcat dblp.xml.gz | ./cs_works.sed | sqlite3 $(ROLAPDB).db
-	touch $@
