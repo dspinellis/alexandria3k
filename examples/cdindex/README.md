@@ -6,8 +6,12 @@ The scripts in this directory calculate the CD₅ (five-year) index
 for Crossref works published between 1945 and 2021.
 To do so it populates a graph with 116,568,934 nodes (publications) and
 1,255,033,889 edges (citations).
+The calculation requires about 70 hours of CPU time and 60 GB of RAM.
+The C++ implementation used ([cdindex-db.cpp](./cdindex-db.cpp)
+is multithreaded, so on an 8-core machine it takes less than 10 hours.
 
-Thw [cdindex-db.py](./cdindex-db.py) does so on a previously populated
-database.
+The original Python implementation ([cdindex-db.py](./cdindex-db.py))
+[cannot be easily parallelized](https://stackoverflow.com/questions/75267745/how-can-i-share-a-large-data-structure-among-forked-python-processes),
+and would take weeks to finish.
 The [cdindex-otf.py](./cdindex-otf.py) performs the same calculation
 on the fly, as a demonstration of Using the _Alexandria3k_ Python API.
