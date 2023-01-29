@@ -174,6 +174,13 @@ def parse_cli_arguments(parser, args=None):
     """Parse command line arguments (or args e.g. when testing)"""
 
     parser.add_argument(
+        "-a",
+        "--attach-databases",
+        nargs="+",
+        type=str,
+        help="Databases to attach for the row selection query",
+    )
+    parser.add_argument(
         "-c",
         "--columns",
         nargs="+",
@@ -431,7 +438,10 @@ def main():
 
     if crossref_instance and args.populate_db_path:
         crossref_instance.populate(
-            args.populate_db_path, args.columns, args.row_selection
+            args.populate_db_path,
+            args.columns,
+            args.row_selection,
+            args.attach_databases,
         )
         debug.log("files-read", f"{FileCache.file_reads} files read")
         perf.log("Crossref table population")

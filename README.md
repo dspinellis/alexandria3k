@@ -246,6 +246,16 @@ SELECT COUNT(*) FROM funder_awards;
 SELECT COUNT(*) FROM work_references;
 ```
 
+### Record selection from external database
+The following command creates an SQLite database with all Crossref data
+of works whose DOI appears in the attached database named `selected.db`.
+```sh
+alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
+   --populate-db-path selected-works.db \
+   --attach-databases 'attached:selected.db' \
+   --row-selection "EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)"
+```
+
 ### Populate the database with author records from ORCID
 Only records of authors identified in the publications through an
 ORCID will be added.
@@ -332,7 +342,8 @@ SELECT author_affiliations.name FROM
 ## Command-line options reference
 <!-- CLI start -->
 ```
-usage: alexandria3k [-h] [-c COLUMNS [COLUMNS ...]] [-D DEBUG [DEBUG ...]]
+usage: alexandria3k [-h] [-a ATTACH_DATABASES [ATTACH_DATABASES ...]]
+                    [-c COLUMNS [COLUMNS ...]] [-D DEBUG [DEBUG ...]]
                     [-d DATA_SOURCE [DATA_SOURCE ...]] [-E OUTPUT_ENCODING]
                     [-F FIELD_SEPARATOR] [-H] [-i [INDEX ...]]
                     [-L LIST_SCHEMA] [-l LINKED_RECORDS] [-n] [-o OUTPUT] [-P]
@@ -344,6 +355,8 @@ alexandria3k: Publication metadata interface
 
 optional arguments:
   -h, --help            show this help message and exit
+  -a ATTACH_DATABASES [ATTACH_DATABASES ...], --attach-databases ATTACH_DATABASES [ATTACH_DATABASES ...]
+                        Databases to attach for the row selection query
   -c COLUMNS [COLUMNS ...], --columns COLUMNS [COLUMNS ...]
                         Columns to populate using table.column or table.*
   -D DEBUG [DEBUG ...], --debug DEBUG [DEBUG ...]
@@ -493,6 +506,17 @@ crossref_instance.populate(
         "work_references.doi",
     ],
     condition="work_references.doi is not null",
+)
+```
+
+### Record selection from external database
+The following command creates an SQLite database with all Crossref data
+of works whose DOI appears in the attached database named `selected.db`.
+```py
+crossref_instance.populate(
+    "selected-works.db",
+    condition="EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)",
+    ["attached:selected.db"]
 )
 ```
 

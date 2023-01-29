@@ -879,6 +879,7 @@ class Crossref:
     """Create a Crossref meta-data object that support queries over its
     (virtual) table and the population of an SQLite database with its
     data"""
+    # pylint: disable=too-many-instance-attributes
 
     def __init__(self, crossref_directory, sample=lambda n: True):
         # A named in-memory database; it can be attached by name to others
@@ -899,6 +900,7 @@ class Crossref:
         self.population_columns = {}
         self.query_and_population_columns = {}
         self.index_manager = None
+        self.attached_databases = []
 
         for table in tables:
             self.vdb.execute(
@@ -929,9 +931,13 @@ class Crossref:
             self.query_columns.
             See https://rogerbinns.github.io/apsw/tips.html#parsing-sql"""
 
-            def authorizer(op_code, table, column, _database, _trigger):
+            def authorizer(op_code, table, column, database, _trigger):
                 """Query authorizer to monitor used columns"""
-                if op_code == apsw.SQLITE_READ and column:
+                if (
+                    op_code == apsw.SQLITE_READ
+                    and column
+                    and database not in self.attached_databases
+                ):
                     # print(f"AUTH: adding {table}.{column}")
                     Crossref.add_column(self.query_columns, table, column)
                 return apsw.SQLITE_OK
@@ -1026,7 +1032,13 @@ class Crossref:
         """Return the column names associated with an executing query"""
         return [description[0] for description in self.cursor.description]
 
-    def populate(self, database_path, columns=None, condition=None):
+    def populate(
+        self,
+        database_path,
+        columns=None,
+        condition=None,
+        attach_databases=None,
+    ):
         """Populate the specified SQLite database.
         The database is created if it does not exist.
         If it exists, the populated tables are dropped
@@ -1046,12 +1058,9 @@ class Crossref:
         will only get populated with the records associated with the
         correspoing main table.
 
-        indexes is an array of table_name(indexed_column...)  strings,
-        that specifies indexes to be created before populating the tables.
-        The indexes can be used to speed up the evaluation of the population
-        conditions.
-        Note that foreign key indexes will always be created and need
-        not be specified.
+        attach_databases is a list of colon joined tuples specifying
+        a database name and its path.  These are attached and made
+        available to the row selection query.
         """
 
         # pylint: disable=too-many-statements
@@ -1175,7 +1184,7 @@ class Crossref:
             self.vdb.execute(log_sql(statement))
             perf.log(f"Populate {table}")
 
-        def create_database_schema(columns):
+        def create_database_schema(columns, attach_databases):
             """Create the populated database, if needed"""
             if not os.path.exists(database_path):
                 pdb = sqlite3.connect(database_path)
@@ -1185,6 +1194,18 @@ class Crossref:
                 log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
             )
             set_fast_writing(self.vdb)
+
+            for db_spec in attach_databases:
+                try:
+                    (db_name, db_path) = db_spec.split(":")
+                except ValueError:
+                    fail(
+                        f"Invalid database specification: '{db_spec}'; expected name:path"
+                    )
+                self.vdb.execute(
+                    log_sql(f"ATTACH DATABASE '{db_path}' AS {db_name}")
+                )
+                self.attached_databases.append(db_name)
 
             self.index_manager = IndexManager(self.vdb)
 
@@ -1262,7 +1283,9 @@ class Crossref:
 
             perf.log("Matched table creation")
 
-        create_database_schema(columns)
+        if attach_databases is None:
+            attach_databases = []
+        create_database_schema(columns, attach_databases)
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
         # indexing and the file cache avoids opening, reading, decompressing,

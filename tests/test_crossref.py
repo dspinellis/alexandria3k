@@ -31,6 +31,7 @@ from alexandria3k import debug
 from alexandria3k.file_cache import FileCache
 
 DATABASE_PATH = "tests/tmp/crossref.db"
+ATTACHED_DATABASE_PATH = "tests/tmp/attached.db"
 
 
 class TestDoiNormalize(unittest.TestCase):
@@ -503,3 +504,41 @@ class TestCrossrefQuery(unittest.TestCase):
                 ),
                 5,
             )
+
+class TestCrossrefPopulateAttachedDatabaseCondition(TestCrossrefPopulate):
+    """Verify column specification and population of single table"""
+
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+        FileCache.file_reads = 0
+
+        # Create and populate attached database
+        ensure_unlinked(ATTACHED_DATABASE_PATH)
+        attached = sqlite3.connect(ATTACHED_DATABASE_PATH)
+        attached.execute("CREATE TABLE s_works(doi)")
+        attached.execute("INSERT INTO s_works VALUES('10.1016/j.bjps.2022.04.046')")
+        attached.commit()
+        attached.close()
+
+        # debug.set_flags(["log-sql"])
+        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref.populate(
+            DATABASE_PATH,
+            ["works.doi"],
+            "EXISTS (SELECT 1 FROM attached.s_works WHERE works.doi = s_works.doi)",
+            [f"attached:{ATTACHED_DATABASE_PATH}"]
+        )
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+        os.unlink(ATTACHED_DATABASE_PATH)
+
+    def test_counts(self):
+        self.assertEqual(self.record_count("works"), 1)
+        self.assertEqual(FileCache.file_reads, 8)
