@@ -2,9 +2,11 @@ cdindex-db
 dblp.xml.gz
 .depend
 .depend.all
+fast-cdindex
 nohup.out
 populate
 reports
 rolap
 simple-rolap
+sqlite_modern_cpp
 tables
