@@ -10,15 +10,21 @@ import sqlite3
 import sys
 
 from alexandria3k import perf, debug
-from fast_cdindex import cdindex, timestamp_from_datetime
+
+use_fast_cdindex = False
+
+if use_fast_cdindex:
+    from fast_cdindex import cdindex, timestamp_from_datetime
+else:
+    from cdindex import cdindex, timestamp_from_datetime
 
 # Five years, for calculating the CD_5 index
 DELTA = int(datetime.timedelta(days=365 * 5).total_seconds())
 
 BATCH_SIZE = 10000
 
-# Set to true to create a random population
-random_population = True
+# Set to true to create a random population (works only with fast_cdindex)
+random_population = False
 RANDOM_POPULATION_SIZE = 1000000
 random.seed("xyzzy")
 
@@ -119,7 +125,8 @@ if __name__ == '__main__':
         add_edges(db, graph)
         db.close()
 
-    graph.prepare_for_searching()
+    if use_fast_cdindex:
+        graph.prepare_for_searching()
     perf.log("Prepare graph for searching")
 
     # Shared between instances as a subscriptable list
@@ -127,16 +134,16 @@ if __name__ == '__main__':
     vertices_list = list(graph.vertices())
 
     # Calculate and add to the database the CD5 index for all works in the graph
-    db = sqlite3.connect(sys.argv[2], check_same_thread=False)
+    db = sqlite3.connect(sys.argv[2])
     db.execute("DROP TABLE IF EXISTS cdindex")
-    db.execute("CREATE TABLE cdindex(doi, timestamp, cdindex)")
+    db.execute("CREATE TABLE cdindex(doi, cdindex)")
 
     counter = 0
     cursor = db.cursor()
     for doi in graph.vertices():
         cursor.execute(
-            "INSERT INTO cdindex VALUES(?, ?, ?)",
-            (doi, graph.timestamp(doi), graph.cdindex(doi, DELTA)),
+            "INSERT INTO cdindex VALUES(?, ?)",
+            (doi, graph.cdindex(doi, DELTA)),
         )
         if counter % 1000000 == 0:
             progress_output("S", counter);
