@@ -40,3 +40,7 @@ fast-cdindex:
 
 cdindex-db: cdindex-db.cpp sqlite_modern_cpp fast-cdindex
 	g++ -std=c++17 -I sqlite_modern_cpp/hdr -I fast-cdindex/src -o $@ cdindex-db.cpp fast-cdindex/src/cdindex.cpp -lsqlite3 -ltbb -ggdb3 -O3
+
+# Fix a DOI containing a |
+reports/cd5index-all.txt.gz: reports/cd5index-all.txt
+	sed 's/\\|\[ndash/-/;s/|/\t/' $? | gzip -c >$@
