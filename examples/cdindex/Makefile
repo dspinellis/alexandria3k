@@ -44,3 +44,7 @@ cdindex-db: cdindex-db.cpp sqlite_modern_cpp fast-cdindex
 # Fix a DOI containing a |
 reports/cd5index-all.txt.gz: reports/cd5index-all.txt
 	sed 's/\\|\[ndash/-/;s/|/\t/' $? | gzip -c >$@
+
+tables/cdindex: populate cdindex-db.py
+	mkdir -p tables
+	$(TIME) python cdindex-db.py "$(MAINDB).db" "$(ROLAPDB).db" >$@
