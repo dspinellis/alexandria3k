@@ -448,8 +448,8 @@ def main():
 
     if args.orcid:
         orcid.populate(
-            args.orcid,
             args.populate_db_path,
+            args.orcid,
             args.columns,
             args.linked_records == "persons",
             args.linked_records == "works",
@@ -457,7 +457,7 @@ def main():
         perf.log("ORCID table population")
 
     if args.ror:
-        ror.populate(args.ror, args.populate_db_path)
+        ror.populate(args.populate_db_path, args.ror)
         perf.log("ROR table population")
 
     if args.query_file:

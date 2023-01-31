@@ -39,7 +39,7 @@ class TestRorPopulate(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate("tests/data/ror.zip", DATABASE_PATH)
+        ror.populate(DATABASE_PATH, "tests/data/ror.zip")
 
         cls.con = apsw.Connection(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -184,7 +184,7 @@ class TestRorLink(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate("tests/data/ror.zip", DATABASE_PATH)
+        ror.populate(DATABASE_PATH, "tests/data/ror.zip")
 
         # Needed to test author-ror linking
         cls.crossref = crossref.Crossref("tests/data/sample")

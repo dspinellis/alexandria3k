@@ -528,8 +528,8 @@ ORCID will be added.
 from alexandria3k import orcid
 
 orcid.populate(
-    "ORCID_2022_10_summaries.tar.gz",
     "database.db",
+    "ORCID_2022_10_summaries.tar.gz",
     columns=[
         "person_countries.*",
         "person_educations.orcid",
@@ -586,8 +586,8 @@ csv_sources.link_works_asjcs("database.db")
 from alexandria3k import ror
 
 ror.populate(
-    "database.db",
-    "v1.17.1-2022-12-16-ror-data.zip"
+    "v1.17.1-2022-12-16-ror-data.zip",
+    "database.db"
 )
 ```
 

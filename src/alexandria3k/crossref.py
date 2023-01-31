@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2023  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -26,11 +26,11 @@ import sqlite3
 # pylint: disable-next=import-error
 import apsw
 
-from .common import add_columns, fail, log_sql, set_fast_writing
-from . import debug
-from . import perf
-from .tsort import tsort
-from .virtual_db import (
+from alexandria3k.common import add_columns, fail, log_sql, set_fast_writing
+from alexandria3k import debug
+from alexandria3k import perf
+from alexandria3k.tsort import tsort
+from alexandria3k.virtual_db import (
     ColumnMeta,
     TableMeta,
     CONTAINER_ID_COLUMN,
@@ -876,9 +876,24 @@ class IndexManager:
 
 
 class Crossref:
-    """Create a Crossref meta-data object that support queries over its
-    (virtual) table and the population of an SQLite database with its
-    data"""
+    """
+    Create a Crossref meta-data object that supports queries over its
+    (virtual) tables and the population of an SQLite database with its
+    data.
+
+    :param crossref_directory: The directory path where the Crossref
+        data files are located
+    :type crossref_directory: str
+    :param sample: A callable to control container sampling, defaults
+        to `lambda n: True`.
+        The population or query method will call this argument
+        for each Crossref container file with each container's file
+        name as its argument.  When the callable returns `True` the
+        container file will get processed, when it returns `False` the
+        container will get skipped.
+    :type sample: callable, optional
+    """
+
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, crossref_directory, sample=lambda n: True):
@@ -963,19 +978,31 @@ class Crossref:
         self.cursor.setexectrace(None)
 
     def query(self, query, partition=False):
-        """Run the specified query on the virtual database.
-        Returns an iterable over the query's results.
-        Queries involving table joins will run substantially faster
-        if access to each table's records is restricted with
-        an expression `table_name.container_id = CONTAINER_ID`, and
-        the `partition` argument is set to true.
-        In such a case the query is repeatedly run over each database
-        partition (compressed JSON file) with `CONTAINER_ID` iterating
-        sequentially to cover all partitions.
-        The query's result is the concatenation of the individal partition
-        results.
-        Running queries with joins without partitioning will often result
-        in quadratic (or worse) algorithmic complexity."""
+        """
+        Run the specified query on the virtual database using the data
+        specified in the object constructor's call.
+
+        :param query: An SQL `SELECT` query specifying the required data.
+        :type query: str
+
+        :param partition: When true the query will run separately in each
+            container, defaults to `False`.
+            Queries involving table joins will run substantially faster
+            if access to each table's records is restricted with
+            an expression `table_name.container_id = CONTAINER_ID`, and
+            the `partition` argument is set to true.
+            In such a case the query is repeatedly run over each database
+            partition (compressed JSON file) with `CONTAINER_ID` iterating
+            sequentially to cover all partitions.
+            The query's result is the concatenation of the individal partition
+            results.
+            Running queries with joins without partitioning will often result
+            in quadratic (or worse) algorithmic complexity.
+        :type partition: bool, optional
+
+        :return: An iterable over the query's results.
+        :rtype: iterable
+        """
 
         self.cursor = self.vdb.cursor()
 
@@ -1039,28 +1066,38 @@ class Crossref:
         condition=None,
         attach_databases=None,
     ):
-        """Populate the specified SQLite database.
+        """
+        Populate the specified SQLite database using the data specified
+        in the object constructor's call.
         The database is created if it does not exist.
-        If it exists, the populated tables are dropped
+        If it exists, the tables to be populated are dropped
         (if they exist) and recreated anew as specified.
 
-        columns is an array containing strings of
-        table_name.column_name or table_name.*
+        :param database_path: The path specifying the SQLite database
+            to populate.
+        :type database_path: str
 
-        conditions is a dictionary of table_name to condition
+        :param columns: A list of strings specifying the columns to
+            populate, defaults to `None`.  The strings are of the form
+            `table_name.column_name` or `table_name.*`.
+        :type columns: list, optional
 
-        The condition is an
-        [SQL expression](https://www.sqlite.org/syntax/expr.html)
-        containing references to the table's columns.
-        It can also contain references to populated tables, by prefixing
-        the column name with `populated.`.
-        Implicitly, if a main table is populated, its detail tables
-        will only get populated with the records associated with the
-        correspoing main table.
+        :param condition: `SQL expression`_ specifying the rows to include
+            in the database's population, defaults to `None`.
+            The expression can contain references to the table's columns.
+            Implicitly, if a main table is populated, its details tables
+            will only get populated with the records associated with the
+            correspoing main table's record.
+        :type condition: str, optional
 
-        attach_databases is a list of colon joined tuples specifying
-        a database name and its path.  These are attached and made
-        available to the row selection query.
+        :param attach_databases: A list of colon-joined tuples specifying
+            a database name and its path, defaults to `None`.
+            The specified databases are attached and made available to the
+            row selection query through the specified database name.
+        :type attach_databases: list, optional
+
+
+        .. _SQL expression: https://www.sqlite.org/syntax/expr.html
         """
 
         # pylint: disable=too-many-statements

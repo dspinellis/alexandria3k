@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2023  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -22,9 +22,13 @@ import codecs
 import csv
 import sqlite3
 
-from .common import data_source, ensure_table_exists, get_string_resource
-from . import perf
-from .virtual_db import ColumnMeta, TableMeta
+from alexandria3k.common import (
+    data_source,
+    ensure_table_exists,
+    get_string_resource,
+)
+from alexandria3k import perf
+from alexandria3k.virtual_db import ColumnMeta, TableMeta
 
 
 def record_source(source, delimiter):
@@ -294,29 +298,92 @@ def load_csv_data(database_path, table_meta, source, delimiter=","):
     con.close()
 
 
-def populate_asjc(database_path, source):
-    """Populate ASJC table of database with data from source"""
+def populate_asjc(database_path, source="resource:data/asjc.csv"):
+    """
+    Populate the Scopus Subject Areas and All Science Journal Classification
+    Codes (ASJC) table of the database with data from the specified source.
+    The database is created if it does not exist.
+    If it exists, the tables to be populated are dropped
+    (if they exist) and recreated anew as specified.
+
+    :param database_path: The path specifying the SQLite database
+        to populate.
+    :type database_path: str
+
+    :param source: CSV file or URL of the file containing the corresponding
+        data, defaults to the program's internally stored data.
+    :type source: str, optional
+    """
     load_csv_data(database_path, asjc_import_table, source, delimiter=";")
 
 
 def populate_journal_names(database_path, source):
-    """Populate journal names table of database with data from source"""
+    """
+    Populate journal names table of the database with data from the specified
+    source.
+    The database is created if it does not exist.
+    If it exists, the tables to be populated are dropped
+    (if they exist) and recreated anew as specified.
+
+    :param database_path: The path specifying the SQLite database
+        to populate.
+    :type database_path: str
+
+    :param source: CSV file or URL of the file containing the corresponding
+        data, e.g. `"http://ftp.crossref.org/titlelist/titleFile.csv"`.
+    :type source: str
+    """
     load_csv_data(database_path, journals_table, source)
 
 
 def populate_funder_names(database_path, source):
-    """Populate funder names table of database with data from source"""
+    """
+    Populate funder names table of the database with data from the
+    specified source.
+    The database is created if it does not exist.
+    If it exists, the tables to be populated are dropped
+    (if they exist) and recreated anew as specified.
+
+    :param database_path: The path specifying the SQLite database
+        to populate.
+    :type database_path: str
+
+    :param source: CSV file or URL of the file containing the corresponding
+        data, e.g. `"https://doi.crossref.org/funderNames?mode=list"`.
+    :type source: str
+    """
     load_csv_data(database_path, funders_table, source)
 
 
 def populate_open_access_journals(database_path, source):
-    """Populate OA journals table of database with data from source"""
+    """
+    Populate the open access journals table of the database with data from
+    the specified source.
+    The database is created if it does not exist.
+    If it exists, the tables to be populated are dropped
+    (if they exist) and recreated anew as specified.
+
+
+    :param database_path: The path specifying the SQLite database
+        to populate.
+    :type database_path: str
+
+    :param source: CSV file or URL of the file containing the corresponding
+        data, e.g. `"https://doaj.org/csv"`.
+    :type source: str
+    """
     load_csv_data(database_path, open_access_table, source)
 
 
 def link_works_asjcs(database_path):
-    """Create a many to many table linking works with Scopus
-    All Science Journal Classification Codes — ASJCs"""
+    """
+    Create a many to many table linking works with Scopus
+    All Science Journal Classification Codes — ASJCs.
+
+    :param database_path: The path specifying the SQLite database
+        to populate.
+    :type database_path: str
+    """
     connection = sqlite3.connect(database_path)
     ensure_table_exists(connection, "work_subjects")
     ensure_table_exists(connection, "asjcs")

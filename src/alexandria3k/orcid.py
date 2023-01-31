@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2023  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -24,9 +24,9 @@ import xml.etree.ElementTree as ET
 # pylint: disable-next=import-error
 import apsw
 
-from .common import add_columns, fail, log_sql, set_fast_writing
-from . import perf
-from .virtual_db import ColumnMeta, TableFiller, TableMeta
+from alexandria3k.common import add_columns, fail, log_sql, set_fast_writing
+from alexandria3k import perf
+from alexandria3k.virtual_db import ColumnMeta, TableFiller, TableMeta
 
 # The ORCID XML namespaces in XPath format
 ACTIVITIES = "{http://www.orcid.org/ns/activities}"
@@ -486,25 +486,39 @@ def order_column_definitions_by_schema(table, column_names):
 
 # pylint: disable-next=too-many-locals,too-many-branches,too-many-statements
 def populate(
-    data_path,
     database_path,
+    data_path,
     columns=None,
     authors_only=False,
     works_only=False,
 ):
-    """Populate the specified SQLite database.
+    """
+    Populate the specified SQLite database.
     The database is created if it does not exist.
-    If it exists, the populated tables are dropped
+    If it exists, the tables to be populated are dropped
     (if they exist) and recreated anew as specified.
 
-    columns is an array containing strings of
-    table_name.column_name or table_name.*
+    :param database_path: Path specifying the SQLite database to populate.
+    :type database_path: str
 
-    If authors_only is True then only ORCID records of persons that exist in the
-    Crossref work_authors table will be added.
+    :param data_path: Path to the ORCID summaries data file, e.g.
+        `"ORCID_2022_10_summaries.tar.gz"`
+    :type data_path: str
 
-    If works_only is True then only ORCID records of persons whose works
-    exist in the Crossref works table will be added.
+    :param columns: A list of strings specifying the columns to
+        populate, defaults to `None`.  The strings are of the form
+        `table_name.column_name` or `table_name.*`.
+    :type columns: list, optional
+
+    :param authors_only: Specify whether only ORCID records of persons
+        that exist in the Crossref `work_authors` table shall be added,
+        defaults to `False`.
+    :type authors_only: bool, optional
+
+    :param works_only: Specify whether only ORCID records of persons
+        whose *works* exist in the Crossref works table shall be added,
+        defaults to `False`.
+    :type works_only: bool, optional
     """
 
     def add_column(table, column):

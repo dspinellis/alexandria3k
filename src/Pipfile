@@ -12,6 +12,7 @@ pyahocorasick = "*"
 black = "*"
 pylint = "*"
 flake8 = "*"
+sphinx = "*"
 
 [requires]
 python_version = "3"

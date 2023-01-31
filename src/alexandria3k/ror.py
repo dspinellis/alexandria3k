@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2023  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -26,15 +26,15 @@ import ahocorasick
 # pylint: disable-next=import-error
 import apsw
 
-from .common import (
+from alexandria3k.common import (
     ensure_table_exists,
     get_string_resource,
     log_sql,
     set_fast_writing,
 )
-from . import debug
-from . import perf
-from .virtual_db import ColumnMeta, TableFiller, TableMeta
+from alexandria3k import debug
+from alexandria3k import perf
+from alexandria3k.virtual_db import ColumnMeta, TableFiller, TableMeta
 
 
 def external_ids_all(id_name, row):
@@ -162,11 +162,21 @@ tables = [
 table_dict = {t.get_name(): t for t in tables}
 
 
-def populate(data_path, database_path):
-    """Populate the specified SQLite database.
+def populate(database_path, data_path):
+    """
+    Populate the specified SQLite database with the research organization
+    details.
     The database is created if it does not exist.
-    If it exists, the populated tables are dropped
+    If it exists, the tables to be populated are dropped
     (if they exist) and recreated anew as specified.
+
+    :param database_path: The path specifying the SQLite database
+        to populate.
+    :type database_path: str
+
+    :param data_path: Path to a zip file containing the research organization
+        data, e.g. `"v1.17.1-2022-12-16-ror-data.zip"`
+    :type data_path: str
     """
 
     def add_org_records(data):
@@ -247,8 +257,22 @@ def unique_entries(table, id_field, name_field, condition=""):
 
 
 def link_author_affiliations(database_path, link_to_top):
-    """Create an work_authors_rors table that links each work author to the
-    identified Research Organization Record"""
+    """
+    Create a `work_authors_rors` table that links each work author to the
+    identified research organization record (ROR).
+
+    :param database_path: The path specifying the SQLite database
+        in which to add the table.  The database must be already
+        contain the `research_organizations` and `author_affiliations`
+        tables.
+    :type database_path: str
+
+    :param link_to_top: If `True` then the authors are linked to the
+        top-level of the hierarchy associated with their affiliation
+        (e.g. the university to which the university hospital they are
+        affiliated with belongs).
+    :type link_to_top: bool
+    """
     database = apsw.Connection(database_path)
     database.execute(log_sql("DELETE FROM work_authors_rors"))
     set_fast_writing(database)

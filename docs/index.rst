@@ -3,13 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to alexandria3k's documentation!
-========================================
+Alexandria3k reference documentation
+====================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   crossref
+   orcid
+   csv_sources
+   ror
 
 
 Indices and tables

@@ -39,8 +39,8 @@ class TestOrcidAll(unittest.TestCase):
             os.unlink(DATABASE_PATH)
 
         orcid.populate(
-            "tests/data/ORCID_2022_10_summaries.tar.gz",
             DATABASE_PATH,
+            "tests/data/ORCID_2022_10_summaries.tar.gz",
             None,  # All columns
             False,  # Not only person linked records
             False,  # Not only work linked records
@@ -138,8 +138,8 @@ class TestOrcidAuthorsOnly(unittest.TestCase):
         cls.crossref.populate(DATABASE_PATH)
 
         orcid.populate(
-            "tests/data/ORCID_2022_10_summaries.tar.gz",
             DATABASE_PATH,
+            "tests/data/ORCID_2022_10_summaries.tar.gz",
             columns=None,  # All columns
             authors_only=True,
             works_only=False,
@@ -183,8 +183,8 @@ class TestOrcidWorksOnly(unittest.TestCase):
         cls.crossref.populate(DATABASE_PATH)
 
         orcid.populate(
-            "tests/data/ORCID_2022_10_summaries.tar.gz",
             DATABASE_PATH,
+            "tests/data/ORCID_2022_10_summaries.tar.gz",
             columns=None,  # All columns
             authors_only=False,
             works_only=True,

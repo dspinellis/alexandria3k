@@ -6,15 +6,21 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import sys
+import os
+
+sys.path.append("../src")
+sys.path.append("../src/alexandria3k")
+
 project = 'alexandria3k'
-copyright = '2023, Diomidis Spinellis'
+copyright = '2022-2023, Diomidis Spinellis'
 author = 'Diomidis Spinellis'
-release = '2.4.0'
+release = '2.5.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = ['sphinx.ext.autodoc']
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
