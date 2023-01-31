@@ -92,7 +92,7 @@ the URL from which it will directly stream the data to populate the database.
 
 ## Use overview
 After downloading the Crossref data you can use _alexandria3k_ through its
-Python API or as a command-line tool.
+[Python API](https://dspinellis.github.io/alexandria3k/) or as a command-line tool.
 These are the things you can do with _alexandria3k_.
 
 * Directly run ad hoc SQL queries on the Crossref data
