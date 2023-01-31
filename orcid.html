@@ -32,8 +32,36 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="orcid">
-<h1>orcid<a class="headerlink" href="#orcid" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-orcid">
+<span id="orcid"></span><h1>orcid<a class="headerlink" href="#module-orcid" title="Permalink to this headline">¶</a></h1>
+<p>Populate ORCID data tables</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="orcid.populate">
+<span class="sig-prename descclassname"><span class="pre">orcid.</span></span><span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authors_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">works_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orcid.populate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate the specified SQLite database.
+The database is created if it does not exist.
+If it exists, the tables to be populated are dropped
+(if they exist) and recreated anew as specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database_path</strong> (<em>str</em>) – Path specifying the SQLite database to populate.</p></li>
+<li><p><strong>data_path</strong> (<em>str</em>) – Path to the ORCID summaries data file, e.g.
+<cite>“ORCID_2022_10_summaries.tar.gz”</cite></p></li>
+<li><p><strong>columns</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of strings specifying the columns to
+populate, defaults to <cite>None</cite>.  The strings are of the form
+<cite>table_name.column_name</cite> or <cite>table_name.*</cite>.</p></li>
+<li><p><strong>authors_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – Specify whether only ORCID records of persons
+that exist in the Crossref <cite>work_authors</cite> table shall be added,
+defaults to <cite>False</cite>.</p></li>
+<li><p><strong>works_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – Specify whether only ORCID records of persons
+whose <em>works</em> exist in the Crossref works table shall be added,
+defaults to <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

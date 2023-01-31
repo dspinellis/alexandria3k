@@ -32,8 +32,102 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="csv-sources">
-<h1>csv_sources<a class="headerlink" href="#csv-sources" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-csv_sources">
+<span id="csv-sources"></span><h1>csv_sources<a class="headerlink" href="#module-csv_sources" title="Permalink to this headline">¶</a></h1>
+<p>Populate subject, journal, funder, OA data tables</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="csv_sources.link_works_asjcs">
+<span class="sig-prename descclassname"><span class="pre">csv_sources.</span></span><span class="sig-name descname"><span class="pre">link_works_asjcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_sources.link_works_asjcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a many to many table linking works with Scopus
+All Science Journal Classification Codes — ASJCs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to populate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="csv_sources.populate_asjc">
+<span class="sig-prename descclassname"><span class="pre">csv_sources.</span></span><span class="sig-name descname"><span class="pre">populate_asjc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'resource:data/asjc.csv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_sources.populate_asjc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate the Scopus Subject Areas and All Science Journal Classification
+Codes (ASJC) table of the database with data from the specified source.
+The database is created if it does not exist.
+If it exists, the tables to be populated are dropped
+(if they exist) and recreated anew as specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to populate.</p></li>
+<li><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) – CSV file or URL of the file containing the corresponding
+data, defaults to the program’s internally stored data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="csv_sources.populate_funder_names">
+<span class="sig-prename descclassname"><span class="pre">csv_sources.</span></span><span class="sig-name descname"><span class="pre">populate_funder_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_sources.populate_funder_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate funder names table of the database with data from the
+specified source.
+The database is created if it does not exist.
+If it exists, the tables to be populated are dropped
+(if they exist) and recreated anew as specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to populate.</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – CSV file or URL of the file containing the corresponding
+data, e.g. <cite>“https://doi.crossref.org/funderNames?mode=list”</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="csv_sources.populate_journal_names">
+<span class="sig-prename descclassname"><span class="pre">csv_sources.</span></span><span class="sig-name descname"><span class="pre">populate_journal_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_sources.populate_journal_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate journal names table of the database with data from the specified
+source.
+The database is created if it does not exist.
+If it exists, the tables to be populated are dropped
+(if they exist) and recreated anew as specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to populate.</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – CSV file or URL of the file containing the corresponding
+data, e.g. <cite>“http://ftp.crossref.org/titlelist/titleFile.csv”</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="csv_sources.populate_open_access_journals">
+<span class="sig-prename descclassname"><span class="pre">csv_sources.</span></span><span class="sig-name descname"><span class="pre">populate_open_access_journals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_sources.populate_open_access_journals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate the open access journals table of the database with data from
+the specified source.
+The database is created if it does not exist.
+If it exists, the tables to be populated are dropped
+(if they exist) and recreated anew as specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to populate.</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – CSV file or URL of the file containing the corresponding
+data, e.g. <cite>“https://doaj.org/csv”</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
