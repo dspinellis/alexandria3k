@@ -1,3 +1,8 @@
+/*
+ *  Calculate the CD5 index of Crossref works published 1945-2021
+ *  from a previously populated database.
+ */
+
 #include <algorithm>
 #include <atomic>
 #include <cstdlib>
