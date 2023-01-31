@@ -11,7 +11,7 @@ import sys
 
 from alexandria3k import perf, debug
 
-use_fast_cdindex = False
+use_fast_cdindex = True
 
 if use_fast_cdindex:
     from fast_cdindex import cdindex, timestamp_from_datetime
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     if use_fast_cdindex:
         graph.prepare_for_searching()
-    perf.log("Prepare graph for searching")
+        perf.log("Prepare graph for searching")
 
     # Shared between instances as a subscriptable list
     global vertices_list
