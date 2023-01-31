@@ -182,7 +182,7 @@ SELECT type AS name, Sum(number) FROM counts
 The following command counts the number of publication that have
 or do not have an abstract in an approximately 1% sample
 of the data set's containers.
-It uses a tab character ('\t') to separate the output fields.
+It uses a tab character (`\t`) to separate the output fields.
 Through sampling the data containers it runs in a couple of minutes,
 rather than hours.
 ```sh
