@@ -13,6 +13,7 @@ black = "*"
 pylint = "*"
 flake8 = "*"
 sphinx = "*"
+sphinx-argparse = "*"
 
 [requires]
 python_version = "3"

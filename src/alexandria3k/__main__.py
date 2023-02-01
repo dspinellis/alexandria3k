@@ -33,6 +33,8 @@ from . import orcid
 from . import ror
 from . import perf
 
+DESCRIPTION="alexandria3k: Relational interface to publication metadata"
+
 # Default values for diverse data sources
 DOAJ_DEFAULT = "https://doaj.org/csv"
 FUNDER_NAMES_DEFAULT = "https://doi.crossref.org/funderNames?mode=list"
@@ -170,8 +172,8 @@ def database_counts(database):
     print(f"{count} references(s) with DOI")
 
 
-def parse_cli_arguments(parser, args=None):
-    """Parse command line arguments (or args e.g. when testing)"""
+def add_cli_arguments(parser):
+    """Add the available command-line arguments to the specified parser."""
 
     parser.add_argument(
         "-a",
@@ -264,12 +266,6 @@ def parse_cli_arguments(parser, args=None):
         help="Only add ORCID records that link to existing <persons> or <works>",
     )
     parser.add_argument(
-        "-n",
-        "--normalize",
-        action="store_true",
-        help="Normalize relations in the populated Crossref database",
-    )
-    parser.add_argument(
         "-o",
         "--output",
         type=str,
@@ -329,6 +325,9 @@ link-works-asjcs (link works with Scopus All Science Journal Classification Code
         """,
     )
 
+def parse_cli_arguments(parser, args=None):
+    """Parse command line arguments (or args e.g. when testing)"""
+    add_cli_arguments(parser)
     return expand_data_source(parser, parser.parse_args(args))
 
 
@@ -394,14 +393,17 @@ def expand_data_source(parser, args):
 
     return args
 
+def get_cli_parser():
+    """Return a CLI parser (used by sphinx-argparse)"""
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
+    add_cli_arguments(parser)
+    return parser
 
 def main():
     # pylint: disable=too-many-branches
     # pylint: disable=too-many-statements
     """Program entry point"""
-    parser = argparse.ArgumentParser(
-        description="alexandria3k: Publication metadata interface"
-    )
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
     args = parse_cli_arguments(parser)
 
     # Setup debug logging and performance monitoring

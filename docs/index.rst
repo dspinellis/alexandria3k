@@ -10,10 +10,8 @@ Alexandria3k reference documentation
    :maxdepth: 2
    :caption: Contents:
 
-   crossref
-   orcid
-   csv_sources
-   ror
+   api
+   cli
 
 
 Indices and tables

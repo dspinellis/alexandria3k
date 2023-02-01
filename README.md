@@ -97,7 +97,10 @@ the URL from which it will directly stream the data to populate the database.
 
 ## Use overview
 After downloading the Crossref data you can use _alexandria3k_ through its
-[Python API](https://dspinellis.github.io/alexandria3k/) or as a command-line tool.
+Python API or as a command-line tool.
+Both interfaces are documented
+[here](https://dspinellis.github.io/alexandria3k/).
+
 These are the things you can do with _alexandria3k_.
 
 * Directly run ad hoc SQL queries on the Crossref data
@@ -343,94 +346,6 @@ SELECT author_affiliations.name FROM
     ON work_authors_rors.work_author_id = work_authors.id
   WHERE work_authors_rors.ror_id is null;
 ```
-
-## Command-line options reference
-<!-- CLI start -->
-```
-usage: alexandria3k [-h] [-a ATTACH_DATABASES [ATTACH_DATABASES ...]]
-                    [-c COLUMNS [COLUMNS ...]] [-D DEBUG [DEBUG ...]]
-                    [-d DATA_SOURCE [DATA_SOURCE ...]] [-E OUTPUT_ENCODING]
-                    [-F FIELD_SEPARATOR] [-H] [-i [INDEX ...]]
-                    [-L LIST_SCHEMA] [-l LINKED_RECORDS] [-n] [-o OUTPUT] [-P]
-                    [-p POPULATE_DB_PATH] [-Q QUERY_FILE] [-q QUERY]
-                    [-R ROW_SELECTION_FILE] [-r ROW_SELECTION] [-s SAMPLE]
-                    [-x EXECUTE]
-
-alexandria3k: Publication metadata interface
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -a ATTACH_DATABASES [ATTACH_DATABASES ...], --attach-databases ATTACH_DATABASES [ATTACH_DATABASES ...]
-                        Databases to attach for the row selection query
-  -c COLUMNS [COLUMNS ...], --columns COLUMNS [COLUMNS ...]
-                        Columns to populate using table.column or table.*
-  -D DEBUG [DEBUG ...], --debug DEBUG [DEBUG ...]
-                        Output debuggging information as specfied by the
-                        arguments. files-read: Output counts of data files
-                        read; link: Record linking operations; log-sql: Output
-                        executed SQL statements; perf: Output performance
-                        timings; populated-counts: Dump counts of the
-                        populated database; populated-data: Dump the data of
-                        the populated database; populated-reports: Output
-                        query results from the populated database; progress:
-                        Report progress; stderr: Log to standard error;
-                        virtual-counts: Dump counts of the virtual database;
-                        virtual-data: Dump the data of the virtual database.
-  -d DATA_SOURCE [DATA_SOURCE ...], --data-source DATA_SOURCE [DATA_SOURCE ...]
-                        Specify data set to be processed and its source. The
-                        following data sets are supported: ASJC [<CSV-file> |
-                        <URL>] (defaults to internal table); Crossref
-                        <container-directory>; DOAJ [<CSV-file> | <URL>]
-                        (defaults to https://doaj.org/csv); funder-names
-                        [<CSV-file> | <URL>] (defaults to
-                        https://doi.crossref.org/funderNames?mode=list);
-                        journal-names [<CSV-file> | <URL>] (defaults to
-                        http://ftp.crossref.org/titlelist/titleFile.csv);
-                        ORCID <summaries.tar.gz-file> ROR <zip-file>;
-  -E OUTPUT_ENCODING, --output-encoding OUTPUT_ENCODING
-                        Query output character encoding (use utf-8-sig for
-                        Excel)
-  -F FIELD_SEPARATOR, --field-separator FIELD_SEPARATOR
-                        Character to use for separating query output fields
-  -H, --header          Include a header in the query output
-  -i [INDEX ...], --index [INDEX ...]
-                        SQL expressions that select the populated rows
-  -L LIST_SCHEMA, --list-schema LIST_SCHEMA
-                        List the schema of the specified database. The
-                        following names are supported: Crossref, ORCID, ROR,
-                        other, all
-  -l LINKED_RECORDS, --linked-records LINKED_RECORDS
-                        Only add ORCID records that link to existing <persons>
-                        or <works>
-  -n, --normalize       Normalize relations in the populated Crossref database
-  -o OUTPUT, --output OUTPUT
-                        Output file for query results
-  -P, --partition       Run the query over partitioned data slices. (Warning:
-                        arguments are run per partition.)
-  -p POPULATE_DB_PATH, --populate-db-path POPULATE_DB_PATH
-                        Populate the SQLite database in the specified path
-  -Q QUERY_FILE, --query-file QUERY_FILE
-                        File containing query to run on the virtual tables
-  -q QUERY, --query QUERY
-                        Query to run on the virtual tables
-  -R ROW_SELECTION_FILE, --row-selection-file ROW_SELECTION_FILE
-                        File containing SQL expression that selects the
-                        populated rows
-  -r ROW_SELECTION, --row-selection ROW_SELECTION
-                        SQL expression that selects the populated rows
-  -s SAMPLE, --sample SAMPLE
-                        Python expression to sample the Crossref tables (e.g.
-                        random.random() < 0.0002)
-  -x EXECUTE, --execute EXECUTE
-                        Operation to execute on the data. This can be one of:
-                        link-aa-base-ror (link author affiliations to base-
-                        level research organizations); link-aa-top-ror (link
-                        author affiliations to top-level research
-                        organizations); link-works-asjcs (link works with
-                        Scopus All Science Journal Classification Codes —
-                        ASJCs).
-```
-<!-- CLI end -->
 
 ## Python API
 After downloading the Crossref data, the functionality of _alexandria3k_
