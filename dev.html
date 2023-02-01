@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Development &#8212; alexandria3k 2.5.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Research organization registry (ROR) data" href="ror.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<p>For software development purposes <em>alexandria3k</em> can also be installed
+and used through its <a class="reference external" href="https://github.com/dspinellis/alexandria3k">Github
+repository</a>, rather than
+as a Python package.</p>
+<div class="section" id="installation">
+<span id="installation-1"></span><h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/dspinellis/alexandria3k.git
+<span class="nb">cd</span> alexandra3k/src
+pipenv install
+</pre></div>
+</div>
+</div>
+<div class="section" id="cli-use-while-developing">
+<h2>CLI use while developing<a class="headerlink" href="#cli-use-while-developing" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in alexandria3k/src directory</span>
+
+<span class="c1"># Install development dependencies</span>
+pipenv install --dev
+
+<span class="c1"># Launch a shell in the virtual environment</span>
+pipenv shell
+
+<span class="c1"># Navigate to the top directory</span>
+<span class="nb">cd</span> ..
+
+<span class="c1"># Run the CLI</span>
+bin/alexandria3k --help
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-unit-and-integration-tests">
+<h3>Python unit and integration tests<a class="headerlink" href="#python-unit-and-integration-tests" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in the top-level directory</span>
+python3 -m unittest discover
+</pre></div>
+</div>
+</div>
+<div class="section" id="sql-unit-tests">
+<h3>SQL unit tests<a class="headerlink" href="#sql-unit-tests" title="Permalink to this headline">¶</a></h3>
+<p>To run SQL unit tests install
+<a class="reference external" href="https://github.com/dspinellis/rdbunit">rdbunit</a> and the
+<a class="reference external" href="https://www.sqlite.org/index.html">SQLite</a> command-line tool.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in the top-level directory</span>
+<span class="k">for</span> t in tests/*.rdbu<span class="p">;</span> <span class="k">do</span> rdbunit --database<span class="o">=</span>sqlite <span class="nv">$t</span> <span class="p">|</span> sqlite3 <span class="p">;</span> <span class="k">done</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="formatting">
+<h2>Formatting<a class="headerlink" href="#formatting" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in the top-level directory</span>
+black -l <span class="m">79</span> src/alexandria3k/*.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="linting">
+<h2>Linting<a class="headerlink" href="#linting" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in the top-level directory</span>
+python -m pylint src/alexandria3k/*.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="building">
+<h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in the top-level directory</span>
+python3 -m build
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">alexandria3k</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cli-use-while-developing">CLI use while developing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#formatting">Formatting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#linting">Linting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building">Building</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="ror.html" title="previous chapter">Research organization registry (ROR) data</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022-2023, Diomidis Spinellis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/dev.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

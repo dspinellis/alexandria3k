@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Alexandria3k reference documentation &#8212; alexandria3k 2.5.0 documentation</title>
+    <title>Alexandria3k documentation &#8212; alexandria3k 2.5.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -14,7 +14,7 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Python API" href="api.html" />
+    <link rel="next" title="Installation" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -31,19 +31,114 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="alexandria3k-reference-documentation">
-<h1>Alexandria3k reference documentation<a class="headerlink" href="#alexandria3k-reference-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="alexandria3k-documentation">
+<h1>Alexandria3k documentation<a class="headerlink" href="#alexandria3k-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The <em>alexandria3k</em> package supplies a library and a command-line tool
+providing efficient relational query access to diverse publication open
+data sets.
+The most important one is the entire <a class="reference external" href="https://www.nature.com/articles/d41586-022-02926-y">Crossref data
+set</a> (157 GB
+compressed, 1 TB uncompressed). This contains publication metadata from
+about 134 million publications from all major international publishers
+with full citation data for 60 million of them.
+In addition, the Crossref data set can be linked with the <a class="reference external" href="https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-">ORCID summary
+data
+set</a>
+(25 GB compressed, 435 GB uuncompressed), containing about 78 million
+author records, as well as data sets of funder bodies, journal names,
+open access journals, and research organizations.</p>
+<p>The <em>alexandria3k</em>
+package installation contains all elements required to run it. It does
+not require the installation, configuration, and maintenance of a third
+party relational or graph database. It can therefore be used
+out-of-the-box for performing reproducible publication research on the
+desktop.</p>
+<div class="section" id="pre-print-and-citation">
+<h2>Pre-print and citation<a class="headerlink" href="#pre-print-and-citation" title="Permalink to this headline">¶</a></h2>
+<p>Details about the rationale, design, implementation, and use of this
+software can be found in the following paper.</p>
+<p>Diomidis Spinellis. Open Reproducible Systematic Publication Research.
+arXiv:2301.13312, January 2023.
+<a class="reference external" href="https://doi.org/10.48550/arXiv.2301.13312">doi 10.48550/arXiv.2301.13312</a></p>
+</div>
+<div class="section" id="package-name-derivation">
+<h2>Package name derivation<a class="headerlink" href="#package-name-derivation" title="Permalink to this headline">¶</a></h2>
+<p>The <em>alexandria3k</em> package is named after the <a class="reference external" href="https://en.wikipedia.org/wiki/Library_of_Alexandria">Library of
+Alexandria</a>,
+indicating how publication data can be processed in the third millenium
+AD.</p>
+</div>
+</div>
+<div class="section" id="contents">
+<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="downloading.html#crossref-data">Crossref data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloading.html#orcid-data">ORCID data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloading.html#other-data-sources">Other data sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#obtain-list-of-command-line-options">Obtain list of command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#show-doi-and-title-of-all-publications">Show DOI and title of all publications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">Save DOI and title of 2021 publications in a CSV file suitable for Excel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#count-crossref-publications-by-year-and-type">Count Crossref publications by year and type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#sampling">Sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#database-of-covid-research">Database of COVID research</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#publications-graph">Publications graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#record-selection-from-external-database">Record selection from external database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#populate-the-database-with-author-records-from-orcid">Populate the database with author records from ORCID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#populate-the-database-with-journal-names">Populate the database with journal names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#populate-the-database-with-funder-names">Populate the database with funder names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#work-with-scopus-all-science-journal-classification-codes-asjc">Work with Scopus All Science Journal Classification Codes (ASJC)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#populate-the-database-with-data-regarding-open-access-journals">Populate the database with data regarding open access journals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#populate-the-database-with-the-names-of-research-organizations">Populate the database with the names of research organizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#link-author-affiliations-with-research-organization-names">Link author affiliations with research organization names</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#create-a-crossref-object">Create a Crossref object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#iterate-through-the-doi-and-title-of-all-publications">Iterate through the DOI and title of all publications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#create-a-dictionary-of-which-2021-publications-were-funded-by-each-body">Create a dictionary of which 2021 publications were funded by each body</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#database-of-covid-research">Database of COVID research</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#reference-graph">Reference graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#record-selection-from-external-database">Record selection from external database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#populate-the-database-from-orcid">Populate the database from ORCID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#populate-the-database-with-journal-names">Populate the database with journal names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#populate-the-database-with-funder-names">Populate the database with funder names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#populate-the-database-with-data-regarding-open-access-journals">Populate the database with data regarding open access journals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#work-with-scopus-all-science-journal-classification-codes-asjc">Work with Scopus All Science Journal Classification Codes (ASJC)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#populate-the-database-with-the-names-of-research-organizations">Populate the database with the names of research organizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python-eg.html#link-author-affiliations-with-research-organization-names">Link author affiliations with research organization names</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="schema.html#crossref-data">Crossref data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schema.html#orcid-data">ORCID data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schema.html#ror-data">ROR data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schema.html#other-data">Other data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="crossref.html">Crossref — Publication metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="orcid.html">ORCID — Author data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="csv_sources.html">Subjects, journals, open access, and funders data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ror.html">Research organization data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ror.html">Research organization registry (ROR) data</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev.html#cli-use-while-developing">CLI use while developing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev.html#formatting">Formatting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev.html#linting">Linting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev.html#building">Building</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -51,7 +146,6 @@
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
@@ -73,17 +167,23 @@
 
 
 <h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="api.html" title="next chapter">Python API</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
   </ul></li>
 </ul>
 </div>

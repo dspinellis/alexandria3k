@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relational schemas &#8212; alexandria3k 2.5.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command line interface" href="cli.html" />
+    <link rel="prev" title="Python API examples" href="python-eg.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="relational-schemas">
+<h1>Relational schemas<a class="headerlink" href="#relational-schemas" title="Permalink to this headline">¶</a></h1>
+<p>The complete schema of a fully-populated database appears below.
+Opening the image in a separate window will allow you to zoom it.</p>
+<p>Direct SQL queries can also be performed on the Crossref data set.</p>
+<div class="figure align-default">
+<img alt="Complete data schema" src="_images/all.svg" /></div>
+<p>Queries involving multiple scans of the tables (e.g. relational joins)
+should be performed by directing <em>alexandria3k</em> to perform them
+separately in each partition. This however means that aggregation
+operations will not work as expected, because they will be run multiple
+times (once for every partition).</p>
+<div class="section" id="crossref-data">
+<h2>Crossref data<a class="headerlink" href="#crossref-data" title="Permalink to this headline">¶</a></h2>
+<p>Crossref data concern works, identified through their DOI.</p>
+<div class="figure align-default">
+<img alt="Crossref data schema" src="_images/crossref.svg" /></div>
+</div>
+<div class="section" id="orcid-data">
+<h2>ORCID data<a class="headerlink" href="#orcid-data" title="Permalink to this headline">¶</a></h2>
+<p>ORCID data concern work authors, identified through their ORCID.</p>
+<div class="figure align-default">
+<img alt="ORCID data schema" src="_images/orcid.svg" /></div>
+</div>
+<div class="section" id="ror-data">
+<h2>ROR data<a class="headerlink" href="#ror-data" title="Permalink to this headline">¶</a></h2>
+<p>ROR data concern research organizations, identified through their DOI.</p>
+<div class="figure align-default">
+<img alt="ROR data schema" src="_images/ror.svg" /></div>
+</div>
+<div class="section" id="other-data">
+<h2>Other data<a class="headerlink" href="#other-data" title="Permalink to this headline">¶</a></h2>
+<p>Other data include journal names, subjects (ASJCS), funders, and
+open access journals.</p>
+<div class="figure align-default">
+<img alt="Other data schema" src="_images/other.svg" /></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">alexandria3k</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Relational schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#crossref-data">Crossref data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#orcid-data">ORCID data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ror-data">ROR data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-data">Other data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="python-eg.html" title="previous chapter">Python API examples</a></li>
+      <li>Next: <a href="cli.html" title="next chapter">Command line interface</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022-2023, Diomidis Spinellis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/schema.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

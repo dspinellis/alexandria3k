@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data downloading &#8212; alexandria3k 2.5.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Use overview" href="use.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="data-downloading">
+<h1>Data downloading<a class="headerlink" href="#data-downloading" title="Permalink to this headline">¶</a></h1>
+<p>To use <em>alexandria3k</em> you need to download the open data you require
+for your study.</p>
+<div class="section" id="crossref-data">
+<h2>Crossref data<a class="headerlink" href="#crossref-data" title="Permalink to this headline">¶</a></h2>
+<p>The main data set on which <em>alexandria3k</em> operates is that of
+<a class="reference external" href="https://www.crossref.org">Crossref</a>, comprising about 130 million
+publication metadata records with more than 1.7 billion reference
+records and 359 million author records. You can obtain the data from
+<a class="reference external" href="https://academictorrents.com/browse.php?search=crossref">Acedemic
+Torrents</a>
+using a torrent client of your choice. Below is an example of commands
+that download the April 2022 Crossref snapshot (the one on which
+<em>alexandria3k</em> has been tested) using the
+<a class="reference external" href="https://aria2.github.io/">aria2c</a> download utility.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download Crossref data (168 GB) through the torrent link</span>
+aria2c https://doi.org/10.13003/83b2gq
+</pre></div>
+</div>
+<p>Currently, the Crossref data set is split into about 26 thousand
+compressed files, each containing JSON data for 3000 publications
+(works). <em>Alexandria3k</em> provides a relational view of these data, and
+also allows the sampling of a subset of the container files to quickly
+experiment with queries, before they are run on the complete set.</p>
+</div>
+<div class="section" id="orcid-data">
+<h2>ORCID data<a class="headerlink" href="#orcid-data" title="Permalink to this headline">¶</a></h2>
+<p>You can populate a database with data regarding authors (URLs,
+countries, external identifiers, education, employment, works, etc.)
+from the <a class="reference external" href="https://orcid.org/">ORCID</a> initiative. For this you need to
+download the <em>summary file</em> of the ORCID Public Data File
+(e.g. <code class="docutils literal notranslate"><span class="pre">ORCID_2022_10_summaries.tar.gz</span></code> — 25GB) through
+<a class="reference external" href="https://orcid.figshare.com/">Figshare</a>. Note that <em>alexandria3k</em>
+works on the compressed file; there is no need to expand it (it expands
+to about 0.5 PB).</p>
+</div>
+<div class="section" id="other-data-sources">
+<h2>Other data sources<a class="headerlink" href="#other-data-sources" title="Permalink to this headline">¶</a></h2>
+<p>The <em>alexandria3k</em> system can also add to a database the following
+tables. You can download the data and point <em>alexandria3k</em> to the
+corresponding file, or, because the data sets are relatively small, you
+can provide <em>alexandria3k</em> the URL from which it will directly stream
+the data to populate the database.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://ftp.crossref.org/titlelist/titleFile.csv">Crossref journal
+data</a> (109k
+records)</p></li>
+<li><p><a class="reference external" href="https://doi.crossref.org/funderNames?mode=list">Crossref funder
+data</a> (21k
+records)</p></li>
+<li><p><a class="reference external" href="https://doaj.org/csv">Open access journal metadata</a> from the
+<a class="reference external" href="https://doaj.org/">directory of open access journals</a> (19k
+records)</p></li>
+<li><p><a class="reference external" href="https://doi.org/10.5281/zenodo.7448410">Research organization
+data</a> from the <a class="reference external" href="https://ror.org/">Research
+Organization Registry — ROR</a> (595k records)</p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">alexandria3k</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data downloading</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#crossref-data">Crossref data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#orcid-data">ORCID data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-data-sources">Other data sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="use.html" title="next chapter">Use overview</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022-2023, Diomidis Spinellis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/downloading.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
