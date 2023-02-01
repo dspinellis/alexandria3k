@@ -32,8 +32,50 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="research-organization-registry-ror-data">
-<h1>Research organization registry (ROR) data<a class="headerlink" href="#research-organization-registry-ror-data" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-ror">
+<span id="research-organization-registry-ror-data"></span><h1>Research organization registry (ROR) data<a class="headerlink" href="#module-ror" title="Permalink to this headline">¶</a></h1>
+<p>Populate ROR (Research Organization Registry) data tables</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ror.link_author_affiliations">
+<span class="sig-prename descclassname"><span class="pre">ror.</span></span><span class="sig-name descname"><span class="pre">link_author_affiliations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_to_top</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ror.link_author_affiliations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <cite>work_authors_rors</cite> table that links each work author to the
+identified research organization record (ROR).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+in which to add the table.  The database must be already
+contain the <cite>research_organizations</cite> and <cite>author_affiliations</cite>
+tables.</p></li>
+<li><p><strong>link_to_top</strong> (<em>bool</em>) – If <cite>True</cite> then the authors are linked to the
+top-level of the hierarchy associated with their affiliation
+(e.g. the university to which the university hospital they are
+affiliated with belongs).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ror.populate">
+<span class="sig-prename descclassname"><span class="pre">ror.</span></span><span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ror.populate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate the specified SQLite database with the research organization
+details.
+The database is created if it does not exist.
+If it exists, the tables to be populated are dropped
+(if they exist) and recreated anew as specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to populate.</p></li>
+<li><p><strong>data_path</strong> (<em>str</em>) – Path to a zip file containing the research organization
+data, e.g. <cite>“v1.17.1-2022-12-16-ror-data.zip”</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

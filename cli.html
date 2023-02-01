@@ -35,6 +35,116 @@
   <div class="section" id="command-line-interface">
 <h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
 <p>The <em>alexandria3k</em> command can be invoked from the shell as follows.</p>
+<p><p>alexandria3k: Relational interface to publication metadata</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">alexandria3k</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">COLUMNS</span> <span class="p">[</span><span class="n">COLUMNS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">D</span> <span class="n">DEBUG</span> <span class="p">[</span><span class="n">DEBUG</span> <span class="o">...</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DATA_SOURCE</span> <span class="p">[</span><span class="n">DATA_SOURCE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">E</span> <span class="n">OUTPUT_ENCODING</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">F</span> <span class="n">FIELD_SEPARATOR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">H</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="p">[</span><span class="n">INDEX</span> <span class="p">[</span><span class="n">INDEX</span> <span class="o">...</span><span class="p">]]]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">L</span> <span class="n">LIST_SCHEMA</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span> <span class="n">LINKED_RECORDS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">P</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">POPULATE_DB_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">Q</span> <span class="n">QUERY_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="n">QUERY</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">R</span> <span class="n">ROW_SELECTION_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ROW_SELECTION</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">x</span> <span class="n">EXECUTE</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="named-arguments">
+<h2>Named Arguments<a class="headerlink" href="#named-arguments" title="Permalink to this headline">¶</a></h2>
+<dl class="option-list">
+<dt><kbd>-a, --attach-databases</kbd></dt>
+<dd><p>Databases to attach for the row selection query</p>
+</dd>
+<dt><kbd>-c, --columns</kbd></dt>
+<dd><p>Columns to populate using table.column or table.*</p>
+</dd>
+<dt><kbd>-D, --debug</kbd></dt>
+<dd><dl class="simple">
+<dt>Output debuggging information as specfied by the arguments.</dt><dd><p>files-read: Output counts of data files read;
+link: Record linking operations;
+log-sql: Output executed SQL statements;
+perf: Output performance timings;
+populated-counts: Dump counts of the populated database;
+populated-data: Dump the data of the populated database;
+populated-reports: Output query results from the populated database;
+progress: Report progress;
+stderr: Log to standard error;
+virtual-counts: Dump counts of the virtual database;
+virtual-data: Dump the data of the virtual database.</p>
+</dd>
+</dl>
+<p>Default: []</p>
+</dd>
+<dt><kbd>-d, --data-source</kbd></dt>
+<dd><dl class="simple">
+<dt>Specify data set to be processed and its source.</dt><dd><p>The following data sets are supported:
+ASJC [&lt;CSV-file&gt; | &lt;URL&gt;] (defaults to internal table);
+Crossref &lt;container-directory&gt;;
+DOAJ [&lt;CSV-file&gt; | &lt;URL&gt;] (defaults to <a class="reference external" href="https://doaj.org/csv">https://doaj.org/csv</a>);
+funder-names [&lt;CSV-file&gt; | &lt;URL&gt;] (defaults to <a class="reference external" href="https://doi.crossref.org/funderNames?mode=list">https://doi.crossref.org/funderNames?mode=list</a>);
+journal-names [&lt;CSV-file&gt; | &lt;URL&gt;] (defaults to <a class="reference external" href="http://ftp.crossref.org/titlelist/titleFile.csv">http://ftp.crossref.org/titlelist/titleFile.csv</a>);
+ORCID &lt;summaries.tar.gz-file&gt;
+ROR &lt;zip-file&gt;;</p>
+</dd>
+</dl>
+</dd>
+<dt><kbd>-E, --output-encoding</kbd></dt>
+<dd><p>Query output character encoding (use utf-8-sig for Excel)</p>
+<p>Default: “utf-8”</p>
+</dd>
+<dt><kbd>-F, --field-separator</kbd></dt>
+<dd><p>Character to use for separating query output fields</p>
+<p>Default: “,”</p>
+</dd>
+<dt><kbd>-H, --header</kbd></dt>
+<dd><p>Include a header in the query output</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-i, --index</kbd></dt>
+<dd><p>SQL expressions that select the populated rows</p>
+</dd>
+<dt><kbd>-L, --list-schema</kbd></dt>
+<dd><dl class="simple">
+<dt>List the schema of the specified database.  The following</dt><dd><p>names are supported: Crossref, ORCID, ROR, other, all</p>
+</dd>
+</dl>
+</dd>
+<dt><kbd>-l, --linked-records</kbd></dt>
+<dd><p>Only add ORCID records that link to existing &lt;persons&gt; or &lt;works&gt;</p>
+</dd>
+<dt><kbd>-o, --output</kbd></dt>
+<dd><p>Output file for query results</p>
+</dd>
+<dt><kbd>-P, --partition</kbd></dt>
+<dd><p>Run the query over partitioned data slices. (Warning: arguments are run per partition.)</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-p, --populate-db-path</kbd></dt>
+<dd><p>Populate the SQLite database in the specified path</p>
+</dd>
+<dt><kbd>-Q, --query-file</kbd></dt>
+<dd><p>File containing query to run on the virtual tables</p>
+</dd>
+<dt><kbd>-q, --query</kbd></dt>
+<dd><p>Query to run on the virtual tables</p>
+</dd>
+<dt><kbd>-R, --row-selection-file</kbd></dt>
+<dd><p>File containing SQL expression that selects the populated rows</p>
+</dd>
+<dt><kbd>-r, --row-selection</kbd></dt>
+<dd><p>SQL expression that selects the populated rows</p>
+</dd>
+<dt><kbd>-s, --sample</kbd></dt>
+<dd><p>Python expression to sample the Crossref tables (e.g. random.random() &lt; 0.0002)</p>
+<p>Default: “True”</p>
+</dd>
+<dt><kbd>-x, --execute</kbd></dt>
+<dd><p>Operation to execute on the data. This can be one of:
+link-aa-base-ror (link author affiliations to base-level research
+organizations);
+link-aa-top-ror (link author affiliations to top-level research organizations);
+link-works-asjcs (link works with Scopus All Science Journal Classification Codes — ASJCs).</p>
+</dd>
+</dl>
+</div>
 </div>
 
 
@@ -61,7 +171,10 @@
 <li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#named-arguments">Named Arguments</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
 </ul>
