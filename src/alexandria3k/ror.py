@@ -220,7 +220,7 @@ def populate(database_path, data_path):
 
 def add_words(automaton, source):
     """Add the words from the specified source to the AC automaton"""
-    for (ror_id, word) in source:
+    for ror_id, word in source:
         automaton.add_word(word, (ror_id, len(word), word))
 
 
@@ -322,10 +322,9 @@ def link_author_affiliations(database_path, link_to_top):
 
     insert_cursor = database.cursor()
     affiliations_number = 0
-    for (author_id, affiliation_name) in select_cursor.execute(
+    for author_id, affiliation_name in select_cursor.execute(
         "SELECT author_id, name FROM author_affiliations"
     ):
-
         if not affiliation_name:
             continue
         affiliations_number += 1

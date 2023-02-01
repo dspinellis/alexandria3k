@@ -181,7 +181,7 @@ class StreamingTable:
         # print(f"BestIndex gets c={constraints} o={_orderbys}")
         used_constraints = []
         index_number = 0
-        for (column, operation) in constraints:
+        for column, operation in constraints:
             if (
                 column == CONTAINER_ID_COLUMN
                 and operation == apsw.SQLITE_INDEX_CONSTRAINT_EQ
@@ -353,7 +353,7 @@ class TableFiller:
         # Create dictionary of names/values to insert
         values = {}
         not_null_values = 0
-        for (column_name, extractor) in self.extractors.items():
+        for column_name, extractor in self.extractors.items():
             if column_name == id_name:
                 values[column_name] = id_value
             elif extractor:
@@ -383,7 +383,7 @@ class TableFiller:
             # Create dictionary of names/values to insert
             values = {}
             not_null_values = 0
-            for (column_name, extractor) in self.extractors.items():
+            for column_name, extractor in self.extractors.items():
                 if column_name == id_name:
                     values[column_name] = id_value
                 else:

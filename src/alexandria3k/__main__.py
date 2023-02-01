@@ -33,7 +33,7 @@ from . import orcid
 from . import ror
 from . import perf
 
-DESCRIPTION="alexandria3k: Relational interface to publication metadata"
+DESCRIPTION = "alexandria3k: Relational interface to publication metadata"
 
 # Default values for diverse data sources
 DOAJ_DEFAULT = "https://doaj.org/csv"
@@ -325,6 +325,7 @@ link-works-asjcs (link works with Scopus All Science Journal Classification Code
         """,
     )
 
+
 def parse_cli_arguments(parser, args=None):
     """Parse command line arguments (or args e.g. when testing)"""
     add_cli_arguments(parser)
@@ -393,11 +394,13 @@ def expand_data_source(parser, args):
 
     return args
 
+
 def get_cli_parser():
     """Return a CLI parser (used by sphinx-argparse)"""
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     add_cli_arguments(parser)
     return parser
+
 
 def main():
     # pylint: disable=too-many-branches

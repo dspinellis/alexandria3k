@@ -579,7 +579,7 @@ def populate(
 
     # Reorder columns to match the defined schema order
     # This creates schemas with a deterministic column order
-    for (table_name, table_columns) in population_columns.items():
+    for table_name, table_columns in population_columns.items():
         population_columns[table_name] = order_columns_by_schema(
             table_name, population_columns[table_name]
         )
@@ -589,7 +589,7 @@ def populate(
     set_fast_writing(database)
     cursor = database.cursor()
     table_fillers = []
-    for (table_name, table_columns) in population_columns.items():
+    for table_name, table_columns in population_columns.items():
         # Table creation
         table = get_table_meta_by_name(table_name)
         cursor.execute(log_sql(f"DROP TABLE IF EXISTS {table_name}"))

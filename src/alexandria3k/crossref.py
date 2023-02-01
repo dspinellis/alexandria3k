@@ -870,7 +870,7 @@ class IndexManager:
 
     def drop_indexes(self):
         """Drop all created indexes"""
-        for (table, column) in self.indexes:
+        for table, column in self.indexes:
             self.db.execute(log_sql(f"DROP INDEX {table}_{column}_idx"))
         self.indexes.clear()
 
@@ -1040,7 +1040,7 @@ class Crossref:
                 "progress",
                 f"Container {i} {self.data_source.get_file_name_by_id(i)}",
             )
-            for (table_name, table_columns) in self.query_columns.items():
+            for table_name, table_columns in self.query_columns.items():
                 columns = ", ".join(table_columns)
                 partition.execute(
                     log_sql(
@@ -1116,7 +1116,7 @@ class Crossref:
                         to_add.append((parent_table_name, primary_key))
                     table_name = parent_table_name
             # print("ADD COLUMNS ", to_add)
-            for (table, column) in to_add:
+            for table, column in to_add:
                 Crossref.add_column(
                     self.query_and_population_columns, table, column
                 )
@@ -1263,7 +1263,7 @@ class Crossref:
                 perf.log("Condition parsing")
 
             # Create empty tables
-            for (table_name, table_columns) in self.population_columns.items():
+            for table_name, table_columns in self.population_columns.items():
                 table = get_table_meta_by_name(table_name)
                 self.vdb.execute(
                     log_sql(f"DROP TABLE IF EXISTS populated.{table_name}")
