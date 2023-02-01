@@ -25,13 +25,13 @@ import random
 import sqlite3
 import sys
 
-from . import crossref
-from . import csv_sources
-from . import debug
-from .file_cache import FileCache
-from . import orcid
-from . import ror
-from . import perf
+from alexandria3k import crossref
+from alexandria3k import csv_sources
+from alexandria3k import debug
+from alexandria3k.file_cache import FileCache
+from alexandria3k import orcid
+from alexandria3k import ror
+from alexandria3k import perf
 
 DESCRIPTION = "alexandria3k: Relational interface to publication metadata"
 
