@@ -9,12 +9,12 @@ for format in svg pdf ; do
     (
       cat schema/schema-head.dot schema/$schema.dot
       bin/alexandria3k --list-schema $schema | bin/schema2dot.sed
-    ) | dot -T$format  -o schema/$schema.$format
+    ) | dot -T$format  -o docs/schema/$schema.$format
   done
 
   # Create combined schema diagram
   (
     ( cd schema ; cat schema-head.dot crossref.dot orcid.dot ror.dot other.dot )
     bin/alexandria3k --list-schema all | bin/schema2dot.sed
-  ) | dot -T$format  -o schema/all.$format
+  ) | dot -T$format  -o docs/schema/all.$format
 done
