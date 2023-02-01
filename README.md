@@ -26,6 +26,11 @@ journal names,
 open access journals,
 and research organizations.
 
+Details about the rationale, design, implementation, and use of this software
+can be found in the following paper.
+
+Diomidis Spinellis. Open Reproducible Systematic Publication Research. arXiv:2301.13312, January 2023. https://doi.org/10.48550/arXiv.2301.13312
+
 ## Installation
 The easiest way to install _alexandria3k_ and its dependencies is through
 [PyPI](https://pypi.org/):
