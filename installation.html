@@ -43,6 +43,22 @@ through <a class="reference external" href="https://pypi.org/">PyPI</a>:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip install --use-pep517 alexandria3k
 </pre></div>
 </div>
+<div class="section" id="local-documentation">
+<h2>Local documentation<a class="headerlink" href="#local-documentation" title="Permalink to this headline">¶</a></h2>
+<p>The documentation of <em>alexandria3k</em>
+<a class="reference external" href="https://dspinellis.github.io/alexandria3k/">is available online</a>
+If you want a local copy, you can create the HTML files by
+cloning the <em>alexandria3k</em>
+<a class="reference external" href="https://github.com/dspinellis/alexandria3k">repository</a>,
+installing the required development dependencies,
+and running <cite>make html</cite> in the <cite>docs</cite> directory.
+The HTML files will be made available in the <cite>docs/_build</cite> directory.</p>
+<p>Similarly, if you want to install a Unix manual page for the <em>alexandria3k</em>
+command-line interface, you can run <cite>make manpage</cite> (kudos to you BTW).
+You can then install the man page made available at <cite>docs/_build/alexandria3k.1</cite>
+in your preferred man page source file location, e.g.
+<cite>/usr/local/share/man/man1</cite> or <cite>$HOME/man/man1</cite>.</p>
+</div>
 </div>
 
 
@@ -63,13 +79,16 @@ through <a class="reference external" href="https://pypi.org/">PyPI</a>:</p>
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#local-documentation">Local documentation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
 </ul>

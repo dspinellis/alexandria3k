@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debug logging &#8212; alexandria3k 2.5.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Performance monitoring" href="perf.html" />
+    <link rel="prev" title="Research organization registry (ROR) data" href="ror.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="debug-logging">
+<h1>Debug logging<a class="headerlink" href="#debug-logging" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k</span> <span class="kn">import</span> <span class="n">debug</span>
+</pre></div>
+</div>
+<span class="target" id="module-debug"></span><p>Maintain debug state and output enabled messages.</p>
+<p>Use example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">debug</span>
+
+<span class="n">debug</span><span class="o">.</span><span class="n">set_flags</span><span class="p">([</span><span class="s2">&quot;parsing&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">])</span>
+<span class="n">debug</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;flag_name&quot;</span><span class="p">,</span> <span class="s2">&quot;Some message&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">debug</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="s2">&quot;flag_name&quot;</span><span class="p">)</span> <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="debug.enabled">
+<span class="sig-prename descclassname"><span class="pre">debug.</span></span><span class="sig-name descname"><span class="pre">enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#debug.enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the specified flag is enabled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>flag</strong> (<em>str</em>) – Flag to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the specified flag is enabled.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="debug.log">
+<span class="sig-prename descclassname"><span class="pre">debug.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#debug.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output the specified message if the corresponding flag is enabled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flag</strong> (<em>str</em>) – Flag that controls the message output.</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Message to output.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="debug.set_flags">
+<span class="sig-prename descclassname"><span class="pre">debug.</span></span><span class="sig-name descname"><span class="pre">set_flags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#debug.set_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable the specified debug flags.
+The following flags are supported:</p>
+<ul class="simple">
+<li><p>files-read: Counts of Crossref data files read;</p></li>
+<li><p>link: Record linking operations;</p></li>
+<li><p>sql: Executed SQL statements;</p></li>
+<li><p>perf: Performance timings;</p></li>
+<li><p>populated-counts: Counts of the populated database;</p></li>
+<li><p>populated-data: Data of the populated database;</p></li>
+<li><p>populated-reports: Query results from the populated database;</p></li>
+<li><p>progress: Report population progress;</p></li>
+<li><p>sorted-tables: Topologically ordered Crossref query tables;</p></li>
+<li><p>stderr: Log to standard error;</p></li>
+<li><p>virtual-counts: Counts of the virtual database;</p></li>
+<li><p>virtual-data: Data of the virtual database.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>flags</strong> (<em>list</em>) – Flags to enable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="debug.set_output">
+<span class="sig-prename descclassname"><span class="pre">debug.</span></span><span class="sig-name descname"><span class="pre">set_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#debug.set_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Direct output to the specified output target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fo</strong> (<em>file object</em>) – File object on which output the debug messages,
+e.g. <cite>sys.stderr</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">alexandria3k</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="crossref.html">Crossref — Publication metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="orcid.html">ORCID — Author data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csv_sources.html">Subjects, journals, open access, and funders data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ror.html">Research organization registry (ROR) data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Debug logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="perf.html">Performance monitoring</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="api.html">Python API</a><ul>
+      <li>Previous: <a href="ror.html" title="previous chapter">Research organization registry (ROR) data</a></li>
+      <li>Next: <a href="perf.html" title="next chapter">Performance monitoring</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022-2023, Diomidis Spinellis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/debug.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
