@@ -1,0 +1,32 @@
+BEGIN SETUP
+
+works:
+id	published_year
+10	2001
+11	2001
+20	2002
+21	2002
+22	2002
+30	2003
+31	2003
+32	2003
+33	2003
+
+work_links:
+work_id	url
+20	u1
+20	u2
+30	u1
+31	u1
+32	u1
+32	u2
+
+END
+
+INCLUDE SELECT yearly-work-links.sql
+
+BEGIN RESULT
+year	n
+2002	1
+2003	3
+END
