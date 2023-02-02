@@ -53,7 +53,7 @@ Contents
    cli-eg
    python-eg
    schema
-   cli
+   cli/index
    api
    dev
 
