@@ -1,4 +1,4 @@
-ORCID — Author data
+Author data — ORCID
 ===================
 
 .. code:: py

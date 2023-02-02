@@ -1,4 +1,4 @@
-Crossref — Publication metadata
+Publication metadata — Crossref
 ===============================
 
 .. code:: py

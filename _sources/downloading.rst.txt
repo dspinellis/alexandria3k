@@ -39,7 +39,7 @@ download the *summary file* of the ORCID Public Data File
 (e.g. ``ORCID_2022_10_summaries.tar.gz`` — 25GB) through
 `Figshare <https://orcid.figshare.com/>`__. Note that *alexandria3k*
 works on the compressed file; there is no need to expand it (it expands
-to about 0.5 PB).
+to about 0.5 TB).
 
 Other data sources
 ~~~~~~~~~~~~~~~~~~

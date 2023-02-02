@@ -1,4 +1,4 @@
-Research organization registry (ROR) data
+Research organization registry data — ROR
 =========================================
 
 .. code:: py
