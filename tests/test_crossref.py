@@ -126,7 +126,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
-        # debug.set_flags(["log-sql", "dump-matched"])
+        # debug.set_flags(["sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(DATABASE_PATH)
@@ -229,7 +229,7 @@ class TestCrossrefPopulateMasterCondition(TestCrossrefPopulate):
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
-        # debug.set_flags(["log-sql", "dump-matched"])
+        # debug.set_flags(["sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(DATABASE_PATH, None, "issn_print = '16191366'")
@@ -253,7 +253,7 @@ class TestCrossrefPopulateDetailCondition(TestCrossrefPopulate):
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
-        # debug.set_flags(["log-sql", "dump-matched"])
+        # debug.set_flags(["sql", "dump-matched"])
 
         cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(
@@ -282,7 +282,7 @@ class TestCrossrefPopulateMasterColumnNoCondition(TestCrossrefPopulate):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
 
-        # debug.set_flags(["log-sql"])
+        # debug.set_flags(["sql"])
         cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate( DATABASE_PATH, ["works.doi"])
         cls.con = sqlite3.connect(DATABASE_PATH)
@@ -313,7 +313,7 @@ class TestCrossrefPopulateMasterColumnCondition(TestCrossrefPopulate):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
 
-        # debug.set_flags(["log-sql"])
+        # debug.set_flags(["sql"])
         cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(
             DATABASE_PATH,
@@ -349,7 +349,7 @@ class TestCrossrefPopulateDetailConditionColumns(TestCrossrefPopulate):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
 
-        # debug.set_flags(["log-sql"])
+        # debug.set_flags(["sql"])
         cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(
             DATABASE_PATH,
@@ -521,7 +521,7 @@ class TestCrossrefPopulateAttachedDatabaseCondition(TestCrossrefPopulate):
         attached.commit()
         attached.close()
 
-        # debug.set_flags(["log-sql"])
+        # debug.set_flags(["sql"])
         cls.crossref = crossref.Crossref("tests/data/sample")
         cls.crossref.populate(
             DATABASE_PATH,

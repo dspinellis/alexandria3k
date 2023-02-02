@@ -195,18 +195,20 @@ def add_cli_arguments(parser):
         nargs="+",
         type=str,
         default=[],
+        # NOTE: Keep in sync with list in debug.py
         help="""Output debuggging information as specfied by the arguments.
-    files-read: Output counts of data files read;
+    files-read: Counts of Crossref data files read;
     link: Record linking operations;
-    log-sql: Output executed SQL statements;
-    perf: Output performance timings;
-    populated-counts: Dump counts of the populated database;
-    populated-data: Dump the data of the populated database;
-    populated-reports: Output query results from the populated database;
-    progress: Report progress;
+    sql: Executed SQL statements;
+    perf: Performance timings;
+    populated-counts: Counts of the populated database;
+    populated-data: Data of the populated database;
+    populated-reports: Query results from the populated database;
+    progress: Report population progress;
+    sorted-tables: Topologically ordered Crossref query tables;
     stderr: Log to standard error;
-    virtual-counts: Dump counts of the virtual database;
-    virtual-data: Dump the data of the virtual database.
+    virtual-counts: Counts of the virtual database;
+    virtual-data: Data of the virtual database.
 """,
     )
     parser.add_argument(

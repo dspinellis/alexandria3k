@@ -98,9 +98,9 @@ def set_fast_writing(database):
 
 
 def log_sql(statement):
-    """Return the specified SQL statement. If "log-sql" is set,
+    """Return the specified SQL statement. If "sql" is set,
     output a copy of the statement on the standard output"""
-    debug.log("log-sql", statement)
+    debug.log("sql", statement)
     return statement
 
 

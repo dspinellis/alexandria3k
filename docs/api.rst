@@ -9,3 +9,5 @@ Python API
    orcid
    csv_sources
    ror
+   debug
+   perf

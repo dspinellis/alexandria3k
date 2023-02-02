@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2023  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,23 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Maintain and output time performance values.
-
-Use:
-import perf
-perf.enable()
-expensive_task()
-perf.log("Finished expensive task")
-another_expensive_task()
-perf.log("Finished another expensive task")
-"""
+"""Maintain and output time performance values."""
 
 import time
 
-from . import debug
+from alexandria3k import debug
 
 PERF_FLAG = "perf"
-
 
 # By default use perf_counter() rather than process_time() to also
 # take into account I/O time
@@ -42,8 +32,20 @@ previous = start
 
 
 def log(message):
-    """Print the specified performance figure timestamp.
-    To enable this call debug.enable_flags(["perf"]).
+    """Print the specified performance message and times.
+    This will output the relative elapsed time from the previous
+    output, the absolute time since the program's start, and
+    the specified message.
+
+    To obtain performance output messages you need to enable the
+    corresponding debug flag.
+
+    .. code-block:: python
+
+        debug.enable_flags(["perf"]).
+
+    :param message: Message to output
+    :type message: str
     """
     if not debug.enabled(PERF_FLAG):
         return
