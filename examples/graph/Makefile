@@ -7,7 +7,8 @@
 
 export MAINDB?=graph
 export DEPENDENCIES=populate asjcs link-works-asjcs rors link-aa-base-ror \
-  reports/work-metrics.txt reports/yearly-journals.txt
+  reports/work-metrics.txt reports/yearly-journals.txt \
+  reports/yearly-abstracts.txt
 
 include ../common/Makefile
 
@@ -47,3 +48,9 @@ reports/yearly-journals.txt: yearly-journals.sql $(CROSSREF_DIR)
 	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
 	  --field-separator '|' \
 	  --query-file yearly-journals.sql >$@
+
+reports/yearly-abstracts.txt: yearly-abstracts.sql $(CROSSREF_DIR)
+	mkdir -p reports
+	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
+	  --field-separator '|' \
+	  --query-file yearly-abstracts.sql >$@

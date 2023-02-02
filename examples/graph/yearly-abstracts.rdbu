@@ -1,0 +1,23 @@
+BEGIN SETUP
+
+works:
+published_year abstract
+2010		a
+2010		b
+2010		null
+2011		k
+2011		l
+2012		null
+2012		null
+2012		null
+
+END
+
+INCLUDE SELECT yearly-abstracts.sql
+
+BEGIN RESULT
+year	total	abstract
+2010	3	2
+2011	2	2
+2012	3	0
+END
