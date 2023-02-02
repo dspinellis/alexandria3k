@@ -29,8 +29,8 @@ set, e.g. by selecting some columns).
 After your populate an SQLite database and create suitable indexes, SQL
 queries often run in seconds.
 
-You can find many example of studies conducted with command-line
-invocations in the
+You can find many complete proof-of-concept example studies
+conducted with command-line invocations in the
 `examples <https://github.com/dspinellis/alexandria3k/tree/main/examples>`__
 directory. Consider using the
 `hello world <https://github.com/dspinellis/alexandria3k/tree/main/examples/authors-by-decade>`__ (work authors by decade) example as a starting point.
