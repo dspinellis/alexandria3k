@@ -6,9 +6,7 @@
 #
 
 export MAINDB?=graph
-export DEPENDENCIES=populate asjcs link-works-asjcs rors link-aa-base-ror \
-  reports/work-metrics.txt reports/yearly-journals.txt \
-  reports/yearly-abstracts.txt
+export DEPENDENCIES=populate asjcs link-works-asjcs rors link-aa-base-ror
 
 include ../common/Makefile
 
@@ -37,20 +35,3 @@ populate: $(CROSSREF_DIR)
 	  work_authors.work_id \
 	  work_authors.orcid
 	touch $@
-
-reports/work-metrics.txt: work-metrics.sql $(CROSSREF_DIR)
-	mkdir -p reports
-	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
-	  --query-file work-metrics.sql >$@
-
-reports/yearly-journals.txt: yearly-journals.sql $(CROSSREF_DIR)
-	mkdir -p reports
-	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
-	  --field-separator '|' \
-	  --query-file yearly-journals.sql >$@
-
-reports/yearly-abstracts.txt: yearly-abstracts.sql $(CROSSREF_DIR)
-	mkdir -p reports
-	alexandria3k --data-source Crossref $(CROSSREF_DIR) \
-	  --field-separator '|' \
-	  --query-file yearly-abstracts.sql >$@

@@ -36,6 +36,7 @@ The following examples are available.
 * [Calculate the h5-index of journals](journal-h5)
 * [Calculate the h5-index of software engineering research venues](soft-eng-h5)
 * [Calculate h5-index of persons and study their citation graph](person-h5)
+* [Report metrics associated with the Crossref data set](crossref-standalone)
 * [Calculate relative yearly author productivity](author-productivity)
 * [Calculate the average size of an article's pages each year](yearly-numpages)
 * [Calculate the works' CD-5 index using the Python API or a pre-populated database](cdindex)
