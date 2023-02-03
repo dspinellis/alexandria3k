@@ -8,7 +8,7 @@ include ../common/Makefile
 
 reports/research-synthesis.txt: $(CROSSREF_DIR) research-synthesis.sql
 	mkdir -p reports
-	alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
+	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
 	  --query-file research-synthesis.sql >$@
 
 reports/total.txt: reports/research-synthesis.txt
