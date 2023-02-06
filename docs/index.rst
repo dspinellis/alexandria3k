@@ -56,6 +56,7 @@ Contents
    cli/index
    api
    dev
+   faq
 
 
 Indices and tables
