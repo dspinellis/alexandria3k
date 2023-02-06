@@ -4,4 +4,4 @@ CREATE TABLE rolap.twenty_year_publications AS
     Sum(n) OVER (
       ORDER BY published_year ROWS BETWEEN 21 PRECEDING AND 1 PRECEDING
     ), 0) AS n
-  FROM yearly_works_all;
+  FROM rolap.yearly_works_all;
