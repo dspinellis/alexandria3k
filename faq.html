@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Python Module Index &#8212; alexandria3k 2.5.0 documentation</title>
+    <title>FAQ: Frequently asked questions &#8212; alexandria3k 2.5.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -14,18 +14,12 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-
+    <link rel="prev" title="Development" href="dev.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-
-    <script>
-      DOCUMENTATION_OPTIONS.COLLAPSE_INDEX = true;
-    </script>
-
 
   </head><body>
   
@@ -37,59 +31,34 @@
 
           <div class="body" role="main">
             
-
-   <h1>Python Module Index</h1>
-
-   <div class="modindex-jumpbox">
-   <a href="#cap-c"><strong>c</strong></a> | 
-   <a href="#cap-d"><strong>d</strong></a> | 
-   <a href="#cap-o"><strong>o</strong></a> | 
-   <a href="#cap-p"><strong>p</strong></a> | 
-   <a href="#cap-r"><strong>r</strong></a>
-   </div>
-
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-c"><td></td><td>
-       <strong>c</strong></td><td></td></tr>
-     <tr>
-       <td></td>
-       <td>
-       <a href="csv_sources.html#module-csv_sources"><code class="xref">csv_sources</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-d"><td></td><td>
-       <strong>d</strong></td><td></td></tr>
-     <tr>
-       <td></td>
-       <td>
-       <a href="debug.html#module-debug"><code class="xref">debug</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-o"><td></td><td>
-       <strong>o</strong></td><td></td></tr>
-     <tr>
-       <td></td>
-       <td>
-       <a href="orcid.html#module-orcid"><code class="xref">orcid</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-p"><td></td><td>
-       <strong>p</strong></td><td></td></tr>
-     <tr>
-       <td></td>
-       <td>
-       <a href="perf.html#module-perf"><code class="xref">perf</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-r"><td></td><td>
-       <strong>r</strong></td><td></td></tr>
-     <tr>
-       <td></td>
-       <td>
-       <a href="ror.html#module-ror"><code class="xref">ror</code></a></td><td>
-       <em></em></td></tr>
-   </table>
+  <div class="section" id="faq-frequently-asked-questions">
+<h1>FAQ: Frequently asked questions<a class="headerlink" href="#faq-frequently-asked-questions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="is-sampling-peformed-before-or-after-the-row-selection">
+<h2>Is sampling peformed before or after the row selection?<a class="headerlink" href="#is-sampling-peformed-before-or-after-the-row-selection" title="Permalink to this headline">¶</a></h2>
+<p>Sampling is a powerful optimization applied before any other operation.
+Sampling is exactly the same as running Alexandria3k on a directory
+with fewer containers.
+With a low enough sample (e.g. <cite>random.random() &lt; 0.0002</cite>),
+a Crossref scan will complete in seconds.
+This allows you to quickly verify a workflow’s steps.</p>
+</div>
+<div class="section" id="will-sampling-consistently-populate-a-work-s-related-tables">
+<h2>Will sampling consistently populate a work’s related tables?<a class="headerlink" href="#will-sampling-consistently-populate-a-work-s-related-tables" title="Permalink to this headline">¶</a></h2>
+<p>Each Crossref container has data
+(e.g. title, authors, subjects, funders, references)
+for a few thousand complete publications.
+When it is skipped through sampling all related data are skipped,
+when it is included all related data can be included.</p>
+</div>
+<div class="section" id="how-does-row-selection-affect-dependent-data">
+<h2>How does row selection affect dependent data?<a class="headerlink" href="#how-does-row-selection-affect-dependent-data" title="Permalink to this headline">¶</a></h2>
+<p>By design the row selection for a table also affects the tables
+that depend on it.
+If e.g. you select a single work, then that work’s references
+and only those can be included in the references table.
+If you select an author all the author’s affiliations can be included.</p>
+</div>
+</div>
 
 
           </div>
@@ -108,7 +77,7 @@
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
@@ -118,13 +87,19 @@
 <li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">FAQ: Frequently asked questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#is-sampling-peformed-before-or-after-the-row-selection">Is sampling peformed before or after the row selection?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#will-sampling-consistently-populate-a-work-s-related-tables">Will sampling consistently populate a work’s related tables?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-does-row-selection-affect-dependent-data">How does row selection affect dependent data?</a></li>
+</ul>
+</li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="dev.html" title="previous chapter">Development</a></li>
   </ul></li>
 </ul>
 </div>
@@ -157,6 +132,9 @@
       Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
+      |
+      <a href="_sources/faq.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
 
     
