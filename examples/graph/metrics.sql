@@ -14,33 +14,31 @@ CREATE INDEX IF NOT EXISTS work_authors_rors_work_author_id_idx
 .print Works
 SELECT Count(*) FROM works;
 .print Works with a text mining link
-SELECT Count(*) FROM (SELECT DISTINCT work_id FROM work_links);
+SELECT Count(DISTINCT work_id) FROM work_links;
 .print Works with subject
-SELECT Count(*) FROM (SELECT DISTINCT work_id FROM work_subjects);
+SELECT Count(DISTINCT work_id) FROM work_subjects;
 .print Works with references
-SELECT Count(*) FROM (SELECT DISTINCT work_id FROM work_references);
+SELECT Count(DISTINCT work_id) FROM work_references;
 
 .print Works with affiliation
-SELECT Count(*) FROM (
-  SELECT DISTINCT work_id
+SELECT Count(DISTINCT work_id)
   FROM works
   INNER JOIN work_authors on work_authors.work_id = works.id
   INNER JOIN author_affiliations
-    ON author_affiliations.author_id = work_authors.id
-);
+    ON author_affiliations.author_id = work_authors.id;
 
 -- .print Works with an abstract
 -- SELECT count(*) FROM works WHERE abstract is not null;
 
 .print Works with funders
-SELECT Count(*) FROM (SELECT DISTINCT work_id FROM work_funders);
+SELECT Count(DISTINCT work_id) FROM work_funders;
 
 .print Author records
 SELECT Count(*) FROM work_authors;
 .print Author records with ORCID
 SELECT Count(*) FROM work_authors WHERE orcid is not null;
 .print Distinct authors with ORCID
-SELECT Count(*) FROM (SELECT DISTINCT orcid FROM work_authors);
+SELECT Count(DISTINCT orcid) FROM work_authors;
 
 .print Author affiliation records
 SELECT Count(*) FROM author_affiliations;
@@ -49,13 +47,13 @@ SELECT Count(*) FROM author_affiliations;
 SELECT Count(*) FROM work_authors_rors;
 
 .print Distinct affiliation names
-SELECT Count(*) FROM (SELECT DISTINCT name FROM author_affiliations);
+SELECT Count(DISTINCT name) FROM author_affiliations;
 
 .print Author records matched with research organization records
-SELECT Count(*) FROM (SELECT DISTINCT work_author_id FROM work_authors_rors);
+SELECT Count(DISTINCT work_author_id) FROM work_authors_rors;
 
 .print Distinct matched research organization records
-SELECT Count(*) FROM (SELECT DISTINCT ror_id FROM work_authors_rors);
+SELECT Count(DISTINCT ror_id) FROM work_authors_rors;
 
 .print Works with a research organization record match
 SELECT Count(*) FROM (
@@ -74,7 +72,7 @@ SELECT Count(*) FROM work_funders;
 .print Funder records with DOI
 SELECT Count(*) FROM work_funders where doi is not null;
 .print Distinct funder DOIs
-SELECT Count(*) FROM (SELECT DISTINCT doi FROM work_funders WHERE doi is not null);
+SELECT Count(DISTINCT doi) FROM work_funders WHERE doi is not null;
 .print Funder awards
 SELECT Count(*) FROM funder_awards;
 
@@ -83,4 +81,4 @@ SELECT Count(*) FROM work_references;
 .print References with DOIs
 SELECT Count(*) FROM work_references WHERE doi is not null OR isbn is not null;
 .print Distinct reference DOIs
-SELECT Count(*) FROM (SELECT DISTINCT doi FROM work_references WHERE doi is not null);
+SELECT Count(DISTINCT doi) FROM work_references WHERE doi is not null;
