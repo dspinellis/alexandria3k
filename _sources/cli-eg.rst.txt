@@ -112,10 +112,13 @@ Crossref data set to create a graph between navigable entities.
 
    alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
       --populate-db-path graph.db \
-      --columns works.doi work_references.work_id work_references.doi work_funders.id \
-       work_funders.work_id work_funders.doi funder_awards.funder_id funder_awards.name \
-       author_affiliations.author_id author_affiliations.name work_subjects.work_id work_subjects.name \
-       work_authors.id work_authors.work_id work_authors.orcid
+      --columns works.id works.doi works.published_year \
+        work_references.work_id work_references.doi work_references.isbn \
+        work_funders.id work_funders.work_id work_funders.doi \
+        funder_awards.funder_id funder_awards.name \
+        author_affiliations.author_id author_affiliations.name \
+        work_links.work_id work_subjects.work_id work_subjects.name \
+        work_authors.id work_authors.work_id work_authors.orcid
 
 Through this data set you can run on the database queries such as the
 following.

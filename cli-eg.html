@@ -126,10 +126,13 @@ regarding publications that contain “COVID” in their title or abstract.</p>
 Crossref data set to create a graph between navigable entities.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --data-source Crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --populate-db-path graph.db <span class="se">\</span>
-   --columns works.doi work_references.work_id work_references.doi work_funders.id <span class="se">\</span>
-    work_funders.work_id work_funders.doi funder_awards.funder_id funder_awards.name <span class="se">\</span>
-    author_affiliations.author_id author_affiliations.name work_subjects.work_id work_subjects.name <span class="se">\</span>
-    work_authors.id work_authors.work_id work_authors.orcid
+   --columns works.id works.doi works.published_year <span class="se">\</span>
+     work_references.work_id work_references.doi work_references.isbn <span class="se">\</span>
+     work_funders.id work_funders.work_id work_funders.doi <span class="se">\</span>
+     funder_awards.funder_id funder_awards.name <span class="se">\</span>
+     author_affiliations.author_id author_affiliations.name <span class="se">\</span>
+     work_links.work_id work_subjects.work_id work_subjects.name <span class="se">\</span>
+     work_authors.id work_authors.work_id work_authors.orcid
 </pre></div>
 </div>
 <p>Through this data set you can run on the database queries such as the
