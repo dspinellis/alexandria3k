@@ -110,7 +110,7 @@ of works whose DOI appears in the attached database named
    crossref_instance.populate(
        "selected-works.db",
        condition="EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)",
-       ["attached:selected.db"]
+       attach_databases=["attached:selected.db"]
    )
 
 Populate the database from ORCID
