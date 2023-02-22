@@ -1,6 +1,10 @@
 /*
  *  Calculate the CD5 index of Crossref works published 1945-2021
  *  from a previously populated database.
+ *  The CD5 values until of works published in the range 2017-2021 must
+ *  be discarded as they lack the required citations from five year
+ *  subsequent publications.
+ *
  */
 
 #include <algorithm>
@@ -91,7 +95,9 @@ add_vertices(database &db, Graph &graph)
     for (auto && row : db << "SELECT doi, published_year,"
 		"  Coalesce(published_month, 1),"
 		"  Coalesce(published_day, 1)"
-		"FROM works WHERE " RANGE) {
+		"FROM works WHERE " RANGE " AND EXISTS"
+		  " (SELECT 1 FROM work_references WHERE work_id == works.id)"
+		) {
 	string doi;
 	int year, month, day;
 	row >> doi >> year >> month >> day;
@@ -158,10 +164,15 @@ main(int argc, char *argv[])
         database cdb(argv[1]);
 
 	// Create indices
+	cdb << "CREATE INDEX IF NOT EXISTS works_published_year_idx ON works(published_year)";
+	cerr << "Index works_published_year_idx ready" << endl;
+
 	cdb << "CREATE INDEX IF NOT EXISTS works_id_idx ON works(id)";
+	cerr << "Index works_id_idx ready" << endl;
 
 	cdb << "CREATE INDEX IF NOT EXISTS work_references_work_id_idx"
 	  " ON work_references(work_id)";
+	cerr << "Index work_references_work_id_idx ready" << endl;
 
 	if (use_random_values) {
 	    add_random_vertices(graph);
