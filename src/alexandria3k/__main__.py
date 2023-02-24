@@ -391,8 +391,11 @@ def expand_data_source(parser, args):
     else:
         parser.error(f"Unknown source name {args.data_source[0]}")
 
-    if args.query and not args.crossref:
+    if (args.query or args.query_file) and not args.crossref:
         parser.error("Missing Crossref data directory value")
+
+    if (args.query or args.query_file) and args.populate_db_path:
+        parser.error("Database population cannot be combined with direct queries. Consider specifying --row-selection or --columns.")
 
     return args
 
