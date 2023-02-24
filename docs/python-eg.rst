@@ -101,16 +101,22 @@ navigable graph between publications and their references.
 Record selection from external database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following command creates an SQLite database with all Crossref data
+The following commands create an SQLite database with all Crossref data
 of works whose DOI appears in the attached database named
 ``selected.db``.
 
 .. code:: py
 
+   from alexandria3k.crossref import Crossref
+
+   crossref_instance = Crossref(
+        'April 2022 Public Data File from Crossref',
+       attach_databases=["attached:selected.db"]
+   )
+
    crossref_instance.populate(
        "selected-works.db",
-       condition="EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)",
-       ["attached:selected.db"]
+       condition="EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)"
    )
 
 Populate the database from ORCID

@@ -395,7 +395,10 @@ def expand_data_source(parser, args):
         parser.error("Missing Crossref data directory value")
 
     if (args.query or args.query_file) and args.populate_db_path:
-        parser.error("Database population cannot be combined with direct queries. Consider specifying --row-selection or --columns.")
+        parser.error(
+            "Database population cannot be combined with direct queries. "
+            "Consider specifying --row-selection or --columns."
+        )
 
     return args
 
@@ -428,7 +431,9 @@ def main():
     if args.crossref:
         # pylint: disable-next=W0123
         sample = eval(f"lambda path: {args.sample}")
-        crossref_instance = crossref.Crossref(args.crossref, sample)
+        crossref_instance = crossref.Crossref(
+            args.crossref, sample, args.attach_databases
+        )
 
     if debug.enabled("virtual-counts"):
         # Streaming interface
@@ -451,7 +456,6 @@ def main():
             args.populate_db_path,
             args.columns,
             args.row_selection,
-            args.attach_databases,
         )
         debug.log("files-read", f"{FileCache.file_reads} files read")
         perf.log("Crossref table population")

@@ -884,6 +884,7 @@ class Crossref:
     :param crossref_directory: The directory path where the Crossref
         data files are located
     :type crossref_directory: str
+
     :param sample: A callable to control container sampling, defaults
         to `lambda n: True`.
         The population or query method will call this argument
@@ -892,11 +893,24 @@ class Crossref:
         container file will get processed, when it returns `False` the
         container will get skipped.
     :type sample: callable, optional
+
+    :param attach_databases: A list of colon-joined tuples specifying
+        a database name and its path, defaults to `None`.
+        The specified databases are attached and made available to the
+        query and the population condition through the specified database
+        name.
+    :type attach_databases: list, optional
+
     """
 
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, crossref_directory, sample=lambda n: True):
+    def __init__(
+        self,
+        crossref_directory,
+        sample=lambda n: True,
+        attach_databases=None,
+    ):
         # A named in-memory database; it can be attached by name to others
         self.vdb = apsw.Connection(
             "file:virtual?mode=memory&cache=shared",
@@ -915,8 +929,25 @@ class Crossref:
         self.population_columns = {}
         self.query_and_population_columns = {}
         self.index_manager = None
-        self.attached_databases = []
 
+        # Attach specified databases
+        self.attached_databases = []
+        self.attach_commands = []
+        if attach_databases is None:
+            attach_databases = []
+        for db_spec in attach_databases:
+            try:
+                (db_name, db_path) = db_spec.split(":")
+            except ValueError:
+                fail(
+                    f"Invalid database specification: '{db_spec}'; expected name:path"
+                )
+            attach_command = f"ATTACH DATABASE '{db_path}' AS {db_name}"
+            self.vdb.execute(log_sql(attach_command))
+            self.attached_databases.append(db_name)
+            self.attach_commands.append(attach_command)
+
+        # Create virtual table placeholders
         for table in tables:
             self.vdb.execute(
                 log_sql(
@@ -1019,7 +1050,7 @@ class Crossref:
         #
         # Identify required tables and columns
         # Create an in-memory database
-        # Attach database partition to in-memory database
+        # Attach database partition and other attached dbs to in-memory database
         # For each partition:
         #   Copy tables to in-memory database
         #   Run query on in-memory database
@@ -1035,6 +1066,11 @@ class Crossref:
                 "ATTACH DATABASE 'file:virtual?mode=memory&cache=shared' AS virtual"
             )
         )
+
+        # Also attach databases to the partition
+        for attach_command in self.attach_commands:
+            partition.execute(log_sql(attach_command))
+
         for i in self.data_source.get_file_id_iterator():
             debug.log(
                 "progress",
@@ -1064,7 +1100,6 @@ class Crossref:
         database_path,
         columns=None,
         condition=None,
-        attach_databases=None,
     ):
         """
         Populate the specified SQLite database using the data specified
@@ -1089,12 +1124,6 @@ class Crossref:
             will only get populated with the records associated with the
             correspoing main table's record.
         :type condition: str, optional
-
-        :param attach_databases: A list of colon-joined tuples specifying
-            a database name and its path, defaults to `None`.
-            The specified databases are attached and made available to the
-            row selection query through the specified database name.
-        :type attach_databases: list, optional
 
 
         .. _SQL expression: https://www.sqlite.org/syntax/expr.html
@@ -1221,7 +1250,7 @@ class Crossref:
             self.vdb.execute(log_sql(statement))
             perf.log(f"Populate {table}")
 
-        def create_database_schema(columns, attach_databases):
+        def create_database_schema(columns):
             """Create the populated database, if needed"""
             if not os.path.exists(database_path):
                 pdb = sqlite3.connect(database_path)
@@ -1231,18 +1260,6 @@ class Crossref:
                 log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
             )
             set_fast_writing(self.vdb)
-
-            for db_spec in attach_databases:
-                try:
-                    (db_name, db_path) = db_spec.split(":")
-                except ValueError:
-                    fail(
-                        f"Invalid database specification: '{db_spec}'; expected name:path"
-                    )
-                self.vdb.execute(
-                    log_sql(f"ATTACH DATABASE '{db_path}' AS {db_name}")
-                )
-                self.attached_databases.append(db_name)
 
             self.index_manager = IndexManager(self.vdb)
 
@@ -1320,9 +1337,7 @@ class Crossref:
 
             perf.log("Matched table creation")
 
-        if attach_databases is None:
-            attach_databases = []
-        create_database_schema(columns, attach_databases)
+        create_database_schema(columns)
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
         # indexing and the file cache avoids opening, reading, decompressing,

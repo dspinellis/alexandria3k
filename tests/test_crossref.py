@@ -33,6 +33,15 @@ from alexandria3k.file_cache import FileCache
 DATABASE_PATH = "tests/tmp/crossref.db"
 ATTACHED_DATABASE_PATH = "tests/tmp/attached.db"
 
+def populate_attached():
+    """Create and populate an attached database"""
+    ensure_unlinked(ATTACHED_DATABASE_PATH)
+    attached = sqlite3.connect(ATTACHED_DATABASE_PATH)
+    attached.execute("CREATE TABLE s_works(doi)")
+    attached.execute("INSERT INTO s_works VALUES('10.1016/j.bjps.2022.04.046')")
+    attached.commit()
+    attached.close()
+
 
 class TestDoiNormalize(unittest.TestCase):
     def test_plain(self):
@@ -458,8 +467,13 @@ class TestCrossrefQuery(unittest.TestCase):
     """Verify non-works column specification and multiple conditions"""
 
     def setUp(self):
+        # debug.set_flags(["sql"])
         FileCache.file_reads = 0
-        self.crossref = crossref.Crossref("tests/data/sample")
+        populate_attached()
+        self.crossref = crossref.Crossref(
+            "tests/data/sample",
+            attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
+        )
 
     def test_works(self):
         for partition in True, False:
@@ -468,6 +482,19 @@ class TestCrossrefQuery(unittest.TestCase):
                     self.crossref.query("SELECT * FROM works", partition)
                 ),
                 12,
+            )
+
+    def test_works_attached(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.crossref.query(
+            """SELECT * FROM works WHERE EXISTS (
+                SELECT 1 FROM attached.s_works WHERE works.doi = s_works.doi)
+            """, partition
+                    )
+                ),
+                1,
             )
 
     def test_work_authors(self):
@@ -512,22 +539,17 @@ class TestCrossrefPopulateAttachedDatabaseCondition(TestCrossrefPopulate):
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
-
-        # Create and populate attached database
-        ensure_unlinked(ATTACHED_DATABASE_PATH)
-        attached = sqlite3.connect(ATTACHED_DATABASE_PATH)
-        attached.execute("CREATE TABLE s_works(doi)")
-        attached.execute("INSERT INTO s_works VALUES('10.1016/j.bjps.2022.04.046')")
-        attached.commit()
-        attached.close()
+        populate_attached()
 
         # debug.set_flags(["sql"])
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(
+            "tests/data/sample",
+            attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
+        )
         cls.crossref.populate(
             DATABASE_PATH,
             ["works.doi"],
             "EXISTS (SELECT 1 FROM attached.s_works WHERE works.doi = s_works.doi)",
-            [f"attached:{ATTACHED_DATABASE_PATH}"]
         )
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
