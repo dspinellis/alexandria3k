@@ -171,7 +171,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         )
         self.assertEqual(FileCache.file_reads, 8)
 
-    def test_work_countents(self):
+    def test_work_contents(self):
         self.assertEqual(
             self.cond_field(
                 "works", "publisher", "doi = '10.1016/j.bjps.2022.04.046'"
