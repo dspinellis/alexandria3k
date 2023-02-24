@@ -40,17 +40,17 @@ enabled_flags = set()
 output = sys.stdout
 
 
-def set_output(fo):
+def set_output(output_file):
     """
     Direct output to the specified output target.
 
-    :param fo: File object on which output the debug messages,
+    :param output_file: File object on which output the debug messages,
         e.g. `sys.stderr`.
-    :type fo: file object
+    :type output_file: file object
     """
     # pylint: disable-next=global-statement,invalid-name
     global output
-    output = fo
+    output = output_file
 
 
 def get_output():
