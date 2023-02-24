@@ -2,7 +2,7 @@ Installation
 ------------
 
 The easiest way to install *alexandria3k* and its dependencies is
-through `PyPI <https://pypi.org/>`__:
+through `PyPI <https://pypi.org/>`__.
 
 .. code:: sh
 
@@ -13,6 +13,10 @@ or
 .. code:: sh
 
    pip install --use-pep517 alexandria3k
+
+The installation requires at least Python version 3.7.
+The best practice is to
+`perform the installation in a Python virtual environment <https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/>`__.
 
 Local documentation
 ~~~~~~~~~~~~~~~~~~~
