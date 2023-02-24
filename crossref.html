@@ -39,7 +39,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="crossref.Crossref">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crossref.</span></span><span class="sig-name descname"><span class="pre">Crossref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crossref_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=&lt;function</span> <span class="pre">Crossref.&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crossref.Crossref" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crossref.</span></span><span class="sig-name descname"><span class="pre">Crossref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crossref_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=&lt;function</span> <span class="pre">Crossref.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crossref.Crossref" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Crossref meta-data object that supports queries over its
 (virtual) tables and the population of an SQLite database with its
 data.</p>
@@ -55,12 +55,17 @@ for each Crossref container file with each container’s file
 name as its argument.  When the callable returns <cite>True</cite> the
 container file will get processed, when it returns <cite>False</cite> the
 container will get skipped.</p></li>
+<li><p><strong>attach_databases</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of colon-joined tuples specifying
+a database name and its path, defaults to <cite>None</cite>.
+The specified databases are attached and made available to the
+query and the population condition through the specified database
+name.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="crossref.Crossref.populate">
-<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crossref.Crossref.populate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crossref.Crossref.populate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Populate the specified SQLite database using the data specified
 in the object constructor’s call.
 The database is created if it does not exist.
@@ -80,10 +85,6 @@ The expression can contain references to the table’s columns.
 Implicitly, if a main table is populated, its details tables
 will only get populated with the records associated with the
 correspoing main table’s record.</p></li>
-<li><p><strong>attach_databases</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of colon-joined tuples specifying
-a database name and its path, defaults to <cite>None</cite>.
-The specified databases are attached and made available to the
-row selection query through the specified database name.</p></li>
 </ul>
 </dd>
 </dl>

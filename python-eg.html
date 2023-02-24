@@ -117,13 +117,19 @@ navigable graph between publications and their references.</p>
 </div>
 <div class="section" id="record-selection-from-external-database">
 <span id="record-selection-from-external-database-1"></span><h2>Record selection from external database<a class="headerlink" href="#record-selection-from-external-database" title="Permalink to this headline">¶</a></h2>
-<p>The following command creates an SQLite database with all Crossref data
+<p>The following commands create an SQLite database with all Crossref data
 of works whose DOI appears in the attached database named
 <code class="docutils literal notranslate"><span class="pre">selected.db</span></code>.</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">crossref_instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.crossref</span> <span class="kn">import</span> <span class="n">Crossref</span>
+
+<span class="n">crossref_instance</span> <span class="o">=</span> <span class="n">Crossref</span><span class="p">(</span>
+     <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span><span class="p">,</span>
+    <span class="n">attach_databases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;attached:selected.db&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">crossref_instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span>
     <span class="s2">&quot;selected-works.db&quot;</span><span class="p">,</span>
-    <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span><span class="p">,</span>
-    <span class="p">[</span><span class="s2">&quot;attached:selected.db&quot;</span><span class="p">]</span>
+    <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
