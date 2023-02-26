@@ -7,6 +7,4 @@ SELECT published_year AS year, Avg(cdindex) AS cdindex
   FROM rolap.cdindex
   INNER JOIN works ON works.doi = cdindex.doi
   WHERE cdindex is not null AND published_year is not null
-  GROUP BY year
-  -- Years to 2021 are needed for calculating CD5
-  HAVING year <= 2016;
+  GROUP BY year;

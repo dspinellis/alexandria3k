@@ -5,4 +5,3 @@
 SELECT doi,cdindex
 FROM rolap.cdindex
 WHERE doi IN ('10.1103/physrev.140.a1133', '10.1038/171737a0');
-

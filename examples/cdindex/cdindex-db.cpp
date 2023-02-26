@@ -20,6 +20,7 @@
 #include <sqlite_modern_cpp.h>
 #include <cdindex.h>
 
+#define END_YEAR 2021
 #define RANGE "published_year BETWEEN 1945 and 2021"
 // #define RANGE "published_year BETWEEN 1945 and 1946"
 
@@ -29,10 +30,15 @@ using namespace std;
 const bool use_random_values = false;
 const int RANDOM_POPULATION_SIZE = 10000000;
 
+// Last timestamp for which CD index can be calculated
+timestamp_t HORIZON;
+
+
 const int BATCH_SIZE = 10000;
 
 // Five years, for calculating the CD_5 index
-const time_t DELTA = 5 * 365 * 24 * 60 * 60;
+const int DELTA_YEAR = 5;
+const time_t DELTA = DELTA_YEAR * 365 * 24 * 60 * 60;
 
 // Data associated with vertices
 class Vdata {
@@ -51,6 +57,17 @@ typedef pair<s2v_type::iterator, s2v_type::iterator> work_type;
 static atomic<unsigned long long> work_counter = 0;
 
 /*
+ * Return true if a valid CD index can be calculated for the specified
+ * node, i.e. if the node has references and its publication time
+ * allows the establishment of an N-year focal point.
+ */
+static bool
+valid_cd_index(Vertex *v)
+{
+    return v->get_out_degree() > 0 && v->get_timestamp() <= HORIZON;
+}
+
+/*
  * Calculate CD-index along the passed begin/end range and store it in
  * the vertice's data
  */
@@ -58,7 +75,8 @@ static void
 worker(work_type &be)
 {
     for (auto v = be.first; v != be.second; v++)
-	s2v.at(v->first).cdindex = cdindex(v->second.vi, DELTA);
+	if (valid_cd_index(v->second.vi.v))
+	    s2v.at(v->first).cdindex = cdindex(v->second.vi, DELTA);
     work_counter += BATCH_SIZE;
     if (work_counter % 1000000 == 0)
 	cerr << "C " << work_counter << endl;
@@ -95,8 +113,7 @@ add_vertices(database &db, Graph &graph)
     for (auto && row : db << "SELECT doi, published_year,"
 		"  Coalesce(published_month, 1),"
 		"  Coalesce(published_day, 1)"
-		"FROM works WHERE " RANGE " AND EXISTS"
-		  " (SELECT 1 FROM work_references WHERE work_id == works.id)"
+		"FROM works WHERE " RANGE
 		) {
 	string doi;
 	int year, month, day;
@@ -159,20 +176,10 @@ int
 main(int argc, char *argv[])
 {
     Graph graph;
+    HORIZON = timestamp_from_datetime(END_YEAR - DELTA_YEAR, 12, 31);
 
     try {
         database cdb(argv[1]);
-
-	// Create indices
-	cdb << "CREATE INDEX IF NOT EXISTS works_published_year_idx ON works(published_year)";
-	cerr << "Index works_published_year_idx ready" << endl;
-
-	cdb << "CREATE INDEX IF NOT EXISTS works_id_idx ON works(id)";
-	cerr << "Index works_id_idx ready" << endl;
-
-	cdb << "CREATE INDEX IF NOT EXISTS work_references_work_id_idx"
-	  " ON work_references(work_id)";
-	cerr << "Index work_references_work_id_idx ready" << endl;
 
 	if (use_random_values) {
 	    add_random_vertices(graph);
@@ -212,6 +219,8 @@ main(int argc, char *argv[])
 	auto ps = rdb << "INSERT INTO cdindex VALUES(?, ?)";
 	int counter = 0;
 	for (auto v : s2v) {
+	    if (!valid_cd_index(v.second.vi.v))
+		continue;
 	    ps << v.first << v.second.cdindex;
 	    ps++;
 	    if (counter++ % 1000000 == 0)
