@@ -34,8 +34,8 @@ publication research on the desktop.
 Details about the rationale, design, implementation, and use of this software
 can be found in the following paper.
 
-Diomidis Spinellis. Open Reproducible Systematic Publication Research. arXiv:2301.13312, January 2023. https://doi.org/10.48550/arXiv.2301.13312
+Diomidis Spinellis. Open Reproducible Systematic Publication Research. arXiv:2301.13312, February 2023. https://doi.org/10.48550/arXiv.2301.13312
 
-## Reference and use documentation
+## Documentation
 
-The complete documentation for *alexandria3k*  can be found [here](https://dspinellis.github.io/alexandria3k/).
+The complete reference and use documentation for *alexandria3k*  can be found [here](https://dspinellis.github.io/alexandria3k/).
