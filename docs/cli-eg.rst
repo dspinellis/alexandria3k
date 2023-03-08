@@ -32,7 +32,7 @@ Save DOI and title of 2021 publications in a CSV file suitable for Excel
    alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
      --query 'SELECT DOI, title FROM works WHERE published_year = 2021' \
      --output 2021.csv \
-     --output-encoding use utf-8-sig
+     --output-encoding utf-8-sig
 
 Count Crossref publications by year and type
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

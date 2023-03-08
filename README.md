@@ -12,7 +12,7 @@ of them.
 In addition,
 the Crossref data set can be linked with
 the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
-  (25 GB compressed, 435 GB uuncompressed),
+  (25 GB compressed, 435 GB uncompressed),
   containing about 78 million author records, as well as
 data sets of
 funder bodies,
