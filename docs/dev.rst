@@ -59,8 +59,8 @@ To run SQL unit tests install
    # While in the top-level directory
    for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
 
-Formatting
-~~~~~~~~~~
+Code formatting
+~~~~~~~~~~~~~~~
 
 .. code:: sh
 
@@ -74,6 +74,18 @@ Linting
 
    # While in the top-level directory
    python -m pylint src/alexandria3k/*.py
+
+Database schema diagrams
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+After the database schema has changed, its relational diagrams in the
+documentation must be updated as follows.
+
+.. code:: sh
+
+   # While in the top-level directory
+   bin/update-schema
+
 
 Building
 ~~~~~~~~
