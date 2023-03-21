@@ -631,6 +631,16 @@ tables = [
             ColumnMeta(
                 "update_count", lambda row: len_value(row, "update-to")
             ),
+            # Columns to facilitate queries without requiring building
+            # a references graph.
+            ColumnMeta(
+                "references_count",
+                lambda row: dict_value(row, "references-count"),
+            ),
+            ColumnMeta(
+                "is_referenced_by_count",
+                lambda row: dict_value(row, "is-referenced-by-count"),
+            ),
         ],
     ),
     TableMeta(

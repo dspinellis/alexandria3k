@@ -231,6 +231,22 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
             ),
             "text/plain",
         )
+        self.assertEqual(
+            self.cond_field(
+                "works",
+                "references_count",
+                "doi = '10.1007/s10270-017-0613-x'",
+            ),
+            42,
+        )
+        self.assertEqual(
+            self.cond_field(
+                "works",
+                "is_referenced_by_count",
+                "doi = '10.1007/s10270-017-0613-x'",
+            ),
+            5,
+        )
 
 
 class TestCrossrefPopulateMasterCondition(TestCrossrefPopulate):
