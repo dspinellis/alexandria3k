@@ -87,7 +87,7 @@ open_access_table = TableMeta(
     columns=[
         ColumnMeta("name", description="Journal title"),
         ColumnMeta("url", description="Journal URL"),
-        ColumnMeta("doaj_ur", description="URL in DOAJ"),
+        ColumnMeta("doaj_url", description="URL in DOAJ"),
         ColumnMeta(
             "oaj_start",
             description="When did the journal start to publish all content using an open license?",

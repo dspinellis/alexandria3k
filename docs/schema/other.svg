@@ -129,7 +129,7 @@
 <text text-anchor="start" x="289" y="-1105.3" font-family="Arial" font-weight="bold" font-size="14.00">open_access_journals</text>
 <text text-anchor="start" x="264" y="-1085.3" font-family="Arial" font-size="14.00">name</text>
 <text text-anchor="start" x="264" y="-1070.3" font-family="Arial" font-size="14.00">url</text>
-<text text-anchor="start" x="264" y="-1055.3" font-family="Arial" font-size="14.00">doaj_ur</text>
+<text text-anchor="start" x="264" y="-1055.3" font-family="Arial" font-size="14.00">doaj_url</text>
 <text text-anchor="start" x="264" y="-1040.3" font-family="Arial" font-size="14.00">oaj_start</text>
 <text text-anchor="start" x="264" y="-1025.3" font-family="Arial" font-size="14.00">alternative_name</text>
 <text text-anchor="start" x="264" y="-1010.3" font-family="Arial" font-size="14.00">issn_print</text>
