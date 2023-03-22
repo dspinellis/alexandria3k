@@ -218,7 +218,7 @@ open_access_table = TableMeta(
             "most_recent_addition", description="Most Recent Article Added"
         ),
     ],
-    post_population_script="sql/normalize-oaj-issns.sql",
+    post_population_script="sql/normalize-doaj.sql",
 )
 
 # Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
