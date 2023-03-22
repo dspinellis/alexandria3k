@@ -55,7 +55,7 @@ journals_table = TableMeta(
         ColumnMeta("doi"),
         ColumnMeta("volume_info"),
     ],
-    post_population_script="sql/normalize-issns.sql",
+    post_population_script="sql/normalize-journal-names-issns.sql",
 )
 
 journals_issns_table = TableMeta(
@@ -218,6 +218,7 @@ open_access_table = TableMeta(
             "most_recent_addition", description="Most Recent Article Added"
         ),
     ],
+    post_population_script="sql/normalize-oaj-issns.sql",
 )
 
 # Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
