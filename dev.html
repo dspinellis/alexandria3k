@@ -46,8 +46,10 @@ pipenv install
 </pre></div>
 </div>
 </div>
-<div class="section" id="cli-use-while-developing">
-<h2>CLI use while developing<a class="headerlink" href="#cli-use-while-developing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="development-environment">
+<h2>Development environment<a class="headerlink" href="#development-environment" title="Permalink to this headline">¶</a></h2>
+<p>Perform the following steps for setting up a virtual environment
+with the required development dependencies.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in alexandria3k/src directory</span>
 
 <span class="c1"># Install development dependencies</span>
@@ -55,14 +57,21 @@ pipenv install --dev
 
 <span class="c1"># Launch a shell in the virtual environment</span>
 pipenv shell
-
-<span class="c1"># Navigate to the top directory</span>
-<span class="nb">cd</span> ..
-
-<span class="c1"># Run the CLI</span>
-bin/alexandria3k --help
 </pre></div>
 </div>
+<p>You can the run the command-line version from the source distribution
+top-level directory as follows:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>bin/alexandria3k --help
+</pre></div>
+</div>
+</div>
+<div class="section" id="continuous-integration">
+<h2>Continuous integration<a class="headerlink" href="#continuous-integration" title="Permalink to this headline">¶</a></h2>
+<p>GitHub actions are used for running unit tests, linting, verifying the
+code’s format, as well as building the package and the documentation
+when a new commit is pushed to GitHub.
+Before doing so, it’s advisable to perform these actions locally,
+as detailed in the following sections.</p>
 </div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
@@ -106,6 +115,8 @@ documentation must be updated as follows.</p>
 bin/update-schema
 </pre></div>
 </div>
+<p>This requires an installed version of the <a class="reference external" href="https://graphviz.org/">GraphViz</a>
+<em>dot</em> command.</p>
 </div>
 <div class="section" id="building">
 <h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
@@ -113,6 +124,12 @@ bin/update-schema
 python3 -m build
 </pre></div>
 </div>
+</div>
+<div class="section" id="documentation-building">
+<h2>Documentation building<a class="headerlink" href="#documentation-building" title="Permalink to this headline">¶</a></h2>
+<p>The process for converting the documentation into HTML and a Unix <em>man</em> page
+is documented in the
+<a class="reference internal" href="installation.html"><span class="doc">installation instructions</span></a>.</p>
 </div>
 </div>
 
@@ -144,12 +161,14 @@ python3 -m build
 <li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#cli-use-while-developing">CLI use while developing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-environment">Development environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#continuous-integration">Continuous integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-formatting">Code formatting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#linting">Linting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#database-schema-diagrams">Database schema diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building">Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation-building">Documentation building</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
