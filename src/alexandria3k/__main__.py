@@ -29,6 +29,7 @@ from alexandria3k import crossref
 from alexandria3k import csv_sources
 from alexandria3k import debug
 from alexandria3k.file_cache import FileCache
+from alexandria3k.common import program_version
 from alexandria3k import orcid
 from alexandria3k import ror
 from alexandria3k import perf
@@ -316,6 +317,12 @@ def add_cli_arguments(parser):
         help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
     )
     parser.add_argument(
+        "-v",
+        "--version",
+        action="store_true",
+        help="Report program version and exit",
+    )
+    parser.add_argument(
         "-x",
         "--execute",
         type=str,
@@ -425,6 +432,10 @@ def main():
 
     if args.list_schema:
         schema_list(parser, args.list_schema)
+        sys.exit(0)
+
+    if args.version:
+        print(f"alexandria3k version {program_version()}")
         sys.exit(0)
 
     crossref_instance = None
