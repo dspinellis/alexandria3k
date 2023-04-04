@@ -40,7 +40,20 @@ jobs:
           for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
       - name: Build package
         run: cd src && pipenv run python -m build ..
+      - name: Create virtual environment for installation
+        run: |
+          pip install virtualenv
+          python -m venv test-a3k
       - name: Install built package
-        run: python3 -m pip install --use-pep517 dist/alexandria3k-*.whl
+        run: |
+          cd test-a3k
+          . bin/activate
+          python3 -m pip install --use-pep517 ../dist/alexandria3k-*.whl
       - name: Run built package
-        run: alexandria3d --version
+        run: |
+          cd test-a3k
+          . bin/activate
+          # As Python module
+          python -m alexandria3k --version
+          # As a command
+          bin/alexandria3k --version
