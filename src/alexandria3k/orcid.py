@@ -660,7 +660,7 @@ def populate(
             for filler in table_fillers:
                 if filler.get_table_name() == "persons":
                     person_id = filler.add_records(
-                        element_tree, "person_id", person_id
+                        element_tree, "id", person_id
                     )
                 else:
                     filler.add_records(element_tree, "person_id", person_id)

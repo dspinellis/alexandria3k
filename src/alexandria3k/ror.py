@@ -184,7 +184,7 @@ def populate(database_path, data_path):
             ror_id = None
             for filler in table_fillers:
                 if filler.get_table_name() == "research_organizations":
-                    ror_id = filler.add_records(ror, "ror_id", ror_id)
+                    ror_id = filler.add_records(ror, "id", ror_id)
                 else:
                     filler.add_records(ror, "ror_id", ror_id)
 
