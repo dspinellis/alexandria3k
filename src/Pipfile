@@ -11,9 +11,9 @@ pyahocorasick = "*"
 [dev-packages]
 black = "*"
 pylint = "*"
-flake8 = "*"
 sphinx = "*"
 sphinx-argparse = "*"
+typing-extensions = "*"
 
 [requires]
 python_version = "3"
