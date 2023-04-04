@@ -44,7 +44,7 @@
                     <span class="p">[</span><span class="o">-</span><span class="n">L</span> <span class="n">LIST_SCHEMA</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span> <span class="n">LINKED_RECORDS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">P</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">POPULATE_DB_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">Q</span> <span class="n">QUERY_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="n">QUERY</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">-</span><span class="n">R</span> <span class="n">ROW_SELECTION_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ROW_SELECTION</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">-</span><span class="n">x</span> <span class="n">EXECUTE</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">x</span> <span class="n">EXECUTE</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="named-arguments">
@@ -136,6 +136,10 @@ ROR &lt;zip-file&gt;;</p>
 <dt><kbd>-s, --sample</kbd></dt>
 <dd><p>Python expression to sample the Crossref tables (e.g. random.random() &lt; 0.0002)</p>
 <p>Default: “True”</p>
+</dd>
+<dt><kbd>-v, --version</kbd></dt>
+<dd><p>Report program version and exit</p>
+<p>Default: False</p>
 </dd>
 <dt><kbd>-x, --execute</kbd></dt>
 <dd><p>Operation to execute on the data. This can be one of:
