@@ -39,3 +39,5 @@ jobs:
       - name: Run SQL unit tests
         run: |
           for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
+      - name: Build package
+        run: python3 -m build
