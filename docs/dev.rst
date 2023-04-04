@@ -41,6 +41,15 @@ top-level directory as follows:
    bin/alexandria3k --help
 
 
+Continuous integration
+~~~~~~~~~~~~~~~~~~~~~~
+
+GitHub actions are used for running unit tests, linting, verifying the
+code's format, as well as building the package and the documentation
+when a new commit is pushed to GitHub.
+Before doing so, it's advisable to perform these actions locally,
+as detailed in the following sections.
+
 Testing
 ~~~~~~~
 
