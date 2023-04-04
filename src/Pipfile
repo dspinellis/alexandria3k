@@ -13,7 +13,7 @@ black = "*"
 pylint = "*"
 sphinx = "*"
 sphinx-argparse = "*"
-typing-extensions = "*"
+build = "*"
 
 [requires]
 python_version = "3"
