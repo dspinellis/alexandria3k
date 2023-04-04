@@ -22,14 +22,13 @@ jobs:
           pip install pipenv
           cd src && pipenv install --dev
       - name: Run unit and integration tests
-        run: |
-          cd src && pipenv run python -m unittest discover ..
+        run: cd src && pipenv run python -m unittest discover ..
       - name: Check code formatting
-        run: |
-          cd src && pipenv run black -l 79 --check alexandria3k/*.py
+        run: cd src && pipenv run black -l 79 --check alexandria3k/*.py
       - name: Lint
         run: |
-          cd src && pipenv run python -m pylint --rcfile ../.pylintrc alexandria3k/*.py
+          cd src
+          pipenv run python -m pylint --rcfile ../.pylintrc alexandria3k/*.py
       - name: Install rdbunit
         run: |
           git clone --depth=1 https://github.com/dspinellis/rdbunit.git
@@ -40,4 +39,8 @@ jobs:
         run: |
           for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
       - name: Build package
-        run: python3 -m build
+        run: cd src && pipenv run python -m build ..
+      - name: Install built package
+        run: python3 -m pip install --use-pep517 dist/alexandria3k-*.whl
+      - name: Run built package
+        run: alexandria3d --version
