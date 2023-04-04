@@ -17,8 +17,11 @@ Installation
    cd alexandra3k/src
    pipenv install
 
-CLI use while developing
-~~~~~~~~~~~~~~~~~~~~~~~~
+Development environment
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Perform the following steps for setting up a virtual environment
+with the required development dependencies.
 
 .. code:: sh
 
@@ -30,11 +33,13 @@ CLI use while developing
    # Launch a shell in the virtual environment
    pipenv shell
 
-   # Navigate to the top directory
-   cd ..
+You can the run the command-line version from the source distribution
+top-level directory as follows:
 
-   # Run the CLI
+.. code:: sh
+
    bin/alexandria3k --help
+
 
 Testing
 ~~~~~~~
@@ -87,6 +92,9 @@ documentation must be updated as follows.
    bin/update-schema
 
 
+This requires an installed version of the `GraphViz <https://graphviz.org/>`__
+*dot* command.
+
 Building
 ~~~~~~~~
 
@@ -95,4 +103,9 @@ Building
    # While in the top-level directory
    python3 -m build
 
+Documentation building
+~~~~~~~~~~~~~~~~~~~~~~
 
+The process for converting the documentation into HTML and a Unix *man* page
+is documented in the
+:doc:`installation instructions <installation>`.
