@@ -25,12 +25,13 @@ import unittest
 import ahocorasick
 import apsw
 
-sys.path.append("src")
+from .test_dir import add_src_dir, td
+add_src_dir()
 
 from alexandria3k.common import ensure_unlinked, query_result
 from alexandria3k import ror, crossref
 
-DATABASE_PATH = "tests/tmp/ror.db"
+DATABASE_PATH = td("tmp/ror.db")
 
 
 class TestRorPopulate(unittest.TestCase):
@@ -39,7 +40,7 @@ class TestRorPopulate(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate(DATABASE_PATH, "tests/data/ror.zip")
+        ror.populate(DATABASE_PATH, td("data/ror.zip"))
 
         cls.con = apsw.Connection(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -184,10 +185,10 @@ class TestRorLink(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate(DATABASE_PATH, "tests/data/ror.zip")
+        ror.populate(DATABASE_PATH, td("data/ror.zip"))
 
         # Needed to test author-ror linking
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(DATABASE_PATH)
 
         cls.con = apsw.Connection(DATABASE_PATH)

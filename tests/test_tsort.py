@@ -21,7 +21,8 @@
 import unittest
 import sys
 
-sys.path.append("src")
+from .test_dir import add_src_dir
+add_src_dir()
 
 from alexandria3k.tsort import tsort
 from alexandria3k.crossref import get_table_meta_by_name

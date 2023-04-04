@@ -23,15 +23,16 @@ import unittest
 import sqlite3
 import sys
 
-sys.path.append("src")
+from .test_dir import add_src_dir, td
+add_src_dir()
 
 from alexandria3k.common import ensure_unlinked, query_result
 from alexandria3k import crossref
 from alexandria3k import debug
 from alexandria3k.file_cache import FileCache
 
-DATABASE_PATH = "tests/tmp/crossref.db"
-ATTACHED_DATABASE_PATH = "tests/tmp/attached.db"
+DATABASE_PATH = td("tmp/crossref.db")
+ATTACHED_DATABASE_PATH = td("tmp/attached.db")
 
 def populate_attached():
     """Create and populate an attached database"""
@@ -137,7 +138,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         FileCache.file_reads = 0
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -256,7 +257,7 @@ class TestCrossrefPopulateMasterCondition(TestCrossrefPopulate):
         FileCache.file_reads = 0
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(DATABASE_PATH, None, "issn_print = '16191366'")
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -280,7 +281,7 @@ class TestCrossrefPopulateDetailCondition(TestCrossrefPopulate):
         FileCache.file_reads = 0
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(
             DATABASE_PATH, None, "work_authors.orcid = '0000-0002-5878-603X'"
         )
@@ -308,7 +309,7 @@ class TestCrossrefPopulateMasterColumnNoCondition(TestCrossrefPopulate):
         FileCache.file_reads = 0
 
         # debug.set_flags(["sql"])
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate( DATABASE_PATH, ["works.doi"])
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -339,7 +340,7 @@ class TestCrossrefPopulateMasterColumnCondition(TestCrossrefPopulate):
         FileCache.file_reads = 0
 
         # debug.set_flags(["sql"])
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(
             DATABASE_PATH,
             ["works.doi"],
@@ -375,7 +376,7 @@ class TestCrossrefPopulateDetailConditionColumns(TestCrossrefPopulate):
         FileCache.file_reads = 0
 
         # debug.set_flags(["sql"])
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(
             DATABASE_PATH,
             ["works.doi", "work_funders.*"],
@@ -414,7 +415,7 @@ class TestCrossrefPopulateMultipleConditionColumns(TestCrossrefPopulate):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
 
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(
             DATABASE_PATH,
             ["work_updates.label"],
@@ -487,7 +488,7 @@ class TestCrossrefQuery(unittest.TestCase):
         FileCache.file_reads = 0
         populate_attached()
         self.crossref = crossref.Crossref(
-            "tests/data/sample",
+            td("data/sample"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
 
@@ -559,7 +560,7 @@ class TestCrossrefPopulateAttachedDatabaseCondition(TestCrossrefPopulate):
 
         # debug.set_flags(["sql"])
         cls.crossref = crossref.Crossref(
-            "tests/data/sample",
+            td("data/sample"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
         cls.crossref.populate(

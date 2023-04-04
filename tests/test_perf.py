@@ -22,7 +22,8 @@ import io
 import sys
 import unittest
 
-sys.path.append("src")
+from .test_dir import add_src_dir
+add_src_dir()
 
 from alexandria3k import debug
 from alexandria3k import perf

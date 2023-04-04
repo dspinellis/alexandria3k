@@ -16,31 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""main module test"""
+"""Provide a function to obtain the tests directory"""
 
-import argparse
+import os
 import sys
-import unittest
 
-from alexandria3k.__main__ import parse_cli_arguments, DOAJ_DEFAULT
+def td(path):
+    """Return the path relative the tests directory"""
+    return f"{os.path.dirname(__file__)}/{path}"
 
-
-class TestMain(unittest.TestCase):
-    def test_expand_orcid_ok(self):
-        args = parse_cli_arguments(
-            argparse.ArgumentParser(),
-            ["-d", "orcid", "od.tar.gz", "-p" "x.db"],
-        )
-        self.assertEqual(args.orcid, "od.tar.gz")
-
-    def test_expand_doaj_ok(self):
-        args = parse_cli_arguments(
-            argparse.ArgumentParser(), ["-d", "doaj", "doaj.csv", "-p" "x.db"]
-        )
-        self.assertEqual(args.doaj, "doaj.csv")
-
-    def test_expand_doaj_defalt(self):
-        args = parse_cli_arguments(
-            argparse.ArgumentParser(), ["-d", "doaj", "-p" "x.db"]
-        )
-        self.assertEqual(args.doaj, DOAJ_DEFAULT)
+def add_src_dir():
+    """Append to the path the src directory"""
+    sys.path.insert(0, f"{os.path.dirname(__file__)}/../src")

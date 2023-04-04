@@ -24,14 +24,13 @@ import re
 import sys
 import unittest
 
-sys.path.append("src")
-
 from alexandria3k import csv_sources
 
+from .test_dir import td
 
 class TestCsvSources(unittest.TestCase):
     def test_record_source(self):
-        gen = csv_sources.record_source('tests/data/titleFile.csv', ",")
+        gen = csv_sources.record_source(td("data/titleFile.csv"), ",")
         row = next(gen)
         self.assertTrue("18435912" in row)
         self.assertTrue("10.36801/apme" in row)

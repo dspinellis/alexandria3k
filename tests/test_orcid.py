@@ -23,13 +23,14 @@ import unittest
 import sqlite3
 import sys
 
-sys.path.append("src")
+from .test_dir import add_src_dir, td
+add_src_dir()
 
 from alexandria3k.common import ensure_unlinked, query_result
 from alexandria3k import crossref
 from alexandria3k import orcid
 
-DATABASE_PATH = "tests/tmp/orcid.db"
+DATABASE_PATH = td("tmp/orcid.db")
 
 
 class TestOrcidAll(unittest.TestCase):
@@ -40,7 +41,7 @@ class TestOrcidAll(unittest.TestCase):
 
         orcid.populate(
             DATABASE_PATH,
-            "tests/data/ORCID_2022_10_summaries.tar.gz",
+            td("data/ORCID_2022_10_summaries.tar.gz"),
             None,  # All columns
             False,  # Not only person linked records
             False,  # Not only work linked records
@@ -134,12 +135,12 @@ class TestOrcidAuthorsOnly(unittest.TestCase):
         ensure_unlinked(DATABASE_PATH)
 
         # Add known authors
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(DATABASE_PATH)
 
         orcid.populate(
             DATABASE_PATH,
-            "tests/data/ORCID_2022_10_summaries.tar.gz",
+            td("data/ORCID_2022_10_summaries.tar.gz"),
             columns=None,  # All columns
             authors_only=True,
             works_only=False,
@@ -179,12 +180,12 @@ class TestOrcidWorksOnly(unittest.TestCase):
         ensure_unlinked(DATABASE_PATH)
 
         # Add known authors
-        cls.crossref = crossref.Crossref("tests/data/sample")
+        cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(DATABASE_PATH)
 
         orcid.populate(
             DATABASE_PATH,
-            "tests/data/ORCID_2022_10_summaries.tar.gz",
+            td("data/ORCID_2022_10_summaries.tar.gz"),
             columns=None,  # All columns
             authors_only=False,
             works_only=True,

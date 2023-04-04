@@ -24,11 +24,12 @@ import sqlite3
 import sys
 import unittest
 
-sys.path.append("src")
+from .test_dir import add_src_dir, td
+add_src_dir()
 
 from alexandria3k import common, ror
 
-DATABASE_PATH = "tests/tmp/ror.db"
+DATABASE_PATH = td("tmp/ror.db")
 
 class TestCommon(unittest.TestCase):
     @classmethod
@@ -36,7 +37,7 @@ class TestCommon(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate(DATABASE_PATH, "tests/data/ror.zip")
+        ror.populate(DATABASE_PATH, td("data/ror.zip"))
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 

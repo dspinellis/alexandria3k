@@ -22,10 +22,10 @@ import io
 import sys
 import unittest
 
-sys.path.append("src/alexandria3k")
+from .test_dir import add_src_dir, td
+add_src_dir()
 
-import debug
-
+import alexandria3k.debug as debug
 
 class TestDebug(unittest.TestCase):
     def test_no_output(self):

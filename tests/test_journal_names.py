@@ -23,11 +23,11 @@ import unittest
 import sqlite3
 import sys
 
-sys.path.append("src")
-
 from alexandria3k import csv_sources
 
-DATABASE_PATH = "tests/tmp/journal_names.db"
+from .test_dir import td
+
+DATABASE_PATH = td("tmp/journal_names.db")
 
 
 class TestOrcid(unittest.TestCase):
@@ -39,7 +39,7 @@ class TestOrcid(unittest.TestCase):
         csv_sources.load_csv_data(
             DATABASE_PATH,
             csv_sources.journals_table,
-            "tests/data/titleFile.csv",
+            td("data/titleFile.csv"),
         )
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
