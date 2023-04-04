@@ -1003,7 +1003,7 @@ class Crossref:
                 # Abort the query's evaluation with an exception.  Returning
                 # apsw.SQLITE_DENY seems to be doing something that takes
                 # minutes to finish
-                return None
+                return False
 
             # Add the columns required by the actual query
             self.cursor.setexectrace(tracer)
