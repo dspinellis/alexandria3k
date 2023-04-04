@@ -1360,6 +1360,8 @@ class Crossref:
             )
 
             if len(matched_tables) == 1:
+                # False positive
+                # pylint: disable-next=unbalanced-dict-unpacking
                 (table,) = self.population_columns
                 populate_only_root_table(table, i, condition)
             else:
