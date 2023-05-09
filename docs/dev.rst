@@ -33,7 +33,7 @@ with the required development dependencies.
    # Launch a shell in the virtual environment
    pipenv shell
 
-You can the run the command-line version from the source distribution
+You can then run the command-line version from the source distribution from 
 top-level directory as follows:
 
 .. code:: sh
