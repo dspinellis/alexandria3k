@@ -29,6 +29,10 @@ asjcs: populate
 	$(TIME) alexandria3k --data-source ASJC --populate "$(MAINDB).db"
 	touch $@
 
+doaj: populate
+	$(TIME) alexandria3k --data-source DOAJ --populate "$(MAINDB).db"
+	touch $@
+
 link-works-asjcs: asjcs populate
 	$(TIME) alexandria3k --execute link-works-asjcs \
 	  --populate "$(MAINDB).db"
