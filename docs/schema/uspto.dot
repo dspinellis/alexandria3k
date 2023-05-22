@@ -1,0 +1,173 @@
+digraph DatabaseSchema {
+  node [shape=plaintext]
+  
+  // Tables
+  us_patent [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="2"><b>us_patent</b></td></tr>
+    <hr/>
+        <tr><td port="0" align="left">language</td></tr>
+        <tr><td port="2" align="left">dtd_version</td></tr>
+        <tr><td port="0" align="left">filename</td></tr>
+        <tr><td port="2" align="left">status</td></tr><tr><td port="0" align="left">id</td></tr>
+        <tr><td port="2" align="left">country</td></tr>
+        <tr><td port="0" align="left">date_produced</td></tr>
+        <tr><td port="2" align="left">date_publiced</td></tr>
+  </table>>]
+
+  us_bibliographic_data [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="2"><b>us_bibliographic_data</b></td></tr>
+    <hr/>
+   <tr><td port="0" align="left">publ_references</td></tr>
+        <tr><td port="2" align="left">app_references</td></tr>
+        <tr><td port="0" align="left">us_series_code</td></tr>
+        <tr><td port="2" align="left">us_grant_extension</td></tr><tr><td port="0" align="left">ipcr_classification</td></tr>
+        <tr><td port="2" align="left">cpc_classification</td></tr>
+        <tr><td port="0" align="left">title</td></tr>
+        <tr><td port="2" align="left">us_references_cited</td></tr>
+        <tr><td port="0" align="left">num_of_claims</td></tr>
+        <tr><td port="2" align="left">us_exemplary_cited</td></tr><tr><td port="0" align="left">figures</td></tr>
+        <tr><td port="2" align="left">us_related_documents</td></tr>
+        <tr><td port="0" align="left">us_parties</td></tr>
+        <tr><td port="2" align="left">assignees</td></tr>
+        <tr><td port="0" align="left">examiners</td></tr>
+        <tr><td port="2" align="left">us_related_documents</td></tr>
+  </table>>]
+  
+  abstract [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>abstract</b></td></tr>
+    <hr/>
+    <tr><td align="left">id</td></tr>
+    <tr><td align="left">text</td></tr>
+  </table>>]
+
+  publication_references [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>publication_references</b></td></tr>
+    <hr/>
+        <tr><td port="0" align="left">country</td></tr>
+        <tr><td port="2" align="left">doc</td></tr>
+        <tr><td port="0" align="left">kind</td></tr>
+        <tr><td port="2" align="left">date</td></tr>
+  </table>>]
+  
+  application_references [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>application_references</b></td></tr>
+    <hr/>
+        <tr><td port="0" align="left">country</td></tr>
+        <tr><td port="2" align="left">doc</td></tr>
+        <tr><td port="2" align="left">date</td></tr>
+  </table>>]
+
+  ipcr_classification [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>ipcr_classification</b></td></tr>
+    <hr/>
+        <tr><td port="0" align="left">date</td></tr>
+        <tr><td port="2" align="left">level_of_classification</td></tr>
+        <tr><td port="2" align="left">section</td></tr>
+        <tr><td port="0" align="left">class</td></tr>
+        <tr><td port="2" align="left">subclass</td></tr>
+        <tr><td port="2" align="left">main_group</td></tr>
+        <tr><td port="2" align="left">subgroup</td></tr>
+        <tr><td port="0" align="left">symbol_position</td></tr>
+        <tr><td port="2" align="left">value_of_classification</td></tr>
+        <tr><td port="2" align="left">action_date</td></tr>
+        
+        <tr><td port="2" align="left">generating_office</td></tr>       
+        <tr><td port="2" align="left">classification_status</td></tr>       
+        <tr><td port="2" align="left">classification_data_source</td></tr>   
+  </table>>]
+
+  cpc_classification [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>cpc_classification</b></td></tr>
+    <hr/>
+        <tr><td port="0" align="left">enum{main, further}</td></tr>
+        <tr><td port="0" align="left">date</td></tr>
+        <tr><td port="2" align="left">section</td></tr>
+        <tr><td port="0" align="left">class</td></tr>
+        <tr><td port="2" align="left">subclass</td></tr>
+        <tr><td port="2" align="left">main_group</td></tr>
+        <tr><td port="2" align="left">subgroup</td></tr>
+        <tr><td port="0" align="left">symbol_position</td></tr>
+        <tr><td port="2" align="left">value_of_classification</td></tr>
+        <tr><td port="2" align="left">action_date</td></tr>        
+        <tr><td port="2" align="left">generating_office</td></tr>       
+        <tr><td port="2" align="left">classification_status</td></tr>       
+        <tr><td port="2" align="left">classification_data_source</td></tr>
+  </table>>]
+
+
+  us_citations [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>us_citations</b></td></tr>
+    <hr/>
+    <tr><td port="0" align="left">patcit_num</td></tr>
+    <tr><td port="2" align="left">doc_country</td></tr>
+    <tr><td port="0" align="left">doc_number</td></tr>
+    <tr><td port="2" align="left">doc_kind</td></tr>
+    <tr><td port="2" align="left">doc_name</td></tr>
+    <tr><td port="2" align="left">doc_date</td></tr>
+    <tr><td port="0" align="left">category</td></tr>
+    <tr><td port="2" align="left">cpc_classification</td></tr>
+    <tr><td port="2" align="left">national_classification_country</td></tr>
+    <tr><td port="2" align="left">national_classification_number</td></tr>
+  </table>>]
+  
+  figures [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>figures</b></td></tr>
+    <hr/>
+    <tr><td port="0" align="left">drawning_num</td></tr>
+    <tr><td port="2" align="left">figures_num</td></tr>
+    </table>>]
+    
+  us_parties [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>us_parties</b></td></tr>
+    <hr/>
+    <tr><td port="0" align="left">us_applicant_name</td></tr>
+    <tr><td port="2" align="left">us_applicant_surname</td></tr>
+    <tr><td port="0" align="left">investor_name</td></tr>
+    <tr><td port="2" align="left">investor_surname</td></tr>
+    <tr><td port="0" align="left">agent_name</td></tr>
+    <tr><td port="2" align="left">agent_surname</td></tr>    
+    </table>>]
+
+  examiners [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>examiners</b></td></tr>
+    <hr/>
+    <tr><td port="0" align="left">primary_name</td></tr>
+    <tr><td port="0" align="left">primary_surname</td></tr>
+    <tr><td port="2" align="left">department</td></tr>
+    <tr><td port="0" align="left">assistant_name</td></tr>
+    <tr><td port="2" align="left">assistant_surname</td></tr>  
+    </table>>]    
+
+  
+  us_classification_search [label=<<table border="0" cellborder="1" cellspacing="0">
+    <tr><td bgcolor="#DDEEFF" colspan="1"><b>us_classification_search</b></td></tr>
+    <hr/>
+    <tr><td port="0" align="left">classification_national</td></tr>
+    <tr><td port="0" align="left">classification_cpc</td></tr>
+    </table>>]      
+    
+
+  // Relationships
+  us_patent -> us_bibliographic_data [label="1 to 1"]
+  us_patent -> abstract [label="1 to 1"]
+
+  us_bibliographic_data -> publication_references [label="1 to 1"]
+  us_bibliographic_data -> application_references [label="1 to 1"]
+  us_bibliographic_data -> us_classification_search [label="0 to *"]
+  us_bibliographic_data -> us_citations [label="0 to *"]
+  us_bibliographic_data -> figures [label="1 to *"]
+  us_bibliographic_data -> us_parties [label="1 to 1"]
+  us_bibliographic_data -> examiners [label="1 to 1"]
+
+//   us_patent -> ipcr_classification [label="1 to *"]
+//   us_patent -> us_bibliographic_data [label="1 to 1"]
+//   us_bibliographic_data -> us_patent [label="1 to 1"]
+//   us_bibliographic_data -> application_references [label="1 to *"]
+//   application_references -> us_bibliographic_data [label="1 to 1"]
+//   application_references -> abstract [label="1 to 1"]
+//   abstract -> application_references [label="1 to *"]
+//   abstract -> publication_references [label="1 to *"]
+//   reviews -> abstract [label="1 to *"]
+//   reviews -> us_patent [label="1 to *"]
+// 
+}
