@@ -37,7 +37,6 @@ c.execute(f"""
   SELECT Coalesce(is_referenced_by_count, 0) FROM works
   LEFT JOIN rolap.oa_works ON works.id = oa_works.work_id
   WHERE oa_works.work_id is null AND published_year >= 2011
-    AND (works.issn_print is not null OR works.issn_electronic is not null)
 """)
 non_oa_references = c.fetchall()
 describe(f"References to non-OA", non_oa_references)
