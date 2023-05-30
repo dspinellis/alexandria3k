@@ -77,10 +77,7 @@ def dict_value(dictionary, key):
     """Return the value of dictionary for key or None if it doesn't exist"""
     if not dictionary:
         return None
-    try:
-        return dictionary[key]
-    except KeyError:
-        return None
+    return dictionary.get(key)
 
 
 def array_value(array, index):
