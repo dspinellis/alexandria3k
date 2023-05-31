@@ -446,21 +446,30 @@ class TestCrossrefPopulateMultipleConditionColumns(TestCrossrefPopulate):
 
 
 class TestCrossrefTransitiveClosure(unittest.TestCase):
+    def setUp(self):
+        # debug.set_flags(["sql"])
+        FileCache.file_reads = 0
+        populate_attached()
+        self.crossref = crossref.Crossref(
+            td("data/sample"),
+            attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
+        )
+
     def test_single(self):
         self.assertEqual(
-            crossref.tables_transitive_closure(["works"], "works"),
+            self.crossref.tables_transitive_closure(["works"], "works"),
             set(["works"]),
         )
 
     def test_child(self):
         self.assertEqual(
-            crossref.tables_transitive_closure(["work_authors"], "works"),
+            self.crossref.tables_transitive_closure(["work_authors"], "works"),
             set(["works", "work_authors"]),
         )
 
     def test_grandchild(self):
         self.assertEqual(
-            crossref.tables_transitive_closure(
+            self.crossref.tables_transitive_closure(
                 ["author_affiliations"], "works"
             ),
             set(["works", "work_authors", "author_affiliations"]),
@@ -468,7 +477,7 @@ class TestCrossrefTransitiveClosure(unittest.TestCase):
 
     def test_siblings(self):
         self.assertEqual(
-            crossref.tables_transitive_closure(
+            self.crossref.tables_transitive_closure(
                 ["work_authors", "work_subjects"], "works"
             ),
             set(["works", "work_authors", "work_subjects"]),
