@@ -25,7 +25,7 @@ from .file_cache import get_file_cache
 
 
 class TableMeta:
-    """Meta-data of tables we maintain"""
+    """A container for table meta-data"""
 
     # pylint: disable=too-many-instance-attributes
     def __init__(self, name, **kwargs):
@@ -42,6 +42,8 @@ class TableMeta:
         self.extract_multiple = kwargs.get("extract_multiple")
         self.columns = kwargs["columns"]
         self.post_population_script = kwargs.get("post_population_script")
+
+        self.delimiter = kwargs.get("delimiter") or ","
 
         # Create dictionary of columns by name
         self.columns_by_name = {}
@@ -120,7 +122,7 @@ class TableMeta:
 
 
 class ColumnMeta:
-    """Meta-data of table columns we maintain"""
+    """A container for column meta-data"""
 
     def __init__(self, name, value_extractor=None, **kwargs):
         self.name = name
@@ -164,10 +166,58 @@ class StreamingTable:
     """An apsw table streaming over data of the supplied table metadata"""
 
     def __init__(self, table_meta, table_dict, data_source):
+        """Not part of the apsw VTTable interface"""
         self.table_meta = table_meta
         self.table_dict = table_dict
         self.data_source = data_source
 
+    # pylint: disable-next=unused-argument
+    def BestIndex(self, constraints, _orderbys):
+        """Called by the Engine to determine the best available index
+        for the operation at hand"""
+        return None
+
+    def Disconnect(self):
+        """Called when a reference to a virtual table is no longer used"""
+
+    Destroy = Disconnect
+
+    def get_table_meta_by_name(self, name):
+        """Return the metadata of the specified table"""
+        return self.table_dict[name]
+
+    def get_table_meta(self):
+        """Return the metadata of this table"""
+        return self.table_meta
+
+    def cursor(self, table_meta):
+        """Return the cursor associated with this table.  The constructor
+        for cursors embedded in others takes a parent cursor argument.  To
+        handle this requirement, this method recursively calls itself until
+        it reaches the top-level table."""
+        cursor_class = table_meta.get_cursor_class()
+        parent_name = table_meta.get_parent_name()
+        if not parent_name:
+            return cursor_class(self)
+        parent = self.get_table_meta_by_name(parent_name)
+        return cursor_class(self, self.cursor(parent))
+
+    def Open(self):
+        """Return the table's cursor object"""
+        return self.cursor(self.table_meta)
+
+    def get_value_extractor_by_ordinal(self, column_ordinal):
+        """Return the value extraction function for column at specified
+        ordinal.  Not part of the apsw interface."""
+        return self.table_meta.get_value_extractor_by_ordinal(column_ordinal)
+
+
+class StreamingCachedContainerTable(StreamingTable):
+    """An apsw table streaming over data of the supplied table metadata.
+    This works over a cached data container (e.g. a parsed JSON or XML
+    file) that allows indexing entries within it."""
+
+    # pylint: disable-next=arguments-differ
     def BestIndex(self, constraints, _orderbys):
         """Called by the Engine to determine the best available index
         for the operation at hand"""
@@ -208,42 +258,14 @@ class StreamingTable:
             )
         return None
 
-    def Disconnect(self):
-        """Called when a reference to a virtual table is no longer used"""
-
-    Destroy = Disconnect
-
-    def get_table_meta_by_name(self, name):
-        """Return the metadata of the specified table"""
-        return self.table_dict[name]
-
-    def cursor(self, table_meta):
-        """Return the cursor associated with this table.  The constructor
-        for cursors embedded in others takes a parent cursor argument.  To
-        handle this requirement, this method recursively calls itself until
-        it reaches the top-level table."""
-        cursor_class = table_meta.get_cursor_class()
-        parent_name = table_meta.get_parent_name()
-        if not parent_name:
-            return cursor_class(self)
-        parent = self.get_table_meta_by_name(parent_name)
-        return cursor_class(self, self.cursor(parent))
-
-    def Open(self):
-        """Return the table's cursor object"""
-        return self.cursor(self.table_meta)
-
-    def get_value_extractor_by_ordinal(self, column_ordinal):
-        """Return the value extraction function for column at specified
-        ordinal.  Not part of the apsw interface."""
-        return self.table_meta.get_value_extractor_by_ordinal(column_ordinal)
-
 
 class FilesCursor:
     """A cursor over the items data files. Internal use only.
     Not used by a table."""
 
     def __init__(self, table):
+        """Not part of the apsw VTCursor interface.
+        The table agument is a StreamingTable object"""
         self.table = table
         self.eof = False
         # The following get initialized in Filter()

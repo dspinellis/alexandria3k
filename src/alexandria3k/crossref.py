@@ -26,7 +26,7 @@ from alexandria3k.virtual_db import (
     TableMeta,
     FilesCursor,
     ROWID_INDEX,
-    StreamingTable,
+    StreamingCachedContainerTable,
 )
 
 
@@ -189,7 +189,7 @@ class Source:
         Return the tuple required by the apsw.Source.Create method:
         the table's schema and the virtual table class."""
         table = self.table_dict[table_name]
-        return table.table_schema(), StreamingTable(
+        return table.table_schema(), StreamingCachedContainerTable(
             table, self.table_dict, self.data_files.get_file_array()
         )
 
@@ -769,6 +769,5 @@ class Crossref(DataSource):
         super().__init__(
             Source(table_dict, crossref_directory, sample),
             tables,
-            sample,
             attach_databases,
         )

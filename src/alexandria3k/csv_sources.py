@@ -23,17 +23,18 @@ import csv
 import sqlite3
 
 from alexandria3k.common import (
-    data_source,
+    data_from_uri_provider,
     ensure_table_exists,
     get_string_resource,
 )
+from alexandria3k.funder_names import tables as funders_table
 from alexandria3k import perf
 from alexandria3k.virtual_db import ColumnMeta, TableMeta
 
 
-def record_source(source, delimiter):
+def record_source(source, delimiter=","):
     """Given a file path or a URL return a record source for its contents"""
-    with data_source(source) as raw_input:
+    with data_from_uri_provider(source) as raw_input:
         reader = csv.reader(
             codecs.iterdecode(raw_input, "utf-8"), delimiter=delimiter
         )
@@ -66,17 +67,6 @@ journals_issns_table = TableMeta(
         ColumnMeta(
             "issn_type", description="A: Additional, E: Electronic, P: Print"
         ),
-    ],
-)
-
-# Crossref funder data https://doi.crossref.org/funderNames?mode=list
-# https://www.crossref.org/services/funder-registry/
-funders_table = TableMeta(
-    "funder_names",
-    columns=[
-        ColumnMeta("url"),
-        ColumnMeta("name"),
-        ColumnMeta("replaced"),
     ],
 )
 
@@ -335,25 +325,6 @@ def populate_journal_names(database_path, source):
     :type source: str
     """
     load_csv_data(database_path, journals_table, source)
-
-
-def populate_funder_names(database_path, source):
-    """
-    Populate funder names table of the database with data from the
-    specified source.
-    The database is created if it does not exist.
-    If it exists, the tables to be populated are dropped
-    (if they exist) and recreated anew as specified.
-
-    :param database_path: The path specifying the SQLite database
-        to populate.
-    :type database_path: str
-
-    :param source: CSV file or URL of the file containing the corresponding
-        data, e.g. `"https://doi.crossref.org/funderNames?mode=list"`.
-    :type source: str
-    """
-    load_csv_data(database_path, funders_table, source)
 
 
 def populate_open_access_journals(database_path, source):

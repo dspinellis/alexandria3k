@@ -1,5 +1,5 @@
 #
-# Alexandria3k Crossref bibliographic metadata processing
+# Alexandria3k FunderNames bibliographic metadata processing
 # Copyright (C) 2022  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -18,15 +18,13 @@
 #
 """csv_sources module test"""
 
-import codecs
-import csv
-import re
-import sys
 import unittest
+
+from .test_dir import add_src_dir, td
+add_src_dir()
 
 from alexandria3k import csv_sources
 
-from .test_dir import td
 
 class TestCsvSources(unittest.TestCase):
     def test_record_source(self):

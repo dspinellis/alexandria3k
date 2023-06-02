@@ -28,8 +28,9 @@ import sys
 from alexandria3k import crossref
 from alexandria3k import csv_sources
 from alexandria3k import debug
-from alexandria3k.file_cache import FileCache
 from alexandria3k.common import program_version
+from alexandria3k.file_cache import FileCache
+from alexandria3k import funder_names
 from alexandria3k import orcid
 from alexandria3k import ror
 from alexandria3k import perf
@@ -374,7 +375,7 @@ def expand_data_source(parser, args):
 
     source_name = args.data_source[0].lower()
 
-    if source_name == "crossref":
+    if source_name in ["crossref", "funder-names"]:
         if not (args.populate_db_path or args.query or args.query_file):
             parser.error("Database path or query must be specified")
     else:
@@ -397,9 +398,6 @@ def expand_data_source(parser, args):
         args.ror = required_value("Missing ROR zip file value")
     else:
         parser.error(f"Unknown source name {args.data_source[0]}")
-
-    if (args.query or args.query_file) and not args.crossref:
-        parser.error("Missing Crossref data directory value")
 
     if (args.query or args.query_file) and args.populate_db_path:
         parser.error(
@@ -438,22 +436,29 @@ def main():
         print(f"alexandria3k version {program_version()}")
         sys.exit(0)
 
-    crossref_instance = None
+    data_source = None
+    # pylint: disable-next=eval-used
+    sample = eval(f"lambda path: {args.sample}")
+
+    if args.funder_names:
+        data_source = funder_names.FunderNames(
+            args.funder_names, sample, args.attach_databases
+        )
+
     if args.crossref:
         # pylint: disable-next=W0123
-        sample = eval(f"lambda path: {args.sample}")
-        crossref_instance = crossref.Crossref(
+        data_source = crossref.Crossref(
             args.crossref, sample, args.attach_databases
         )
 
     if debug.enabled("virtual-counts"):
         # Streaming interface
-        database_counts(crossref_instance.get_virtual_db())
+        database_counts(data_source.get_virtual_db())
         debug.log("files-read", f"{FileCache.file_reads} files read")
 
     if debug.enabled("virtual-data"):
         # Streaming interface
-        database_dump(crossref_instance.get_virtual_db())
+        database_dump(data_source.get_virtual_db())
         debug.log("files-read", f"{FileCache.file_reads} files read")
 
     if args.row_selection_file:
@@ -462,8 +467,8 @@ def main():
             for line in query_input:
                 args.row_selection += line
 
-    if crossref_instance and args.populate_db_path:
-        crossref_instance.populate(
+    if data_source and args.populate_db_path:
+        data_source.populate(
             args.populate_db_path,
             args.columns,
             args.row_selection,
@@ -501,9 +506,9 @@ def main():
             sys.stdout.reconfigure(encoding=args.output_encoding)
             csv_file = sys.stdout
         csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
-        for rec in crossref_instance.query(args.query, args.partition):
+        for rec in data_source.query(args.query, args.partition):
             if args.header:
-                csv_writer.writerow(crossref_instance.get_query_column_names())
+                csv_writer.writerow(data_source.get_query_column_names())
                 args.header = False
             csv_writer.writerow(rec)
         csv_file.close()
@@ -514,10 +519,6 @@ def main():
     if args.doaj:
         csv_sources.populate_open_access_journals(
             args.populate_db_path, args.doaj
-        )
-    if args.funder_names:
-        csv_sources.populate_funder_names(
-            args.populate_db_path, args.funder_names
         )
     if args.journal_names:
         csv_sources.populate_journal_names(

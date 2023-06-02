@@ -145,7 +145,7 @@ def is_url(url):
     return RE_URL.match(url)
 
 
-def data_source(source):
+def data_from_uri_provider(source):
     """Given a file path, a URL, or this package's resource path
     return a readable source for its contents"""
     if source.startswith("resource:"):

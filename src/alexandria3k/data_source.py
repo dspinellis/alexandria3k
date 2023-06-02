@@ -32,6 +32,10 @@ from alexandria3k import perf
 from alexandria3k.tsort import tsort
 from alexandria3k.virtual_db import CONTAINER_ID_COLUMN
 
+# Set or compare for equality to this reference for an index value
+# is used to denote a single partition
+SINGLE_PARTITION_INDEX = "SINGLE_PARTITION"
+
 
 class ElementsCursor:
     """An (abstract) cursor over a collection of data embedded within
@@ -40,6 +44,8 @@ class ElementsCursor:
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, table, parent_cursor):
+        """Not part of the apsw VTCursor interface.
+        The table agument is a StreamingTable object"""
         self.table = table
         self.parent_cursor = parent_cursor
         self.elements = None
@@ -166,15 +172,6 @@ class DataSource:
         The first table in the list shall be the root table of the hierarchy.
     :type tables: TableMeta
 
-    :param sample: A callable to control container sampling, defaults
-        to `lambda n: True`.
-        The population or query method will call this argument
-        for each data source container file with each container's file
-        name as its argument.  When the callable returns `True` the
-        container file will get processed, when it returns `False` the
-        container will get skipped.
-    :type sample: callable, optional
-
     :param attach_databases: A list of colon-joined tuples specifying
         a database name and its path, defaults to `None`.
         The specified databases are attached and made available to the
@@ -190,14 +187,12 @@ class DataSource:
         self,
         data_source,
         tables,
-        sample=lambda n: True,
         attach_databases=None,
     ):
         # Name of root table
         self.root_name = tables[0].get_name()
 
         self.tables = tables
-        self.sample = sample
         self.table_dict = {t.get_name(): t for t in tables}
 
         # A named in-memory database; it can be attached by name to others
@@ -503,22 +498,31 @@ class DataSource:
                     )
             return result
 
-        def populate_only_root_table(table, partition_index, condition):
+        def populate_only_root_table(
+            table, partition_index, selection_condition
+        ):
             """Populate the root table, when no other tables will be needed"""
 
             columns = ", ".join(
                 [f"{table}.{col}" for col in self.population_columns[table]]
             )
-            if not condition:
-                condition = "true"
+            if not selection_condition:
+                selection_condition = "true"
+
+            # Partition is set to -1 when no partitions exist
+            partition_condition = (
+                "true"
+                if partition_index is SINGLE_PARTITION_INDEX
+                else f"{table}.container_id = {partition_index}"
+            )
             # No need for temp table matching at the root
             self.vdb.execute(
                 log_sql(
                     f"""
                 INSERT INTO populated.{table}
                 SELECT {columns} FROM {table}
-                WHERE {table}.container_id = {partition_index}
-                  AND {condition}
+                WHERE {partition_condition}
+                  AND {selection_condition}
             """
                 )
             )
