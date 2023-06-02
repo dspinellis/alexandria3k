@@ -118,13 +118,6 @@ class TableMeta:
         """Return defined column definition DDL for column name"""
         return self.columns_by_name[name].get_definition()
 
-    def creation_tuple(self, table_dict, data_source):
-        """Return the tuple required by the apsw.Source.Create method:
-        the table's schema and the virtual table class."""
-        return self.table_schema(), StreamingTable(
-            self, table_dict, data_source
-        )
-
 
 class ColumnMeta:
     """Meta-data of table columns we maintain"""

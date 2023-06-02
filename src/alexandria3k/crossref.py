@@ -26,6 +26,7 @@ from alexandria3k.virtual_db import (
     TableMeta,
     FilesCursor,
     ROWID_INDEX,
+    StreamingTable,
 )
 
 
@@ -184,9 +185,12 @@ class Source:
         self.table_dict = table_dict
 
     def Create(self, _db, _module_name, _db_name, table_name):
-        """Create the specified virtual table"""
-        return self.table_dict[table_name].creation_tuple(
-            self.table_dict, self.data_files.get_file_array()
+        """Create the specified virtual table
+        Return the tuple required by the apsw.Source.Create method:
+        the table's schema and the virtual table class."""
+        table = self.table_dict[table_name]
+        return table.table_schema(), StreamingTable(
+            table, self.table_dict, self.data_files.get_file_array()
         )
 
     Connect = Create
