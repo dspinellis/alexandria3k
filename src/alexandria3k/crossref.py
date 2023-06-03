@@ -30,6 +30,8 @@ from alexandria3k.virtual_db import (
 )
 
 
+DEFAULT_SOURCE = None
+
 # Method names coming from apsw start with uppercase
 # pylint: disable=invalid-name
 # pylint: disable=too-many-lines

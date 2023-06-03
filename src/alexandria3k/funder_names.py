@@ -23,6 +23,7 @@ from alexandria3k.csv_sources import CsvCursor, VTSource
 from alexandria3k.data_source import DataSource
 from alexandria3k.virtual_db import ColumnMeta, TableMeta
 
+DEFAULT_SOURCE = "https://doi.crossref.org/funderNames?mode=list"
 
 # Crossref funder data https://doi.crossref.org/funderNames?mode=list
 # https://www.crossref.org/services/funder-registry/
@@ -36,6 +37,8 @@ table = TableMeta(
         ColumnMeta("replaced", lambda row: row[2] if len(row[2]) else None),
     ],
 )
+
+tables = [table]
 
 
 class FunderNames(DataSource):

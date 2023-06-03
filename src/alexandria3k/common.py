@@ -44,8 +44,9 @@ RE_URL = re.compile(r"\w+://")
 def is_unittest():
     """ "Return True if the routine is executed in a unit test"""
     return any(
+        "unittest" in str(cls)
         # pylint: disable-next=protected-access
-        "unittest" in str(cls) for cls in sys._getframe(1).f_globals.values()
+        for cls in sys._getframe(1).f_globals.values()
     )
 
 

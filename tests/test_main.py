@@ -22,7 +22,8 @@ import argparse
 import sys
 import unittest
 
-from alexandria3k.__main__ import parse_cli_arguments, DOAJ_DEFAULT
+from alexandria3k.__main__ import parse_cli_arguments
+from alexandria3k.doaj import DEFAULT_SOURCE
 
 
 class TestMain(unittest.TestCase):
@@ -43,4 +44,4 @@ class TestMain(unittest.TestCase):
         args = parse_cli_arguments(
             argparse.ArgumentParser(), ["-d", "doaj", "-p" "x.db"]
         )
-        self.assertEqual(args.doaj, DOAJ_DEFAULT)
+        self.assertEqual(args.doaj, DEFAULT_SOURCE)

@@ -24,6 +24,7 @@ from alexandria3k.csv_sources import CsvCursor, VTSource
 from alexandria3k.data_source import DataSource
 from alexandria3k.virtual_db import ColumnMeta, TableMeta
 
+DEFAULT_SOURCE = "https://doaj.org/csv"
 
 # DOAJ open access journal metadata data
 # https://doaj.org/csv
@@ -167,6 +168,9 @@ table = TableMeta(
     ],
     post_population_script="sql/normalize-doaj.sql",
 )
+
+
+tables = [table]
 
 
 class Doaj(DataSource):

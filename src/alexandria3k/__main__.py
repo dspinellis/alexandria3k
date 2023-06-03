@@ -39,8 +39,6 @@ from alexandria3k import perf
 DESCRIPTION = "alexandria3k: Relational interface to publication metadata"
 
 # Default values for diverse data sources
-DOAJ_DEFAULT = "https://doaj.org/csv"
-FUNDER_NAMES_DEFAULT = "https://doi.crossref.org/funderNames?mode=list"
 JOURNAL_NAMES_DEFAULT = "http://ftp.crossref.org/titlelist/titleFile.csv"
 ASJC_DEFAULT = "resource:data/asjc.csv"
 
@@ -110,8 +108,8 @@ def schema_list(parser, arg):
         tables_list(
             crossref.tables
             + csv_sources.tables
-            + [doaj.table]
-            + [funder_names.table]
+            + doaj.tables
+            + funder_names.tables
             + orcid.tables
             + ror.tables
         )
@@ -228,8 +226,8 @@ def add_cli_arguments(parser):
     The following data sets are supported:
     ASJC [<CSV-file> | <URL>] (defaults to internal table);
     Crossref <container-directory>;
-    DOAJ [<CSV-file> | <URL>] (defaults to {DOAJ_DEFAULT});
-    funder-names [<CSV-file> | <URL>] (defaults to {FUNDER_NAMES_DEFAULT});
+    DOAJ [<CSV-file> | <URL>] (defaults to {doaj.DEFAULT_SOURCE});
+    funder-names [<CSV-file> | <URL>] (defaults to {funder_names.DEFAULT_SOURCE});
     journal-names [<CSV-file> | <URL>] (defaults to {JOURNAL_NAMES_DEFAULT});
     ORCID <summaries.tar.gz-file>
     ROR <zip-file>;
@@ -254,13 +252,6 @@ def add_cli_arguments(parser):
         "--header",
         action="store_true",
         help="Include a header in the query output",
-    )
-    parser.add_argument(
-        "-i",
-        "--index",
-        nargs="*",
-        type=str,
-        help="SQL expressions that select the populated rows",
     )
     parser.add_argument(
         "-L",
@@ -393,9 +384,9 @@ def expand_data_source(parser, args):
     elif source_name == "crossref":
         args.crossref = required_value("Missing Crossref data directory value")
     elif source_name == "doaj":
-        args.doaj = optional_value(DOAJ_DEFAULT)
+        args.doaj = optional_value(doaj.DEFAULT_SOURCE)
     elif source_name == "funder-names":
-        args.funder_names = optional_value(FUNDER_NAMES_DEFAULT)
+        args.funder_names = optional_value(funder_names.DEFAULT_SOURCE)
     elif source_name == "journal-names":
         args.journal_names = optional_value(JOURNAL_NAMES_DEFAULT)
     elif source_name == "orcid":
