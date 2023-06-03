@@ -107,7 +107,11 @@ def schema_list(parser, arg):
     name = arg.lower()
     if name == "all":
         tables_list(
-            crossref.tables + csv_sources.tables + orcid.tables + ror.tables
+            crossref.tables
+            + csv_sources.tables
+            + orcid.tables
+            + ror.tables
+            + [funder_names.table]
         )
     elif name == "crossref":
         tables_list(crossref.tables)

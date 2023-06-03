@@ -175,14 +175,14 @@ def lower_or_none(string):
     return string.lower() if string else None
 
 
-class Source:
+class VTSource:
     """Virtual table data source.  This gets registered with the apsw
     Connection through createmodule in order to instantiate the virtual
     tables."""
 
-    def __init__(self, table_dict, data_directory, sample):
+    def __init__(self, data_directory, sample):
         self.data_files = DataFiles(data_directory, sample)
-        self.table_dict = table_dict
+        self.table_dict = {t.get_name(): t for t in tables}
 
     def Create(self, _db, _module_name, _db_name, table_name):
         """Create the specified virtual table
@@ -765,9 +765,8 @@ class Crossref(DataSource):
         sample=lambda n: True,
         attach_databases=None,
     ):
-        table_dict = {t.get_name(): t for t in tables}
         super().__init__(
-            Source(table_dict, crossref_directory, sample),
+            VTSource(crossref_directory, sample),
             tables,
             attach_databases,
         )
