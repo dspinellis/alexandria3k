@@ -19,7 +19,6 @@
 """funder_names module test. This tests the functionality of all
 csv_sources data sources."""
 
-import codecs
 import csv
 import os
 import re
@@ -62,7 +61,7 @@ class TestFunderNamesPopulateVanilla(PopulateQueries):
     @classmethod
     def tearDownClass(cls):
         cls.con.close()
-        #os.unlink(DATABASE_PATH)
+        os.unlink(DATABASE_PATH)
 
     def test_counts(self):
         self.assertEqual(self.record_count("funder_names"), 11)

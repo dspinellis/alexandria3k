@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Provide query and population access to the funder table"""
+"""Provide query and population access to the Crossref funder names data."""
 
 
 from alexandria3k.csv_sources import CsvCursor, VTSource
@@ -31,8 +31,8 @@ table = TableMeta(
     cursor_class=CsvCursor,
     columns=[
         ColumnMeta("id"),
-        ColumnMeta("url", lambda row: row[0]),
-        ColumnMeta("name", lambda row: row[1]),
+        ColumnMeta("url"),
+        ColumnMeta("name"),
         ColumnMeta("replaced", lambda row: row[2] if len(row[2]) else None),
     ],
 )

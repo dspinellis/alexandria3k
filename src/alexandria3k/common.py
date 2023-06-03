@@ -41,9 +41,25 @@ from . import debug
 RE_URL = re.compile(r"\w+://")
 
 
+def is_unittest():
+    """ "Return True if the routine is executed in a unit test"""
+    return any(
+        # pylint: disable-next=protected-access
+        "unittest" in str(cls) for cls in sys._getframe(1).f_globals.values()
+    )
+
+
+def warn(message):
+    """Output a warning with the specified message"""
+    if is_unittest():
+        return
+    print(f"Warning: {message}", file=sys.stderr)
+
+
 def fail(message):
     """Fail the program execution with the specified error message"""
-    print(message, file=sys.stderr)
+    print(f"Error: {message}", file=sys.stderr)
+    print("Terminating program execution.", file=sys.stderr)
     sys.exit(1)
 
 

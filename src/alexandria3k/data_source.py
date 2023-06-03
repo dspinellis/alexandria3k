@@ -21,12 +21,20 @@
 import abc
 import csv
 import os
+import re
 import sqlite3
 
 # pylint: disable-next=import-error
 import apsw
 
-from alexandria3k.common import add_columns, fail, log_sql, set_fast_writing
+from alexandria3k.common import (
+    add_columns,
+    fail,
+    get_string_resource,
+    log_sql,
+    set_fast_writing,
+    warn,
+)
 from alexandria3k import debug
 from alexandria3k import perf
 from alexandria3k.tsort import tsort
@@ -168,7 +176,7 @@ class DataSource:
     :param data_source: An object that shall supply the database elements
     :type data_source: DataSource
 
-    :param tables: A list of the tables associated with the data source
+    :param tables: A list of the table metadata associated with the data source
         The first table in the list shall be the root table of the hierarchy.
     :type tables: TableMeta
 
@@ -649,6 +657,36 @@ class DataSource:
 
             perf.log("Matched table creation")
 
+        def run_post_population_script(table):
+            """Run the post population script of the specified table,
+            if available, ignoring errors of individual statements."""
+            table_meta = self.get_table_meta_by_name(table)
+            post_population_script = table_meta.get_post_population_script()
+            if not post_population_script:
+                return
+
+            pdb = sqlite3.connect(database_path)
+            script = get_string_resource(post_population_script)
+            # remove C-style comments
+            script = re.sub(r"/\*.*?\*/", "", script, flags=re.DOTALL)
+            # remove SQL single-line comments
+            script = re.sub(r"--.*$", "", script, flags=re.MULTILINE)
+            statements = script.strip().split(";")
+
+            for statement in statements:
+                try:
+                    pdb.execute(log_sql(statement))
+                    perf.log(f"Run {post_population_script} {statement}")
+                except sqlite3.Error as err:
+                    warn(
+                        f"{post_population_script}: "
+                        f"Unable to execute {statement}: {err} "
+                        "(Column not populated?)"
+                    )
+
+            pdb.execute(log_sql("COMMIT"))
+            pdb.close()
+
         create_database_schema(columns)
         # Populate all tables from the records of each file in sequence.
         # This improves the locality of reference and through the constraint
@@ -677,3 +715,5 @@ class DataSource:
 
         self.vdb.execute(log_sql("DETACH populated"))
         self.vdb.close()
+        for table in self.population_columns:
+            run_post_population_script(table)

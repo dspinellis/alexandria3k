@@ -25,10 +25,11 @@ import random
 import sqlite3
 import sys
 
+from alexandria3k.common import program_version
 from alexandria3k import crossref
 from alexandria3k import csv_sources
 from alexandria3k import debug
-from alexandria3k.common import program_version
+from alexandria3k import doaj
 from alexandria3k.file_cache import FileCache
 from alexandria3k import funder_names
 from alexandria3k import orcid
@@ -109,9 +110,10 @@ def schema_list(parser, arg):
         tables_list(
             crossref.tables
             + csv_sources.tables
+            + [doaj.table]
+            + [funder_names.table]
             + orcid.tables
             + ror.tables
-            + [funder_names.table]
         )
     elif name == "crossref":
         tables_list(crossref.tables)
@@ -444,15 +446,18 @@ def main():
     # pylint: disable-next=eval-used
     sample = eval(f"lambda path: {args.sample}")
 
-    if args.funder_names:
-        data_source = funder_names.FunderNames(
-            args.funder_names, sample, args.attach_databases
-        )
-
     if args.crossref:
         # pylint: disable-next=W0123
         data_source = crossref.Crossref(
             args.crossref, sample, args.attach_databases
+        )
+
+    if args.doaj:
+        data_source = doaj.Doaj(args.doaj, sample, args.attach_databases)
+
+    if args.funder_names:
+        data_source = funder_names.FunderNames(
+            args.funder_names, sample, args.attach_databases
         )
 
     if debug.enabled("virtual-counts"):
@@ -520,10 +525,6 @@ def main():
 
     if args.asjc:
         csv_sources.populate_asjc(args.populate_db_path, args.asjc)
-    if args.doaj:
-        csv_sources.populate_open_access_journals(
-            args.populate_db_path, args.doaj
-        )
     if args.journal_names:
         csv_sources.populate_journal_names(
             args.populate_db_path, args.journal_names
