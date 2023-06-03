@@ -26,5 +26,6 @@ def td(path):
     return f"{os.path.dirname(__file__)}/{path}"
 
 def add_src_dir():
-    """Append to the path the src directory"""
+    """Append to the path the src directory.  This allows unit tests to be
+    executed individually, rather than only through discover."""
     sys.path.insert(0, f"{os.path.dirname(__file__)}/../src")

@@ -22,6 +22,9 @@ import argparse
 import sys
 import unittest
 
+from .test_dir import add_src_dir, td
+add_src_dir()
+
 from alexandria3k.__main__ import parse_cli_arguments
 from alexandria3k.doaj import DEFAULT_SOURCE
 

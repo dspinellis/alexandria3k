@@ -132,83 +132,6 @@ class CsvCursor:
         self.raw_input.close()
 
 
-def record_source(source, delimiter=","):
-    """Given a file path or a URL return a record source for its contents"""
-    with data_from_uri_provider(source) as raw_input:
-        reader = csv.reader(
-            codecs.iterdecode(raw_input, "utf-8"), delimiter=delimiter
-        )
-        next(reader, None)  # Skip header row
-        for i in reader:
-            yield i
-
-
-# Crossref journal data http://ftp.crossref.org/titlelist/titleFile.csv
-journals_table = TableMeta(
-    "journal_names",
-    columns=[
-        ColumnMeta("title"),
-        ColumnMeta("id"),
-        ColumnMeta("publisher"),
-        ColumnMeta("issn_print"),
-        ColumnMeta("issn_eprint"),
-        ColumnMeta("issns_additional"),
-        ColumnMeta("doi"),
-        ColumnMeta("volume_info"),
-    ],
-    post_population_script="sql/normalize-journal-names-issns.sql",
-)
-
-journals_issns_table = TableMeta(
-    "journals_issns",
-    columns=[
-        ColumnMeta("journal_id"),
-        ColumnMeta("issn"),
-        ColumnMeta(
-            "issn_type", description="A: Additional, E: Electronic, P: Print"
-        ),
-    ],
-)
-
-# Scopus Subject Areas and All Science Journal Classification Codes (ASJC)
-# https://service.elsevier.com/app/answers/detail/a_id/15181/supporthub/scopus/
-asjc_import_table = TableMeta(
-    "asjc_import",
-    columns=[
-        ColumnMeta("id"),
-        ColumnMeta("field"),
-        ColumnMeta("subject_area"),
-    ],
-    post_population_script="sql/normalize-asjc.sql",
-)
-
-asjcs_table = TableMeta(
-    "asjcs",
-    columns=[
-        ColumnMeta("id"),
-        ColumnMeta("field"),
-        ColumnMeta("subject_area_id"),
-        ColumnMeta("general_field_id"),
-    ],
-    post_population_script="sql/normalize-asjc.sql",
-)
-
-asjc_general_fields_table = TableMeta(
-    "asjc_general_fields",
-    columns=[
-        ColumnMeta("id"),
-        ColumnMeta("name"),
-    ],
-)
-
-asjc_subject_areas_table = TableMeta(
-    "asjc_subject_areas",
-    columns=[
-        ColumnMeta("id"),
-        ColumnMeta("name"),
-    ],
-)
-
 works_asjcs_table = TableMeta(
     "works_asjcs",
     columns=[
@@ -218,70 +141,8 @@ works_asjcs_table = TableMeta(
 )
 
 tables = [
-    asjc_general_fields_table,
-    asjc_subject_areas_table,
-    asjcs_table,
-    journals_issns_table,
-    journals_table,
     works_asjcs_table,
 ]
-
-
-def load_csv_data(database_path, table_meta, source, delimiter=","):
-    """Populate specified table of database with data from source"""
-    con = sqlite3.connect(database_path)
-    cur = con.cursor()
-    cur.execute(f"DROP TABLE IF EXISTS {table_meta.get_name()}")
-    cur.execute(table_meta.table_schema())
-    cur.executemany(
-        table_meta.insert_statement(), record_source(source, delimiter)
-    )
-    perf.log("Load CSV data")
-    post_population_script = table_meta.get_post_population_script()
-    if post_population_script:
-        script = get_string_resource(post_population_script)
-        cur.executescript(script)
-        perf.log(f"Run {post_population_script}")
-    con.commit()
-    con.close()
-
-
-def populate_asjc(database_path, source="resource:data/asjc.csv"):
-    """
-    Populate the Scopus Subject Areas and All Science Journal Classification
-    Codes (ASJC) table of the database with data from the specified source.
-    The database is created if it does not exist.
-    If it exists, the tables to be populated are dropped
-    (if they exist) and recreated anew as specified.
-
-    :param database_path: The path specifying the SQLite database
-        to populate.
-    :type database_path: str
-
-    :param source: CSV file or URL of the file containing the corresponding
-        data, defaults to the program's internally stored data.
-    :type source: str, optional
-    """
-    load_csv_data(database_path, asjc_import_table, source, delimiter=";")
-
-
-def populate_journal_names(database_path, source):
-    """
-    Populate journal names table of the database with data from the specified
-    source.
-    The database is created if it does not exist.
-    If it exists, the tables to be populated are dropped
-    (if they exist) and recreated anew as specified.
-
-    :param database_path: The path specifying the SQLite database
-        to populate.
-    :type database_path: str
-
-    :param source: CSV file or URL of the file containing the corresponding
-        data, e.g. `"http://ftp.crossref.org/titlelist/titleFile.csv"`.
-    :type source: str
-    """
-    load_csv_data(database_path, journals_table, source)
 
 
 def link_works_asjcs(database_path):

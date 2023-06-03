@@ -25,6 +25,7 @@ import random
 import sqlite3
 import sys
 
+from alexandria3k import asjcs
 from alexandria3k.common import program_version
 from alexandria3k import crossref
 from alexandria3k import csv_sources
@@ -32,15 +33,13 @@ from alexandria3k import debug
 from alexandria3k import doaj
 from alexandria3k.file_cache import FileCache
 from alexandria3k import funder_names
+from alexandria3k import journal_names
 from alexandria3k import orcid
 from alexandria3k import ror
 from alexandria3k import perf
 
 DESCRIPTION = "alexandria3k: Relational interface to publication metadata"
 
-# Default values for diverse data sources
-JOURNAL_NAMES_DEFAULT = "http://ftp.crossref.org/titlelist/titleFile.csv"
-ASJC_DEFAULT = "resource:data/asjc.csv"
 
 random.seed("alexandria3k")
 
@@ -106,10 +105,12 @@ def schema_list(parser, arg):
     name = arg.lower()
     if name == "all":
         tables_list(
-            crossref.tables
+            asjcs.tables
+            + crossref.tables
             + csv_sources.tables
             + doaj.tables
             + funder_names.tables
+            + journal_names.tables
             + orcid.tables
             + ror.tables
         )
@@ -228,7 +229,7 @@ def add_cli_arguments(parser):
     Crossref <container-directory>;
     DOAJ [<CSV-file> | <URL>] (defaults to {doaj.DEFAULT_SOURCE});
     funder-names [<CSV-file> | <URL>] (defaults to {funder_names.DEFAULT_SOURCE});
-    journal-names [<CSV-file> | <URL>] (defaults to {JOURNAL_NAMES_DEFAULT});
+    journal-names [<CSV-file> | <URL>] (defaults to {journal_names.DEFAULT_SOURCE});
     ORCID <summaries.tar.gz-file>
     ROR <zip-file>;
     """,
@@ -360,7 +361,7 @@ def expand_data_source(parser, args):
         return args.data_source[1] if len(args.data_source) == 2 else default
 
     args.crossref = None
-    args.asjc = None
+    args.asjcs = None
     args.doaj = None
     args.funder_names = None
     args.journal_names = None
@@ -372,15 +373,21 @@ def expand_data_source(parser, args):
 
     source_name = args.data_source[0].lower()
 
-    if source_name in ["crossref", "funder-names"]:
+    if source_name in [
+        "asjcs",
+        "crossref",
+        "funder-names",
+        "doaj",
+        "journal_names",
+    ]:
         if not (args.populate_db_path or args.query or args.query_file):
             parser.error("Database path or query must be specified")
     else:
         if not args.populate_db_path:
             parser.error("Database path must be specified")
 
-    if source_name == "asjc":
-        args.asjc = optional_value(ASJC_DEFAULT)
+    if source_name == "asjcs":
+        args.asjcs = optional_value(asjcs.DEFAULT_SOURCE)
     elif source_name == "crossref":
         args.crossref = required_value("Missing Crossref data directory value")
     elif source_name == "doaj":
@@ -388,7 +395,7 @@ def expand_data_source(parser, args):
     elif source_name == "funder-names":
         args.funder_names = optional_value(funder_names.DEFAULT_SOURCE)
     elif source_name == "journal-names":
-        args.journal_names = optional_value(JOURNAL_NAMES_DEFAULT)
+        args.journal_names = optional_value(journal_names.DEFAULT_SOURCE)
     elif source_name == "orcid":
         args.orcid = required_value("Missing ORCID data file value")
     elif source_name == "ror":
@@ -437,6 +444,9 @@ def main():
     # pylint: disable-next=eval-used
     sample = eval(f"lambda path: {args.sample}")
 
+    if args.asjcs:
+        data_source = asjcs.Asjcs(args.asjcs, sample, args.attach_databases)
+
     if args.crossref:
         # pylint: disable-next=W0123
         data_source = crossref.Crossref(
@@ -461,6 +471,11 @@ def main():
         database_dump(data_source.get_virtual_db())
         debug.log("files-read", f"{FileCache.file_reads} files read")
 
+    if args.journal_names:
+        data_source = journal_names.JournalNames(
+            args.journal_names, sample, args.attach_databases
+        )
+
     if args.row_selection_file:
         args.row_selection = ""
         with open(args.row_selection_file, encoding="utf-8") as query_input:
@@ -474,7 +489,7 @@ def main():
             args.row_selection,
         )
         debug.log("files-read", f"{FileCache.file_reads} files read")
-        perf.log("Crossref table population")
+        perf.log("Table population")
 
     if args.orcid:
         orcid.populate(
@@ -513,13 +528,6 @@ def main():
             csv_writer.writerow(rec)
         csv_file.close()
         debug.log("files-read", f"{FileCache.file_reads} files read")
-
-    if args.asjc:
-        csv_sources.populate_asjc(args.populate_db_path, args.asjc)
-    if args.journal_names:
-        csv_sources.populate_journal_names(
-            args.populate_db_path, args.journal_names
-        )
 
     if args.execute == "link-aa-base-ror":
         ror.link_author_affiliations(args.populate_db_path, link_to_top=False)

@@ -187,3 +187,14 @@ def get_string_resource(file_path):
     """Return the contents of the named file relative to the package's
     source code directory"""
     return str(pkgutil.get_data(__name__, file_path), "utf-8")
+
+
+def remove_sqlite_comments(script):
+    """Remove SQLite comments (-- and C-style) from the passed script.
+    This cannot handle comment characters embedded in strings."""
+
+    # remove C-style comments
+    script = re.sub(r"/\*.*?\*/", "", script, flags=re.DOTALL)
+
+    # remove SQL single-line comments
+    return re.sub(r"--[^\n]*\n?", "", script).strip()

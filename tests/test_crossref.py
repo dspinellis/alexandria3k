@@ -24,9 +24,9 @@ import sqlite3
 import sys
 
 from .test_dir import add_src_dir, td
-from .common import PopulateQueries, record_count
 add_src_dir()
 
+from .common import PopulateQueries, record_count
 from alexandria3k.common import ensure_unlinked, query_result
 from alexandria3k import crossref
 from alexandria3k import debug

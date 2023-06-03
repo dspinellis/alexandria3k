@@ -21,7 +21,6 @@
 import abc
 import csv
 import os
-import re
 import sqlite3
 
 # pylint: disable-next=import-error
@@ -32,6 +31,7 @@ from alexandria3k.common import (
     fail,
     get_string_resource,
     log_sql,
+    remove_sqlite_comments,
     set_fast_writing,
     warn,
 )
@@ -667,11 +667,7 @@ class DataSource:
 
             pdb = sqlite3.connect(database_path)
             script = get_string_resource(post_population_script)
-            # remove C-style comments
-            script = re.sub(r"/\*.*?\*/", "", script, flags=re.DOTALL)
-            # remove SQL single-line comments
-            script = re.sub(r"--.*$", "", script, flags=re.MULTILINE)
-            statements = script.strip().split(";")
+            statements = remove_sqlite_comments(script).split(";\n")
 
             for statement in statements:
                 try:
@@ -683,8 +679,7 @@ class DataSource:
                         f"Unable to execute {statement}: {err} "
                         "(Column not populated?)"
                     )
-
-            pdb.execute(log_sql("COMMIT"))
+            pdb.commit()
             pdb.close()
 
         create_database_schema(columns)

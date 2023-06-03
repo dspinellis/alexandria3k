@@ -64,3 +64,21 @@ class TestCommon(unittest.TestCase):
 
         self.assertTrue(common.table_exists(self.cursor, "ror_links"))
         self.assertEqual(line, b"Code;Field;Subject area;General field id\n")
+
+    def test_remove_sqlite_comments_plain(self):
+        s = "a"
+        self.assertEqual(common.remove_sqlite_comments(s), "a")
+
+    def test_remove_sqlite_comments_sql(self):
+        s = """CREATE
+-- SQL comment
+select"""
+        self.assertEqual(common.remove_sqlite_comments(s), "CREATE\nselect")
+    def test_remove_sqlite_comments_c(self):
+        s = """CREATE
+/*
+A C comment
+last line
+*/
+select"""
+        self.assertEqual(common.remove_sqlite_comments(s), "CREATE\n\nselect")

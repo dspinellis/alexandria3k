@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""doaj module test. This tests the basic import functionality and
+"""asjcs module test. This tests the basic import functionality and
 the post-processing step.  The remaining functionality is tested by
 the test_funder_names module."""
 
@@ -32,19 +32,19 @@ add_src_dir()
 
 from .common import PopulateQueries, record_count
 from alexandria3k.common import ensure_unlinked, query_result
-from alexandria3k import doaj
+from alexandria3k import asjcs
 
-DATABASE_PATH = td("tmp/doaj.db")
+DATABASE_PATH = td("tmp/asjcs.db")
 
 
-class TestDoajPopulateVanilla(PopulateQueries):
+class TestAsjcsPopulateVanilla(PopulateQueries):
     @classmethod
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.doaj = doaj.Doaj(td("data/doaj.csv"))
-        cls.doaj.populate(DATABASE_PATH)
+        cls.asjcs = asjcs.Asjcs(asjcs.DEFAULT_SOURCE)
+        cls.asjcs.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -54,59 +54,26 @@ class TestDoajPopulateVanilla(PopulateQueries):
         os.unlink(DATABASE_PATH)
 
     def test_counts(self):
-        self.assertEqual(self.record_count("open_access_journals"), 9)
+        self.assertEqual(self.record_count("asjc_import"), 342)
 
         self.assertEqual(
             self.record_count(
-                """(SELECT DISTINCT publisher
-          FROM open_access_journals WHERE name like 'A%')"""
+                "(SELECT DISTINCT subject_area FROM asjc_import)"
             ),
-            8,
+            5,
         )
 
 
     def test_contents(self):
         self.assertEqual(
             self.cond_field(
-                "open_access_journals", "name", "issn_print = '00016012'"
+                "asjc_import", "field", "code = '1202'"
             ),
-            "Acta Médica Costarricense",
+            "History",
         )
         self.assertEqual(
             self.cond_field(
-                "open_access_journals", "article_records_number", "issn_print = '00016012'"
+                "asjc_import", "subject_area", "code = '1712'"
             ),
-            1207,
-        )
-        self.assertEqual(
-            self.cond_field(
-                "open_access_journals", "most_recent_addition", "issn_print = '00016012'"
-            ),
-            "2015-12-08T15:06:43Z",
-        )
-
-class TestDoajPopulateColumns(PopulateQueries):
-    @classmethod
-    def setUpClass(cls):
-        # ensure_unlinked(DATABASE_PATH)
-        # debug.set_flags(["sql", "dump-matched"])
-
-        cls.doaj = doaj.Doaj(td("data/doaj.csv"))
-        cls.doaj.populate( DATABASE_PATH, [
-            "open_access_journals.name",
-            "open_access_journals.issn_print"])
-        cls.con = sqlite3.connect(DATABASE_PATH)
-        cls.cursor = cls.con.cursor()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.con.close()
-        os.unlink(DATABASE_PATH)
-
-    def test_contents(self):
-        self.assertEqual(
-            self.cond_field(
-                "open_access_journals", "name", "issn_print = '00016012'"
-            ),
-            "Acta Médica Costarricense",
+            "Physical Sciences",
         )

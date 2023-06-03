@@ -21,7 +21,7 @@
 
 BEGIN SETUP
 asjc_import:
-id	field			subject_area
+code	field			subject_area
 1000	Multidisciplinary	Multidisciplinary
 1100	"General Agricultural"	"Life Sciences"
 1101	"Biological Sciences"	"Life Sciences"
@@ -33,7 +33,7 @@ INCLUDE CREATE src/alexandria3k/sql/normalize-asjc.sql
 
 BEGIN RESULT
 asjcs:
-id	field			subject_area_id		general_field_id
+code	field			subject_area_id		general_field_id
 1000	Multidisciplinary	2			1000
 1100	"General Agricultural"	1			1100
 1101	"Biological Sciences"	1			1100
