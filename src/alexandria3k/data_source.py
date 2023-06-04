@@ -56,16 +56,11 @@ class ElementsCursor:
         The table agument is a StreamingTable object"""
         self.table = table
         self.parent_cursor = parent_cursor
+        # Rows over which to iterate
         self.elements = None
         self.eof = None
         # Initialized in Filter()
         self.element_index = None
-
-    @abc.abstractmethod
-    def element_name(self):
-        """The work key from which to retrieve the elements. Not part of the
-        apsw API."""
-        return
 
     # pylint: disable=arguments-differ
     def Filter(self, *args):
@@ -92,27 +87,10 @@ class ElementsCursor:
         """Return the current row. Not part of the apsw API."""
         return self.elements[self.element_index]
 
+    @abc.abstractmethod
     def Next(self):
         """Advance reading to the next available element."""
-        while True:
-            if self.parent_cursor.Eof():
-                self.eof = True
-                return
-            if not self.elements:
-                self.elements = self.parent_cursor.current_row_value().get(
-                    self.element_name()
-                )
-                self.element_index = -1
-            if not self.elements:
-                self.parent_cursor.Next()
-                self.elements = None
-                continue
-            if self.element_index + 1 < len(self.elements):
-                self.element_index += 1
-                self.eof = False
-                return
-            self.parent_cursor.Next()
-            self.elements = None
+        return
 
     def container_id(self):
         """Return the id of the container containing the data being fetched.
@@ -293,7 +271,7 @@ class DataSource:
                 if (
                     op_code == apsw.SQLITE_READ
                     and column
-                    and database not in self.attached_databases
+                    and database not in self.attached_databases + ["populated"]
                 ):
                     # print(f"AUTH: adding {table}.{column}")
                     DataSource.add_column(self.query_columns, table, column)
@@ -382,10 +360,10 @@ class DataSource:
         for attach_command in self.attach_commands:
             partition.execute(log_sql(attach_command))
 
-        for i in self.data_source.get_file_id_iterator():
+        for i in self.data_source.get_container_iterator():
             debug.log(
                 "progress",
-                f"Container {i} {self.data_source.get_file_name_by_id(i)}",
+                f"Container {i} {self.data_source.get_container_name(i)}",
             )
             for table_name, table_columns in self.query_columns.items():
                 columns = ", ".join(table_columns)
@@ -430,7 +408,9 @@ class DataSource:
 
         :param condition: `SQL expression`_ specifying the rows to include
             in the database's population, defaults to `None`.
-            The expression can contain references to the table's columns.
+            The expression can contain references to the table's columns,
+            to tables in attached databases prefixed by their name, and
+            tables in the database being populated prefixed by `populated`.
             Implicitly, if a main table is populated, its details tables
             will only get populated with the records associated with the
             correspoing main table's record.
@@ -688,10 +668,10 @@ class DataSource:
         # indexing and the file cache avoids opening, reading, decompressing,
         # and parsing each file multiple times.
         matched_tables = query_and_population_tables()
-        for i in self.data_source.get_file_id_iterator():
+        for i in self.data_source.get_container_iterator():
             debug.log(
                 "progress",
-                f"Container {i} {self.data_source.get_file_name_by_id(i)}",
+                f"Container {i} {self.data_source.get_container_name(i)}",
             )
 
             if len(matched_tables) == 1:

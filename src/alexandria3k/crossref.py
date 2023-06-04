@@ -18,13 +18,15 @@
 #
 """Virtual database table access of Crossref data"""
 
+import abc
 import os
 
 from alexandria3k.data_source import DataSource, ElementsCursor
+from alexandria3k.file_cache import get_file_cache
 from alexandria3k.virtual_db import (
     ColumnMeta,
+    CONTAINER_INDEX,
     TableMeta,
-    FilesCursor,
     ROWID_INDEX,
     StreamingCachedContainerTable,
 )
@@ -57,11 +59,11 @@ class DataFiles:
         """Return the array of data files"""
         return self.data_files
 
-    def get_file_id_iterator(self):
+    def get_container_iterator(self):
         """Return an iterator over the int identifiers of all data files"""
         return range(0, len(self.data_files))
 
-    def get_file_name_by_id(self, fid):
+    def get_container_name(self, fid):
         """Return the name of the file corresponding to the specified fid"""
         return self.data_files[fid]
 
@@ -197,16 +199,116 @@ class VTSource:
 
     Connect = Create
 
-    def get_file_id_iterator(self):
+    def get_container_iterator(self):
         """Return an iterator over the data files' identifiers"""
-        return self.data_files.get_file_id_iterator()
+        return self.data_files.get_container_iterator()
 
-    def get_file_name_by_id(self, fid):
+    def get_container_name(self, fid):
         """Return the name of the file corresponding to the specified fid"""
-        return self.data_files.get_file_name_by_id(fid)
+        return self.data_files.get_container_name(fid)
 
 
-class WorksCursor(ElementsCursor):
+class FilesCursor:
+    """A cursor over the items data files. Internal use only.
+    Not used directly by an SQLite table."""
+
+    def __init__(self, table):
+        """Not part of the apsw VTCursor interface.
+        The table agument is a StreamingTable object"""
+        self.table = table
+        self.eof = False
+        # The following get initialized in Filter()
+        self.file_index = None
+        self.single_file = None
+        self.file_read = None
+        self.items = None
+
+    def Filter(self, index_number, _index_name, constraint_args):
+        """Always called first to initialize an iteration to the first
+        (possibly constrained) row of the table"""
+        # print(f"Filter n={index_number} c={constraint_args}")
+
+        if index_number == 0:
+            # No index; iterate through all the files
+            self.file_index = -1
+            self.single_file = False
+        elif index_number & CONTAINER_INDEX:
+            # Index; constraint reading through the specified file
+            self.single_file = True
+            self.file_read = False
+            self.file_index = constraint_args[0] - 1
+        self.Next()
+
+    def Next(self):
+        """Advance reading to the next available file. Files are assumed to be
+        non-empty."""
+        if self.single_file and self.file_read:
+            self.eof = True
+            return
+        if self.file_index + 1 >= len(self.table.data_source):
+            self.eof = True
+            return
+        self.file_index += 1
+        self.items = get_file_cache().read(
+            self.table.data_source[self.file_index]
+        )
+        self.eof = False
+        # The single file has been read. Set EOF in next Next call
+        self.file_read = True
+
+    def Rowid(self):
+        """Return a unique id of the row along all records"""
+        return self.file_index
+
+    def current_row_value(self):
+        """Return the current row. Not part of the apsw API."""
+        return self.items
+
+    def Eof(self):
+        """Return True when the end of the table's records has been reached."""
+        return self.eof
+
+    def Close(self):
+        """Cursor's destructor, used for cleanup"""
+        self.items = None
+
+
+class CrossrefElementsCursor(ElementsCursor):
+    """A cursor over Crossref elements.  It depends on the implementation
+    of the abstract method element_name."""
+
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def element_name(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return
+
+    def Next(self):
+        """Advance reading to the next available element."""
+        while True:
+            if self.parent_cursor.Eof():
+                self.eof = True
+                return
+            if not self.elements:
+                self.elements = self.parent_cursor.current_row_value().get(
+                    self.element_name()
+                )
+                self.element_index = -1
+            if not self.elements:
+                self.parent_cursor.Next()
+                self.elements = None
+                continue
+            if self.element_index + 1 < len(self.elements):
+                self.element_index += 1
+                self.eof = False
+                return
+            self.parent_cursor.Next()
+            self.elements = None
+
+
+class WorksCursor(CrossrefElementsCursor):
     """A cursor over the works data."""
 
     def __init__(self, table):
@@ -271,7 +373,7 @@ class WorksCursor(ElementsCursor):
         self.files_cursor.Close()
 
 
-class AuthorsCursor(ElementsCursor):
+class AuthorsCursor(CrossrefElementsCursor):
     """A cursor over the items' authors data."""
 
     def element_name(self):
@@ -296,7 +398,7 @@ class AuthorsCursor(ElementsCursor):
         return super().Column(col)
 
 
-class ReferencesCursor(ElementsCursor):
+class ReferencesCursor(CrossrefElementsCursor):
     """A cursor over the items' references data."""
 
     def element_name(self):
@@ -315,7 +417,7 @@ class ReferencesCursor(ElementsCursor):
         return super().Column(col)
 
 
-class UpdatesCursor(ElementsCursor):
+class UpdatesCursor(CrossrefElementsCursor):
     """A cursor over the items' updates data."""
 
     def element_name(self):
@@ -334,7 +436,7 @@ class UpdatesCursor(ElementsCursor):
         return super().Column(col)
 
 
-class SubjectsCursor(ElementsCursor):
+class SubjectsCursor(CrossrefElementsCursor):
     """A cursor over the work items' subject data."""
 
     def element_name(self):
@@ -354,7 +456,7 @@ class SubjectsCursor(ElementsCursor):
         return super().Column(col)
 
 
-class LicensesCursor(ElementsCursor):
+class LicensesCursor(CrossrefElementsCursor):
     """A cursor over the work items' subject data."""
 
     def element_name(self):
@@ -374,7 +476,7 @@ class LicensesCursor(ElementsCursor):
         return super().Column(col)
 
 
-class LinksCursor(ElementsCursor):
+class LinksCursor(CrossrefElementsCursor):
     """A cursor over the work items' subject data."""
 
     def element_name(self):
@@ -394,7 +496,7 @@ class LinksCursor(ElementsCursor):
         return super().Column(col)
 
 
-class FundersCursor(ElementsCursor):
+class FundersCursor(CrossrefElementsCursor):
     """A cursor over the work items' funder data."""
 
     def element_name(self):
@@ -418,7 +520,7 @@ class FundersCursor(ElementsCursor):
         return super().Column(col)
 
 
-class AffiliationsCursor(ElementsCursor):
+class AffiliationsCursor(CrossrefElementsCursor):
     """A cursor over the authors' affiliation data."""
 
     def element_name(self):
@@ -438,7 +540,7 @@ class AffiliationsCursor(ElementsCursor):
         return super().Column(col)
 
 
-class AwardsCursor(ElementsCursor):
+class AwardsCursor(CrossrefElementsCursor):
     """A cursor over the authors' affiliation data."""
 
     def element_name(self):

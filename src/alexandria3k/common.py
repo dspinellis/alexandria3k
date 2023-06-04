@@ -59,6 +59,9 @@ def warn(message):
 
 def fail(message):
     """Fail the program execution with the specified error message"""
+    if debug.enabled("exception"):
+        # pylint: disable-next=broad-exception-raised
+        raise Exception(message)
     print(f"Error: {message}", file=sys.stderr)
     print("Terminating program execution.", file=sys.stderr)
     sys.exit(1)

@@ -204,6 +204,7 @@ def add_cli_arguments(parser):
         default=[],
         # NOTE: Keep in sync with list in debug.py
         help="""Output debuggging information as specfied by the arguments.
+    exception: Raise an exception when an error occurs;
     files-read: Counts of Crossref data files read;
     link: Record linking operations;
     sql: Executed SQL statements;
@@ -379,6 +380,7 @@ def expand_data_source(parser, args):
         "funder-names",
         "doaj",
         "journal_names",
+        "orcid",
     ]:
         if not (args.populate_db_path or args.query or args.query_file):
             parser.error("Database path or query must be specified")
@@ -476,6 +478,9 @@ def main():
             args.journal_names, sample, args.attach_databases
         )
 
+    if args.orcid:
+        data_source = orcid.Orcid(args.orcid, sample, args.attach_databases)
+
     if args.row_selection_file:
         args.row_selection = ""
         with open(args.row_selection_file, encoding="utf-8") as query_input:
@@ -490,16 +495,6 @@ def main():
         )
         debug.log("files-read", f"{FileCache.file_reads} files read")
         perf.log("Table population")
-
-    if args.orcid:
-        orcid.populate(
-            args.populate_db_path,
-            args.orcid,
-            args.columns,
-            args.linked_records == "persons",
-            args.linked_records == "works",
-        )
-        perf.log("ORCID table population")
 
     if args.ror:
         ror.populate(args.populate_db_path, args.ror)

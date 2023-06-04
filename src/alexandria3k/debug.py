@@ -64,6 +64,7 @@ def set_flags(flags):
     Enable the specified debug flags.
     The following flags are supported:
 
+    * exception: Raise an exception when an error occurs;
     * files-read: Counts of Crossref data files read;
     * link: Record linking operations;
     * sql: Executed SQL statements;

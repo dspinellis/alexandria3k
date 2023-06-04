@@ -46,13 +46,13 @@ class VTSource:
         self.sample = sample
         self.table_dict = {table.get_name(): table}
 
-    def get_file_id_iterator(self):
+    def get_container_iterator(self):
         """Return an iterator over the int identifiers of all data files"""
         # -1 signifies that no partitions exist
         return [SINGLE_PARTITION_INDEX]
 
     # pylint: disable-next=unused-argument
-    def get_file_name_by_id(self, fid):
+    def get_container_name(self, fid):
         """Return the name of the file corresponding to the specified fid"""
         return self.data_source
 

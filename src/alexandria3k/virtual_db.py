@@ -22,7 +22,6 @@
 import apsw
 
 from alexandria3k.common import log_sql
-from .file_cache import get_file_cache
 
 
 class TableMeta:
@@ -191,6 +190,10 @@ class StreamingTable:
         """Return the metadata of this table"""
         return self.table_meta
 
+    def get_data_source(self):
+        """Return the data source of this table"""
+        return self.data_source
+
     def cursor(self, table_meta):
         """Return the cursor associated with this table.  The constructor
         for cursors embedded in others takes a parent cursor argument.  To
@@ -260,71 +263,6 @@ class StreamingCachedContainerTable(StreamingTable):
         return None
 
 
-class FilesCursor:
-    """A cursor over the items data files. Internal use only.
-    Not used by a table."""
-
-    def __init__(self, table):
-        """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
-        self.table = table
-        self.eof = False
-        # The following get initialized in Filter()
-        self.file_index = None
-        self.single_file = None
-        self.file_read = None
-        self.items = None
-
-    def Filter(self, index_number, _index_name, constraint_args):
-        """Always called first to initialize an iteration to the first
-        (possibly constrained) row of the table"""
-        # print(f"Filter n={index_number} c={constraint_args}")
-
-        if index_number == 0:
-            # No index; iterate through all the files
-            self.file_index = -1
-            self.single_file = False
-        elif index_number & CONTAINER_INDEX:
-            # Index; constraint reading through the specified file
-            self.single_file = True
-            self.file_read = False
-            self.file_index = constraint_args[0] - 1
-        self.Next()
-
-    def Next(self):
-        """Advance reading to the next available file. Files are assumed to be
-        non-empty."""
-        if self.single_file and self.file_read:
-            self.eof = True
-            return
-        if self.file_index + 1 >= len(self.table.data_source):
-            self.eof = True
-            return
-        self.file_index += 1
-        self.items = get_file_cache().read(
-            self.table.data_source[self.file_index]
-        )
-        self.eof = False
-        # The single file has been read. Set EOF in next Next call
-        self.file_read = True
-
-    def Rowid(self):
-        """Return a unique id of the row along all records"""
-        return self.file_index
-
-    def current_row_value(self):
-        """Return the current row. Not part of the apsw API."""
-        return self.items
-
-    def Eof(self):
-        """Return True when the end of the table's records has been reached."""
-        return self.eof
-
-    def Close(self):
-        """Cursor's destructor, used for cleanup"""
-        self.items = None
-
-
 class TableFiller:
     """An object for adding records to a table"""
 
@@ -349,6 +287,7 @@ class TableFiller:
         for cname in column_names:
             self.extractors[cname] = table.get_value_extractor_by_name(cname)
         self.table_name = table.get_name()
+        # print(f"New TableFiller {table.get_name()} {column_names=}")
 
     def have_extractors(self):
         """Return True if the table has at least one extractor"""
@@ -367,6 +306,7 @@ class TableFiller:
     def add_single_record(self, data_source, id_name, id_value):
         """Add to the table the required values from the provided data source"""
         # Create dictionary of names/values to insert
+        # print(f"add_single_record {data_source=} {id_name=} {id_value=}")
         values = {}
         not_null_values = 0
         for column_name, extractor in self.extractors.items():
@@ -382,6 +322,7 @@ class TableFiller:
         if not_null_values == 0:
             return None
 
+        # print(f"{self.statement=} {values=}")
         self.cursor.execute(
             log_sql(self.statement),
             values,
@@ -395,6 +336,7 @@ class TableFiller:
     def add_multiple_records(self, data_source, id_name, id_value):
         """Add to the table the required values from the XML element tree"""
         records = []
+        # print(f"add_multiple_records {data_source=} {id_name=} {id_value=}")
         for record in self.extract_multiple(data_source):
             # Create dictionary of names/values to insert
             values = {}
@@ -412,6 +354,7 @@ class TableFiller:
             if not_null_values > 0:
                 records.append(values)
 
+        # print(f"{self.statement=} {records=}")
         self.cursor.executemany(
             log_sql(self.statement),
             records,
