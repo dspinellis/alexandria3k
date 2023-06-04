@@ -21,6 +21,7 @@
 # pylint: disable-next=import-error
 import apsw
 
+from alexandria3k.common import log_sql
 from .file_cache import get_file_cache
 
 
@@ -382,7 +383,7 @@ class TableFiller:
             return None
 
         self.cursor.execute(
-            self.statement,
+            log_sql(self.statement),
             values,
             prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
         )
@@ -412,7 +413,7 @@ class TableFiller:
                 records.append(values)
 
         self.cursor.executemany(
-            self.statement,
+            log_sql(self.statement),
             records,
             prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
         )
