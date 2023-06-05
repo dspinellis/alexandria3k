@@ -426,14 +426,20 @@ class TestCrossrefPopulateMultipleConditionColumns(PopulateQueries):
 
 
 class TestCrossrefTransitiveClosure(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # debug.set_flags(["sql"])
         FileCache.file_reads = 0
         populate_attached()
-        self.crossref = crossref.Crossref(
+        cls.crossref = crossref.Crossref(
             td("data/sample"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.crossref
+        os.unlink(ATTACHED_DATABASE_PATH)
 
     def test_single(self):
         self.assertEqual(
@@ -467,14 +473,20 @@ class TestCrossrefTransitiveClosure(unittest.TestCase):
 class TestCrossrefQuery(unittest.TestCase):
     """Verify non-works column specification and multiple conditions"""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # debug.set_flags(["sql"])
         FileCache.file_reads = 0
         populate_attached()
-        self.crossref = crossref.Crossref(
+        cls.crossref = crossref.Crossref(
             td("data/sample"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.crossref
+        os.unlink(ATTACHED_DATABASE_PATH)
 
     def test_works(self):
         for partition in True, False:

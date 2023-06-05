@@ -201,13 +201,19 @@ class TestFunderNamesPopulateMasterColumnCondition(PopulateQueries):
 class TestFunderNamesQuery(unittest.TestCase):
     """Verify non-works column specification and multiple conditions"""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # debug.set_flags(["sql"])
         populate_attached()
-        self.funder_names = funder_names.FunderNames(
+        cls.funder_names = funder_names.FunderNames(
             td("data/funderNames.csv"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.funder_names
+        os.unlink(ATTACHED_DATABASE_PATH)
 
     def test_works(self):
         self.assertEqual(
