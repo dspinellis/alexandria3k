@@ -69,14 +69,9 @@ def set_flags(flags):
     * link: Record linking operations;
     * sql: Executed SQL statements;
     * perf: Performance timings;
-    * populated-counts: Counts of the populated database;
-    * populated-data: Data of the populated database;
-    * populated-reports: Query results from the populated database;
     * progress: Report population progress;
     * sorted-tables: Topologically ordered Crossref query tables;
     * stderr: Log to standard error;
-    * virtual-counts: Counts of the virtual database;
-    * virtual-data: Data of the virtual database.
 
     :param flags: Flags to enable.
     :type flags: list

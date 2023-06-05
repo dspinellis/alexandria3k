@@ -20,16 +20,10 @@
 
 import codecs
 import csv
-import sqlite3
 
-from alexandria3k.common import (
-    data_from_uri_provider,
-    ensure_table_exists,
-    get_string_resource,
-)
+from alexandria3k.common import data_from_uri_provider
 from alexandria3k.data_source import SINGLE_PARTITION_INDEX
-from alexandria3k import perf
-from alexandria3k.virtual_db import ColumnMeta, TableMeta, StreamingTable
+from alexandria3k.virtual_db import StreamingTable
 
 
 # Method names coming from apsw start with uppercase
@@ -131,34 +125,3 @@ class CsvCursor:
     def Close(self):
         """Cursor's destructor, used for cleanup"""
         self.raw_input.close()
-
-
-works_asjcs_table = TableMeta(
-    "works_asjcs",
-    columns=[
-        ColumnMeta("work_id"),
-        ColumnMeta("asjc_id"),
-    ],
-)
-
-tables = [
-    works_asjcs_table,
-]
-
-
-def link_works_asjcs(database_path):
-    """
-    Create a many to many table linking works with Scopus
-    All Science Journal Classification Codes — ASJCs.
-
-    :param database_path: The path specifying the SQLite database
-        to populate.
-    :type database_path: str
-    """
-    connection = sqlite3.connect(database_path)
-    ensure_table_exists(connection, "work_subjects")
-    ensure_table_exists(connection, "asjcs")
-    script = get_string_resource("sql/link-works-asjcs.sql")
-    cursor = connection.cursor()
-    cursor.executescript(script)
-    perf.log("link_works_asjcs")

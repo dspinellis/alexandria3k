@@ -16,8 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Provide query and population access to the Scopus Subject Areas and
-All Science Journal Classification Codes (ASJC) data."""
+"""Scopus Subject Areas and All Science Journal Classification Codes (ASJC) data"""
 
 
 from alexandria3k.csv_sources import CsvCursor, VTSource

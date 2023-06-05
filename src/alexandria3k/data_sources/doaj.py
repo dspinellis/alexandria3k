@@ -16,8 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Provide query and population access to the Directory of Open
-Access Journals data."""
+"""Directory of Open Access Journals"""
 
 
 from alexandria3k.csv_sources import CsvCursor, VTSource

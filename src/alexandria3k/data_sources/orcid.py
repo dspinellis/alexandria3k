@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Virtual database table access of ORCID data"""
+"""Open Researcher and Contributor ID (ORCID) data"""
 
 import tarfile
 import xml.etree.ElementTree as ET
@@ -32,6 +32,8 @@ from alexandria3k.virtual_db import (
 )
 
 # pylint: disable=R0801
+
+DEFAULT_SOURCE = None
 
 
 # pylint: disable-next=too-many-instance-attributes
