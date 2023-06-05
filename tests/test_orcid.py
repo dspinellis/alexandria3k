@@ -29,8 +29,8 @@ add_src_dir()
 
 from .common import record_count
 from alexandria3k.common import ensure_unlinked, query_result
-from alexandria3k import crossref
-from alexandria3k import orcid
+from alexandria3k.data_sources import crossref
+from alexandria3k.data_sources import orcid
 
 DATABASE_PATH = td("tmp/orcid.db")
 

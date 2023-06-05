@@ -26,7 +26,7 @@ import sys
 from .test_dir import add_src_dir, td
 add_src_dir()
 
-from alexandria3k import journal_names
+from alexandria3k.data_sources import journal_names
 
 DATABASE_PATH = td("tmp/journal_names.db")
 

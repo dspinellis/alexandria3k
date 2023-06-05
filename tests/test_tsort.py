@@ -25,7 +25,7 @@ from .test_dir import add_src_dir, td
 add_src_dir()
 
 from alexandria3k.tsort import tsort
-from alexandria3k import crossref
+from alexandria3k.data_sources import crossref
 from alexandria3k.file_cache import FileCache
 
 

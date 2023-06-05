@@ -32,7 +32,7 @@ add_src_dir()
 
 from .common import PopulateQueries, record_count
 from alexandria3k.common import ensure_unlinked, query_result
-from alexandria3k import funder_names
+from alexandria3k.data_sources import funder_names
 
 DATABASE_PATH = td("tmp/funder_names.db")
 ATTACHED_DATABASE_PATH = td("tmp/attached.db")

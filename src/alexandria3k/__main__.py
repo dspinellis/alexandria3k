@@ -25,17 +25,17 @@ import random
 import sqlite3
 import sys
 
-from alexandria3k import asjcs
+from alexandria3k.data_sources import asjcs
 from alexandria3k.common import program_version
-from alexandria3k import crossref
+from alexandria3k.data_sources import crossref
 from alexandria3k import csv_sources
 from alexandria3k import debug
-from alexandria3k import doaj
+from alexandria3k.data_sources import doaj
 from alexandria3k.file_cache import FileCache
-from alexandria3k import funder_names
-from alexandria3k import journal_names
-from alexandria3k import orcid
-from alexandria3k import ror
+from alexandria3k.data_sources import funder_names
+from alexandria3k.data_sources import journal_names
+from alexandria3k.data_sources import orcid
+from alexandria3k.data_sources import ror
 from alexandria3k import perf
 
 DESCRIPTION = "alexandria3k: Relational interface to publication metadata"

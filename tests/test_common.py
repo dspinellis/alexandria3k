@@ -27,7 +27,8 @@ import unittest
 from .test_dir import add_src_dir, td
 add_src_dir()
 
-from alexandria3k import common, ror
+from alexandria3k import common
+from alexandria3k.data_sources import ror
 
 DATABASE_PATH = td("tmp/ror.db")
 

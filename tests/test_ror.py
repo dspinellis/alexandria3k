@@ -30,7 +30,7 @@ from .test_dir import add_src_dir, td
 add_src_dir()
 
 from alexandria3k.common import ensure_unlinked, query_result
-from alexandria3k import ror, crossref
+from alexandria3k.data_sources import ror, crossref
 
 DATABASE_PATH = td("tmp/ror.db")
 
