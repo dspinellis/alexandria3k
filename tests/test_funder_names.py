@@ -1,6 +1,6 @@
 #
 # Alexandria3k FunderNames bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2023  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""funder_names module test. This tests the functionality of all
+"""funder_names module test. This tests the common functionality of all
 csv_sources data sources."""
 
 import csv
 import os
+import random
 import re
 import sys
 import sqlite3
@@ -98,6 +99,27 @@ class TestFunderNamesPopulateVanilla(PopulateQueries):
             ),
             "R",
         )
+
+
+class TestFunderNamesPopulateSample(PopulateQueries):
+    @classmethod
+    def setUpClass(cls):
+        # ensure_unlinked(DATABASE_PATH)
+        # debug.set_flags(["sql", "dump-matched"])
+
+        random.seed(42)
+        cls.funder_names = funder_names.FunderNames(td("data/funderNames.csv"), lambda _x: random.random() < 0.5)
+        cls.funder_names.populate(DATABASE_PATH)
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_counts(self):
+        self.assertEqual(self.record_count("funder_names"), 7)
 
 
 class TestFunderNamesPopulateMasterCondition(PopulateQueries):

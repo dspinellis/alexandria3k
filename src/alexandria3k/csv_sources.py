@@ -59,7 +59,7 @@ class VTSource:
         and an apsw table (a StramingTable instance) streaming over its data"""
         table = self.table_dict[table_name]
         return table.table_schema(), StreamingTable(
-            table, self.table_dict, self.data_source
+            table, self.table_dict, self.data_source, self.sample
         )
 
     Connect = Create
@@ -118,11 +118,15 @@ class CsvCursor:
 
     def Next(self):
         """Advance to the next item."""
-        self.row_value = next(self.reader, None)
-        if not self.row_value:
-            self.eof = True
-        else:
+        while True:  # Loop until sample returns True
+            self.row_value = next(self.reader, None)
+            if not self.row_value:
+                self.eof = True
+                break
             self.item_index += 1
+            if not self.table.sample(self.row_value):
+                continue
+            break
 
     def Close(self):
         """Cursor's destructor, used for cleanup"""

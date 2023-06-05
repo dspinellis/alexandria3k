@@ -163,11 +163,14 @@ ROWID_INDEX = 2
 class StreamingTable:
     """An apsw table streaming over data of the supplied table metadata"""
 
-    def __init__(self, table_meta, table_dict, data_source):
+    def __init__(
+        self, table_meta, table_dict, data_source, sample=lambda x: True
+    ):
         """Not part of the apsw VTTable interface"""
         self.table_meta = table_meta
         self.table_dict = table_dict
         self.data_source = data_source
+        self.sampling_function = sample
 
     def BestIndex(self, _constraints, _orderbys):
         """Called by the Engine to determine the best available index
@@ -178,6 +181,11 @@ class StreamingTable:
         """Called when a reference to a virtual table is no longer used"""
 
     Destroy = Disconnect
+
+    def sample(self, data_id):
+        """Return true if the identified data element should be included
+        in the sample given in the table's constructor."""
+        return self.sampling_function(data_id)
 
     def get_table_meta_by_name(self, name):
         """Return the metadata of the specified table"""

@@ -19,9 +19,10 @@
 """ORCID import integration tests"""
 
 import os
-import unittest
+import random
 import sqlite3
 import sys
+import unittest
 
 from .test_dir import add_src_dir, td
 add_src_dir()
@@ -258,3 +259,31 @@ class TestOrcidQuery(unittest.TestCase):
                 ),
                 128,
             )
+
+
+class TestOrcidSample(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if os.path.exists(DATABASE_PATH):
+            os.unlink(DATABASE_PATH)
+
+        random.seed(42)
+        cls.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"),
+                                 lambda _x: random.random() < 0.5)
+        cls.orcid.populate(DATABASE_PATH)
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_import(
+        self,
+    ):
+        result = TestOrcidSample.cursor.execute(f"SELECT Count(*) from persons")
+        (count,) = result.fetchone()
+        # ORCID_2022_10_summaries/000/0000-0001-5078-5000.xml is an error
+        # record, so only its DOI is imported
+        self.assertEqual(count, 1)

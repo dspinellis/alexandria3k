@@ -19,6 +19,7 @@
 """ROR import integration tests"""
 
 import os
+import random
 import sys
 import unittest
 
@@ -194,6 +195,31 @@ class TestRorPopulate(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertTrue(("0000 0004 1936 7857",) in rows)
 
+
+class TestRorPopulateSample(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if os.path.exists(DATABASE_PATH):
+            os.unlink(DATABASE_PATH)
+
+        random.seed("alexandria3k")
+        cls.ror = ror.Ror(td("data/ror.zip"), lambda _name: random.random() < 0.25)
+        cls.ror.populate(DATABASE_PATH)
+
+        cls.con = apsw.Connection(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_import(self):
+        result = TestRorPopulateSample.cursor.execute(
+            "SELECT Count(*) from research_organizations"
+        )
+        (count,) = result.fetchone()
+        self.assertEqual(count, 12)
 
 class TestRorLink(unittest.TestCase):
     @classmethod

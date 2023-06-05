@@ -109,17 +109,23 @@ class PersonsCursor:
     def Next(self):
         """Advance to the next item."""
         if self.single_file:
-            if self.file_read:
+            if self.file_read or not self.table.sample(
+                self.data_source.get_orcid()
+            ):
                 self.eof = True
             # The single file has been read. Set EOF in next Next call
             self.file_read = True
             return
-        self.file_id = next(self.iterator, None)
-        if self.file_id is None:
-            self.eof = True
-            return
-        self.item_index += 1
-        self.eof = False
+
+        while True:  # Loop until sample returns True
+            self.file_id = next(self.iterator, None)
+            if self.file_id is None:
+                self.eof = True
+                return
+            self.item_index += 1
+            self.eof = False
+            if self.table.sample(self.data_source.get_orcid()):
+                break
 
     def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
@@ -764,6 +770,7 @@ class VTSource:
     def __init__(self, data_source, sample):
         self.data_files = TarFiles(data_source, sample)
         self.table_dict = {t.get_name(): t for t in tables}
+        self.sample = sample
 
     def Create(self, _db, _module_name, _db_name, table_name):
         """Create the specified virtual table
@@ -771,7 +778,7 @@ class VTSource:
         the table's schema and the virtual table class."""
         table = self.table_dict[table_name]
         return table.table_schema(), StreamingCachedContainerTable(
-            table, self.table_dict, self.data_files
+            table, self.table_dict, self.data_files, self.sample
         )
 
     Connect = Create
