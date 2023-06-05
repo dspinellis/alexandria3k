@@ -31,6 +31,8 @@ from alexandria3k.virtual_db import (
     StreamingCachedContainerTable,
 )
 
+# pylint: disable=R0801
+
 
 # pylint: disable-next=too-many-instance-attributes
 class PersonsCursor:
@@ -130,7 +132,7 @@ class PersonsCursor:
 
 
 class PersonDetailsCursor(ElementsCursor):
-    """A cursor over the items' person researcher urls data."""
+    """A cursor over any of a person's details data."""
 
     def __init__(self, table, parent_cursor):
         """Not part of the apsw VTCursor interface.

@@ -37,7 +37,9 @@ class TestCommon(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate(DATABASE_PATH, td("data/ror.zip"))
+        cls.ror = ror.Ror(td("data/ror.zip"))
+        cls.ror.populate(DATABASE_PATH)
+
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 

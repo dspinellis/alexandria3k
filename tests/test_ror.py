@@ -40,7 +40,8 @@ class TestRorPopulate(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate(DATABASE_PATH, td("data/ror.zip"))
+        cls.ror = ror.Ror(td("data/ror.zip"))
+        cls.ror.populate(DATABASE_PATH)
 
         cls.con = apsw.Connection(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -69,7 +70,7 @@ class TestRorPopulate(unittest.TestCase):
             established,
             country_code,
         ) = result.fetchone()
-        self.assertEqual(id, 1)
+        self.assertEqual(id, 0)
         self.assertEqual(ror_path, "019wvm592")
         self.assertEqual(name, "Australian National University")
         self.assertEqual(status, "active")
@@ -78,7 +79,9 @@ class TestRorPopulate(unittest.TestCase):
 
     def test_funder_ids(self):
         result = TestRorPopulate.cursor.execute(
-            "SELECT funder_id FROM ror_funder_ids WHERE ror_id=2"
+            """SELECT funder_id FROM ror_funder_ids WHERE ror_id=(
+                    SELECT id FROM research_organizations WHERE
+                        ror_path='02bfwt286')"""
         )
         rows = list(result)
         self.assertEqual(len(rows), 6)
@@ -87,7 +90,9 @@ class TestRorPopulate(unittest.TestCase):
 
     def test_ror_types(self):
         result = TestRorPopulate.cursor.execute(
-            "SELECT type FROM ror_types WHERE ror_id=2"
+            """SELECT type FROM ror_types WHERE ror_id=(
+                    SELECT id FROM research_organizations WHERE
+                        ror_path='02bfwt286')"""
         )
         rows = list(result)
         self.assertEqual(len(rows), 1)
@@ -95,7 +100,9 @@ class TestRorPopulate(unittest.TestCase):
 
     def test_ror_links(self):
         result = TestRorPopulate.cursor.execute(
-            "SELECT link FROM ror_links WHERE ror_id=2"
+            """SELECT link FROM ror_links WHERE ror_id=(
+                    SELECT id FROM research_organizations WHERE
+                        ror_path='02bfwt286')"""
         )
         rows = list(result)
         self.assertEqual(len(rows), 1)
@@ -125,7 +132,9 @@ class TestRorPopulate(unittest.TestCase):
 
     def test_ror_relationships(self):
         result = TestRorPopulate.cursor.execute(
-            "SELECT type, ror_path FROM ror_relationships WHERE ror_id=2"
+            """SELECT type, ror_path FROM ror_relationships WHERE ror_id=(
+                    SELECT id FROM research_organizations WHERE
+                        ror_path='02bfwt286')"""
         )
         rows = list(result)
         self.assertEqual(len(rows), 13)
@@ -146,13 +155,16 @@ class TestRorPopulate(unittest.TestCase):
 
     def test_ror_addresses(self):
         result = TestRorPopulate.cursor.execute(
-            "SELECT * FROM ror_addresses WHERE ror_id=2"
+            """SELECT * FROM ror_addresses WHERE ror_id=(
+                    SELECT id FROM research_organizations WHERE
+                        ror_path='02bfwt286')"""
         )
         rows = list(result)
         self.assertEqual(len(rows), 1)
         self.assertTrue(
             (
-                2,
+                16384,
+                1,
                 -37.9083,
                 145.138,
                 "Melbourne",
@@ -164,7 +176,9 @@ class TestRorPopulate(unittest.TestCase):
 
     def test_ror_wikidata_ids(self):
         result = TestRorPopulate.cursor.execute(
-            "SELECT wikidata_id FROM ror_wikidata_ids WHERE ror_id=2"
+            """SELECT wikidata_id FROM ror_wikidata_ids WHERE ror_id=(
+                    SELECT id FROM research_organizations WHERE
+                        ror_path='02bfwt286')"""
         )
         rows = list(result)
         self.assertEqual(len(rows), 1)
@@ -172,7 +186,9 @@ class TestRorPopulate(unittest.TestCase):
 
     def test_ror_isnis(self):
         result = TestRorPopulate.cursor.execute(
-            "SELECT isni FROM ror_isnis WHERE ror_id=2"
+            """SELECT isni FROM ror_isnis WHERE ror_id=(
+                    SELECT id FROM research_organizations WHERE
+                        ror_path='02bfwt286')"""
         )
         rows = list(result)
         self.assertEqual(len(rows), 1)
@@ -185,7 +201,8 @@ class TestRorLink(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate(DATABASE_PATH, td("data/ror.zip"))
+        cls.ror = ror.Ror(td("data/ror.zip"))
+        cls.ror.populate(DATABASE_PATH)
 
         # Needed to test author-ror linking
         cls.crossref = crossref.Crossref(td("data/sample"))

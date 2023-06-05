@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2023  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,6 @@
 
 # pylint: disable-next=import-error
 import apsw
-
-from alexandria3k.common import log_sql
 
 
 class TableMeta:
@@ -171,8 +169,7 @@ class StreamingTable:
         self.table_dict = table_dict
         self.data_source = data_source
 
-    # pylint: disable-next=unused-argument
-    def BestIndex(self, constraints, _orderbys):
+    def BestIndex(self, _constraints, _orderbys):
         """Called by the Engine to determine the best available index
         for the operation at hand"""
         return None
@@ -261,106 +258,3 @@ class StreamingCachedContainerTable(StreamingTable):
                 / index_number,  # about 2000 disk i/o (8M file / 4k block)
             )
         return None
-
-
-class TableFiller:
-    """An object for adding records to a table"""
-
-    def __init__(self, database, table, column_names, is_master=False):
-        # A filler on an is_master table can only be called to insert
-        # a single record returning its rowid
-
-        # One cursor per object to allow caching the SQL statement
-        self.cursor = database.cursor()
-
-        # {title, isbn, rating} → ":title, :isbn, :rating"
-        values = ",".join(map(lambda n: f":{n}", column_names))
-        ret = " RETURNING rowid" if is_master else ""
-        self.is_master = is_master
-        self.statement = f"""
-            INSERT INTO {table.get_name()} VALUES({values}) {ret}"""
-
-        # Create a dictionary of functions to extract the record values for
-        # the specified columns
-        self.extractors = {}
-        self.extract_multiple = table.get_extract_multiple()
-        for cname in column_names:
-            self.extractors[cname] = table.get_value_extractor_by_name(cname)
-        self.table_name = table.get_name()
-        # print(f"New TableFiller {table.get_name()} {column_names=}")
-
-    def have_extractors(self):
-        """Return True if the table has at least one extractor"""
-        return len(self.extractors) > 0
-
-    def add_records(self, data_source, id_name, id_value):
-        """Add to the table the required values from the specified data
-        source (e.g. XML element tree or JSON tree.
-        When a single record is added return its rowid.
-        """
-        if self.extract_multiple:
-            self.add_multiple_records(data_source, id_name, id_value)
-            return None
-        return self.add_single_record(data_source, id_name, id_value)
-
-    def add_single_record(self, data_source, id_name, id_value):
-        """Add to the table the required values from the provided data source"""
-        # Create dictionary of names/values to insert
-        # print(f"add_single_record {data_source=} {id_name=} {id_value=}")
-        values = {}
-        not_null_values = 0
-        for column_name, extractor in self.extractors.items():
-            if column_name == id_name:
-                values[column_name] = id_value
-            elif extractor:
-                value = extractor(data_source)
-                values[column_name] = value
-                if value is not None:
-                    not_null_values += 1
-
-        # No insertion if all non-key values are NULL
-        if not_null_values == 0:
-            return None
-
-        # print(f"{self.statement=} {values=}")
-        self.cursor.execute(
-            log_sql(self.statement),
-            values,
-            prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
-        )
-        if not self.is_master:
-            return None
-        (rowid,) = self.cursor.fetchone()
-        return rowid
-
-    def add_multiple_records(self, data_source, id_name, id_value):
-        """Add to the table the required values from the XML element tree"""
-        records = []
-        # print(f"add_multiple_records {data_source=} {id_name=} {id_value=}")
-        for record in self.extract_multiple(data_source):
-            # Create dictionary of names/values to insert
-            values = {}
-            not_null_values = 0
-            for column_name, extractor in self.extractors.items():
-                if column_name == id_name:
-                    values[column_name] = id_value
-                else:
-                    value = extractor(record)
-                    values[column_name] = value
-                    if value is not None:
-                        not_null_values += 1
-
-            # No insertion if all non-key values are NULL
-            if not_null_values > 0:
-                records.append(values)
-
-        # print(f"{self.statement=} {records=}")
-        self.cursor.executemany(
-            log_sql(self.statement),
-            records,
-            prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
-        )
-
-    def get_table_name(self):
-        """Return the name of the filled table"""
-        return self.table_name

@@ -384,6 +384,7 @@ class DataSource:
         """Return the column names associated with an executing query"""
         return [description[0] for description in self.cursor.description]
 
+    # pylint: disable-next=too-many-locals
     def populate(
         self,
         database_path,
@@ -486,6 +487,16 @@ class DataSource:
                     )
             return result
 
+        def partition_condition(partition_index):
+            """Return an SQL expression for selecting the rows
+            according to the partition index.  If no partitioning
+            is in effect return `True`."""
+            return (
+                "true"
+                if partition_index is SINGLE_PARTITION_INDEX
+                else f"{table}.container_id = {partition_index}"
+            )
+
         def populate_only_root_table(
             table, partition_index, selection_condition
         ):
@@ -497,19 +508,13 @@ class DataSource:
             if not selection_condition:
                 selection_condition = "true"
 
-            # Partition is set to -1 when no partitions exist
-            partition_condition = (
-                "true"
-                if partition_index is SINGLE_PARTITION_INDEX
-                else f"{table}.container_id = {partition_index}"
-            )
             # No need for temp table matching at the root
             self.vdb.execute(
                 log_sql(
                     f"""
                 INSERT INTO populated.{table}
                 SELECT {columns} FROM {table}
-                WHERE {partition_condition}
+                WHERE {partition_condition(partition_index)}
                   AND {selection_condition}
             """
                 )
@@ -545,7 +550,7 @@ class DataSource:
             statement = f"""
                 INSERT INTO populated.{table}
                     SELECT {columns} FROM {table}
-                    WHERE {table}.container_id = {partition_index} {exists}
+                    WHERE {partition_condition(partition_index)} {exists}
                 """
             self.vdb.execute(log_sql(statement))
             perf.log(f"Populate {table}")

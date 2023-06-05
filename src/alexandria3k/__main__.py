@@ -113,6 +113,7 @@ def schema_list(parser, arg):
             + journal_names.tables
             + orcid.tables
             + ror.tables
+            + ror.link_tables
         )
     elif name == "crossref":
         tables_list(crossref.tables)
@@ -381,6 +382,7 @@ def expand_data_source(parser, args):
         "doaj",
         "journal_names",
         "orcid",
+        "ror",
     ]:
         if not (args.populate_db_path or args.query or args.query_file):
             parser.error("Database path or query must be specified")
@@ -481,6 +483,9 @@ def main():
     if args.orcid:
         data_source = orcid.Orcid(args.orcid, sample, args.attach_databases)
 
+    if args.ror:
+        data_source = ror.Ror(args.ror, sample, args.attach_databases)
+
     if args.row_selection_file:
         args.row_selection = ""
         with open(args.row_selection_file, encoding="utf-8") as query_input:
@@ -495,10 +500,6 @@ def main():
         )
         debug.log("files-read", f"{FileCache.file_reads} files read")
         perf.log("Table population")
-
-    if args.ror:
-        ror.populate(args.populate_db_path, args.ror)
-        perf.log("ROR table population")
 
     if args.query_file:
         args.query = ""
@@ -523,6 +524,7 @@ def main():
             csv_writer.writerow(rec)
         csv_file.close()
         debug.log("files-read", f"{FileCache.file_reads} files read")
+        perf.log("Query execution")
 
     if args.execute == "link-aa-base-ror":
         ror.link_author_affiliations(args.populate_db_path, link_to_top=False)

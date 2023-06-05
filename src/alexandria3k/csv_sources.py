@@ -48,11 +48,9 @@ class VTSource:
 
     def get_container_iterator(self):
         """Return an iterator over the int identifiers of all data files"""
-        # -1 signifies that no partitions exist
         return [SINGLE_PARTITION_INDEX]
 
-    # pylint: disable-next=unused-argument
-    def get_container_name(self, fid):
+    def get_container_name(self, _fid):
         """Return the name of the file corresponding to the specified fid"""
         return self.data_source
 
@@ -104,8 +102,7 @@ class CsvCursor:
             return extract_function(self.row_value)
         return self.row_value[col - 1]
 
-    # pylint: disable-next=unused-argument
-    def Filter(self, index_number, _index_name, constraint_args):
+    def Filter(self, _index_number, _index_name, _constraint_args):
         """Always called first to initialize an iteration to the first row
         of the table according to the index"""
         # print("FILTER", index_number, constraint_args)
