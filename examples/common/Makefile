@@ -6,8 +6,10 @@ export RDBMS?=sqlite
 # TODO: Set MAINDB
 export ROLAPDB?=rolap
 
+A3K?=a3k
 CROSSREF_DIR?=../common/Crossref-April-2022
 ORCID_SUMMARIES?=../common/ORCID_2022_10_summaries.tar.gz
+ROR?=../common/ror-v1.17.1-2022-12-16.zip
 
 V?=1
 TIME?=time
@@ -23,39 +25,40 @@ $(CROSSREF_DIR):
 $(ORCID_SUMMARIES):
 	curl -L https://orcid.figshare.com/ndownloader/files/37635374 >$@
 
-# TODO: Add rule in including Makefile to populate database with required data
+$(ROR):
+	curl -L 'https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1' >$@
+
+# TODO when using this Makefile: Add rule in including Makefile named
+# "populate" to populate the database with required data
 
 asjcs: populate
-	$(TIME) alexandria3k --data-source ASJC --populate "$(MAINDB).db"
+	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" asjcs
 	touch $@
 
 doaj: populate
-	$(TIME) alexandria3k --data-source DOAJ --populate "$(MAINDB).db"
+	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" doaj
 	touch $@
 
 link-works-asjcs: asjcs populate
-	$(TIME) alexandria3k --execute link-works-asjcs \
-	  --populate "$(MAINDB).db"
+	$(TIME) $(A3K) process "$(MAINDB).db" link-works-asjcs
 	touch $@
 
 rors: populate
-	$(TIME) alexandria3k --data-source ROR ../common/ror-v1.17.1-2022-12-16.zip --populate "$(MAINDB).db"
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" ror $(ROR)
 	touch $@
 
 link-aa-base-ror: rors populate
-	$(TIME) alexandria3k --execute link-aa-base-ror \
-	  --populate "$(MAINDB).db"
+	$(TIME) $(A3K) process "$(MAINDB).db" link-aa-base-ror
 	touch $@
 
 link-aa-top-ror: rors populate
-	$(TIME) alexandria3k --execute link-aa-top-ror \
-	  --populate "$(MAINDB).db"
+	$(TIME) $(A3K) process "$(MAINDB).db" link-aa-top-ror
 	touch $@
 
 # Add journal names
 journal-names:
-	$(TIME) alexandria3k --data-source journal-names \
-	  --populate-db-path "$(MAINDB).db"
+	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" journal-names
 	touch $@
 
 simple-rolap/Makefile:

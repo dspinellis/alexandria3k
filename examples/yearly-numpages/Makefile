@@ -9,11 +9,9 @@ include ../common/Makefile
 
 # Populate database with works and their pages
 populate: $(CROSSREF_DIR)
-	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
-	 --populate "$(MAINDB).db" \
-	  --debug progress \
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --columns works.id \
 	    works.published_year \
-	    works.page \
-	  --debug progress
+	    works.page
 	touch $@

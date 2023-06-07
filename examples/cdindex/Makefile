@@ -6,13 +6,15 @@ export MAINDB?=cdindex
 
 export DEPENDENCIES=populate tables/cdindex
 
+# Intel thread building blocks library
+TBB?=-ltbb
+
 include ../common/Makefile
 
 # Populate database with required fields
 populate: $(CROSSREF_DIR)
-	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
-	  --populate "$(MAINDB).db" \
-	  --debug progress \
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --columns works.id \
 	    works.doi \
 	    works.published_year \
@@ -39,7 +41,7 @@ fast-cdindex:
 	git clone https://github.com/dspinellis/fast-cdindex.git
 
 cdindex-db: cdindex-db.cpp sqlite_modern_cpp fast-cdindex
-	g++ -std=c++17 -I sqlite_modern_cpp/hdr -I fast-cdindex/src -o $@ cdindex-db.cpp fast-cdindex/src/cdindex.cpp -lsqlite3 -ltbb -ggdb3 -O3
+	g++ -std=c++17 -I sqlite_modern_cpp/hdr -I fast-cdindex/src -o $@ cdindex-db.cpp fast-cdindex/src/cdindex.cpp -lsqlite3 $(TBB) -ggdb3 -O3
 
 # Fix a DOI containing a |
 reports/cd5index-all.txt.gz: reports/cd5index-all.txt

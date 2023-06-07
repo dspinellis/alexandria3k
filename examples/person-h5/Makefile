@@ -10,9 +10,8 @@ include ../common/Makefile
 # Populate database with required details for past five years
 populate: $(CROSSREF_DIR)
 	# Populate database with DOIs of works and their references
-	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
-	  --populate "$(MAINDB).db" \
-	  --debug progress \
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --columns works.id \
 	    works.doi \
 	    work_references.doi \
