@@ -24,11 +24,12 @@ jobs:
       - name: Run unit and integration tests
         run: cd src && pipenv run python -m unittest discover ..
       - name: Check code formatting
-        run: cd src && pipenv run black -l 79 --check alexandria3k/*.py
+        run: cd src && find . -name '*.py' | pipenv run black -l 79 --check
       - name: Lint
         run: |
           cd src
-          pipenv run python -m pylint --rcfile ../.pylintrc alexandria3k/*.py
+          find . -name '*.py' | xargs pipenv run python -m pylint --rcfile ../.pylintrc
+
       - name: Install rdbunit
         run: |
           git clone --depth=1 https://github.com/dspinellis/rdbunit.git

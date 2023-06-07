@@ -79,7 +79,7 @@ Code formatting
 .. code:: sh
 
    # While in the top-level directory
-   black -l 79 src/alexandria3k/*.py
+   find src -name '*.py' | xargs black -l 79
 
 Linting
 ~~~~~~~
@@ -87,7 +87,7 @@ Linting
 .. code:: sh
 
    # While in the top-level directory
-   python -m pylint src/alexandria3k/*.py
+   find src -name '*.py' | xargs python -m pylint --rcfile .pylintrc
 
 Plugin documentation
 ~~~~~~~~~~~~~~~~~~~~
