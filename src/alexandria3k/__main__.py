@@ -303,22 +303,24 @@ def add_subcommand_query(subparsers):
     )
 
 
-def list_tables(name):
-    """List the schema of the tables in the specified module"""
+def get_tables(name):
+    """Return a list of the schema of the tables in the specified module"""
     tables = module_get_attribute(name, "tables")
-    for table in tables:
-        print(table.table_schema())
+    return [table.table_schema() for table in tables]
 
 
 def list_facility_schema(facility, args):
     """Print the specified facility (data_sources or processes) data
     schema."""
     if args.facility:
-        list_tables(f"{facility}.{module_name(args.facility)}")
+        result = get_tables(f"{facility}.{module_name(args.facility)}")
     else:
-        # All modules
+        # All modules, but each table only once
+        result = set()
         for module in facility_modules(facility):
-            list_tables(f"{facility}.{module}")
+            result.update(get_tables(f"{facility}.{module}"))
+    for table_schema in result:
+        print(table_schema)
 
 
 def add_subcommand_list_complete_schema(subparsers):
@@ -377,7 +379,7 @@ def list_facility_description(facility, show_default):
     source."""
     indent = max(len(name) for name in facility_names(facility)) + 3
 
-    width = shutil.get_terminal_size().columns if os.isatty(1) else 70
+    width = shutil.get_terminal_size().columns if os.isatty(1) else 1e9
     for name in facility_names(facility):
         module = module_name(f"{facility}.{name}")
         description = module_get_attribute(module, "__doc__")
