@@ -59,4 +59,4 @@ jobs:
           # As Python module
           python -m alexandria3k --version
           # As a command
-          bin/alexandria3k --version
+          bin/a3k --version
