@@ -24,7 +24,9 @@ jobs:
       - name: Run unit and integration tests
         run: cd src && pipenv run python -m unittest discover ..
       - name: Check code formatting
-        run: cd src && find . -name '*.py' | pipenv run black -l 79 --check
+        run: |
+          cd src
+          find . -name '*.py' | pipenv run black -l 79 --check
       - name: Lint
         run: |
           cd src
