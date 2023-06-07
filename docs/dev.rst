@@ -1,5 +1,5 @@
-Development
------------
+Development processes
+---------------------
 
 For software development purposes *alexandria3k* can also be installed
 and used through its `Github

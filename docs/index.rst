@@ -58,6 +58,7 @@ Contents
    plugin-api
    utility-api
    dev
+   dev-plugin
    faq
 
 

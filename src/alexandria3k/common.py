@@ -101,7 +101,7 @@ def set_fast_writing(database):
     """
     Very fast inserts at the risk of possible data corruption in case of a
     crash.
-    We don't really care, because we assume the databased is
+    We don't really care, because we assume the database is
     populated in one go from empty, and if it gets corrupted
     the process can be repeated.
     This increases speed in ORCID works population by 50:

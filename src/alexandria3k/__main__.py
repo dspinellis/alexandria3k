@@ -195,9 +195,7 @@ def add_subcommand_help(top_parser, subparsers):
         """Display top-level help."""
         top_parser.print_help()
 
-    parser = subparsers.add_parser(
-        "help", help="Show top-level help message."
-    )
+    parser = subparsers.add_parser("help", help="Show top-level help message.")
     parser.set_defaults(func=top_level_help)
 
 
@@ -429,9 +427,7 @@ def add_subcommand_version(subparsers):
         """Display program version and exit"""
         print(f"a3k version {program_version()}")
 
-    parser = subparsers.add_parser(
-        "version", help="Report program version"
-    )
+    parser = subparsers.add_parser("version", help="Report program version")
     parser.set_defaults(func=show_version)
 
 

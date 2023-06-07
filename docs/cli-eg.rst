@@ -2,26 +2,26 @@ Command line execution examples
 -------------------------------
 
 After downloading the Crossref data, the functionality of *alexandria3k*
-can be used through the corresponding command.
+can be used through its CLI named *a3k*.
 Below are isolated examples of command-line invocations
 demonstrating particular aspects of *alexandria3k*.
 You can find examples of complete proof-of-concept studies in the
 `examples <https://github.com/dspinellis/alexandria3k/tree/main/examples>`__
 directory.
 
-Obtain list of command-line options
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Obtain list of available commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: sh
 
-   alexandria3k --help
+   a3k help
 
 Show DOI and title of all publications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: sh
 
-   alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
+   a3k query crossref 'April 2022 Public Data File from Crossref' \
       --query 'SELECT DOI, title FROM works'
 
 Save DOI and title of 2021 publications in a CSV file suitable for Excel
@@ -29,7 +29,7 @@ Save DOI and title of 2021 publications in a CSV file suitable for Excel
 
 .. code:: sh
 
-   alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
+   a3k query crossref 'April 2022 Public Data File from Crossref' \
      --query 'SELECT DOI, title FROM works WHERE published_year = 2021' \
      --output 2021.csv \
      --output-encoding use utf-8-sig
@@ -42,7 +42,7 @@ number of Crossref publications by year and publication type.
 
 .. code:: sh
 
-   alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
+   a3k query crossref 'April 2022 Public Data File from Crossref' \
       --query-file count-year-type.sql >results.csv
 
 where ``count-year-type.sql`` contains:
@@ -74,7 +74,7 @@ minutes, rather than hours.
 
 .. code:: sh
 
-   alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref'  \
+   a3k query crossref 'April 2022 Public Data File from Crossref'  \
       --sample 'random.random() < 0.01' \
       --field-separator $'\t' \
       --query-file count-no-abstract.sql
@@ -98,8 +98,8 @@ regarding publications that contain “COVID” in their title or abstract.
 
 .. code:: sh
 
-   alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
-      --populate-db-path covid.db \
+   a3k populate covid.db \
+      crossref 'April 2022 Public Data File from Crossref' \
       --row-selection "title like '%COVID%' OR abstract like '%COVID%' "
 
 Publications graph
@@ -110,8 +110,8 @@ Crossref data set to create a graph between navigable entities.
 
 .. code:: sh
 
-   alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
-      --populate-db-path graph.db \
+   a3k populate graph.db \
+      crossref 'April 2022 Public Data File from Crossref' \
       --columns works.id works.doi works.published_year \
         work_references.work_id work_references.doi work_references.isbn \
         work_funders.id work_funders.work_id work_funders.doi \
@@ -155,38 +155,39 @@ of works whose DOI appears in the attached database named
 
 .. code:: sh
 
-   alexandria3k --data-source Crossref 'April 2022 Public Data File from Crossref' \
-      --populate-db-path selected-works.db \
+   a3k populate selected-works.db \
+      crossref 'April 2022 Public Data File from Crossref' \
       --attach-databases 'attached:selected.db' \
       --row-selection "EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)"
 
 Populate the database with author records from ORCID
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Only records of authors identified in the publications through an ORCID
-will be added.
+Only records of authors identified in the Crossref publications through
+an ORCID will be added.
 
 .. code:: sh
 
-   alexandria3k --populate-db-path database.db \
-     --data-source ORCID ORCID_2022_10_summaries.tar.gz \
-     --linked-records persons
+   a3k populate database.db \
+      ORCID ORCID_2022_10_summaries.tar.gz \
+      --row-selection "EXISTS (SELECT 1 FROM populated.work_authors
+        WHERE work_authors.orcid = persons.orcid)"
 
 Populate the database with journal names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: sh
 
-   alexandria3k --populate-db-path database.db \
-     --data-source journal-names http://ftp.crossref.org/titlelist/titleFile.csv
+   a3k populate database.db \
+     journal-names http://ftp.crossref.org/titlelist/titleFile.csv
 
 Populate the database with funder names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: sh
 
-   alexandria3k --populate-db-path database.db \
-     --data-source funder-names https://doi.crossref.org/funderNames?mode=list
+   a3k populate database.db \
+     funder-names https://doi.crossref.org/funderNames?mode=list
 
 Work with Scopus All Science Journal Classification Codes (ASJC)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -194,18 +195,17 @@ Work with Scopus All Science Journal Classification Codes (ASJC)
 .. code:: sh
 
    # Populate database with ASJCs
-   alexandria3k --populate-db-path database.db --data-source ASJC
+   a3k populate database.db --data-source asjc
 
    # Link the (sometime previously populated works table) with ASJCs
-   alexandria3k --populate-db-path database.db --execute link-works-asjcs
+   a3k process database.db link-works-asjcs
 
 Populate the database with data regarding open access journals
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: sh
 
-   alexandria3k --populate-db-path database.db \
-     --data-source DOAJ https://doaj.org/csv
+   a3k populate database.db doaj https://doaj.org/csv
 
 Populate the database with the names of research organizations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -219,8 +219,7 @@ Populate the research organization registry (ROR) tables.
      "https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"
 
    # Populate the database
-   alexandria3k --populate-db-path database.db \
-     --data-source ROR ror-v1.17.1.zip
+   a3k populate database.db ror ror-v1.17.1.zip
 
 Link author affiliations with research organization names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -232,10 +231,10 @@ linking the two.
 .. code:: sh
 
    # Link affiliations with best match
-   alexandria3k --populate-db-path database.db --execute link-aa-base-ror
+   a3k process database.db link-aa-base-ror
 
    # Link affiliations with top parent of best match
-   alexandria3k --populate-db-path database.db --execute link-aa-top-ror
+   a3k process database.db link-aa-top-ror
 
 After linking, the results’ quality can be verified with queries such as
 the following.
