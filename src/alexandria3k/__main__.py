@@ -204,7 +204,7 @@ def query(args):
     data_source_instance = get_data_source_instance(args)
 
     if args.query_file:
-        with open(args.query_ile, encoding="utf-8") as file:
+        with open(args.query_file, encoding="utf-8") as file:
             args.query = file.read()
 
     if args.output:
@@ -439,11 +439,11 @@ def get_cli_parser():
     parser.add_argument(
         "-d",
         "--debug",
-        nargs="+",
+        nargs=1,
         type=str,
         default=[],
         # NOTE: Keep in sync with list in debug.py
-        help="""Output debuggging information as specfied by the arguments.
+        help="""Output debuggging information according to the comma-separated arguments.
     exception: Raise an exception when an error occurs;
     files-read: Counts of Crossref data files read;
     link: Record linking operations;
@@ -487,7 +487,8 @@ def main():
     args = parser.parse_args()
 
     # Setup debug logging and performance monitoring
-    debug.set_flags(args.debug)
+    if args.debug:
+        debug.set_flags(args.debug[0].split(","))
     if debug.enabled("stderr"):
         debug.set_output(sys.stderr)
     perf.log("Start")
