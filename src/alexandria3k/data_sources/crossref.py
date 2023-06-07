@@ -29,7 +29,7 @@ from alexandria3k.data_source import (
     StreamingCachedContainerTable,
 )
 from alexandria3k.file_cache import get_file_cache
-from alexandria3k.virtual_db import ColumnMeta, TableMeta
+from alexandria3k.db_schema import ColumnMeta, TableMeta
 
 
 DEFAULT_SOURCE = None

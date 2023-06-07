@@ -21,7 +21,7 @@
 
 from alexandria3k.csv_source import CsvCursor, VTSource
 from alexandria3k.data_source import DataSource
-from alexandria3k.virtual_db import ColumnMeta, TableMeta
+from alexandria3k.db_schema import ColumnMeta, TableMeta
 
 DEFAULT_SOURCE = "https://doi.crossref.org/funderNames?mode=list"
 

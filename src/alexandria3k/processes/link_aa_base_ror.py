@@ -31,7 +31,7 @@ from alexandria3k.common import (
 )
 from alexandria3k import debug
 from alexandria3k import perf
-from alexandria3k.virtual_db import ColumnMeta, TableMeta
+from alexandria3k.db_schema import ColumnMeta, TableMeta
 
 tables = [
     # No extractors; filled by link_author_affiliations

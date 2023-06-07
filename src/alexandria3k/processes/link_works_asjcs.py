@@ -25,7 +25,7 @@ from alexandria3k.common import (
     get_string_resource,
 )
 from alexandria3k import perf
-from alexandria3k.virtual_db import ColumnMeta, TableMeta
+from alexandria3k.db_schema import ColumnMeta, TableMeta
 
 
 tables = [

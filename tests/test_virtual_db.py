@@ -24,7 +24,7 @@ import unittest
 from .test_dir import add_src_dir
 add_src_dir()
 
-from alexandria3k.virtual_db import ColumnMeta, TableMeta
+from alexandria3k.db_schema import ColumnMeta, TableMeta
 
 def extractor():
     return 42
