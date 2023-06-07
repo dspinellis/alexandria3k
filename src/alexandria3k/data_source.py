@@ -17,7 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 """Queries and database population through (possibly partitioned)
-virtual database tables"""
+virtual database tables."""
 
 import abc
 import csv
@@ -40,18 +40,24 @@ from alexandria3k import debug
 from alexandria3k import perf
 from alexandria3k.tsort import tsort
 
-# Set or compare for equality to this reference for an index value
-# is used to denote a single partition
 SINGLE_PARTITION_INDEX = "SINGLE_PARTITION"
+"""str: denote a table with a single partition by setting or comparing for
+equality an index value to this reference."""
 
-# By convention column 1 of each table hold the container (file) id
-# which is the index of the file in the files array
 CONTAINER_ID_COLUMN = 1
+"""int: by convention column 1 of each table hold the container (file) id.
+This can e.g. be the index of the file in an array of container files
+or an increasing counter over a streamed collection."""
 
 ROWID_COLUMN = -1
+"""int: column that denotes the internally used SQLite rowid integer row
+identifier."""
 
 CONTAINER_INDEX = 1
+"""int: database table index using the container id."""
+
 ROWID_INDEX = 2
+"""int: database table index using the row id."""
 
 
 class StreamingTable:
@@ -231,7 +237,7 @@ class ElementsCursor:
         self.elements = None
 
 
-class IndexManager:
+class _IndexManager:
     """Create database indexes, avoiding duplication, and allowing
     them to be dropped."""
 
@@ -684,7 +690,7 @@ class DataSource:
             )
             set_fast_writing(self.vdb)
 
-            self.index_manager = IndexManager(self.vdb, self.root_name)
+            self.index_manager = _IndexManager(self.vdb, self.root_name)
 
             add_columns(
                 columns,
