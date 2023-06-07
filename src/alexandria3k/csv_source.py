@@ -22,8 +22,7 @@ import codecs
 import csv
 
 from alexandria3k.common import data_from_uri_provider
-from alexandria3k.data_source import SINGLE_PARTITION_INDEX
-from alexandria3k.virtual_db import StreamingTable
+from alexandria3k.data_source import SINGLE_PARTITION_INDEX, StreamingTable
 
 
 # Method names coming from apsw start with uppercase

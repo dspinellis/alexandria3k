@@ -25,9 +25,10 @@ from alexandria3k.data_source import (
     DataSource,
     ElementsCursor,
     SINGLE_PARTITION_INDEX,
+    StreamingTable,
 )
 from alexandria3k import perf
-from alexandria3k.virtual_db import ColumnMeta, TableMeta, StreamingTable
+from alexandria3k.virtual_db import ColumnMeta, TableMeta
 
 # pylint: disable=R0801
 

@@ -21,15 +21,15 @@
 import abc
 import os
 
-from alexandria3k.data_source import DataSource, ElementsCursor
-from alexandria3k.file_cache import get_file_cache
-from alexandria3k.virtual_db import (
-    ColumnMeta,
+from alexandria3k.data_source import (
     CONTAINER_INDEX,
-    TableMeta,
+    DataSource,
+    ElementsCursor,
     ROWID_INDEX,
     StreamingCachedContainerTable,
 )
+from alexandria3k.file_cache import get_file_cache
+from alexandria3k.virtual_db import ColumnMeta, TableMeta
 
 
 DEFAULT_SOURCE = None

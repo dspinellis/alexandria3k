@@ -22,14 +22,14 @@ import tarfile
 import xml.etree.ElementTree as ET
 
 from alexandria3k.common import fail, warn
-from alexandria3k.data_source import DataSource, ElementsCursor
-from alexandria3k import perf
-from alexandria3k.virtual_db import (
-    ColumnMeta,
+from alexandria3k.data_source import (
     CONTAINER_INDEX,
-    TableMeta,
+    DataSource,
+    ElementsCursor,
     StreamingCachedContainerTable,
 )
+from alexandria3k import perf
+from alexandria3k.virtual_db import ColumnMeta, TableMeta
 
 # pylint: disable=R0801
 
