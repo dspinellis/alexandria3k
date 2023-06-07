@@ -149,9 +149,9 @@ Populate the database with journal names
 
 .. code:: py
 
-   from alexandria3k import csv_sources
+   from alexandria3k import csv_source
 
-   csv_sources.populate_journal_names(
+   csv_source.populate_journal_names(
        "database.db",
        "http://ftp.crossref.org/titlelist/titleFile.csv"
    )
@@ -163,9 +163,9 @@ Populate the database with funder names
 
 .. code:: py
 
-   from alexandria3k import csv_sources
+   from alexandria3k import csv_source
 
-   csv_sources.populate_funder_names(
+   csv_source.populate_funder_names(
        "database.db",
        "https://doi.crossref.org/funderNames?mode=list"
    )
@@ -177,9 +177,9 @@ Populate the database with data regarding open access journals
 
 .. code:: py
 
-   from alexandria3k import csv_sources
+   from alexandria3k import csv_source
 
-   csv_sources.populate_open_access_journals(
+   csv_source.populate_open_access_journals(
        "database.db",
        "https://doaj.org/csv"
    )
@@ -191,13 +191,13 @@ Work with Scopus All Science Journal Classification Codes (ASJC)
 
 .. code:: py
 
-   from alexandria3k import csv_sources
+   from alexandria3k import csv_source
 
    # Populate database with ASJCs
-   csv_sources.populate_asjc("database.db", "resource:data/asjc.csv")
+   csv_source.populate_asjc("database.db", "resource:data/asjc.csv")
 
    # Link the (sometime previously populated works table) with ASJCs
-   csv_sources.link_works_asjcs("database.db")
+   csv_source.link_works_asjcs("database.db")
 
 .. _populate-the-database-with-the-names-of-research-organizations-1:
 

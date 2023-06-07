@@ -17,7 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 """funder_names module test. This tests the common functionality of all
-csv_sources data sources."""
+csv_source data sources."""
 
 import csv
 import os

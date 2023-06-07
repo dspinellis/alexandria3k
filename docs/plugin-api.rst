@@ -11,5 +11,5 @@ These can be contributed to *alexandria3k* or used in parallel with it.
 .. automodule:: data_source
    :members:
 
-.. automodule:: csv_sources
+.. automodule:: csv_source
    :members:
