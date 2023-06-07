@@ -187,6 +187,19 @@ def link_author_affiliations(database_path, link_to_top):
     perf.log("Link top-level affiliations")
 
 
-def process(database):
-    """Processing entry point from main"""
-    link_author_affiliations(database, link_to_top=False)
+def process(database_path):
+    """
+    Process the specified database creating a table that links Crossref work
+    authors to their corresponding research organization as codified in the
+    Research Orgnization Registry (ROR).
+    The link is made to the lowest identifiable organizational level,
+    e.g. an author's clinic, school, or institute.
+
+    :param database_path: The path specifying the SQLite database
+        to process and populate.
+        The database shall already contain the ROR dataset and the Crossref
+        `author_affiliations` table.
+    :type database_path: str
+    """
+
+    link_author_affiliations(database_path, link_to_top=False)

@@ -796,20 +796,20 @@ class VTSource:
 
 class Orcid(DataSource):
     """
-    Create an ORCID meta-data object that supports queries over its
-    (virtual) tables and the population of an SQLite database with its
+    Create an object containing ORCID meta-data that supports queries over
+    its (virtual) table and the population of an SQLite database with its
     data.
 
-    :param orcid_file: The compressed tar file containing ORCID data
+    :param orcid_file: The file path to the compressed tar file containing
+        ORCID data.
     :type orcid_file: str
 
     :param sample: A callable to control container sampling, defaults
         to `lambda n: True`.
         The population or query method will call this argument
-        for each Crossref container file with each container's file
-        name as its argument.  When the callable returns `True` the
-        container file will get processed, when it returns `False` the
-        container will get skipped.
+        for each ORCID person record with each ORCID as its argument.
+        When the callable returns `True` the container record will get
+        processed, when it returns `False` the record will get skipped.
     :type sample: callable, optional
 
     :param attach_databases: A list of colon-joined tuples specifying

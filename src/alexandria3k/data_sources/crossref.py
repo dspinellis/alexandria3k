@@ -837,8 +837,8 @@ tables = [
 
 class Crossref(DataSource):
     """
-    Create a Crossref meta-data object that supports queries over its
-    (virtual) tables and the population of an SQLite database with its
+    Create an object containing Crossref meta-data that supports queries over
+    its (virtual) tables and the population of an SQLite database with its
     data.
 
     :param crossref_directory: The directory path where the Crossref

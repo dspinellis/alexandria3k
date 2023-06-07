@@ -79,12 +79,28 @@ tables = [
 
 class Asjcs(DataSource):
     """
-    Create an ASJC meta-data object that supports queries over
+    Create an object containing ASJC meta-data that supports queries over
     its (virtual) table and the population of an SQLite database with its
     data.
 
-    :param data_source: The source where the ASJC data are located
+    :param data_source: The location (file path or URL) where the DOAJ data
+      are located.
     :type data_source: str
+
+    :param sample: A callable to row sampling, defaults to `lambda n: True`.
+        The population or query method will call this argument
+        for each record with the record's data as its argument.  When the
+        callable returns `True` the record will get processed, when it
+        returns `False` the record will get skipped.
+    :type sample: callable, optional
+
+    :param attach_databases: A list of colon-joined tuples specifying
+        a database name and its path, defaults to `None`.
+        The specified databases are attached and made available to the
+        query and the population condition through the specified database
+        name.
+    :type attach_databases: list, optional
+
     """
 
     def __init__(

@@ -303,21 +303,19 @@ class VTSource:
 
 class Ror(DataSource):
     """
-    Create an ROR meta-data object that supports queries over its
-    (virtual) tables and the population of an SQLite database with its
+    Create an object containing ROR meta-data that supports queries over
+    its (virtual) table and the population of an SQLite database with its
     data.
 
     :param ror_file: Path to a zip file containing the research organization
         data, e.g. `"v1.17.1-2022-12-16-ror-data.zip"`
     :type ror_file: str
 
-    :param sample: A callable to control container sampling, defaults
-        to `lambda n: True`.
+    :param sample: A callable to row sampling, defaults to `lambda n: True`.
         The population or query method will call this argument
-        for each Crossref container file with each container's file
-        name as its argument.  When the callable returns `True` the
-        container file will get processed, when it returns `False` the
-        container will get skipped.
+        for each record with the record's data as its argument.  When the
+        callable returns `True` the record will get processed, when it
+        returns `False` the record will get skipped.
     :type sample: callable, optional
 
     :param attach_databases: A list of colon-joined tuples specifying
@@ -326,7 +324,6 @@ class Ror(DataSource):
         query and the population condition through the specified database
         name.
     :type attach_databases: list, optional
-
     """
 
     def __init__(

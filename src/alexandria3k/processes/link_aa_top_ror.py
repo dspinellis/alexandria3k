@@ -18,11 +18,22 @@
 #
 """Link author affiliation with top-level research organization"""
 
-from alexandria3k.processes.link_aa_base_ror import link_author_affiliations
+from alexandria3k.processes import link_aa_base_ror
 
-tables = []
+tables = link_aa_base_ror.tables
 
 
-def process(database):
-    """Processing entry point from main"""
-    link_author_affiliations(database, link_to_top=True)
+def process(database_path):
+    """
+    Process the specified database creating a table that links Crossref work
+    authors to their corresponding research organization as codified in the
+    Research Orgnization Registry (ROR).
+    The link is made to the top organizational level corresponding to the
+    identified organization, e.g. the hospital, university, or research
+    center associated with an author's clinic, school, or institute.
+
+    :param database_path: The path specifying the SQLite database
+        to process and populate.
+    :type database_path: str
+    """
+    link_aa_base_ror.link_author_affiliations(database_path, link_to_top=True)

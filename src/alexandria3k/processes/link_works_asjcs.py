@@ -41,11 +41,13 @@ tables = [
 
 def process(database_path):
     """
-    Create a many to many table linking works with Scopus
+    Create a many to many table linking Crossref works with Scopus
     All Science Journal Classification Codes — ASJCs.
 
     :param database_path: The path specifying the SQLite database
-        to populate.
+        to process and populate.
+        The database shall already contain the ASJC dataset and the Crossref
+        `work_subjects` table.
     :type database_path: str
     """
     connection = sqlite3.connect(database_path)

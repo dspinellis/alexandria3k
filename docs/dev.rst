@@ -89,6 +89,18 @@ Linting
    # While in the top-level directory
    python -m pylint src/alexandria3k/*.py
 
+Plugin documentation
+~~~~~~~~~~~~~~~~~~~~
+
+When data source of processing plugins are added the Python API
+documentation must be updated as follows.
+
+.. code:: sh
+
+   # While in the top-level directory
+   bin/update-python-api
+
+
 Database schema diagrams
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

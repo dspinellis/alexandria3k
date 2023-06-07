@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Virtual database table access of arbitrary data"""
+"""Queries and database population through (possibly partitioned)
+virtual database tables"""
 
 import abc
 import csv
@@ -152,7 +153,8 @@ class DataSource:
     data.
 
     :param data_source: An object that shall supply the database elements
-    :type data_source: DataSource
+        Its type depends on the requirements of the specific class.
+    :type data_source: object
 
     :param tables: A list of the table metadata associated with the data source
         The first table in the list shall be the root table of the hierarchy.

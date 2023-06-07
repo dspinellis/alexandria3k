@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Populate subject, journal, funder, OA data tables"""
+"""Functions providing virtual table access to CSV data sources"""
 
 import codecs
 import csv

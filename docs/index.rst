@@ -54,7 +54,9 @@ Contents
    python-eg
    schema
    cli/index
-   api
+   user-api
+   plugin-api
+   utility-api
    dev
    faq
 
