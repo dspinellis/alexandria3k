@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Author data — ORCID &#8212; alexandria3k 2.5.0 documentation</title>
+    <title>Open Researcher and Contributor ID (ORCID) data &#8212; alexandria3k 2.5.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -14,8 +14,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Subjects, journals, open access, and funders data" href="csv_sources.html" />
-    <link rel="prev" title="Publication metadata — Crossref" href="crossref.html" />
+    <link rel="next" title="Research Organization Registry (ROR) data" href="ror.html" />
+    <link rel="prev" title="Crossref journal names" href="journal_names.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,39 +32,338 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="author-data-orcid">
-<h1>Author data — ORCID<a class="headerlink" href="#author-data-orcid" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k</span> <span class="kn">import</span> <span class="n">orcid</span>
+  <div class="section" id="open-researcher-and-contributor-id-orcid-data">
+<h1>Open Researcher and Contributor ID (ORCID) data<a class="headerlink" href="#open-researcher-and-contributor-id-orcid-data" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources</span> <span class="kn">import</span> <span class="n">orcid</span>
 </pre></div>
 </div>
-<span class="target" id="module-orcid"></span><p>Populate ORCID data tables</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="orcid.populate">
-<span class="sig-prename descclassname"><span class="pre">orcid.</span></span><span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authors_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">works_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orcid.populate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Populate the specified SQLite database.
+<dl class="py class">
+<dt class="sig sig-object py" id="data_sources.orcid.Orcid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_sources.orcid.</span></span><span class="sig-name descname"><span class="pre">Orcid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orcid_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=&lt;function</span> <span class="pre">Orcid.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.orcid.Orcid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object containing ORCID meta-data that supports queries over
+its (virtual) table and the population of an SQLite database with its
+data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>orcid_file</strong> (<em>str</em>) – The file path to the compressed tar file containing
+ORCID data.</p></li>
+<li><p><strong>sample</strong> (<em>callable</em><em>, </em><em>optional</em>) – A callable to control container sampling, defaults
+to <cite>lambda n: True</cite>.
+The population or query method will call this argument
+for each ORCID person record with each ORCID as its argument.
+When the callable returns <cite>True</cite> the container record will get
+processed, when it returns <cite>False</cite> the record will get skipped.</p></li>
+<li><p><strong>attach_databases</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of colon-joined tuples specifying
+a database name and its path, defaults to <cite>None</cite>.
+The specified databases are attached and made available to the
+query and the population condition through the specified database
+name.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="data_sources.orcid.Orcid.populate">
+<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.orcid.Orcid.populate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate the specified SQLite database using the data specified
+in the object constructor’s call.
 The database is created if it does not exist.
 If it exists, the tables to be populated are dropped
 (if they exist) and recreated anew as specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>database_path</strong> (<em>str</em>) – Path specifying the SQLite database to populate.</p></li>
-<li><p><strong>data_path</strong> (<em>str</em>) – Path to the ORCID summaries data file, e.g.
-<cite>“ORCID_2022_10_summaries.tar.gz”</cite></p></li>
+<li><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to populate.</p></li>
 <li><p><strong>columns</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of strings specifying the columns to
 populate, defaults to <cite>None</cite>.  The strings are of the form
 <cite>table_name.column_name</cite> or <cite>table_name.*</cite>.</p></li>
-<li><p><strong>authors_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – Specify whether only ORCID records of persons
-that exist in the Crossref <cite>work_authors</cite> table shall be added,
-defaults to <cite>False</cite>.</p></li>
-<li><p><strong>works_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – Specify whether only ORCID records of persons
-whose <em>works</em> exist in the Crossref works table shall be added,
-defaults to <cite>False</cite>.</p></li>
+<li><p><strong>condition</strong> (<em>str</em><em>, </em><em>optional</em>) – <a class="reference external" href="https://www.sqlite.org/syntax/expr.html">SQL expression</a> specifying the rows to include
+in the database’s population, defaults to <cite>None</cite>.
+The expression can contain references to the table’s columns,
+to tables in attached databases prefixed by their name, and
+tables in the database being populated prefixed by <cite>populated</cite>.
+Implicitly, if a main table is populated, its details tables
+will only get populated with the records associated with the
+correspoing main table’s record.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="data_sources.orcid.Orcid.query">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.orcid.Orcid.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the specified query on the virtual database using the data
+specified in the object constructor’s call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – An SQL <cite>SELECT</cite> query specifying the required data.</p></li>
+<li><p><strong>partition</strong> (<em>bool</em><em>, </em><em>optional</em>) – When true the query will run separately in each
+container, defaults to <cite>False</cite>.
+Queries involving table joins will run substantially faster
+if access to each table’s records is restricted with
+an expression <cite>table_name.container_id = CONTAINER_ID</cite>, and
+the <cite>partition</cite> argument is set to true.
+In such a case the query is repeatedly run over each database
+partition (compressed JSON file) with <cite>CONTAINER_ID</cite> iterating
+sequentially to cover all partitions.
+The query’s result is the concatenation of the individal partition
+results.
+Running queries with joins without partitioning will often result
+in quadratic (or worse) algorithmic complexity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An iterable over the query’s results.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>iterable</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="generated-schema">
+<h2>Generated schema<a class="headerlink" href="#generated-schema" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">persons</span><span class="p">(</span>
+  <span class="n">id</span> <span class="nb">INTEGER</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">orcid</span><span class="p">,</span>
+  <span class="n">given_names</span><span class="p">,</span>
+  <span class="n">family_name</span><span class="p">,</span>
+  <span class="n">biography</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_researcher_urls</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">name</span><span class="p">,</span>
+  <span class="n">url</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_countries</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">country</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_keywords</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">keyword</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_external_identifiers</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="k">type</span><span class="p">,</span>
+  <span class="n">value</span><span class="p">,</span>
+  <span class="n">url</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_distinctions</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span><span class="p">,</span>
+  <span class="n">organization_identifier</span><span class="p">,</span>
+  <span class="n">department_name</span><span class="p">,</span>
+  <span class="n">role_title</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_educations</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span><span class="p">,</span>
+  <span class="n">organization_identifier</span><span class="p">,</span>
+  <span class="n">department_name</span><span class="p">,</span>
+  <span class="n">role_title</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_employments</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span><span class="p">,</span>
+  <span class="n">organization_identifier</span><span class="p">,</span>
+  <span class="n">department_name</span><span class="p">,</span>
+  <span class="n">role_title</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_invited_positions</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span><span class="p">,</span>
+  <span class="n">organization_identifier</span><span class="p">,</span>
+  <span class="n">department_name</span><span class="p">,</span>
+  <span class="n">role_title</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_memberships</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span><span class="p">,</span>
+  <span class="n">organization_identifier</span><span class="p">,</span>
+  <span class="n">department_name</span><span class="p">,</span>
+  <span class="n">role_title</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_qualifications</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span><span class="p">,</span>
+  <span class="n">organization_identifier</span><span class="p">,</span>
+  <span class="n">department_name</span><span class="p">,</span>
+  <span class="n">role_title</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_services</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span><span class="p">,</span>
+  <span class="n">organization_identifier</span><span class="p">,</span>
+  <span class="n">department_name</span><span class="p">,</span>
+  <span class="n">role_title</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_fundings</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">title</span><span class="p">,</span>
+  <span class="k">type</span><span class="p">,</span>
+  <span class="n">short_description</span><span class="p">,</span>
+  <span class="n">amount</span><span class="p">,</span>
+  <span class="n">url</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span><span class="p">,</span>
+  <span class="n">organization_identifier</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_peer_reviews</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">reviewer_role</span><span class="p">,</span>
+  <span class="n">review_type</span><span class="p">,</span>
+  <span class="n">subject_type</span><span class="p">,</span>
+  <span class="n">subject_name</span><span class="p">,</span>
+  <span class="n">subject_url</span><span class="p">,</span>
+  <span class="n">group_id</span><span class="p">,</span>
+  <span class="n">completion_year</span><span class="p">,</span>
+  <span class="n">completion_month</span><span class="p">,</span>
+  <span class="n">completion_day</span><span class="p">,</span>
+  <span class="n">organization_name</span><span class="p">,</span>
+  <span class="n">organization_city</span><span class="p">,</span>
+  <span class="n">organization_region</span><span class="p">,</span>
+  <span class="n">organization_country</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_research_resources</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">title</span><span class="p">,</span>
+  <span class="n">start_year</span><span class="p">,</span>
+  <span class="n">start_month</span><span class="p">,</span>
+  <span class="n">start_day</span><span class="p">,</span>
+  <span class="n">end_year</span><span class="p">,</span>
+  <span class="n">end_month</span><span class="p">,</span>
+  <span class="n">end_day</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person_works</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">person_id</span><span class="p">,</span>
+  <span class="n">doi</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -90,18 +389,17 @@ defaults to <cite>False</cite>.</p></li>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="api.html">Python API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="crossref.html">Publication metadata — Crossref</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Author data — ORCID</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csv_sources.html">Subjects, journals, open access, and funders data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ror.html">Research organization registry data — ROR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="debug.html">Debug logging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="perf.html">Performance monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="user-api.html">Python user API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="user-api.html#data-sources">Data sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-api.html#data-processing-operations">Data processing operations</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-plugin.html">Plugin development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
 </ul>
 
@@ -109,9 +407,9 @@ defaults to <cite>False</cite>.</p></li>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="api.html">Python API</a><ul>
-      <li>Previous: <a href="crossref.html" title="previous chapter">Publication metadata — Crossref</a></li>
-      <li>Next: <a href="csv_sources.html" title="next chapter">Subjects, journals, open access, and funders data</a></li>
+  <li><a href="user-api.html">Python user API</a><ul>
+      <li>Previous: <a href="journal_names.html" title="previous chapter">Crossref journal names</a></li>
+      <li>Next: <a href="ror.html" title="next chapter">Research Organization Registry (ROR) data</a></li>
   </ul></li>
   </ul></li>
 </ul>

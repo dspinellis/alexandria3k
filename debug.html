@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Performance monitoring" href="perf.html" />
-    <link rel="prev" title="Research organization registry data — ROR" href="ror.html" />
+    <link rel="prev" title="Python utility API" href="utility-api.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -83,18 +83,14 @@
 <dd><p>Enable the specified debug flags.
 The following flags are supported:</p>
 <ul class="simple">
+<li><p>exception: Raise an exception when an error occurs;</p></li>
 <li><p>files-read: Counts of Crossref data files read;</p></li>
 <li><p>link: Record linking operations;</p></li>
 <li><p>sql: Executed SQL statements;</p></li>
 <li><p>perf: Performance timings;</p></li>
-<li><p>populated-counts: Counts of the populated database;</p></li>
-<li><p>populated-data: Data of the populated database;</p></li>
-<li><p>populated-reports: Query results from the populated database;</p></li>
 <li><p>progress: Report population progress;</p></li>
 <li><p>sorted-tables: Topologically ordered Crossref query tables;</p></li>
 <li><p>stderr: Log to standard error;</p></li>
-<li><p>virtual-counts: Counts of the virtual database;</p></li>
-<li><p>virtual-data: Data of the virtual database.</p></li>
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -140,18 +136,17 @@ e.g. <cite>sys.stderr</cite>.</p>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="api.html">Python API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="crossref.html">Publication metadata — Crossref</a></li>
-<li class="toctree-l2"><a class="reference internal" href="orcid.html">Author data — ORCID</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csv_sources.html">Subjects, journals, open access, and funders data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ror.html">Research organization registry data — ROR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="utility-api.html">Python utility API</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Debug logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="perf.html">Performance monitoring</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-plugin.html">Plugin development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
 </ul>
 
@@ -159,8 +154,8 @@ e.g. <cite>sys.stderr</cite>.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="api.html">Python API</a><ul>
-      <li>Previous: <a href="ror.html" title="previous chapter">Research organization registry data — ROR</a></li>
+  <li><a href="utility-api.html">Python utility API</a><ul>
+      <li>Previous: <a href="utility-api.html" title="previous chapter">Python utility API</a></li>
       <li>Next: <a href="perf.html" title="next chapter">Performance monitoring</a></li>
   </ul></li>
   </ul></li>

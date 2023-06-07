@@ -36,27 +36,34 @@
 <h1>Use overview<a class="headerlink" href="#use-overview" title="Permalink to this headline">¶</a></h1>
 <p>After downloading the Crossref data you can use <em>alexandria3k</em> through
 its Python API or as a command-line tool.</p>
-<p>These are the things you can do with <em>alexandria3k</em>.</p>
+<p>With <em>alexandria3k</em> you can process diverse sources of bibliographic
+data, such as Crossref, ORCID, DOAJ, and ROR.
+Specifically, you can perform the following actions.</p>
 <ul class="simple">
-<li><p>Directly run ad hoc SQL queries on the Crossref data</p></li>
-<li><p>Populate SQLite databases with Crossref, ORCID, DOAJ, and other data</p>
+<li><p>Directly run ad hoc SQL queries on any of the supported data sets.</p></li>
+<li><p>Populate SQLite databases with selected elements of the supported
+data sets.</p>
 <ul>
-<li><p>Select a horizontal subset of Crossref records</p>
+<li><p>Select a horizontal subset of a data set’s records.</p>
 <ul>
-<li><p>Through an SQL expression</p></li>
-<li><p>By sampling a subset of the 26 thousand containers in the data
-set</p></li>
+<li><p>Through an SQL expression.</p></li>
+<li><p>By sampling a subset of the data set’s elements or containers.
+(For example sampling some of the 26 thousand containers in the
+Crossref data set.)</p></li>
 </ul>
 </li>
-<li><p>Select a horizontal subset of ORCID records by only loading those
-associated with already populated Crossref records</p></li>
-<li><p>Select a vertical subset of Crossref or ORCID columns</p>
+<li><p>Select a horizontal subset of a data set’s records by only loading
+those associated with already populated records or records available
+in another database.</p></li>
+<li><p>Select a vertical subset of a data set’s columns</p>
 <ul>
 <li><p>Using the <code class="docutils literal notranslate"><span class="pre">Table.Column</span></code> or <code class="docutils literal notranslate"><span class="pre">Table.*</span></code> notation</p></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><p>Process already populated databases to cross-link or normalize their
+elements.</p></li>
 </ul>
 <p>Populating a database can take minutes (for a small, e.g. experimental,
 subset), a few hours (to traverse the whole Crossref data set and obtain
@@ -94,10 +101,13 @@ directory. Consider using the
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Use overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-plugin.html">Plugin development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
 </ul>
 

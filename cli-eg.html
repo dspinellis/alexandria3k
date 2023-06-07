@@ -35,28 +35,28 @@
   <div class="section" id="command-line-execution-examples">
 <h1>Command line execution examples<a class="headerlink" href="#command-line-execution-examples" title="Permalink to this headline">¶</a></h1>
 <p>After downloading the Crossref data, the functionality of <em>alexandria3k</em>
-can be used through the corresponding command.
+can be used through its CLI named <em>a3k</em>.
 Below are isolated examples of command-line invocations
 demonstrating particular aspects of <em>alexandria3k</em>.
 You can find examples of complete proof-of-concept studies in the
 <a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples">examples</a>
 directory.</p>
-<div class="section" id="obtain-list-of-command-line-options">
-<h2>Obtain list of command-line options<a class="headerlink" href="#obtain-list-of-command-line-options" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --help
+<div class="section" id="obtain-list-of-available-commands">
+<h2>Obtain list of available commands<a class="headerlink" href="#obtain-list-of-available-commands" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k <span class="nb">help</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="show-doi-and-title-of-all-publications">
 <h2>Show DOI and title of all publications<a class="headerlink" href="#show-doi-and-title-of-all-publications" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --data-source Crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --query <span class="s1">&#39;SELECT DOI, title FROM works&#39;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">
 <h2>Save DOI and title of 2021 publications in a CSV file suitable for Excel<a class="headerlink" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --data-source Crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
   --query <span class="s1">&#39;SELECT DOI, title FROM works WHERE published_year = 2021&#39;</span> <span class="se">\</span>
   --output <span class="m">2021</span>.csv <span class="se">\</span>
   --output-encoding use utf-8-sig
@@ -67,7 +67,7 @@ directory.</p>
 <h2>Count Crossref publications by year and type<a class="headerlink" href="#count-crossref-publications-by-year-and-type" title="Permalink to this headline">¶</a></h2>
 <p>This query performs a single pass through the data set to obtain the
 number of Crossref publications by year and publication type.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --data-source Crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --query-file count-year-type.sql &gt;results.csv
 </pre></div>
 </div>
@@ -95,7 +95,7 @@ not have an abstract in an approximately 1% sample of the data set’s
 containers. It uses a tab character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>) to separate the output
 fields. Through sampling the data containers it runs in a couple of
 minutes, rather than hours.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --data-source Crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span>  <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span>  <span class="se">\</span>
    --sample <span class="s1">&#39;random.random() &lt; 0.01&#39;</span> <span class="se">\</span>
    --field-separator <span class="s1">$&#39;\t&#39;</span> <span class="se">\</span>
    --query-file count-no-abstract.sql
@@ -114,8 +114,8 @@ consider sampling just three containers with
 <h2>Database of COVID research<a class="headerlink" href="#database-of-covid-research" title="Permalink to this headline">¶</a></h2>
 <p>The following command creates an SQLite database with all Crossref data
 regarding publications that contain “COVID” in their title or abstract.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --data-source Crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-   --populate-db-path covid.db <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate covid.db <span class="se">\</span>
+   crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --row-selection <span class="s2">&quot;title like &#39;%COVID%&#39; OR abstract like &#39;%COVID%&#39; &quot;</span>
 </pre></div>
 </div>
@@ -124,8 +124,8 @@ regarding publications that contain “COVID” in their title or abstract.</p>
 <h2>Publications graph<a class="headerlink" href="#publications-graph" title="Permalink to this headline">¶</a></h2>
 <p>The following command selects only a subset of columns of the complete
 Crossref data set to create a graph between navigable entities.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --data-source Crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-   --populate-db-path graph.db <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate graph.db <span class="se">\</span>
+   crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --columns works.id works.doi works.published_year <span class="se">\</span>
      work_references.work_id work_references.doi work_references.isbn <span class="se">\</span>
      work_funders.id work_funders.work_id work_funders.doi <span class="se">\</span>
@@ -165,8 +165,8 @@ following.</p>
 <p>The following command creates an SQLite database with all Crossref data
 of works whose DOI appears in the attached database named
 <code class="docutils literal notranslate"><span class="pre">selected.db</span></code>.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --data-source Crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-   --populate-db-path selected-works.db <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate selected-works.db <span class="se">\</span>
+   crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --attach-databases <span class="s1">&#39;attached:selected.db&#39;</span> <span class="se">\</span>
    --row-selection <span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span>
 </pre></div>
@@ -174,42 +174,42 @@ of works whose DOI appears in the attached database named
 </div>
 <div class="section" id="populate-the-database-with-author-records-from-orcid">
 <h2>Populate the database with author records from ORCID<a class="headerlink" href="#populate-the-database-with-author-records-from-orcid" title="Permalink to this headline">¶</a></h2>
-<p>Only records of authors identified in the publications through an ORCID
-will be added.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --populate-db-path database.db <span class="se">\</span>
-  --data-source ORCID ORCID_2022_10_summaries.tar.gz <span class="se">\</span>
-  --linked-records persons
+<p>Only records of authors identified in the Crossref publications through
+an ORCID will be added.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate database.db <span class="se">\</span>
+   ORCID ORCID_2022_10_summaries.tar.gz <span class="se">\</span>
+   --row-selection <span class="s2">&quot;EXISTS (SELECT 1 FROM populated.work_authors</span>
+<span class="s2">     WHERE work_authors.orcid = persons.orcid)&quot;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="populate-the-database-with-journal-names">
 <h2>Populate the database with journal names<a class="headerlink" href="#populate-the-database-with-journal-names" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --populate-db-path database.db <span class="se">\</span>
-  --data-source journal-names http://ftp.crossref.org/titlelist/titleFile.csv
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate database.db <span class="se">\</span>
+  journal-names http://ftp.crossref.org/titlelist/titleFile.csv
 </pre></div>
 </div>
 </div>
 <div class="section" id="populate-the-database-with-funder-names">
 <h2>Populate the database with funder names<a class="headerlink" href="#populate-the-database-with-funder-names" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --populate-db-path database.db <span class="se">\</span>
-  --data-source funder-names https://doi.crossref.org/funderNames?mode<span class="o">=</span>list
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate database.db <span class="se">\</span>
+  funder-names https://doi.crossref.org/funderNames?mode<span class="o">=</span>list
 </pre></div>
 </div>
 </div>
 <div class="section" id="work-with-scopus-all-science-journal-classification-codes-asjc">
 <h2>Work with Scopus All Science Journal Classification Codes (ASJC)<a class="headerlink" href="#work-with-scopus-all-science-journal-classification-codes-asjc" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Populate database with ASJCs</span>
-alexandria3k --populate-db-path database.db --data-source ASJC
+a3k populate database.db --data-source asjc
 
 <span class="c1"># Link the (sometime previously populated works table) with ASJCs</span>
-alexandria3k --populate-db-path database.db --execute link-works-asjcs
+a3k process database.db link-works-asjcs
 </pre></div>
 </div>
 </div>
 <div class="section" id="populate-the-database-with-data-regarding-open-access-journals">
 <h2>Populate the database with data regarding open access journals<a class="headerlink" href="#populate-the-database-with-data-regarding-open-access-journals" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>alexandria3k --populate-db-path database.db <span class="se">\</span>
-  --data-source DOAJ https://doaj.org/csv
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate database.db doaj https://doaj.org/csv
 </pre></div>
 </div>
 </div>
@@ -221,8 +221,7 @@ wget -O ror-v1.17.1.zip <span class="se">\</span>
   <span class="s2">&quot;https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1&quot;</span>
 
 <span class="c1"># Populate the database</span>
-alexandria3k --populate-db-path database.db <span class="se">\</span>
-  --data-source ROR ror-v1.17.1.zip
+a3k populate database.db ror ror-v1.17.1.zip
 </pre></div>
 </div>
 </div>
@@ -232,10 +231,10 @@ alexandria3k --populate-db-path database.db <span class="se">\</span>
 research organization registry fill-in the table <code class="docutils literal notranslate"><span class="pre">work_authors_rors</span></code>
 linking the two.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Link affiliations with best match</span>
-alexandria3k --populate-db-path database.db --execute link-aa-base-ror
+a3k process database.db link-aa-base-ror
 
 <span class="c1"># Link affiliations with top parent of best match</span>
-alexandria3k --populate-db-path database.db --execute link-aa-top-ror
+a3k process database.db link-aa-top-ror
 </pre></div>
 </div>
 <p>After linking, the results’ quality can be verified with queries such as
@@ -285,7 +284,7 @@ the following.</p>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Command line execution examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#obtain-list-of-command-line-options">Obtain list of command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obtain-list-of-available-commands">Obtain list of available commands</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#show-doi-and-title-of-all-publications">Show DOI and title of all publications</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">Save DOI and title of 2021 publications in a CSV file suitable for Excel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#count-crossref-publications-by-year-and-type">Count Crossref publications by year and type</a></li>
@@ -303,10 +302,13 @@ the following.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-plugin.html">Plugin development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
 </ul>
 

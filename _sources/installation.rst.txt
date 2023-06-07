@@ -31,8 +31,8 @@ installing the required development dependencies,
 and running `make html` in the `docs` directory.
 The HTML files will be made available in the `docs/_build` directory.
 
-Similarly, if you want to install a Unix manual page for the *alexandria3k*
+Similarly, if you want to install a Unix manual page for the *a3k*
 command-line interface, you can run `make manpage` (kudos to you BTW).
-You can then install the man page made available at `docs/_build/alexandria3k.1`
+You can then install the man page made available at `docs/_build/a3k.1`
 in your preferred man page source file location, e.g.
 `/usr/local/share/man/man1` or `$HOME/man/man1`.

@@ -85,7 +85,7 @@ AD.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#obtain-list-of-command-line-options">Obtain list of command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli-eg.html#obtain-list-of-available-commands">Obtain list of available commands</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cli-eg.html#show-doi-and-title-of-all-publications">Show DOI and title of all publications</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cli-eg.html#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">Save DOI and title of 2021 publications in a CSV file suitable for Excel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cli-eg.html#count-crossref-publications-by-year-and-type">Count Crossref publications by year and type</a></li>
@@ -118,36 +118,51 @@ AD.</p>
 <li class="toctree-l2"><a class="reference internal" href="python-eg.html#link-author-affiliations-with-research-organization-names">Link author affiliations with research organization names</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="schema.html#crossref-data">Crossref data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schema.html#orcid-data">ORCID data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schema.html#ror-data">ROR data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schema.html#other-data">Other data</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="cli/index.html#named-arguments">Named Arguments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#positional-arguments">Positional Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#named-arguments">Named Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#Sub-commands">Sub-commands</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="crossref.html">Publication metadata — Crossref</a></li>
-<li class="toctree-l2"><a class="reference internal" href="orcid.html">Author data — ORCID</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csv_sources.html">Subjects, journals, open access, and funders data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ror.html">Research organization registry data — ROR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-api.html#data-sources">Data sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-api.html#data-processing-operations">Data processing operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugin-api.html#module-db_schema">db_schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugin-api.html#module-data_source">data_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugin-api.html#module-csv_source">csv_source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="debug.html">Debug logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="perf.html">Performance monitoring</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development processes</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#development-environment">Development environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#continuous-integration">Continuous integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#testing">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#code-formatting">Code formatting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#linting">Linting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev.html#plugin-documentation">Plugin documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#database-schema-diagrams">Database schema diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#building">Building</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev.html#documentation-building">Documentation building</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev-plugin.html">Plugin development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev-plugin.html#data-source-plugins">Data source plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev-plugin.html#data-processing-plugins">Data processing plugins</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a><ul>
@@ -190,10 +205,13 @@ AD.</p>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema.html">Relational schemas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli/index.html">Command line interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-plugin.html">Plugin development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
 </ul>
 

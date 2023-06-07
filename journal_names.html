@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Research Organization Registry (ROR) data &#8212; alexandria3k 2.5.0 documentation</title>
+    <title>Crossref journal names &#8212; alexandria3k 2.5.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -14,8 +14,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Link author affiliation with lowest-level research organization" href="link_aa_base_ror.html" />
-    <link rel="prev" title="Open Researcher and Contributor ID (ORCID) data" href="orcid.html" />
+    <link rel="next" title="Open Researcher and Contributor ID (ORCID) data" href="orcid.html" />
+    <link rel="prev" title="Crossref funder names" href="funder_names.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,22 +32,22 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="research-organization-registry-ror-data">
-<h1>Research Organization Registry (ROR) data<a class="headerlink" href="#research-organization-registry-ror-data" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources</span> <span class="kn">import</span> <span class="n">ror</span>
+  <div class="section" id="crossref-journal-names">
+<h1>Crossref journal names<a class="headerlink" href="#crossref-journal-names" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources</span> <span class="kn">import</span> <span class="n">journal_names</span>
 </pre></div>
 </div>
 <dl class="py class">
-<dt class="sig sig-object py" id="data_sources.ror.Ror">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_sources.ror.</span></span><span class="sig-name descname"><span class="pre">Ror</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ror_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=&lt;function</span> <span class="pre">Ror.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.ror.Ror" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an object containing ROR meta-data that supports queries over
+<dt class="sig sig-object py" id="data_sources.journal_names.JournalNames">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_sources.journal_names.</span></span><span class="sig-name descname"><span class="pre">JournalNames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=&lt;function</span> <span class="pre">JournalNames.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.journal_names.JournalNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object containing journal meta-data that supports queries over
 its (virtual) table and the population of an SQLite database with its
 data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ror_file</strong> (<em>str</em>) – Path to a zip file containing the research organization
-data, e.g. <cite>“v1.17.1-2022-12-16-ror-data.zip”</cite></p></li>
+<li><p><strong>data_source</strong> (<em>str</em>) – The location (file path or URL) where the journal data
+are located.</p></li>
 <li><p><strong>sample</strong> (<em>callable</em><em>, </em><em>optional</em>) – A callable to row sampling, defaults to <cite>lambda n: True</cite>.
 The population or query method will call this argument
 for each record with the record’s data as its argument.  When the
@@ -62,8 +62,8 @@ name.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="data_sources.ror.Ror.populate">
-<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.ror.Ror.populate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="data_sources.journal_names.JournalNames.populate">
+<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.journal_names.JournalNames.populate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Populate the specified SQLite database using the data specified
 in the object constructor’s call.
 The database is created if it does not exist.
@@ -91,8 +91,8 @@ correspoing main table’s record.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="data_sources.ror.Ror.query">
-<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.ror.Ror.query" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="data_sources.journal_names.JournalNames.query">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.journal_names.JournalNames.query" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the specified query on the virtual database using the data
 specified in the object constructor’s call.</p>
 <dl class="field-list simple">
@@ -127,72 +127,22 @@ in quadratic (or worse) algorithmic complexity.</p></li>
 
 <div class="section" id="generated-schema">
 <h2>Generated schema<a class="headerlink" href="#generated-schema" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">research_organizations</span><span class="p">(</span>
-  <span class="n">id</span> <span class="nb">INTEGER</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
-  <span class="n">ror_path</span><span class="p">,</span>
-  <span class="n">name</span><span class="p">,</span>
-  <span class="n">status</span><span class="p">,</span>
-  <span class="n">established</span><span class="p">,</span>
-  <span class="n">country_code</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">journal_names</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">title</span><span class="p">,</span>
+  <span class="n">crossref_id</span><span class="p">,</span>
+  <span class="n">publisher</span><span class="p">,</span>
+  <span class="n">issn_print</span><span class="p">,</span>
+  <span class="n">issn_eprint</span><span class="p">,</span>
+  <span class="n">issns_additional</span><span class="p">,</span>
+  <span class="n">doi</span><span class="p">,</span>
+  <span class="n">volume_info</span>
 <span class="p">);</span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_types</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="k">type</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_links</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="n">link</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_aliases</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="k">alias</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_acronyms</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="n">acronym</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_relationships</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="k">type</span><span class="p">,</span>
-  <span class="n">ror_path</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_addresses</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="n">lat</span><span class="p">,</span>
-  <span class="n">lng</span><span class="p">,</span>
-  <span class="n">city</span><span class="p">,</span>
-  <span class="k">state</span><span class="p">,</span>
-  <span class="n">postcode</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_funder_ids</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="n">funder_id</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_wikidata_ids</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="n">wikidata_id</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_isnis</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="n">isni</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">journals_issns</span><span class="p">(</span>
+  <span class="n">journal_id</span><span class="p">,</span>
+  <span class="n">issn</span><span class="p">,</span>
+  <span class="n">issn_type</span>
 <span class="p">);</span>
 </pre></div>
 </div>
@@ -241,8 +191,8 @@ in quadratic (or worse) algorithmic complexity.</p></li>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="user-api.html">Python user API</a><ul>
-      <li>Previous: <a href="orcid.html" title="previous chapter">Open Researcher and Contributor ID (ORCID) data</a></li>
-      <li>Next: <a href="link_aa_base_ror.html" title="next chapter">Link author affiliation with lowest-level research organization</a></li>
+      <li>Previous: <a href="funder_names.html" title="previous chapter">Crossref funder names</a></li>
+      <li>Next: <a href="orcid.html" title="next chapter">Open Researcher and Contributor ID (ORCID) data</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -277,7 +227,7 @@ in quadratic (or worse) algorithmic complexity.</p></li>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/ror.rst.txt"
+      <a href="_sources/journal_names.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -12,7 +12,9 @@ This allows you to quickly verify a workflow's steps.
 
 Will sampling consistently populate a work's related tables?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Each Crossref container has data
+Sampling is performed deterministically over each data source's
+records or containers.
+For example, in the case of Crossref, each container has data
 (e.g. title, authors, subjects, funders, references)
 for a few thousand complete publications.
 When it is skipped through sampling all related data are skipped,

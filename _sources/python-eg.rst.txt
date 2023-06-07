@@ -1,10 +1,16 @@
 Python API examples
 -------------------
 
-After downloading the Crossref data, the functionality of *alexandria3k*
+After downloading the required data, the functionality of *alexandria3k*
 can be accessed through its Python API, either interactively (for
 exploratory data analytics) or through Python scripts (for long-running
 jobs and for documenting research methods as repeatable processes).
+
+Data source query and database population tasks are performed by
+creating an object instance associated with the corresponding data
+source class (e.g. `Crossref` or `Orcid`).
+Although many of the examples are based on the Crossref data source, the
+same principles apply to the other supported data sources.
 
 Create a Crossref object
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -14,7 +20,7 @@ created by specifying the data directory.
 
 .. code:: py
 
-   from alexandria3k.crossref import Crossref
+   from alexandria3k.data_sources.crossref import Crossref
 
    crossref_instance = Crossref('April 2022 Public Data File from Crossref')
 
@@ -24,7 +30,7 @@ You can also add a parameter indicating how to sample the containers.
 
    from random import random, seed
 
-   from alexandria3k.crossref import Crossref
+   from alexandria3k.data_sources.crossref import Crossref
 
    # Randomly (but deterministically) sample 1% of the containers
    seed("alexandria3k")
@@ -107,7 +113,7 @@ of works whose DOI appears in the attached database named
 
 .. code:: py
 
-   from alexandria3k.crossref import Crossref
+   from alexandria3k.data_sources.crossref import Crossref
 
    crossref_instance = Crossref(
         'April 2022 Public Data File from Crossref',
@@ -123,23 +129,24 @@ Populate the database from ORCID
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Add tables containing author country and education organization. Only
-records of authors identified in the publications through an ORCID will
-be added.
+records of authors identified in the Crossref publications through an
+ORCID will be added.
 
 .. code:: py
 
-   from alexandria3k import orcid
+   from alexandria3k.data_sources.orcid import Orcid
 
-   orcid.populate(
+   orcid_instance = Orcid("ORCID_2022_10_summaries.tar.gz")
+
+   orcid_instance.populate(
        "database.db",
-       "ORCID_2022_10_summaries.tar.gz",
        columns=[
            "person_countries.*",
            "person_educations.orcid",
            "person_educations.organization_name",
        ],
-       authors_only=True,
-       works_only=False
+       condition="""EXISTS (SELECT 1 FROM populated.work_authors
+        WHERE work_authors.orcid = persons.orcid)"""
    )
 
 .. _populate-the-database-with-journal-names-1:
@@ -149,12 +156,12 @@ Populate the database with journal names
 
 .. code:: py
 
-   from alexandria3k import csv_sources
+   from alexandria3k.data_sources.journal_names import JournalNames
 
-   csv_sources.populate_journal_names(
-       "database.db",
+   instance = JournalNames(
        "http://ftp.crossref.org/titlelist/titleFile.csv"
    )
+   instance.populate("database.db")
 
 .. _populate-the-database-with-funder-names-1:
 
@@ -163,12 +170,12 @@ Populate the database with funder names
 
 .. code:: py
 
-   from alexandria3k import csv_sources
+   from alexandria3k.data_sources.funder_names import FunderNames
 
-   csv_sources.populate_funder_names(
-       "database.db",
+   instance = FunderNames(
        "https://doi.crossref.org/funderNames?mode=list"
    )
+   instance.populate("database.db")
 
 .. _populate-the-database-with-data-regarding-open-access-journals-1:
 
@@ -177,12 +184,10 @@ Populate the database with data regarding open access journals
 
 .. code:: py
 
-   from alexandria3k import csv_sources
+   from alexandria3k.data_sources.doaj import Doaj
 
-   csv_sources.populate_open_access_journals(
-       "database.db",
-       "https://doaj.org/csv"
-   )
+   instance = Doaj("https://doaj.org/csv")
+   instance.populate("database.db")
 
 .. _work-with-scopus-all-science-journal-classification-codes-asjc-1:
 
@@ -191,13 +196,15 @@ Work with Scopus All Science Journal Classification Codes (ASJC)
 
 .. code:: py
 
-   from alexandria3k import csv_sources
+   from alexandria3k.data_sources.adjcs import Asjcs
+   from alexandria3k.processes import link_works_asjcs
 
    # Populate database with ASJCs
-   csv_sources.populate_asjc("database.db", "resource:data/asjc.csv")
+   instance = Asjcs("resource:data/asjc.csv")
+   instance.populate("database.db")
 
    # Link the (sometime previously populated works table) with ASJCs
-   csv_sources.link_works_asjcs("database.db")
+   link_works_asjcs.process("database.db")
 
 .. _populate-the-database-with-the-names-of-research-organizations-1:
 
@@ -206,12 +213,10 @@ Populate the database with the names of research organizations
 
 .. code:: py
 
-   from alexandria3k import ror
+   from alexandria3k.data_sources.ror import Ror
 
-   ror.populate(
-       "v1.17.1-2022-12-16-ror-data.zip",
-       "database.db"
-   )
+   instance = Ror("v1.17.1-2022-12-16-ror-data.zip")
+   instance.populate("database.db")
 
 .. _link-author-affiliations-with-research-organization-names-1:
 
@@ -221,11 +226,10 @@ Link author affiliations with research organization names
 .. code:: py
 
    from alexandria3k import ror
+   from alexandria3k.processes import link_aa_base_ror, link_aa_top_ror
 
    # Link affiliations with best match
-   ror.link_author_affiliations(args.populate_db_path, link_to_top=False)
+   link_aa_base_ror.process("database.db")
 
    # Link affiliations with top parent of best match
-   ror.link_author_affiliations(args.populate_db_path, link_to_top=True)
-
-
+   link_aa_top_ror.process("database.db")
