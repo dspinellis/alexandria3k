@@ -33,7 +33,7 @@ from alexandria3k import debug
 from alexandria3k.file_cache import FileCache
 from alexandria3k import perf
 
-DESCRIPTION = "alexandria3k: Relational interface to publication metadata"
+DESCRIPTION = "a3k: Relational interface to publication metadata"
 
 
 random.seed("alexandria3k")
@@ -112,7 +112,7 @@ def populate(args):
 def add_subcommand_populate(subparsers):
     """Add the arguments of the populate subcommand."""
     parser = subparsers.add_parser(
-        "populate", help="populate an SQLite database"
+        "populate", help="Populate an SQLite database."
     )
     parser.set_defaults(func=populate)
     parser.add_argument(
@@ -175,7 +175,7 @@ def process(args):
 def add_subcommand_process(subparsers):
     """Add the arguments of the process subcommand."""
     parser = subparsers.add_parser(
-        "process", help="run a processing step on the specified database"
+        "process", help="Run a processing step on the specified database."
     )
     parser.set_defaults(func=process)
     parser.add_argument(
@@ -184,7 +184,7 @@ def add_subcommand_process(subparsers):
     parser.add_argument(
         "process",
         choices=facility_names("processes"),
-        help="name of the process to perform",
+        help="Name of the process to perform",
     )
 
 
@@ -192,11 +192,11 @@ def add_subcommand_help(top_parser, subparsers):
     """Add the arguments of the populate subcommand."""
 
     def top_level_help(_args):
-        """Display top-level help and exit"""
+        """Display top-level help."""
         top_parser.print_help()
 
     parser = subparsers.add_parser(
-        "help", help="show this help message and exit"
+        "help", help="Show top-level help message."
     )
     parser.set_defaults(func=top_level_help)
 
@@ -231,7 +231,7 @@ def query(args):
 def add_subcommand_query(subparsers):
     """Add the arguments of the populate subcommand."""
     parser = subparsers.add_parser(
-        "query", help="run a query directly on a data source"
+        "query", help="Run a query directly on a data source."
     )
     parser.set_defaults(func=query)
     parser.add_argument(
@@ -334,7 +334,7 @@ def add_subcommand_list_complete_schema(subparsers):
 
     parser = subparsers.add_parser(
         "list-complete-schema",
-        help="list all data source and process schemas",
+        help="List all data source and process schemas.",
     )
     parser.set_defaults(func=list_complete_schema)
 
@@ -348,7 +348,7 @@ def add_subcommand_list_source_schema(subparsers):
 
     parser = subparsers.add_parser(
         "list-source-schema",
-        help="list all data source schemas (default) or the specified one",
+        help="List all data source schemas (default) or the specified one.",
     )
     parser.set_defaults(func=list_source_schema)
     parser.add_argument(
@@ -365,7 +365,7 @@ def add_subcommand_list_process_schema(subparsers):
 
     parser = subparsers.add_parser(
         "list-process-schema",
-        help="list the schema of all processes (default) or of the specified one",
+        help="List the schema of all processes (default) or of the specified one.",
     )
     parser.set_defaults(func=list_process_schema)
     parser.add_argument(
@@ -404,7 +404,7 @@ def add_subcommand_list_processes(subparsers):
         list_facility_description("processes", False)
 
     parser = subparsers.add_parser(
-        "list-processes", help="list available data processes"
+        "list-processes", help="List available data processes."
     )
     parser.set_defaults(func=list_processes)
 
@@ -417,7 +417,7 @@ def add_subcommand_list_sources(subparsers):
         list_facility_description("data_sources", True)
 
     parser = subparsers.add_parser(
-        "list-sources", help="list available data sources"
+        "list-sources", help="List available data sources"
     )
     parser.set_defaults(func=list_sources)
 
@@ -427,10 +427,10 @@ def add_subcommand_version(subparsers):
 
     def show_version(_args):
         """Display program version and exit"""
-        print(f"alexandria3k version {program_version()}")
+        print(f"a3k version {program_version()}")
 
     parser = subparsers.add_parser(
-        "version", help="report program version and exit"
+        "version", help="Report program version"
     )
     parser.set_defaults(func=show_version)
 
@@ -447,7 +447,7 @@ def get_cli_parser():
         type=str,
         default=[],
         # NOTE: Keep in sync with list in debug.py
-        help="""output debuggging information as specfied by the arguments.
+        help="""Output debuggging information as specfied by the arguments.
     exception: Raise an exception when an error occurs;
     files-read: Counts of Crossref data files read;
     link: Record linking operations;
@@ -465,12 +465,12 @@ def get_cli_parser():
         "-v",
         "--version",
         action="store_true",
-        help="report program version and exit",
+        help="Report program version and exit",
     )
 
     # Add sub-commands
     subparsers = parser.add_subparsers(
-        dest="command", help="operation to perform"
+        dest="command", help="Name of the a3k operation to perform."
     )
     add_subcommand_help(parser, subparsers)
     add_subcommand_populate(subparsers)
@@ -497,7 +497,7 @@ def main():
     perf.log("Start")
 
     if args.version:
-        print(f"alexandria3k version {program_version()}")
+        print(f"a3k version {program_version()}")
         sys.exit(0)
 
     # Handle subcommands

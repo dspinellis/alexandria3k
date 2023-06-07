@@ -36,4 +36,4 @@ classifiers = [
 "Bug Tracker" = "https://github.com/dspinellis/alexandria3k/issues"
 
 [project.scripts]
-alexandria3k = "alexandria3k.__main__:main"
+a3k = "alexandria3k.__main__:main"

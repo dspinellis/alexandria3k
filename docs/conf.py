@@ -32,3 +32,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+
+man_pages = [
+    ('cli', 'a3k', 'Process bibliographic data sources', ['Diomidis Spinellis'], 1)
+]
