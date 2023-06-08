@@ -36,16 +36,15 @@ asjcs: populate
 	touch $@
 
 doaj: populate
-	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" doaj
+	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" doaj $(DOAJ)
 	touch $@
 
 link-works-asjcs: asjcs populate
 	$(TIME) $(A3K) process "$(MAINDB).db" link-works-asjcs
 	touch $@
 
-rors: populate
-	$(TIME) $(A3K) --debug progress \
-	  populate "$(MAINDB).db" ror $(ROR)
+rors: populate $(ROR)
+	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" ror $(ROR)
 	touch $@
 
 link-aa-base-ror: rors populate
@@ -58,8 +57,11 @@ link-aa-top-ror: rors populate
 
 # Add journal names
 journal-names:
-	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" journal-names
+	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" journal-names $(JOURNAL_NAMES)
 	touch $@
 
 simple-rolap/Makefile:
 	git clone https://github.com/dspinellis/simple-rolap
+
+depclean:
+	rm -f $(DEPENDENCIES)

@@ -11,6 +11,9 @@ export CROSSREF_DIR?=$(TOP_DIR)/tests/data/sample
 export ORCID_SUMMARIES?=$(TOP_DIR)/tests/data/ORCID_2022_10_summaries.tar.gz
 export DBLP?=$(TOP_DIR)/tests/data/dblp.xml.gz
 export ROR?=$(TOP_DIR)/tests/data/ror.zip
+export DOAJ?=$(TOP_DIR)/tests/data/doaj.csv
+export JOURNAL_NAMES?=$(TOP_DIR)/tests/data/titleFile.csv
+
 export A3K?=$(TOP_DIR)/bin/a3k
 export TBB?=
 export TIME=
@@ -26,3 +29,8 @@ subdirs: $(SUBDIRS)
 
 $(SUBDIRS):
 	$(MAKE) -C $@
+
+clean:
+	for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir clean depclean; \
+	done
