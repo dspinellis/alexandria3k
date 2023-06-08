@@ -30,9 +30,9 @@ export EXPENSIVE_DEPENDENCIES?=true
 
 SUBDIRS?=$(shell find . -mindepth 1 -maxdepth 1 -type d)
 
-.PHONY: subdirs $(SUBDIRS) clean
+.PHONY: all $(SUBDIRS) clean
 
-subdirs: $(SUBDIRS)
+all: $(SUBDIRS)
 
 $(SUBDIRS):
 	$(MAKE) -C $@
