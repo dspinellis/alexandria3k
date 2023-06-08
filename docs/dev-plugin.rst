@@ -74,12 +74,14 @@ In this case only the following steps are needed.
 
 For data sources available in more complex forms you must also define
 
-* a virtual table data source `VTSource`,
+* an SQLite virtual table data source `VTSource`,
 * a cursor to iterate over the records of each table,
 * and possibly a partitioning scheme to handle interrelated tables
   that are streamed concurrently (e.g. a work and its authors).
 
-As examples see
+The virtual table and cursor classes are documented in the
+`APSW Virtual Tables chapter <https://rogerbinns.github.io/apsw/vtable.html>`__.
+As examples of their use in *alexandria3k* see the data source modules
 `crossref` (this uses compressed containers of JSON files,
 each containing multiple works),
 `orcid` (a compressed *tar* file containing an XML file for each author),
