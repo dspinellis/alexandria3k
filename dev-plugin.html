@@ -53,6 +53,7 @@ format (see e.g. the implementations for <cite>asjcs</cite>, <cite>journal_names
 <cite>doaj</cite>, and <cite>funder_names</cite>).
 In this case only the following steps are needed.</p>
 <ul class="simple">
+<li><p>Create the plugin in the <cite>src/alexandria3k/data_sources</cite> directory.</p></li>
 <li><p>Define the data schema in a <cite>tables</cite> global variable
 through the <cite>TableMeta</cite> and <cite>ColumnMeta</cite> classes.
 Use the <cite>CsvCursor</cite> as the table’s cursor.
@@ -98,7 +99,8 @@ Example (for a single table):</p></li>
 </div>
 <ul class="simple">
 <li><p>Add a small subset of the data in the <cite>tests/data</cite> directory.</p></li>
-<li><p>Add unit tests in the <cite>tests</cite> directory.</p></li>
+<li><p>Add unit tests in the <cite>tests/data_sources</cite> directory.</p></li>
+<li><p>Add a motivating example in the <cite>examples</cite> directory.</p></li>
 </ul>
 <p>For data sources available in more complex forms you must also define</p>
 <ul class="simple">
@@ -121,12 +123,15 @@ containers.</p>
 <h2>Data processing plugins<a class="headerlink" href="#data-processing-plugins" title="Permalink to this headline">¶</a></h2>
 <p>To create a data processing plugin follow these steps.</p>
 <ul class="simple">
+<li><p>Create the plugin in the <cite>src/alexandria3k/plugins</cite> directory.</p></li>
 <li><p>Define the schema of the generated tables in a <cite>tables</cite> global variable
 through the <cite>TableMeta</cite> and <cite>ColumnMeta</cite> classes.
 There is not need to define cursors or accessor functions.</p></li>
 <li><p>Define a function named <cite>process</cite>, which takes as an argument a
 path to a populated SQLite database,
 and performs the processing associated with the plugin.</p></li>
+<li><p>Add unit tests in the <cite>tests/processes</cite> directory.</p></li>
+<li><p>Add a motivating example in the <cite>examples</cite> directory.</p></li>
 </ul>
 </div>
 </div>

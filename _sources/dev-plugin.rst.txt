@@ -23,8 +23,9 @@ format (see e.g. the implementations for `asjcs`, `journal_names`,
 `doaj`, and `funder_names`).
 In this case only the following steps are needed.
 
+* Create the plugin in the `src/alexandria3k/data_sources` directory.
 * Define the data schema in a `tables` global variable
-  through the `TableMeta` and `ColumnMeta` classes.  
+  through the `TableMeta` and `ColumnMeta` classes.
   Use the `CsvCursor` as the table's cursor.
   Unless column values are obtained in order from a CSV
   file, each column must define a function that will provide its
@@ -68,12 +69,13 @@ In this case only the following steps are needed.
                 )
 
 * Add a small subset of the data in the `tests/data` directory.
-* Add unit tests in the `tests` directory.
+* Add unit tests in the `tests/data_sources` directory.
+* Add a motivating example in the `examples` directory.
 
 For data sources available in more complex forms you must also define
 
 * a virtual table data source `VTSource`,
-* a cursor to iterate over the records of each table, 
+* a cursor to iterate over the records of each table,
 * and possibly a partitioning scheme to handle interrelated tables
   that are streamed concurrently (e.g. a work and its authors).
 
@@ -91,9 +93,12 @@ Data processing plugins
 ~~~~~~~~~~~~~~~~~~~~~~~
 To create a data processing plugin follow these steps.
 
+* Create the plugin in the `src/alexandria3k/plugins` directory.
 * Define the schema of the generated tables in a `tables` global variable
-  through the `TableMeta` and `ColumnMeta` classes.  
+  through the `TableMeta` and `ColumnMeta` classes.
   There is not need to define cursors or accessor functions.
 * Define a function named `process`, which takes as an argument a
   path to a populated SQLite database,
   and performs the processing associated with the plugin.
+* Add unit tests in the `tests/processes` directory.
+* Add a motivating example in the `examples` directory.
