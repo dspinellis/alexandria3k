@@ -59,7 +59,7 @@ Python unit and integration tests
 .. code:: sh
 
    # While in the top-level directory
-   python3 -m unittest discover
+   python3 -m unittest discover -s .
 
 SQL unit tests
 ^^^^^^^^^^^^^^

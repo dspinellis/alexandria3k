@@ -23,7 +23,7 @@ import unittest
 import sqlite3
 import sys
 
-from .test_dir import add_src_dir, td
+from ..test_dir import add_src_dir, td
 add_src_dir()
 
 from alexandria3k.data_sources import journal_names

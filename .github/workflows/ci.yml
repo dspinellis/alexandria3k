@@ -22,7 +22,7 @@ jobs:
           pip install pipenv
           cd src && pipenv install --dev
       - name: Run unit and integration tests
-        run: cd src && pipenv run python -m unittest discover ..
+        run: cd src && pipenv run python -m unittest discover -s ..
       - name: Check code formatting
         run: |
           cd src

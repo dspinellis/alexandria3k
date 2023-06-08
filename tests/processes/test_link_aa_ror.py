@@ -25,7 +25,7 @@ import unittest
 import ahocorasick
 import apsw
 
-from .test_dir import add_src_dir, td
+from ..test_dir import add_src_dir, td
 add_src_dir()
 
 from alexandria3k.common import ensure_unlinked, query_result
