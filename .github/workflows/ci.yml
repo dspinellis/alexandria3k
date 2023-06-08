@@ -60,3 +60,9 @@ jobs:
           python -m alexandria3k --version
           # As a command
           bin/a3k --version
+      - name: Test provided examples
+        run: |
+          cd test-a3k
+          . bin/activate
+          cd ../examples
+          make
