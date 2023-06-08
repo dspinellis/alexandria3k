@@ -6,7 +6,7 @@ DBLP?=dblp.xml.gz
 
 export MAINDB?=cs_cdindex
 
-export DEPENDENCIES=populate
+export DEPENDENCIES=populate ../cdindex/tables/cdindex
 
 include ../common/Makefile
 
@@ -23,3 +23,7 @@ $(DBLP):
 
 dblp.db: $(DBLP) cs_works.sed
 	zcat $(DBLP) | ./cs_works.sed | sqlite3 dblp.db
+
+# The CD index calculation is required for this example
+../cdindex/tables/cdindex:
+	make -C ../cdindex MAINDB=cdindex tables/cdindex

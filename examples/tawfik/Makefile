@@ -32,4 +32,4 @@ tawfik-works.db: tawfik-works.txt tawfik_works.sql
 
 # The CD index calculation is required for this example
 ../cdindex/tables/cdindex:
-	make -C ../cdindex MAINDB=cdindex
+	make -C ../cdindex MAINDB=cdindex tables/cdindex
