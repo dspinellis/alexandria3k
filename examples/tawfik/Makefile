@@ -4,7 +4,7 @@
 
 export MAINDB?=tawfik
 
-export DEPENDENCIES=populate
+export DEPENDENCIES=populate ../cdindex/tables/cdindex
 
 include ../common/Makefile
 
@@ -29,3 +29,7 @@ reports/tawfik-works.txt: $(CROSSREF_DIR)
 tawfik-works.db: tawfik-works.txt tawfik_works.sql
 	rm -f $@
 	sqlite3 $@ <tawfik_works.sql
+
+# The CD index calculation is required for this example
+../cdindex/tables/cdindex:
+	make -C ../cdindex tables/cdindex
