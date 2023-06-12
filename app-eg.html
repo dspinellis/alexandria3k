@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Application examples &#8212; alexandria3k 2.5.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Schema diagrams" href="schema.html" />
+    <link rel="prev" title="Python API examples" href="python-eg.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="application-examples">
+<h1>Application examples<a class="headerlink" href="#application-examples" title="Permalink to this headline">¶</a></h1>
+<p>The source distribution <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory contains proof-of-concept
+studies that were conducted with <em>alexandria3k</em> as examples of its use.</p>
+<p>They are structured to use Makefiles based on
+<a class="reference external" href="https://github.com/dspinellis/simple-rolap">simple-rolap</a> for
+orchestrating the queries (it is installed automatically) and
+<a class="reference external" href="https://github.com/dspinellis/rdbunit">rdbunit</a> for unit testing
+them (it needs to be manually installed for running the tests). Running
+(GNU) <code class="docutils literal notranslate"><span class="pre">make</span></code> in a directory will produce the expected results in a
+<code class="docutils literal notranslate"><span class="pre">reports</span></code> sub-directory. Many of the studies can take hours or days to
+run. When running the scripts on a shared Unix/Linux computer, running
+<em>make</em> as <code class="docutils literal notranslate"><span class="pre">nohup</span> <span class="pre">nice</span> <span class="pre">make</span></code> will log the operation in the file
+<code class="docutils literal notranslate"><span class="pre">nohup.out</span></code> (use <code class="docutils literal notranslate"><span class="pre">tail</span> <span class="pre">-f</span> <span class="pre">nohup.out</span></code> to view it), prevent the
+command from terminating when a session is disconnected, and decrease
+the priority of the tasks to minimize their burden on interactive users.
+When modifying existing studies or creating one ones, run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">help</span></code>
+in a study directory to see some potentially useful <em>make</em> targets.</p>
+<p>The
+<a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/common">common</a>
+directory contains Makefile rules for satisfying data dependencies
+common to more than one study. It also hosts downloaded data sets to
+minimize useless replication. The <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> residing in it can be
+used to tailor the running of all other studies.</p>
+<p>The following examples are available.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/authors-by-decade">“Hello world” example: number of authors by
+decade</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/research-synthesis">Tally number of research synthesis
+studies</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/graph">Generate and study the entities’ graph
+structure</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/open-access">Examine the evolution and impact of open access journal
+papers</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/orcid">Report metrics associated with ORCID
+data</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/covid">Obtain measures associated with COVID-19
+research</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/impact-factor-2021">Calculate the 2021 journal impact
+factor</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/journal-h5">Calculate the h5-index of
+journals</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/soft-eng-h5">Calculate the h5-index of software engineering research
+venues</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/person-h5">Calculate h5-index of persons and study their citation
+graph</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/crossref-standalone">Report metrics associated with the Crossref data
+set</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/author-productivity">Calculate relative yearly author
+productivity</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/yearly-numpages">Calculate the average size of an article’s pages each
+year</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/cdindex">Calculate the works’ CD-5 index using the Python API or a
+pre-populated
+database</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/tawfik">Investigate the CD-5 index of Dan Tawfik’s
+works</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/sample">Fully-indexed Crossref database
+sample</a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">alexandria3k</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Application examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-plugin.html">Plugin development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="python-eg.html" title="previous chapter">Python API examples</a></li>
+      <li>Next: <a href="schema.html" title="next chapter">Schema diagrams</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022-2023, Diomidis Spinellis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/app-eg.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

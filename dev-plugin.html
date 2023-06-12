@@ -104,12 +104,14 @@ Example (for a single table):</p></li>
 </ul>
 <p>For data sources available in more complex forms you must also define</p>
 <ul class="simple">
-<li><p>a virtual table data source <cite>VTSource</cite>,</p></li>
+<li><p>an SQLite virtual table data source <cite>VTSource</cite>,</p></li>
 <li><p>a cursor to iterate over the records of each table,</p></li>
 <li><p>and possibly a partitioning scheme to handle interrelated tables
 that are streamed concurrently (e.g. a work and its authors).</p></li>
 </ul>
-<p>As examples see
+<p>The virtual table and cursor classes are documented in the
+<a class="reference external" href="https://rogerbinns.github.io/apsw/vtable.html">APSW Virtual Tables chapter</a>.
+As examples of their use in <em>alexandria3k</em> see the data source modules
 <cite>crossref</cite> (this uses compressed containers of JSON files,
 each containing multiple works),
 <cite>orcid</cite> (a compressed <em>tar</em> file containing an XML file for each author),
@@ -157,8 +159,9 @@ and performs the processing associated with the plugin.</p></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line execution examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app-eg.html">Application examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a></li>
