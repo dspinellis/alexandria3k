@@ -101,6 +101,18 @@ documentation must be updated as follows.
    bin/update-python-api
 
 
+Application examples documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When new application examples are added in the ``examples`` directory
+documentation must be updated as follows.
+
+.. code:: sh
+
+   # While in the top-level directory
+   bin/update-app-eg
+
+
 Database schema diagrams
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

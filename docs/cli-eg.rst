@@ -1,5 +1,5 @@
-Command line execution examples
--------------------------------
+Command line examples
+---------------------
 
 After downloading the Crossref data, the functionality of *alexandria3k*
 can be used through its CLI named *a3k*.

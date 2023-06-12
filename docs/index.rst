@@ -52,6 +52,7 @@ Contents
    use
    cli-eg
    python-eg
+   app-eg
    schema
    cli
    user-api
