@@ -5,7 +5,7 @@ The *alexandria3k* is structured around plugins that provide access
 to data sources and data processing functionality.
 New plugins can be developed and contributed by adding a Python
 file in the `data_sources` or `processes` source code directory.
-Plugins are made automagically available to the *a3k* :doc:`cli`
+Plugins are made automatically available to the *a3k* :doc:`cli`
 and can also be used through the *alexandria3k* :doc:`user-api`.
 
 All plugins shall start with a docstring describing the plugin's
@@ -72,7 +72,7 @@ In this case only the following steps are needed.
 * Add unit tests in the `tests/data_sources` directory.
 * Add a motivating example in the `examples` directory.
 
-For data sources available in more complex forms you must also define
+For data sources available in more complex forms you must also define.
 
 * an SQLite virtual table data source `VTSource`,
 * a cursor to iterate over the records of each table,
