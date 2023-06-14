@@ -38,7 +38,7 @@ top-level directory as follows:
 
 .. code:: sh
 
-   bin/alexandria3k --help
+   bin/a3k --help
 
 
 Continuous integration
