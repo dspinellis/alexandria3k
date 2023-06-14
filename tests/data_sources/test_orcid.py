@@ -19,16 +19,18 @@
 """ORCID import integration tests"""
 
 import os
-import unittest
+import random
 import sqlite3
 import sys
+import unittest
 
-from .test_dir import add_src_dir, td
+from ..test_dir import add_src_dir, td
 add_src_dir()
 
+from ..common import record_count
 from alexandria3k.common import ensure_unlinked, query_result
-from alexandria3k import crossref
-from alexandria3k import orcid
+from alexandria3k.data_sources import crossref
+from alexandria3k.data_sources import orcid
 
 DATABASE_PATH = td("tmp/orcid.db")
 
@@ -39,13 +41,8 @@ class TestOrcidAll(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        orcid.populate(
-            DATABASE_PATH,
-            td("data/ORCID_2022_10_summaries.tar.gz"),
-            None,  # All columns
-            False,  # Not only person linked records
-            False,  # Not only work linked records
-        )
+        cls.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"))
+        cls.orcid.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -60,8 +57,8 @@ class TestOrcidAll(unittest.TestCase):
         result = TestOrcidAll.cursor.execute(f"SELECT Count(*) from persons")
         (count,) = result.fetchone()
         # ORCID_2022_10_summaries/000/0000-0001-5078-5000.xml is an error
-        # record, so 7 records remain
-        self.assertEqual(count, 7)
+        # record, so only its DOI is imported
+        self.assertEqual(count, 8)
 
     def test_person(
         self,
@@ -138,13 +135,12 @@ class TestOrcidAuthorsOnly(unittest.TestCase):
         cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(DATABASE_PATH)
 
-        orcid.populate(
-            DATABASE_PATH,
-            td("data/ORCID_2022_10_summaries.tar.gz"),
-            columns=None,  # All columns
-            authors_only=True,
-            works_only=False,
-        )
+        cls.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"))
+        cls.orcid.populate(DATABASE_PATH,
+            condition="""EXISTS (SELECT 1 FROM populated.work_authors
+                WHERE work_authors.orcid = persons.orcid)"""
+                           )
+
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -183,13 +179,12 @@ class TestOrcidWorksOnly(unittest.TestCase):
         cls.crossref = crossref.Crossref(td("data/sample"))
         cls.crossref.populate(DATABASE_PATH)
 
-        orcid.populate(
-            DATABASE_PATH,
-            td("data/ORCID_2022_10_summaries.tar.gz"),
-            columns=None,  # All columns
-            authors_only=False,
-            works_only=True,
-        )
+        cls.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"))
+        cls.orcid.populate(DATABASE_PATH,
+            condition="""EXISTS (SELECT 1 FROM populated.works
+                WHERE person_works.doi = populated.works.doi)"""
+                           )
+
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -212,3 +207,83 @@ class TestOrcidWorksOnly(unittest.TestCase):
             ),
             "Spinellis",
         )
+
+
+class TestOrcidQuery(unittest.TestCase):
+    """Verify non-works column specification and multiple conditions"""
+
+    def setUp(self):
+        # debug.set_flags(["sql"])
+        self.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"))
+
+    def test_persons(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.orcid.query("SELECT * FROM persons", partition)
+                ),
+                8,
+            )
+
+    def test_person_works(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.orcid.query(
+                        "SELECT * FROM person_works", partition
+                    )
+                ),
+                199,
+            )
+
+    def test_person_condition(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.orcid.query(
+                        "SELECT person_works.* FROM persons LEFT JOIN person_works ON person_works.person_id = persons.id WHERE persons.orcid = '0000-0003-4231-1897'",
+                        partition,
+                    )
+                ),
+                128,
+            )
+
+    def test_person_column_subset_condition(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.orcid.query(
+                        "SELECT persons.orcid, person_works.doi FROM persons LEFT JOIN person_works ON person_works.person_id = persons.id WHERE persons.orcid = '0000-0003-4231-1897'",
+                        partition,
+                    )
+                ),
+                128,
+            )
+
+
+class TestOrcidSample(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if os.path.exists(DATABASE_PATH):
+            os.unlink(DATABASE_PATH)
+
+        random.seed(42)
+        cls.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"),
+                                 lambda _x: random.random() < 0.5)
+        cls.orcid.populate(DATABASE_PATH)
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_import(
+        self,
+    ):
+        result = TestOrcidSample.cursor.execute(f"SELECT Count(*) from persons")
+        (count,) = result.fetchone()
+        # ORCID_2022_10_summaries/000/0000-0001-5078-5000.xml is an error
+        # record, so only its DOI is imported
+        self.assertEqual(count, 1)

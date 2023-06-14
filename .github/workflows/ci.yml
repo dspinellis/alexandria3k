@@ -22,13 +22,16 @@ jobs:
           pip install pipenv
           cd src && pipenv install --dev
       - name: Run unit and integration tests
-        run: cd src && pipenv run python -m unittest discover ..
+        run: cd src && pipenv run python -m unittest discover -s ..
       - name: Check code formatting
-        run: cd src && pipenv run black -l 79 --check alexandria3k/*.py
+        run: |
+          cd src
+          find . -name '*.py' | xargs pipenv run black -l 79 --check
       - name: Lint
         run: |
           cd src
-          pipenv run python -m pylint --rcfile ../.pylintrc alexandria3k/*.py
+          find . -name '*.py' | xargs pipenv run python -m pylint --rcfile ../.pylintrc
+
       - name: Install rdbunit
         run: |
           git clone --depth=1 https://github.com/dspinellis/rdbunit.git
@@ -56,4 +59,10 @@ jobs:
           # As Python module
           python -m alexandria3k --version
           # As a command
-          bin/alexandria3k --version
+          bin/a3k --version
+      - name: Test provided examples
+        run: |
+          cd test-a3k
+          . bin/activate
+          cd ../examples
+          make clean all

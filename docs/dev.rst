@@ -1,5 +1,5 @@
-Development
------------
+Development processes
+---------------------
 
 For software development purposes *alexandria3k* can also be installed
 and used through its `Github
@@ -59,7 +59,7 @@ Python unit and integration tests
 .. code:: sh
 
    # While in the top-level directory
-   python3 -m unittest discover
+   python3 -m unittest discover -s .
 
 SQL unit tests
 ^^^^^^^^^^^^^^
@@ -79,7 +79,7 @@ Code formatting
 .. code:: sh
 
    # While in the top-level directory
-   black -l 79 src/alexandria3k/*.py
+   find src -name '*.py' | xargs black -l 79
 
 Linting
 ~~~~~~~
@@ -87,7 +87,31 @@ Linting
 .. code:: sh
 
    # While in the top-level directory
-   python -m pylint src/alexandria3k/*.py
+   find src -name '*.py' | xargs python -m pylint --rcfile .pylintrc
+
+Plugin documentation
+~~~~~~~~~~~~~~~~~~~~
+
+When data source of processing plugins are added the Python API
+documentation must be updated as follows.
+
+.. code:: sh
+
+   # While in the top-level directory
+   bin/update-python-api
+
+
+Application examples documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When new application examples are added in the ``examples`` directory
+documentation must be updated as follows.
+
+.. code:: sh
+
+   # While in the top-level directory
+   bin/update-app-eg
+
 
 Database schema diagrams
 ~~~~~~~~~~~~~~~~~~~~~~~~

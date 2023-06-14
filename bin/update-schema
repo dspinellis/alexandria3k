@@ -7,16 +7,28 @@ set -e
 
 for format in svg pdf ; do
   # Create individual schema diagrams
-  for schema in crossref orcid ror other ; do
+  for schema in crossref orcid ror ; do
     (
       cat docs/schema/schema-head.dot docs/schema/$schema.dot
-      bin/alexandria3k --list-schema $schema | bin/schema2dot.sed
+      bin/a3k list-source-schema $schema | bin/schema2dot.sed
     ) | dot -T$format  -o docs/schema/$schema.$format
   done
+
+  # Create the "other" schema diagram
+    (
+      cat docs/schema/schema-head.dot docs/schema/other.dot
+      (
+        for schema in asjcs doaj funder-names journal-names ; do
+          bin/a3k list-source-schema $schema
+        done
+        bin/a3k list-process-schema
+      ) | bin/schema2dot.sed
+    ) | dot -T$format  -o docs/schema/other.$format
 
   # Create combined schema diagram
   (
     ( cd docs/schema ; cat schema-head.dot crossref.dot orcid.dot ror.dot other.dot )
-    bin/alexandria3k --list-schema all | bin/schema2dot.sed
+    ( bin/a3k list-source-schema ; bin/a3k list-process-schema ) |
+      bin/schema2dot.sed
   ) | dot -T$format  -o docs/schema/all.$format
 done

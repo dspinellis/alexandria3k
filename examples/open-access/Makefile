@@ -11,9 +11,8 @@ include ../common/Makefile
 
 # Populate database with DOIs of works and their references
 populate: $(CROSSREF_DIR)
-	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
-	 --populate "$(MAINDB).db" \
-	  --debug progress \
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --row-selection 'works.issn_print is not null OR works.issn_electronic is not null' \
 	  --columns works.id \
 	  works.doi \
@@ -42,7 +41,7 @@ populate: $(CROSSREF_DIR)
 	touch $@
 
 reports/oa-is-cited-more.txt: oa-is-cited-more.py tables/oa_works
-	./oa-is-cited-more.py >$@
+	$(EXPENSIVE_DEPENDENCIES) ./oa-is-cited-more.py >$@
 
 reports/is-cited-by-is-normal.txt: is-cited-by-is-normal.py populate
-	./is-cited-by-is-normal.py >$@
+	$(EXPENSIVE_DEPENDENCIES) ./is-cited-by-is-normal.py >$@

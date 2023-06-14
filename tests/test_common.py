@@ -27,7 +27,8 @@ import unittest
 from .test_dir import add_src_dir, td
 add_src_dir()
 
-from alexandria3k import common, ror
+from alexandria3k import common
+from alexandria3k.data_sources import ror
 
 DATABASE_PATH = td("tmp/ror.db")
 
@@ -37,7 +38,9 @@ class TestCommon(unittest.TestCase):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        ror.populate(DATABASE_PATH, td("data/ror.zip"))
+        cls.ror = ror.Ror(td("data/ror.zip"))
+        cls.ror.populate(DATABASE_PATH)
+
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -60,7 +63,25 @@ class TestCommon(unittest.TestCase):
         self.assertFalse(common.table_exists(self.cursor, "xyzzy"))
 
     def test_resource_data_source(self):
-        line = common.data_source("resource:data/asjc.csv").readline()
+        line = common.data_from_uri_provider("resource:data/asjc.csv").readline()
 
         self.assertTrue(common.table_exists(self.cursor, "ror_links"))
         self.assertEqual(line, b"Code;Field;Subject area;General field id\n")
+
+    def test_remove_sqlite_comments_plain(self):
+        s = "a"
+        self.assertEqual(common.remove_sqlite_comments(s), "a")
+
+    def test_remove_sqlite_comments_sql(self):
+        s = """CREATE
+-- SQL comment
+select"""
+        self.assertEqual(common.remove_sqlite_comments(s), "CREATE\nselect")
+    def test_remove_sqlite_comments_c(self):
+        s = """CREATE
+/*
+A C comment
+last line
+*/
+select"""
+        self.assertEqual(common.remove_sqlite_comments(s), "CREATE\n\nselect")

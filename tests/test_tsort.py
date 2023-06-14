@@ -21,35 +21,42 @@
 import unittest
 import sys
 
-from .test_dir import add_src_dir
+from .test_dir import add_src_dir, td
 add_src_dir()
 
 from alexandria3k.tsort import tsort
-from alexandria3k.crossref import get_table_meta_by_name
+from alexandria3k.data_sources import crossref
+from alexandria3k.file_cache import FileCache
 
-
-def tsort_add_meta(table_names):
-    """Add Crossref metadata and call tsort"""
-    tables_meta = [get_table_meta_by_name(t) for t in table_names]
-    return tsort(tables_meta, table_names)
 
 
 class TestTsort(unittest.TestCase):
+    def setUp(self):
+        # debug.set_flags(["sql"])
+        FileCache.file_reads = 0
+        self.crossref = crossref.Crossref(td("data/sample"))
+
+    def tsort_add_meta(self, table_names):
+        """Add Crossref metadata and call tsort"""
+        tables_meta = [self.crossref.get_table_meta_by_name(t) for t in table_names]
+        return tsort(tables_meta, table_names)
+
+
     def test_top(self):
         self.assertEqual(
-            tsort_add_meta(["works"]),
+            self.tsort_add_meta(["works"]),
             ["works"],
         )
 
     def test_single_other(self):
         self.assertEqual(
-            tsort_add_meta(["author_affiliations"]),
+            self.tsort_add_meta(["author_affiliations"]),
             ["author_affiliations"],
         )
 
     def test_two_sorted(self):
         self.assertEqual(
-            tsort_add_meta(
+            self.tsort_add_meta(
                 [
                     "works",
                     "work_authors",
@@ -63,7 +70,7 @@ class TestTsort(unittest.TestCase):
 
     def test_two_unsorted(self):
         self.assertEqual(
-            tsort_add_meta(
+            self.tsort_add_meta(
                 [
                     "work_authors",
                     "works",
@@ -77,7 +84,7 @@ class TestTsort(unittest.TestCase):
 
     def test_three_unsorted(self):
         self.assertEqual(
-            tsort_add_meta(
+            self.tsort_add_meta(
                 [
                     "author_affiliations",
                     "work_authors",
@@ -93,7 +100,7 @@ class TestTsort(unittest.TestCase):
 
     def test_no_top(self):
         self.assertEqual(
-            tsort_add_meta(
+            self.tsort_add_meta(
                 [
                     "author_affiliations",
                     "work_authors",
@@ -109,7 +116,7 @@ class TestTsort(unittest.TestCase):
         # Order not guaranteed; compare sets
         self.assertEqual(
             set(
-                tsort_add_meta(
+                self.tsort_add_meta(
                     [
                         "work_subjects",
                         "work_authors",
@@ -124,7 +131,7 @@ class TestTsort(unittest.TestCase):
 
     def test_two_siblings_of_same_parent(self):
         # Order not guaranteed
-        result = tsort_add_meta(
+        result = self.tsort_add_meta(
             [
                 "work_subjects",
                 "works",

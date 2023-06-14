@@ -23,13 +23,15 @@ import unittest
 import sqlite3
 import sys
 
-from .test_dir import add_src_dir, td
+from ..test_dir import add_src_dir, td
 add_src_dir()
 
+from ..common import PopulateQueries, record_count
 from alexandria3k.common import ensure_unlinked, query_result
-from alexandria3k import crossref
+from alexandria3k.data_sources import crossref
 from alexandria3k import debug
 from alexandria3k.file_cache import FileCache
+
 
 DATABASE_PATH = td("tmp/crossref.db")
 ATTACHED_DATABASE_PATH = td("tmp/attached.db")
@@ -109,29 +111,7 @@ class TestDoiNormalize(unittest.TestCase):
         )
 
 
-class TestCrossrefPopulate(unittest.TestCase):
-    """Common utility methods"""
-
-    def record_count(self, table):
-        """Return the number of records in the specified table"""
-        return query_result(self.cursor, f"SELECT Count(*) FROM {table}")
-
-    def cond_field(self, table, field, condition):
-        """Return the specified field in the specified table matching
-        the specified condition"""
-        return query_result(
-            self.cursor, f"SELECT {field} FROM {table} WHERE {condition}"
-        )
-
-    def cond_count(self, table, condition):
-        """Return the number of records in the specified table matching
-        the specified condition"""
-        return query_result(
-            self.cursor, f"SELECT Count(*) FROM {table} WHERE {condition}"
-        )
-
-
-class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
+class TestCrossrefPopulateVanilla(PopulateQueries):
     @classmethod
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
@@ -250,7 +230,7 @@ class TestCrossrefPopulateVanilla(TestCrossrefPopulate):
         )
 
 
-class TestCrossrefPopulateMasterCondition(TestCrossrefPopulate):
+class TestCrossrefPopulateMasterCondition(PopulateQueries):
     @classmethod
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
@@ -274,7 +254,7 @@ class TestCrossrefPopulateMasterCondition(TestCrossrefPopulate):
         self.assertEqual(FileCache.file_reads, 8)
 
 
-class TestCrossrefPopulateDetailCondition(TestCrossrefPopulate):
+class TestCrossrefPopulateDetailCondition(PopulateQueries):
     @classmethod
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
@@ -300,7 +280,7 @@ class TestCrossrefPopulateDetailCondition(TestCrossrefPopulate):
         self.assertEqual(FileCache.file_reads, 8)
 
 
-class TestCrossrefPopulateMasterColumnNoCondition(TestCrossrefPopulate):
+class TestCrossrefPopulateMasterColumnNoCondition(PopulateQueries):
     """Verify column specification and population of root table"""
 
     @classmethod
@@ -331,7 +311,7 @@ class TestCrossrefPopulateMasterColumnNoCondition(TestCrossrefPopulate):
         with self.assertRaises(sqlite3.OperationalError):
             self.cond_field("work_authors", "family", "true")
 
-class TestCrossrefPopulateMasterColumnCondition(TestCrossrefPopulate):
+class TestCrossrefPopulateMasterColumnCondition(PopulateQueries):
     """Verify column specification and population of single table"""
 
     @classmethod
@@ -367,7 +347,7 @@ class TestCrossrefPopulateMasterColumnCondition(TestCrossrefPopulate):
             self.cond_field("work_authors", "family", "true")
 
 
-class TestCrossrefPopulateDetailConditionColumns(TestCrossrefPopulate):
+class TestCrossrefPopulateDetailConditionColumns(PopulateQueries):
     """Verify column specification and population of sibling tables"""
 
     @classmethod
@@ -407,7 +387,7 @@ class TestCrossrefPopulateDetailConditionColumns(TestCrossrefPopulate):
             self.cond_field("work_authors", "family", "true")
 
 
-class TestCrossrefPopulateMultipleConditionColumns(TestCrossrefPopulate):
+class TestCrossrefPopulateMultipleConditionColumns(PopulateQueries):
     """Verify non-works column specification and multiple conditions"""
 
     @classmethod
@@ -446,21 +426,36 @@ class TestCrossrefPopulateMultipleConditionColumns(TestCrossrefPopulate):
 
 
 class TestCrossrefTransitiveClosure(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # debug.set_flags(["sql"])
+        FileCache.file_reads = 0
+        populate_attached()
+        cls.crossref = crossref.Crossref(
+            td("data/sample"),
+            attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.crossref
+        os.unlink(ATTACHED_DATABASE_PATH)
+
     def test_single(self):
         self.assertEqual(
-            crossref.tables_transitive_closure(["works"], "works"),
+            self.crossref.tables_transitive_closure(["works"], "works"),
             set(["works"]),
         )
 
     def test_child(self):
         self.assertEqual(
-            crossref.tables_transitive_closure(["work_authors"], "works"),
+            self.crossref.tables_transitive_closure(["work_authors"], "works"),
             set(["works", "work_authors"]),
         )
 
     def test_grandchild(self):
         self.assertEqual(
-            crossref.tables_transitive_closure(
+            self.crossref.tables_transitive_closure(
                 ["author_affiliations"], "works"
             ),
             set(["works", "work_authors", "author_affiliations"]),
@@ -468,29 +463,30 @@ class TestCrossrefTransitiveClosure(unittest.TestCase):
 
     def test_siblings(self):
         self.assertEqual(
-            crossref.tables_transitive_closure(
+            self.crossref.tables_transitive_closure(
                 ["work_authors", "work_subjects"], "works"
             ),
             set(["works", "work_authors", "work_subjects"]),
         )
 
 
-def record_count(g):
-    """Return the elements (e.g. records) in generator g"""
-    return sum(1 for _ in g)
-
-
 class TestCrossrefQuery(unittest.TestCase):
     """Verify non-works column specification and multiple conditions"""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # debug.set_flags(["sql"])
         FileCache.file_reads = 0
         populate_attached()
-        self.crossref = crossref.Crossref(
+        cls.crossref = crossref.Crossref(
             td("data/sample"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.crossref
+        os.unlink(ATTACHED_DATABASE_PATH)
 
     def test_works(self):
         for partition in True, False:
@@ -549,7 +545,8 @@ class TestCrossrefQuery(unittest.TestCase):
                 5,
             )
 
-class TestCrossrefPopulateAttachedDatabaseCondition(TestCrossrefPopulate):
+
+class TestCrossrefPopulateAttachedDatabaseCondition(PopulateQueries):
     """Verify column specification and population of single table"""
 
     @classmethod

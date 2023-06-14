@@ -4,22 +4,30 @@ Use overview
 After downloading the Crossref data you can use *alexandria3k* through
 its Python API or as a command-line tool.
 
-These are the things you can do with *alexandria3k*.
+With *alexandria3k* you can process diverse sources of bibliographic
+data, such as Crossref, ORCID, DOAJ, and ROR.
+Specifically, you can perform the following actions.
 
--  Directly run ad hoc SQL queries on the Crossref data
--  Populate SQLite databases with Crossref, ORCID, DOAJ, and other data
+- Directly run ad hoc SQL queries on any of the supported data sets.
+- Populate SQLite databases with selected elements of the supported
+  data sets.
 
-   -  Select a horizontal subset of Crossref records
+  - Select a horizontal subset of a data set's records.
 
-      -  Through an SQL expression
-      -  By sampling a subset of the 26 thousand containers in the data
-         set
+    - Through an SQL expression.
+    - By sampling a subset of the data set's elements or containers.
+      (For example sampling some of the 26 thousand containers in the
+      Crossref data set.)
 
-   -  Select a horizontal subset of ORCID records by only loading those
-      associated with already populated Crossref records
-   -  Select a vertical subset of Crossref or ORCID columns
+  - Select a horizontal subset of a data set's records by only loading
+    those associated with already populated records or records available
+    in another database.
+  - Select a vertical subset of a data set's columns
 
-      -  Using the ``Table.Column`` or ``Table.*`` notation
+    - Using the ``Table.Column`` or ``Table.*`` notation
+
+- Process already populated databases to cross-link or normalize their
+  elements.
 
 Populating a database can take minutes (for a small, e.g. experimental,
 subset), a few hours (to traverse the whole Crossref data set and obtain
