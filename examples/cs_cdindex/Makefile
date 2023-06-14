@@ -2,23 +2,28 @@
 # Create a table with the CD index of all CS works
 #
 
+DBLP?=dblp.xml.gz
+
 export MAINDB?=cs_cdindex
 
-export DEPENDENCIES=populate
+export DEPENDENCIES=populate ../cdindex/tables/cdindex
 
 include ../common/Makefile
 
 # Populate database with required fields
 populate: $(CROSSREF_DIR) dblp.db
-	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
-	  --populate "$(MAINDB).db" \
-	  --debug progress \
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --attach-databases 'dblp:dblp.db' \
 	  --row-selection 'EXISTS (SELECT 1 FROM dblp.dois WHERE works.doi = dois.doi)'
 	touch $@
 
-dblp.xml.gz:
+$(DBLP):
 	wget https://dblp.org/xml/dblp.xml.gz
 
-dblp.db: dblp.xml.gz cs_works.sed
-	zcat dblp.xml.gz | ./cs_works.sed | sqlite3 dblp.db
+dblp.db: $(DBLP) cs_works.sed
+	zcat $(DBLP) | ./cs_works.sed | sqlite3 dblp.db
+
+# The CD index calculation is required for this example
+../cdindex/tables/cdindex:
+	make -C ../cdindex MAINDB=cdindex tables/cdindex

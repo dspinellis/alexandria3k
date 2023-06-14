@@ -9,7 +9,7 @@ include ../common/Makefile
 
 # Populate database with COVID publications
 populate: $(CROSSREF_DIR)
-	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)"  \
-	  --populate-db-path "$(MAINDB).db" --debug progress \
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --row-selection "title like '%COVID%' OR abstract like '%COVID%'"
 	touch $@

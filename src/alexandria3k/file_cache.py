@@ -54,13 +54,6 @@ class FileCache:
 file_cache = FileCache()
 
 
-def set_file_cache(new_file_cache):
-    """Set the file cache exported from here to the specified object"""
-    # pylint: disable-next=global-statement,invalid-name
-    global file_cache
-    file_cache = new_file_cache
-
-
 def get_file_cache():
     """Return the file cache used"""
     return file_cache

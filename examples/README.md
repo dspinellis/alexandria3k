@@ -30,6 +30,7 @@ The following examples are available.
 * ["Hello world" example: number of authors by decade](authors-by-decade)
 * [Tally number of research synthesis studies](research-synthesis)
 * [Generate and study the entities' graph structure](graph)
+* [Examine the evolution and impact of open access journal papers](open-access)
 * [Report metrics associated with ORCID data](orcid)
 * [Obtain measures associated with COVID-19 research](covid)
 * [Calculate the 2021 journal impact factor](impact-factor-2021)

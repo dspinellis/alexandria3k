@@ -23,24 +23,22 @@ import unittest
 import sqlite3
 import sys
 
-from alexandria3k import csv_sources
+from ..test_dir import add_src_dir, td
+add_src_dir()
 
-from .test_dir import td
+from alexandria3k.data_sources import journal_names
 
 DATABASE_PATH = td("tmp/journal_names.db")
 
 
-class TestOrcid(unittest.TestCase):
+class TestJournalNames(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        csv_sources.load_csv_data(
-            DATABASE_PATH,
-            csv_sources.journals_table,
-            td("data/titleFile.csv"),
-        )
+        cls.journal_names = journal_names.JournalNames(td("data/titleFile.csv"))
+        cls.journal_names.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -52,7 +50,7 @@ class TestOrcid(unittest.TestCase):
     def test_import(
         self,
     ):
-        result = TestOrcid.cursor.execute(
+        result = TestJournalNames.cursor.execute(
             f"SELECT Count(*) from journal_names"
         )
         (count,) = result.fetchone()
@@ -61,7 +59,7 @@ class TestOrcid(unittest.TestCase):
     def test_issn_name(
         self,
     ):
-        result = TestOrcid.cursor.execute(
+        result = TestJournalNames.cursor.execute(
             """SELECT title FROM journal_names
               WHERE issn_print='26636085'"""
         )
@@ -71,10 +69,12 @@ class TestOrcid(unittest.TestCase):
     def test_multiple_additional_issn(
         self,
     ):
-        result = TestOrcid.cursor.execute(
+        result = TestJournalNames.cursor.execute(
             """
                 SELECT Count(*) from journals_issns
-                  WHERE journal_id='50200' AND issn_type = 'A'
+                  WHERE journal_id=(
+                      SELECT id FROM journal_names WHERE crossref_id = '50200')
+                    AND issn_type = 'A'
             """
         )
         (count,) = result.fetchone()
@@ -84,9 +84,9 @@ class TestOrcid(unittest.TestCase):
         self,
     ):
         for issn in ["00443379", "1420911X", "03010988", "03038408"]:
-            result = TestOrcid.cursor.execute(
+            result = TestJournalNames.cursor.execute(
                 f"""SELECT journal_id FROM journals_issns
                 WHERE issn='{issn}'"""
             )
             (journal_id,) = result.fetchone()
-            self.assertEqual(journal_id, "50200")
+            self.assertEqual(journal_id, 19)

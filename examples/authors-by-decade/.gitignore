@@ -1,8 +1,8 @@
 .depend
+.depend.all
+hello-number.sql
+populate
 reports
 rolap
 simple-rolap
 tables
-.depend.all
-hello-number.sql
-populate

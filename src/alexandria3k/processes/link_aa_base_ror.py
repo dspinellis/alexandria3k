@@ -16,10 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Populate ROR (Research Organization Registry) data tables"""
-
-import json
-import zipfile
+"""Link author affiliation with lowest-level research organization"""
 
 import ahocorasick
 
@@ -34,121 +31,9 @@ from alexandria3k.common import (
 )
 from alexandria3k import debug
 from alexandria3k import perf
-from alexandria3k.virtual_db import ColumnMeta, TableFiller, TableMeta
-
-
-def external_ids_all(id_name, row):
-    """Return all ids or an empty list if not specified"""
-    external_ids = row.get("external_ids")
-    if not external_ids:
-        return []
-    ids = external_ids.get(id_name)
-    if ids:
-        return ids["all"]
-    return []
-
-
-def external_ids_getter(id_name):
-    """Return a function that can be applied to a row and return the
-    external ids associated with the specified id type residing under the
-    "all" branch."""
-    return lambda row: external_ids_all(id_name, row)
-
+from alexandria3k.db_schema import ColumnMeta, TableMeta
 
 tables = [
-    TableMeta(
-        "research_organizations",
-        columns=[
-            ColumnMeta("id", rowid=True),
-            ColumnMeta("ror_path", lambda row: row["id"][16:]),
-            ColumnMeta("name", lambda row: row["name"]),
-            ColumnMeta("status", lambda row: row["status"]),
-            ColumnMeta("established", lambda row: row["established"]),
-            ColumnMeta(
-                "country_code", lambda row: row["country"]["country_code"]
-            ),
-        ],
-    ),
-    TableMeta(
-        "ror_types",
-        extract_multiple=lambda row: row["types"],
-        columns=[
-            ColumnMeta("ror_id"),
-            ColumnMeta("type", lambda value: value),
-        ],
-    ),
-    TableMeta(
-        "ror_links",
-        extract_multiple=lambda row: row["links"],
-        columns=[
-            ColumnMeta("ror_id"),
-            ColumnMeta("link", lambda value: value),
-        ],
-    ),
-    TableMeta(
-        "ror_aliases",
-        extract_multiple=lambda row: row["aliases"],
-        columns=[
-            ColumnMeta("ror_id"),
-            ColumnMeta("alias", lambda value: value),
-        ],
-    ),
-    TableMeta(
-        "ror_acronyms",
-        extract_multiple=lambda row: row["acronyms"],
-        columns=[
-            ColumnMeta("ror_id"),
-            ColumnMeta("acronym", lambda value: value),
-        ],
-    ),
-    TableMeta(
-        "ror_relationships",
-        extract_multiple=lambda row: row["relationships"],
-        columns=[
-            ColumnMeta("ror_id"),
-            ColumnMeta("type", lambda row: row["type"]),
-            ColumnMeta("ror_path", lambda row: row["id"][16:]),
-        ],
-    ),
-    TableMeta(
-        "ror_addresses",
-        extract_multiple=lambda row: row["addresses"],
-        columns=[
-            ColumnMeta("ror_id"),
-            # ROR will simplify the current address schema.
-            # Add more fields when ROR settles it.
-            ColumnMeta("lat", lambda row: row["lat"]),
-            ColumnMeta("lng", lambda row: row["lng"]),
-            ColumnMeta("city", lambda row: row["city"]),
-            ColumnMeta("state", lambda row: row["state"]),
-            ColumnMeta("postcode", lambda row: row["postcode"]),
-        ],
-    ),
-    # OrgRef and GRID are deprecated, so we are not supporting these fields
-    TableMeta(
-        "ror_funder_ids",
-        extract_multiple=external_ids_getter("FundRef"),
-        columns=[
-            ColumnMeta("ror_id"),
-            ColumnMeta("funder_id", lambda value: value),
-        ],
-    ),
-    TableMeta(
-        "ror_wikidata_ids",
-        extract_multiple=external_ids_getter("Wikidata"),
-        columns=[
-            ColumnMeta("ror_id"),
-            ColumnMeta("wikidata_id", lambda value: value),
-        ],
-    ),
-    TableMeta(
-        "ror_isnis",
-        extract_multiple=external_ids_getter("ISNI"),
-        columns=[
-            ColumnMeta("ror_id"),
-            ColumnMeta("isni", lambda value: value),
-        ],
-    ),
     # No extractors; filled by link_author_affiliations
     TableMeta(
         "work_authors_rors",
@@ -158,64 +43,6 @@ tables = [
         ],
     ),
 ]
-
-table_dict = {t.get_name(): t for t in tables}
-
-
-def populate(database_path, data_path):
-    """
-    Populate the specified SQLite database with the research organization
-    details.
-    The database is created if it does not exist.
-    If it exists, the tables to be populated are dropped
-    (if they exist) and recreated anew as specified.
-
-    :param database_path: The path specifying the SQLite database
-        to populate.
-    :type database_path: str
-
-    :param data_path: Path to a zip file containing the research organization
-        data, e.g. `"v1.17.1-2022-12-16-ror-data.zip"`
-    :type data_path: str
-    """
-
-    def add_org_records(data):
-        for ror in data:
-            ror_id = None
-            for filler in table_fillers:
-                if filler.get_table_name() == "research_organizations":
-                    ror_id = filler.add_records(ror, "id", ror_id)
-                else:
-                    filler.add_records(ror, "ror_id", ror_id)
-
-    def create_tables():
-        """Create empty tables and their TableFiller objects"""
-        database = apsw.Connection(database_path)
-        set_fast_writing(database)
-        cursor = database.cursor()
-        fillers = []
-        for table_name, table in table_dict.items():
-            columns = table.get_columns()
-            column_names = [c.get_name() for c in columns]
-            cursor.execute(log_sql(f"DROP TABLE IF EXISTS {table_name}"))
-            cursor.execute(log_sql(table.table_schema()))
-
-            # Value addition
-            is_master = table_name == "research_organizations"
-            filler = TableFiller(database, table, column_names, is_master)
-            if filler.have_extractors():
-                fillers.append(filler)
-        return fillers
-
-    table_fillers = create_tables()
-    # Read, parse, and populate tables from the compressed file
-    with zipfile.ZipFile(data_path, "r") as zip_ref:
-        (file_name,) = zip_ref.namelist()
-        with zip_ref.open(file_name, "r") as ror_file:
-            data = json.load(ror_file)
-            perf.log("Parse ROR")
-            add_org_records(data)
-            perf.log("Add ROR")
 
 
 def add_words(automaton, source):
@@ -245,7 +72,8 @@ def unique_entries(table, id_field, name_field, condition=""):
     """Return an SQL statement that will provide the specified
     name and id of entries whose name exists only once in the
     table"""
-    return f"""
+    return log_sql(
+        f"""
         WITH same_count AS (
           SELECT {id_field} AS id, {name_field} AS name,
             Count() OVER (PARTITION BY {name_field}) AS number
@@ -254,6 +82,7 @@ def unique_entries(table, id_field, name_field, condition=""):
         )
         SELECT id, name from same_count WHERE number == 1;
     """
+    )
 
 
 def link_author_affiliations(database_path, link_to_top):
@@ -274,7 +103,8 @@ def link_author_affiliations(database_path, link_to_top):
     :type link_to_top: bool
     """
     database = apsw.Connection(database_path)
-    database.execute(log_sql("DELETE FROM work_authors_rors"))
+    database.execute(log_sql("DROP TABLE IF EXISTS work_authors_rors"))
+    database.execute(log_sql(tables[0].table_schema()))
     set_fast_writing(database)
     ensure_table_exists(database, "research_organizations")
     ensure_table_exists(database, "author_affiliations")
@@ -355,3 +185,21 @@ def link_author_affiliations(database_path, link_to_top):
     statement = get_string_resource("sql/work-authors-top-rors.sql")
     database.execute(log_sql(statement))
     perf.log("Link top-level affiliations")
+
+
+def process(database_path):
+    """
+    Process the specified database creating a table that links Crossref work
+    authors to their corresponding research organization as codified in the
+    Research Orgnization Registry (ROR).
+    The link is made to the lowest identifiable organizational level,
+    e.g. an author's clinic, school, or institute.
+
+    :param database_path: The path specifying the SQLite database
+        to process and populate.
+        The database shall already contain the ROR dataset and the Crossref
+        `author_affiliations` table.
+    :type database_path: str
+    """
+
+    link_author_affiliations(database_path, link_to_top=False)

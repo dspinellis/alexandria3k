@@ -21,7 +21,7 @@ help:
 
 # Build the man page source.  This is located in a separate directory
 # so that Sphinx will convert it alone
-manpage: $(_BUILDDIR)/alexandria3k.1
+manpage: $(_BUILDDIR)/a3k.1
 
-$(_BUILDDIR)/alexandria3k.1:
-	$(SPHINXBUILD) -b man -c "$(SOURCEDIR)" "$(SOURCEDIR)/cli" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+$(_BUILDDIR)/a3k.1:
+	$(SPHINXBUILD) -b man -c "$(SOURCEDIR)" "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

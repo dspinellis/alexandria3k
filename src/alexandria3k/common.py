@@ -41,9 +41,29 @@ from . import debug
 RE_URL = re.compile(r"\w+://")
 
 
+def is_unittest():
+    """ "Return True if the routine is executed in a unit test"""
+    return any(
+        "unittest" in str(cls)
+        # pylint: disable-next=protected-access
+        for cls in sys._getframe(1).f_globals.values()
+    )
+
+
+def warn(message):
+    """Output a warning with the specified message"""
+    if is_unittest():
+        return
+    print(f"Warning: {message}", file=sys.stderr)
+
+
 def fail(message):
     """Fail the program execution with the specified error message"""
-    print(message, file=sys.stderr)
+    if debug.enabled("exception"):
+        # pylint: disable-next=broad-exception-raised
+        raise Exception(message)
+    print(f"Error: {message}", file=sys.stderr)
+    print("Terminating program execution.", file=sys.stderr)
     sys.exit(1)
 
 
@@ -81,7 +101,7 @@ def set_fast_writing(database):
     """
     Very fast inserts at the risk of possible data corruption in case of a
     crash.
-    We don't really care, because we assume the databased is
+    We don't really care, because we assume the database is
     populated in one go from empty, and if it gets corrupted
     the process can be repeated.
     This increases speed in ORCID works population by 50:
@@ -145,7 +165,7 @@ def is_url(url):
     return RE_URL.match(url)
 
 
-def data_source(source):
+def data_from_uri_provider(source):
     """Given a file path, a URL, or this package's resource path
     return a readable source for its contents"""
     if source.startswith("resource:"):
@@ -170,3 +190,14 @@ def get_string_resource(file_path):
     """Return the contents of the named file relative to the package's
     source code directory"""
     return str(pkgutil.get_data(__name__, file_path), "utf-8")
+
+
+def remove_sqlite_comments(script):
+    """Remove SQLite comments (-- and C-style) from the passed script.
+    This cannot handle comment characters embedded in strings."""
+
+    # remove C-style comments
+    script = re.sub(r"/\*.*?\*/", "", script, flags=re.DOTALL)
+
+    # remove SQL single-line comments
+    return re.sub(r"--[^\n]*\n?", "", script).strip()

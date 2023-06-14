@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Update the descrition of the provided use case
+# Requires Pandoc
+#
+
+set -eu
+
+sed '
+# Add header
+1i\
+# Application examples
+# Change "This"
+1s/This/The source distribution ``examples``/
+# Make relative links absolute
+/https/! {
+  /](/s|(|(https://github.com/dspinellis/alexandria3k/tree/main/examples/|
+}
+'  examples/README.md |
+pandoc -o docs/app-eg.rst
