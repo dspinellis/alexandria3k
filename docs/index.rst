@@ -52,10 +52,14 @@ Contents
    use
    cli-eg
    python-eg
+   app-eg
    schema
-   cli/index
-   api
+   cli
+   user-api
+   plugin-api
+   utility-api
    dev
+   dev-plugin
    faq
 
 

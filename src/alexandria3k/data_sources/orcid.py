@@ -16,17 +16,225 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Populate ORCID data tables"""
+"""Open Researcher and Contributor ID (ORCID) data"""
 
 import tarfile
 import xml.etree.ElementTree as ET
 
-# pylint: disable-next=import-error
-import apsw
-
-from alexandria3k.common import add_columns, fail, log_sql, set_fast_writing
+from alexandria3k.common import fail, warn
+from alexandria3k.data_source import (
+    CONTAINER_INDEX,
+    DataSource,
+    ElementsCursor,
+    StreamingCachedContainerTable,
+)
 from alexandria3k import perf
-from alexandria3k.virtual_db import ColumnMeta, TableFiller, TableMeta
+from alexandria3k.db_schema import ColumnMeta, TableMeta
+
+# pylint: disable=R0801
+
+DEFAULT_SOURCE = None
+
+
+# pylint: disable-next=too-many-instance-attributes
+class PersonsCursor:
+    """A virtual table cursor over persons data.
+    If it is used through data_source partitioned data access
+    within the context of a TarFiles iterator,
+    it shall return the single element of the TarFiles iterator.
+    Otherwise it shall iterate over all elements."""
+
+    def __init__(self, table):
+        """Not part of the apsw VTCursor interface.
+        The table argument is a StreamingTable object"""
+        self.table = table
+        self.data_source = table.get_data_source()
+        # Initialized in Filter()
+        self.eof = False
+        self.item_index = -1
+        self.single_file = None
+        self.file_read = None
+        self.iterator = None
+        # Set in Next
+        self.file_id = None
+
+    def Eof(self):
+        """Return True when the end of the table's records has been reached."""
+        return self.eof
+
+    def container_id(self):
+        """Return the id of the container containing the data being fetched.
+        Not part of the apsw API."""
+        return self.data_source.get_container_id()
+
+    def Rowid(self):
+        """Return a unique id of the row along all records"""
+        return self.item_index
+
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        # print(f"Column {col}")
+        if col == -1:
+            return self.Rowid()
+
+        if col == 0:  # id
+            return self.Rowid()
+
+        if col == 1:
+            return self.data_source.get_container_id()
+
+        if col == 2:  # ORCID; obtain from file name; no XML parse
+            return self.data_source.get_orcid()
+
+        extract_function = self.table.get_value_extractor_by_ordinal(col)
+        return extract_function(self.data_source.get_element_tree())
+
+    def Filter(self, index_number, _index_name, constraint_args):
+        """Always called first to initialize an iteration to the first row
+        of the table according to the index"""
+        # print(f"Filter n={index_number} c={constraint_args}")
+
+        if index_number == 0:
+            # No index; iterate through all the files
+            self.item_index = -1
+            self.single_file = False
+            self.iterator = self.data_source.get_container_iterator()
+        elif index_number & CONTAINER_INDEX:
+            # Index; constraint reading through the specified file
+            self.single_file = True
+            self.file_read = False
+            self.item_index = constraint_args[0]
+        else:
+            fail("Unknown index specified")
+        self.Next()  # Move to first row
+
+    def Next(self):
+        """Advance to the next item."""
+        if self.single_file:
+            if self.file_read or not self.table.sample(
+                self.data_source.get_orcid()
+            ):
+                self.eof = True
+            # The single file has been read. Set EOF in next Next call
+            self.file_read = True
+            return
+
+        while True:  # Loop until sample returns True
+            self.file_id = next(self.iterator, None)
+            if self.file_id is None:
+                self.eof = True
+                return
+            self.item_index += 1
+            self.eof = False
+            if self.table.sample(self.data_source.get_orcid()):
+                break
+
+    def current_row_value(self):
+        """Return the current row. Not part of the apsw API."""
+        return self.data_source.get_element_tree()
+
+    def Close(self):
+        """Cursor's destructor, used for cleanup"""
+        if self.iterator:
+            self.data_source.close()
+
+
+class PersonDetailsCursor(ElementsCursor):
+    """A cursor over any of a person's details data."""
+
+    def __init__(self, table, parent_cursor):
+        """Not part of the apsw VTCursor interface.
+        The table agument is a StreamingTable object"""
+        super().__init__(table, parent_cursor)
+        self.extract_multiple = table.get_table_meta().get_extract_multiple()
+
+    def Rowid(self):
+        """Return a unique id of the row along all records.
+        This allows for 16k elements."""
+        return (self.parent_cursor.Rowid() << 14) | self.element_index
+
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:  # id
+            return self.record_id()
+
+        if col == 2:  # person_id
+            return self.parent_cursor.Rowid()
+
+        return super().Column(col)
+
+    def Next(self):
+        """Advance reading to the next available element."""
+        while True:
+            if self.parent_cursor.Eof():
+                self.eof = True
+                return
+            if not self.elements:
+                self.elements = self.extract_multiple(
+                    self.parent_cursor.current_row_value()
+                )
+                self.element_index = -1
+            if not self.elements:
+                self.parent_cursor.Next()
+                self.elements = None
+                continue
+            if self.element_index + 1 < len(self.elements):
+                self.element_index += 1
+                self.eof = False
+                return
+            self.parent_cursor.Next()
+            self.elements = None
+
+
+class PersonWorksCursor(PersonDetailsCursor):
+    """A cursor for the person's works.  It skips over works lacking a DOI."""
+
+    def Next(self):
+        """Advance reading to the next available element."""
+        while True:
+            if self.parent_cursor.Eof():
+                self.eof = True
+                return
+            if not self.elements:
+                self.elements = self.extract_multiple(
+                    self.parent_cursor.current_row_value()
+                )
+                self.element_index = -1
+            if not self.elements:
+                self.parent_cursor.Next()
+                self.elements = None
+                continue
+            if self.element_index + 1 < len(self.elements):
+                self.element_index += 1
+                tree = self.elements[self.element_index]
+                # Skip over works lacking a DOI
+                if not get_type_element_lower(
+                    tree, f"{COMMON}external-id", "doi"
+                ):
+                    continue
+                self.eof = False
+                return
+            self.parent_cursor.Next()
+            self.elements = None
+
+
+class PersonDetailsTableMeta(TableMeta):
+    """Table metadata for person details.  Objects of this
+    class are injected with properties and columns common to all
+    person details tables."""
+
+    def __init__(self, name, **kwargs):
+        kwargs["foreign_key"] = "person_id"
+        kwargs["parent_name"] = "persons"
+        kwargs["primary_key"] = "id"
+        kwargs["cursor_class"] = PersonDetailsCursor
+        kwargs["columns"] = [
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("person_id"),
+        ] + kwargs["columns"]
+        super().__init__(name, **kwargs)
+
 
 # The ORCID XML namespaces in XPath format
 ACTIVITIES = "{http://www.orcid.org/ns/activities}"
@@ -148,8 +356,10 @@ AFFILIATION = ORGANIZATION + DEPARTMENT_NAME_ROLE + START_END_DATE
 tables = [
     TableMeta(
         "persons",
+        cursor_class=PersonsCursor,
         columns=[
             ColumnMeta("id", rowid=True),
+            ColumnMeta("container_id"),
             ColumnMeta(
                 "orcid", getter(f"{COMMON}orcid-identifier/{COMMON}path")
             ),
@@ -173,85 +383,72 @@ tables = [
             ),
         ],
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_researcher_urls",
         extract_multiple=all_getter(
             f"{PERSON}person/{RESEARCHER_URL}researcher-urls/"
             f"{RESEARCHER_URL}researcher-url"
         ),
         columns=[
-            ColumnMeta("person_id"),
             ColumnMeta("name", getter(f"{RESEARCHER_URL}url-name")),
             ColumnMeta("url", getter(f"{RESEARCHER_URL}url")),
         ],
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_countries",
         extract_multiple=all_getter(
             f"{PERSON}person/{ADDRESS}addresses/{ADDRESS}address"
         ),
         columns=[
-            ColumnMeta("person_id"),
             ColumnMeta("country", getter(f"{ADDRESS}country")),
         ],
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_keywords",
         extract_multiple=all_getter(
             f"{PERSON}person/{KEYWORD}keywords/{KEYWORD}keyword"
         ),
         columns=[
-            ColumnMeta("person_id"),
             ColumnMeta("keyword", getter(f"{KEYWORD}content")),
         ],
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_external_identifiers",
         extract_multiple=all_getter(
             f"{PERSON}person/{EXTERNAL_IDENTIFIER}external-identifiers/"
             f"{EXTERNAL_IDENTIFIER}external-identifier"
         ),
         columns=[
-            ColumnMeta("person_id"),
             ColumnMeta("type", getter(f"{COMMON}external-id-type")),
             ColumnMeta("value", getter(f"{COMMON}external-id-value")),
             ColumnMeta("url", getter(f"{COMMON}external-id-url")),
         ],
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_distinctions",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}distinctions/"
             f"{ACTIVITIES}affiliation-group/{DISTINCTION}distinction-summary"
         ),
-        columns=[
-            ColumnMeta("person_id"),
-        ]
-        + AFFILIATION,
+        columns=[] + AFFILIATION,
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_educations",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}educations/"
             f"{ACTIVITIES}affiliation-group/{EDUCATION}education-summary"
         ),
-        columns=[
-            ColumnMeta("person_id"),
-        ]
-        + AFFILIATION,
+        columns=[] + AFFILIATION,
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_employments",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}employments/"
             f"{ACTIVITIES}affiliation-group/{EMPLOYMENT}employment-summary"
         ),
-        columns=[
-            ColumnMeta("person_id"),
-        ]
-        + AFFILIATION,
+        columns=[] + AFFILIATION,
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_invited_positions",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
@@ -259,24 +456,18 @@ tables = [
             f"{ACTIVITIES}affiliation-group/"
             f"{INVITED_POSITION}invited-position-summary"
         ),
-        columns=[
-            ColumnMeta("person_id"),
-        ]
-        + AFFILIATION,
+        columns=[] + AFFILIATION,
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_memberships",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
             f"{ACTIVITIES}memberships/{ACTIVITIES}affiliation-group/"
             f"{MEMBERSHIP}membership-summary"
         ),
-        columns=[
-            ColumnMeta("person_id"),
-        ]
-        + AFFILIATION,
+        columns=[] + AFFILIATION,
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_qualifications",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
@@ -284,23 +475,17 @@ tables = [
             f"{ACTIVITIES}affiliation-group/"
             f"{QUALIFICATION}qualification-summary"
         ),
-        columns=[
-            ColumnMeta("person_id"),
-        ]
-        + AFFILIATION,
+        columns=[] + AFFILIATION,
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_services",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}services/"
             f"{ACTIVITIES}affiliation-group/{SERVICE}service-summary"
         ),
-        columns=[
-            ColumnMeta("person_id"),
-        ]
-        + AFFILIATION,
+        columns=[] + AFFILIATION,
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_fundings",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}fundings/"
@@ -309,7 +494,6 @@ tables = [
         # pylint: disable-next=fixme
         # TODO external-ids, contributors
         columns=[
-            ColumnMeta("person_id"),
             ColumnMeta("title", getter(f"{FUNDING}funding-title")),
             ColumnMeta("type", getter(f"{FUNDING}funding-type")),
             ColumnMeta(
@@ -321,7 +505,7 @@ tables = [
         + START_END_DATE
         + ORGANIZATION,
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_peer_reviews",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
@@ -330,7 +514,6 @@ tables = [
             f"{PEER_REVIEW}peer-review-summary"
         ),
         columns=[
-            ColumnMeta("person_id"),
             ColumnMeta("reviewer_role", getter(f"{PEER_REVIEW}reviewer-role")),
             ColumnMeta("review_type", getter(f"{PEER_REVIEW}review-type")),
             ColumnMeta("subject_type", getter(f"{PEER_REVIEW}subject-type")),
@@ -376,7 +559,7 @@ tables = [
             ),
         ],
     ),
-    TableMeta(
+    PersonDetailsTableMeta(
         "person_research_resources",
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/"
@@ -384,7 +567,6 @@ tables = [
             f"{RESEARCH_RESOURCE}research-resource-summary"
         ),
         columns=[
-            ColumnMeta("person_id"),
             ColumnMeta(
                 "title",
                 getter(
@@ -431,13 +613,20 @@ tables = [
             ),
         ],
     ),
+    # Use generic TableMeta to setup custom cursor
     TableMeta(
         "person_works",
+        foreign_key="person_id",
+        parent_name="persons",
+        primary_key="id",
+        cursor_class=PersonWorksCursor,
         extract_multiple=all_getter(
             f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/"
             f"{ACTIVITIES}group/{COMMON}external-ids"
         ),
         columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
             ColumnMeta("person_id"),
             ColumnMeta(
                 "doi", type_getter_lower(f"{COMMON}external-id", "doi")
@@ -484,192 +673,162 @@ def order_column_definitions_by_schema(table, column_names):
     return result
 
 
-# pylint: disable-next=too-many-locals,too-many-branches,too-many-statements
-def populate(
-    database_path,
-    data_path,
-    columns=None,
-    authors_only=False,
-    works_only=False,
-):
-    """
-    Populate the specified SQLite database.
-    The database is created if it does not exist.
-    If it exists, the tables to be populated are dropped
-    (if they exist) and recreated anew as specified.
+class ErrorElement:
+    """A class used for representing error elements"""
 
-    :param database_path: Path specifying the SQLite database to populate.
-    :type database_path: str
+    def find(self, _path):
+        """Placeholder to the actual XML tree element."""
+        return None
 
-    :param data_path: Path to the ORCID summaries data file, e.g.
-        `"ORCID_2022_10_summaries.tar.gz"`
-    :type data_path: str
+    def findall(self, _path):
+        """Placeholder to the actual XML tree element."""
+        return None
 
-    :param columns: A list of strings specifying the columns to
-        populate, defaults to `None`.  The strings are of the form
-        `table_name.column_name` or `table_name.*`.
-    :type columns: list, optional
 
-    :param authors_only: Specify whether only ORCID records of persons
-        that exist in the Crossref `work_authors` table shall be added,
-        defaults to `False`.
-    :type authors_only: bool, optional
+class TarFiles:
+    """The source of the XML files in a compressed tar archive.
+    This is a singleton, iterated over either data_source
+    (when partitioning is in effect) or by PersonsCursor.
+    The file contents are accessed by PersonsCursor."""
 
-    :param works_only: Specify whether only ORCID records of persons
-        whose *works* exist in the Crossref works table shall be added,
-        defaults to `False`.
-    :type works_only: bool, optional
-    """
+    def __init__(self, file_path, sample):
+        # Collect the names of all available data files
+        self.file_path = file_path
+        self.sample = sample
+        # Set by tar_generator
+        self.tar_info = None
+        self.orcid = None
+        self.tar = None
+        self.file_id = -1
+        # Updated by get_element_tree
+        self.element_tree = None
 
-    def add_column(table, column):
-        """Add a column required for executing a query to the
-        specified dictionary"""
-        if column == "*":
-            columns = get_table_meta_by_name(table).get_columns()
-            column_names = map(lambda c: c.get_name(), columns)
-            population_columns[table] = set(column_names)
-        elif table in population_columns:
-            population_columns[table].add(column)
-        else:
-            population_columns[table] = {column}
-
-    def work_dois_in_crossref():
-        """
-        Return True if any the work dois included under "works" in element_tree
-        exist in the Crossref works table.
-        """
-        external_id = f"{COMMON}external-id"
-        # Person's work DOIs
-        work_dois = []
-        for record in element_tree.findall(
-            f"{ACTIVITIES}activities-summary/{ACTIVITIES}works/"
-            f"{ACTIVITIES}group/{COMMON}external-ids"
-        ):
-            doi = get_type_element_lower(record, external_id, "doi")
-
-            # Include only defined DOIs and DOIs not cointaining "'",
-            # which would mess the generated SQL (shouldn't happen,
-            # but data can always contain some garbage).
-            # This also reduces the possibility of an SQLIA; not a big
-            # concern in the context of this application.
-            if doi and doi.find("'") == -1:
-                work_dois.append(f"'{doi}'")
-
-        if not work_dois:
-            return False
-        doi_set = ",".join(work_dois)
-        # print(doi_set)
-
-        # For many DOIs SQLite executes OpenEphemeral and then a series of
-        # IdxInsert, which suggests it is optizing the search for all of
-        # them by creating a temporary index
-        cursor.execute(
-            log_sql(
-                f"""
-                SELECT 1 WHERE EXISTS (
-                    SELECT 1 FROM works WHERE doi IN ({doi_set})
-                )
-            """
-            ),
-        )
-        return cursor.fetchone()
-
-    population_columns = {}
-    add_columns(columns, tables, add_column)
-
-    # Reorder columns to match the defined schema order
-    # This creates schemas with a deterministic column order
-    for table_name, table_columns in population_columns.items():
-        population_columns[table_name] = order_columns_by_schema(
-            table_name, population_columns[table_name]
-        )
-
-    # Create empty tables and their TableFiller objects
-    database = apsw.Connection(database_path)
-    set_fast_writing(database)
-    cursor = database.cursor()
-    table_fillers = []
-    for table_name, table_columns in population_columns.items():
-        # Table creation
-        table = get_table_meta_by_name(table_name)
-        cursor.execute(log_sql(f"DROP TABLE IF EXISTS {table_name}"))
-        column_definitions = order_column_definitions_by_schema(
-            table, table_columns
-        )
-        cursor.execute(log_sql(table.table_schema("", column_definitions)))
-
-        # Value addition
-        is_master = table_name == "persons"
-        filler = TableFiller(database, table, table_columns, is_master)
-        table_fillers.append(filler)
-
-    if authors_only:
-        cursor.execute(
-            log_sql(
-                """
-            CREATE INDEX IF NOT EXISTS work_authors_orcid_idx
-                ON work_authors(orcid)
-        """
-            )
-        )
-    # Streaming read from compressed file
-    with tarfile.open(data_path, "r|gz") as tar:
-        for tar_info in tar:
-            if not tar_info.isreg():
+    def tar_generator(self):
+        """A generator function iterating over the tar file entries."""
+        # pylint: disable-next=consider-using-with
+        self.tar = tarfile.open(self.file_path, "r|gz")
+        for self.tar_info in self.tar:
+            if not self.tar_info.isreg():
                 continue
 
             # Obtain ORCID from file name to avoid extraction and parsing
-            (_root, _checksum, file_name) = tar_info.name.split("/")
-            orcid = file_name[:-4]
+            (_root, _checksum, file_name) = self.tar_info.name.split("/")
+            self.file_id += 1
+            self.orcid = file_name[:-4]
+            self.element_tree = None
+            yield self.file_id
 
-            # Skip records of non-linked authors
-            if authors_only:
-                cursor.execute(
-                    log_sql(
-                        """
-                        SELECT 1 WHERE EXISTS (
-                            SELECT 1 FROM work_authors WHERE orcid = ?
-                        )
-                    """
-                    ),
-                    (orcid,),
-                )
-                if not cursor.fetchone():
-                    continue
+    def get_element_tree(self):
+        """Return the parsed XML data of the current element"""
+        if self.element_tree:
+            return self.element_tree
+        # Extract and parse XML data
+        reader = self.tar.extractfile(self.tar_info)
+        xml_data = reader.read()
+        self.element_tree = ET.fromstring(xml_data)
 
-            # Extract and parse XML data
-            reader = tar.extractfile(tar_info)
-            data = reader.read()
-            element_tree = ET.fromstring(data)
-            orcid_xml = element_tree.find(
-                f"{COMMON}orcid-identifier/{COMMON}path"
-            )
-            # Skip error records
-            if orcid_xml is None:
-                continue
+        # Sanity check
+        orcid_xml = self.element_tree.find(
+            f"{COMMON}orcid-identifier/{COMMON}path"
+        )
+        if orcid_xml is None:
+            # Identify error records
+            warn("Error parsing {self.orcid}")
+            self.element_tree = ErrorElement()
+        else:
+            assert self.orcid == orcid_xml.text
 
-            assert orcid == orcid_xml.text
+        perf.log(f"Parse {self.orcid}")
+        return self.element_tree
 
-            perf.log(f"Parse {orcid}")
+    def close(self):
+        """Close the opened tar file"""
+        self.tar.close()
 
-            if works_only and not work_dois_in_crossref():
-                continue
+    def get_container_iterator(self):
+        """Return an iterator over the int identifiers of all data files"""
+        return self.tar_generator()
 
-            # Insert data to the specified tables
-            person_id = None
-            for filler in table_fillers:
-                if filler.get_table_name() == "persons":
-                    person_id = filler.add_records(
-                        element_tree, "id", person_id
-                    )
-                else:
-                    filler.add_records(element_tree, "person_id", person_id)
-            perf.log(f"Populate {orcid}")
+    def get_container_id(self):
+        """Return the file id of the current element."""
+        return self.file_id
 
-    for table_name in population_columns:
-        if table_name != "persons":
-            cursor.execute(
-                f"""CREATE INDEX {table_name}_person_id_idx
-                    ON {table_name}(person_id)"""
-            )
-    cursor.execute("CREATE INDEX persons_orcid_idx ON persons(orcid)")
+    def get_orcid(self):
+        """Return the ORCID of the current element."""
+        return self.orcid
+
+    def get_container_name(self, file_id):
+        """Return the name of the file corresponding to the specified fid"""
+        if file_id != self.file_id:
+            fail("Stale container id {file_id}")
+        return f"{self.orcid}.xml"
+
+
+class VTSource:
+    """Virtual table data source.  This gets registered with the apsw
+    Connection through createmodule in order to instantiate the virtual
+    tables."""
+
+    def __init__(self, data_source, sample):
+        self.data_files = TarFiles(data_source, sample)
+        self.table_dict = {t.get_name(): t for t in tables}
+        self.sample = sample
+
+    def Create(self, _db, _module_name, _db_name, table_name):
+        """Create the specified virtual table
+        Return the tuple required by the apsw.Source.Create method:
+        the table's schema and the virtual table class."""
+        table = self.table_dict[table_name]
+        return table.table_schema(), StreamingCachedContainerTable(
+            table, self.table_dict, self.data_files, self.sample
+        )
+
+    Connect = Create
+
+    def get_container_iterator(self):
+        """Return an iterator over the data files' identifiers"""
+        return self.data_files.get_container_iterator()
+
+    def get_container_name(self, fid):
+        """Return the name of the file corresponding to the specified fid"""
+        return self.data_files.get_container_name(fid)
+
+
+class Orcid(DataSource):
+    """
+    Create an object containing ORCID meta-data that supports queries over
+    its (virtual) table and the population of an SQLite database with its
+    data.
+
+    :param orcid_file: The file path to the compressed tar file containing
+        ORCID data.
+    :type orcid_file: str
+
+    :param sample: A callable to control container sampling, defaults
+        to `lambda n: True`.
+        The population or query method will call this argument
+        for each ORCID person record with each ORCID as its argument.
+        When the callable returns `True` the container record will get
+        processed, when it returns `False` the record will get skipped.
+    :type sample: callable, optional
+
+    :param attach_databases: A list of colon-joined tuples specifying
+        a database name and its path, defaults to `None`.
+        The specified databases are attached and made available to the
+        query and the population condition through the specified database
+        name.
+    :type attach_databases: list, optional
+
+    """
+
+    def __init__(
+        self,
+        orcid_file,
+        sample=lambda n: True,
+        attach_databases=None,
+    ):
+        super().__init__(
+            VTSource(orcid_file, sample),
+            tables,
+            attach_databases,
+        )

@@ -9,8 +9,7 @@ include ../common/Makefile
 
 # Populate database with a 0.02% sample of Crossref containers
 populate: $(CROSSREF_DIR)
-	$(TIME) alexandria3k --data-source Crossref "$(CROSSREF_DIR)" \
-	 --populate "$(MAINDB).db" \
-	  --debug progress \
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --sample 'random.random() < 0.01'
 	touch $@

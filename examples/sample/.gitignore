@@ -1,7 +1,7 @@
 .depend
+.depend.all
+populate
 reports
 rolap
 simple-rolap
 tables
-.depend.all
-populate

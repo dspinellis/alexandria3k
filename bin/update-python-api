@@ -1,0 +1,130 @@
+#!/bin/sh
+#
+#
+# Alexandria3k Crossref bibliographic metadata processing
+#
+# Copyright (C) 2022-2023  Diomidis Spinellis
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Generate user API documentation
+# Run it on the top-level directory
+#
+
+set -eu
+
+USER_INDEX=docs/user-api.rst
+
+cat <<\EOF >$USER_INDEX
+Python user API
+===============
+
+.. Automatically generated file. Do not modify by hand.
+
+Data sources
+~~~~~~~~~~~~
+
+The *alexandria3k* data sources can be used to populate an SQLite database
+or to run SQL queries directly on their data.
+All are available through the classes documented below.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+EOF
+
+bin/a3k list-sources |
+  awk -F: '{print $1}' |
+  sort |
+  while read source ; do
+    module=$(echo $source | sed 's/-/_/g')
+    echo "   $module" >>$USER_INDEX
+
+    # Obtain source title
+    title=$(sed -n '/"""/{s/"""//g; p; q}' src/alexandria3k/data_sources/$module.py)
+    # Source class name
+    class=$(echo $module | sed 's/./\u&/;s/_\(.\)/\u\1/g')
+    cat <<EOF >docs/$module.rst
+$title
+$(echo $title | sed 's/./=/g')
+
+.. Automatically generated file. Do not modify by hand.
+
+.. code:: py
+
+   from alexandria3k.data_sources import $module
+
+.. autoclass:: data_sources.$module.$class
+   :members: query, populate
+
+Generated schema
+----------------
+
+.. code:: sql
+
+$(bin/a3k list-source-schema $source | sed 's/^/    /')
+EOF
+  done
+
+cat <<\EOF >>$USER_INDEX
+
+
+Data processing operations
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *alexandria3k* data processing modules operate on previously
+populated SQLite databases.
+They process existing elements and generate new tables performing
+tasks such as normalization and disambiguation.
+All are available through the modules documented below.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+EOF
+
+bin/a3k list-processes |
+  awk -F: '{print $1}' |
+  sort |
+  while read process ; do
+    module=$(echo $process | sed 's/-/_/g')
+    echo "   $module" >>$USER_INDEX
+
+    # Obtain process title
+    title=$(sed -n '/"""/{s/"""//g; p; q}' src/alexandria3k/processes/$module.py)
+    # Source class name
+    class=$(echo $module | sed 's/./\u&/;s/_\(.\)/\u\1/g')
+    cat <<EOF >docs/$module.rst
+$title
+$(echo $title | sed 's/./=/g')
+
+.. Automatically generated file. Do not modify by hand.
+
+.. code:: py
+
+   from alexandria3k.processes import $module
+
+.. autofunction:: processes.$module.process
+
+Generated schema
+----------------
+
+.. code:: sql
+
+$(bin/a3k list-process-schema $process | sed 's/^/    /')
+EOF
+  done

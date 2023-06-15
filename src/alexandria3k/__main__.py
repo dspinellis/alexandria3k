@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2023  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -21,167 +21,118 @@
 
 import argparse
 import csv
+import importlib
+import os
 import random
-import sqlite3
+import shutil
 import sys
+import textwrap
 
-from alexandria3k import crossref
-from alexandria3k import csv_sources
+from alexandria3k.common import fail, program_version
 from alexandria3k import debug
 from alexandria3k.file_cache import FileCache
-from alexandria3k.common import program_version
-from alexandria3k import orcid
-from alexandria3k import ror
 from alexandria3k import perf
 
-DESCRIPTION = "alexandria3k: Relational interface to publication metadata"
+DESCRIPTION = "a3k: Relational interface to publication metadata"
 
-# Default values for diverse data sources
-DOAJ_DEFAULT = "https://doaj.org/csv"
-FUNDER_NAMES_DEFAULT = "https://doi.crossref.org/funderNames?mode=list"
-JOURNAL_NAMES_DEFAULT = "http://ftp.crossref.org/titlelist/titleFile.csv"
-ASJC_DEFAULT = "resource:data/asjc.csv"
 
 random.seed("alexandria3k")
 
 
-def populated_reports(pdb):
-    """Populated database reports"""
-
-    print("Authors with most publications")
-    for rec in pdb.execute(
-        """SELECT count(*), orcid FROM work_authors
-             WHERE orcid is not null GROUP BY orcid ORDER BY count(*) DESC
-             LIMIT 3"""
-    ):
-        print(rec)
-
-    print("Author affiliations")
-    for rec in pdb.execute(
-        """SELECT work_authors.given, work_authors.family,
-            author_affiliations.name FROM work_authors
-             INNER JOIN author_affiliations
-                ON work_authors.id = author_affiliations.author_id"""
-    ):
-        print(rec)
-
-    print("Organizations with most publications")
-    for rec in pdb.execute(
-        """SELECT count(*), name FROM affiliations_works
-        LEFT JOIN affiliation_names ON affiliation_names.id = affiliation_id
-        GROUP BY affiliation_id ORDER BY count(*) DESC
-        LIMIT 3"""
-    ):
-        print(rec)
-
-    print("Most cited references")
-    for rec in pdb.execute(
-        """SELECT count(*), doi FROM work_references
-        GROUP BY doi ORDER BY count(*) DESC
-        LIMIT 3"""
-    ):
-        print(rec)
-
-    print("Most treated subjects")
-    for rec in pdb.execute(
-        """SELECT count(*), name
-                FROM works_subjects INNER JOIN subject_names
-                    ON works_subjects.subject_id = subject_names.id
-            GROUP BY(works_subjects.subject_id)
-            ORDER BY count(*) DESC
-            LIMIT 3
-        """
-    ):
-        print(rec)
+def module_get_attribute(name, attribute_name):
+    """Return the attribute of the module with the specified name."""
+    module = importlib.import_module(f"alexandria3k.{name}")
+    return getattr(module, attribute_name)
 
 
-def schema_list(parser, arg):
-    """Print the specified database schema"""
+def module_name(facility):
+    """Given the user-visible name of a facility (e.g. funder-names)
+    return the corresponding name of the module (e.g funder_names)."""
+    return facility.replace("-", "_")
 
-    def tables_list(tables):
-        """List the schema of the specified tables"""
-        for table in tables:
-            print(table.table_schema())
 
-    name = arg.lower()
-    if name == "all":
-        tables_list(
-            crossref.tables + csv_sources.tables + orcid.tables + ror.tables
+def class_name(facility):
+    """Given the user-visible name of a facility (e.g. funder-names)
+    return the corresponding name of the class (e.g FunderNames)."""
+    components = facility.split("-")
+    # Capitalize the first letter of each component and join them together.
+    return "".join(x.title() for x in components)
+
+
+def facility_modules(facility):
+    """Return a list with the module names of the available facilities"""
+    main_dir = os.path.dirname(os.path.realpath(__file__))
+    python_files = os.listdir(f"{main_dir}/{facility}")
+    # Remove trailing .py
+    return [os.path.splitext(f)[0] for f in python_files if f.endswith(".py")]
+
+
+def facility_names(facility):
+    """Return a list with the names of the available facilities.
+    (data_source or process)"""
+    # Replace _ with -
+    return [s.replace("_", "-") for s in facility_modules(facility)]
+
+
+def get_data_source_instance(args):
+    """Return a data source instance based on the specified user arguments."""
+    facility = args.data_name
+    module = module_name(f"data_sources.{facility}")
+
+    default_source = module_get_attribute(module, "DEFAULT_SOURCE")
+    data_location = args.data_location or default_source
+    if not data_location:
+        fail(
+            "The data source {facility} requires the specification of a data location"
         )
-    elif name == "crossref":
-        tables_list(crossref.tables)
-    elif name == "orcid":
-        tables_list(orcid.tables)
-    elif name == "ror":
-        # Exclude table we generate
-        ror_tables = [
-            x for x in ror.tables if x.get_name() != "work_authors_rors"
-        ]
-        tables_list(ror_tables)
-    elif name == "other":
-        # Include table we generate
-        work_authors_rors = [
-            x for x in ror.tables if x.get_name() == "work_authors_rors"
-        ]
-        tables_list(csv_sources.tables + work_authors_rors)
-    else:
-        parser.error(f"Unknown source name {arg}")
+
+    # pylint: disable-next=eval-used
+    sample = eval(f"lambda path: {args.sample}")
+
+    class_ = module_get_attribute(module, class_name(facility))
+    return class_(data_location, sample, args.attach_databases)
 
 
-def database_dump(database):
-    """Print the passed database data"""
+def populate(args):
+    """Populate the specified database from the specified data source."""
 
-    for table in crossref.tables:
-        name = table.get_name()
-        print(f"TABLE {name}")
-        csv_writer = csv.writer(sys.stdout, delimiter="\t")
-        for rec in database.execute(f"SELECT * FROM {name}"):
-            csv_writer.writerow(rec)
+    data_source_instance = get_data_source_instance(args)
+    if args.row_selection_file:
+        with open(args.row_selection_file, encoding="utf-8") as file:
+            args.row_selection = file.read()
 
-
-def database_counts(database):
-    """Print various counts on the passed database"""
-
-    def sql_value(database, statement):
-        """Return the first value of the specified SQL statement executed on
-        the specified database"""
-        (res,) = database.execute(statement).fetchone()
-        return res
-
-    for table in crossref.tables:
-        count = sql_value(database, f"SELECT count(*) FROM {table.get_name()}")
-        print(f"{count} element(s)\tin {table.get_name()}")
-
-    count = sql_value(
-        database,
-        """SELECT count(*) from (SELECT DISTINCT orcid FROM work_authors
-                        WHERE orcid is not null)""",
+    data_source_instance.populate(
+        args.database,
+        args.columns,
+        args.row_selection,
     )
-    print(f"{count} unique author ORCID(s)")
+    perf.log("Table population")
 
-    count = sql_value(
-        database,
-        "SELECT count(*) FROM (SELECT DISTINCT work_id FROM work_authors)",
+
+def add_subcommand_populate(subparsers):
+    """Add the arguments of the populate subcommand."""
+    parser = subparsers.add_parser(
+        "populate", help="Populate an SQLite database."
     )
-    print(f"{count} publication(s) with work_authors")
-
-    count = sql_value(
-        database,
-        """SELECT count(*) FROM work_references WHERE
-                      doi is not null""",
+    parser.set_defaults(func=populate)
+    parser.add_argument(
+        "database", help="File path of the database to populate"
     )
-    print(f"{count} references(s) with DOI")
-
-
-def add_cli_arguments(parser):
-    """Add the available command-line arguments to the specified parser."""
+    parser.add_argument(
+        "data_name",
+        choices=facility_names("data_sources"),
+        help="Name of the data source to use",
+    )
+    parser.add_argument(
+        "data_location", nargs="?", help="Path or URL of the source's data"
+    )
 
     parser.add_argument(
         "-a",
         "--attach-databases",
         nargs="+",
         type=str,
-        help="Databases to attach for the row selection query",
+        help="Databases to attach for the row selection expression",
     )
     parser.add_argument(
         "-c",
@@ -191,42 +142,111 @@ def add_cli_arguments(parser):
         help="Columns to populate using table.column or table.*",
     )
     parser.add_argument(
-        "-D",
-        "--debug",
-        nargs="+",
+        "-R",
+        "--row-selection-file",
         type=str,
-        default=[],
-        # NOTE: Keep in sync with list in debug.py
-        help="""Output debuggging information as specfied by the arguments.
-    files-read: Counts of Crossref data files read;
-    link: Record linking operations;
-    sql: Executed SQL statements;
-    perf: Performance timings;
-    populated-counts: Counts of the populated database;
-    populated-data: Data of the populated database;
-    populated-reports: Query results from the populated database;
-    progress: Report population progress;
-    sorted-tables: Topologically ordered Crossref query tables;
-    stderr: Log to standard error;
-    virtual-counts: Counts of the virtual database;
-    virtual-data: Data of the virtual database.
-""",
+        help="File containing SQL expression that selects the populated rows",
     )
     parser.add_argument(
-        "-d",
-        "--data-source",
+        "-r",
+        "--row-selection",
+        type=str,
+        help="SQL expression that selects the populated rows",
+    )
+    parser.add_argument(
+        "-s",
+        "--sample",
+        # By default the function always returns True
+        default="True",
+        type=str,
+        help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
+    )
+
+
+def process(args):
+    """Populate the specified database from the specified data source."""
+
+    module = module_name(f"processes.{args.process}")
+    process_function = module_get_attribute(module, "process")
+    process_function(args.database)
+    perf.log(f"Process {args.process} execution")
+
+
+def add_subcommand_process(subparsers):
+    """Add the arguments of the process subcommand."""
+    parser = subparsers.add_parser(
+        "process", help="Run a processing step on the specified database."
+    )
+    parser.set_defaults(func=process)
+    parser.add_argument(
+        "database", help="file path of the database to run the process on"
+    )
+    parser.add_argument(
+        "process",
+        choices=facility_names("processes"),
+        help="Name of the process to perform",
+    )
+
+
+def add_subcommand_help(top_parser, subparsers):
+    """Add the arguments of the populate subcommand."""
+
+    def top_level_help(_args):
+        """Display top-level help."""
+        top_parser.print_help()
+
+    parser = subparsers.add_parser("help", help="Show top-level help message.")
+    parser.set_defaults(func=top_level_help)
+
+
+def query(args):
+    """Query the specified data source."""
+    data_source_instance = get_data_source_instance(args)
+
+    if args.query_file:
+        with open(args.query_file, encoding="utf-8") as file:
+            args.query = file.read()
+
+    if args.output:
+        # pylint: disable-next=R1732
+        csv_file = open(
+            args.output, "w", newline="", encoding=args.output_encoding
+        )
+    else:
+        sys.stdout.reconfigure(encoding=args.output_encoding)
+        csv_file = sys.stdout
+    csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
+    for rec in data_source_instance.query(args.query, args.partition):
+        if args.header:
+            csv_writer.writerow(data_source_instance.get_query_column_names())
+            args.header = False
+        csv_writer.writerow(rec)
+    csv_file.close()
+    debug.log("files-read", f"{FileCache.file_reads} files read")
+    perf.log("Query execution")
+
+
+def add_subcommand_query(subparsers):
+    """Add the arguments of the populate subcommand."""
+    parser = subparsers.add_parser(
+        "query", help="Run a query directly on a data source."
+    )
+    parser.set_defaults(func=query)
+    parser.add_argument(
+        "data_name",
+        choices=facility_names("data_sources"),
+        help="Name of the data source to use",
+    )
+    parser.add_argument(
+        "data_location", nargs="?", help="Path or URL of the source's data"
+    )
+
+    parser.add_argument(
+        "-a",
+        "--attach-databases",
         nargs="+",
         type=str,
-        help=f"""Specify data set to be processed and its source.
-    The following data sets are supported:
-    ASJC [<CSV-file> | <URL>] (defaults to internal table);
-    Crossref <container-directory>;
-    DOAJ [<CSV-file> | <URL>] (defaults to {DOAJ_DEFAULT});
-    funder-names [<CSV-file> | <URL>] (defaults to {FUNDER_NAMES_DEFAULT});
-    journal-names [<CSV-file> | <URL>] (defaults to {JOURNAL_NAMES_DEFAULT});
-    ORCID <summaries.tar.gz-file>
-    ROR <zip-file>;
-    """,
+        help="Databases to attach making them available to the query",
     )
     parser.add_argument(
         "-E",
@@ -249,26 +269,6 @@ def add_cli_arguments(parser):
         help="Include a header in the query output",
     )
     parser.add_argument(
-        "-i",
-        "--index",
-        nargs="*",
-        type=str,
-        help="SQL expressions that select the populated rows",
-    )
-    parser.add_argument(
-        "-L",
-        "--list-schema",
-        type=str,
-        help="""List the schema of the specified database.  The following
-    names are supported: Crossref, ORCID, ROR, other, all""",
-    )
-    parser.add_argument(
-        "-l",
-        "--linked-records",
-        type=str,
-        help="Only add ORCID records that link to existing <persons> or <works>",
-    )
-    parser.add_argument(
         "-o",
         "--output",
         type=str,
@@ -281,32 +281,15 @@ def add_cli_arguments(parser):
         # pylint: disable-next=line-too-long
         help="Run the query over partitioned data slices. (Warning: arguments are run per partition.)",
     )
-    parser.add_argument(
-        "-p",
-        "--populate-db-path",
-        type=str,
-        help="Populate the SQLite database in the specified path",
-    )
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
         "-Q",
         "--query-file",
         type=str,
         help="File containing query to run on the virtual tables",
     )
-    parser.add_argument(
+    group.add_argument(
         "-q", "--query", type=str, help="Query to run on the virtual tables"
-    )
-    parser.add_argument(
-        "-R",
-        "--row-selection-file",
-        type=str,
-        help="File containing SQL expression that selects the populated rows",
-    )
-    parser.add_argument(
-        "-r",
-        "--row-selection",
-        type=str,
-        help="SQL expression that selects the populated rows",
     )
     parser.add_argument(
         "-s",
@@ -316,236 +299,211 @@ def add_cli_arguments(parser):
         type=str,
         help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
     )
+
+
+def get_tables(name):
+    """Return a list of the schema of the tables in the specified module"""
+    tables = module_get_attribute(name, "tables")
+    return [table.table_schema() for table in tables]
+
+
+def list_facility_schema(facility, args):
+    """Print the specified facility (data_sources or processes) data
+    schema."""
+    if args.facility:
+        result = get_tables(f"{facility}.{module_name(args.facility)}")
+    else:
+        # All modules, but each table only once
+        result = set()
+        for module in facility_modules(facility):
+            result.update(get_tables(f"{facility}.{module}"))
+    for table_schema in result:
+        print(table_schema)
+
+
+def add_subcommand_list_complete_schema(subparsers):
+    """Add the list-complete-schema subcommand."""
+
+    def list_complete_schema(args):
+        """Print the specified data source schema (or all)."""
+        args.facility = None
+        list_facility_schema("data_sources", args)
+        list_facility_schema("processes", args)
+
+    parser = subparsers.add_parser(
+        "list-complete-schema",
+        help="List all data source and process schemas.",
+    )
+    parser.set_defaults(func=list_complete_schema)
+
+
+def add_subcommand_list_source_schema(subparsers):
+    """Add the list-source-schema subcommand."""
+
+    def list_source_schema(args):
+        """Print the specified data source schema (or all)."""
+        list_facility_schema("data_sources", args)
+
+    parser = subparsers.add_parser(
+        "list-source-schema",
+        help="List all data source schemas (default) or the specified one.",
+    )
+    parser.set_defaults(func=list_source_schema)
+    parser.add_argument(
+        "facility", nargs="?", choices=facility_names("data_sources")
+    )
+
+
+def add_subcommand_list_process_schema(subparsers):
+    """Add the list-process-schema subcommand."""
+
+    def list_process_schema(args):
+        """Print the specified process schema (or all)."""
+        list_facility_schema("processes", args)
+
+    parser = subparsers.add_parser(
+        "list-process-schema",
+        help="List the schema of all processes (default) or of the specified one.",
+    )
+    parser.set_defaults(func=list_process_schema)
+    parser.add_argument(
+        "facility", nargs="?", choices=facility_names("processes")
+    )
+
+
+def list_facility_description(facility, show_default):
+    """Print the specified facility (data_sources or processes) description
+    When show_default is True, also add the data source's default data
+    source."""
+    indent = max(len(name) for name in facility_names(facility)) + 3
+
+    width = shutil.get_terminal_size().columns if os.isatty(1) else 1e9
+    for name in facility_names(facility):
+        module = module_name(f"{facility}.{name}")
+        description = module_get_attribute(module, "__doc__")
+        text = description
+        if show_default:
+            default = module_get_attribute(module, "DEFAULT_SOURCE") or "None"
+            text += f"; default data source: {default}"
+        wrapped = textwrap.fill(
+            text,
+            width=width,
+            initial_indent=f"{name}:" + (" " * (indent - len(name) - 1)),
+            subsequent_indent=" " * indent,
+        )
+        print(wrapped)
+
+
+def add_subcommand_list_processes(subparsers):
+    """Add the list-processes subcommand."""
+
+    def list_processes(_args):
+        """Print a description of available processes."""
+        list_facility_description("processes", False)
+
+    parser = subparsers.add_parser(
+        "list-processes", help="List available data processes."
+    )
+    parser.set_defaults(func=list_processes)
+
+
+def add_subcommand_list_sources(subparsers):
+    """Add the list-sources subcommand."""
+
+    def list_sources(_args):
+        """Print a description of available data sources."""
+        list_facility_description("data_sources", True)
+
+    parser = subparsers.add_parser(
+        "list-sources", help="List available data sources"
+    )
+    parser.set_defaults(func=list_sources)
+
+
+def add_subcommand_version(subparsers):
+    """Add the version subcommand."""
+
+    def show_version(_args):
+        """Display program version and exit"""
+        print(f"a3k version {program_version()}")
+
+    parser = subparsers.add_parser("version", help="Report program version")
+    parser.set_defaults(func=show_version)
+
+
+def get_cli_parser():
+    """Return a CLI parser (used by main() and sphinx-argparse)"""
+
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
+
+    parser.add_argument(
+        "-d",
+        "--debug",
+        nargs=1,
+        type=str,
+        default=[],
+        # NOTE: Keep in sync with list in debug.py
+        help="""Output debuggging information according to the comma-separated arguments.
+    exception: Raise an exception when an error occurs;
+    files-read: Counts of Crossref data files read;
+    link: Record linking operations;
+    sql: Executed SQL statements;
+    perf: Performance timings;
+    populated-counts: Counts of the populated database;
+    populated-data: Data of the populated database;
+    populated-reports: Query results from the populated database;
+    progress: Report population progress;
+    sorted-tables: Topologically ordered Crossref query tables;
+    stderr: Log to standard error;
+""",
+    )
     parser.add_argument(
         "-v",
         "--version",
         action="store_true",
         help="Report program version and exit",
     )
-    parser.add_argument(
-        "-x",
-        "--execute",
-        type=str,
-        help="""Operation to execute on the data. This can be one of:
-link-aa-base-ror (link author affiliations to base-level research
-organizations);
-link-aa-top-ror (link author affiliations to top-level research organizations);
-link-works-asjcs (link works with Scopus All Science Journal Classification Codes — ASJCs).
-        """,
+
+    # Add sub-commands
+    subparsers = parser.add_subparsers(
+        dest="command", help="Name of the a3k operation to perform."
     )
-
-
-def parse_cli_arguments(parser, args=None):
-    """Parse command line arguments (or args e.g. when testing)"""
-    add_cli_arguments(parser)
-    return expand_data_source(parser, parser.parse_args(args))
-
-
-def expand_data_source(parser, args):
-    # pylint: disable=too-many-branches
-    """Return the args, expanding the data_source argument by setting an
-    entry in args named after the source and containing where the data
-    are to come from.
-    """
-
-    def required_value(error_message):
-        """Return the second data_source element or fail with the specified
-        error message."""
-        if len(args.data_source) != 2:
-            parser.error(error_message)
-        return args.data_source[1]
-
-    def optional_value(default):
-        """Return the second data_source element or the specified default"""
-        if len(args.data_source) > 2:
-            parser.error("Too many arguments in data source specification")
-        return args.data_source[1] if len(args.data_source) == 2 else default
-
-    args.crossref = None
-    args.asjc = None
-    args.doaj = None
-    args.funder_names = None
-    args.journal_names = None
-    args.orcid = None
-    args.ror = None
-
-    if not args.data_source:
-        return args
-
-    source_name = args.data_source[0].lower()
-
-    if source_name == "crossref":
-        if not (args.populate_db_path or args.query or args.query_file):
-            parser.error("Database path or query must be specified")
-    else:
-        if not args.populate_db_path:
-            parser.error("Database path must be specified")
-
-    if source_name == "asjc":
-        args.asjc = optional_value(ASJC_DEFAULT)
-    elif source_name == "crossref":
-        args.crossref = required_value("Missing Crossref data directory value")
-    elif source_name == "doaj":
-        args.doaj = optional_value(DOAJ_DEFAULT)
-    elif source_name == "funder-names":
-        args.funder_names = optional_value(FUNDER_NAMES_DEFAULT)
-    elif source_name == "journal-names":
-        args.journal_names = optional_value(JOURNAL_NAMES_DEFAULT)
-    elif source_name == "orcid":
-        args.orcid = required_value("Missing ORCID data file value")
-    elif source_name == "ror":
-        args.ror = required_value("Missing ROR zip file value")
-    else:
-        parser.error(f"Unknown source name {args.data_source[0]}")
-
-    if (args.query or args.query_file) and not args.crossref:
-        parser.error("Missing Crossref data directory value")
-
-    if (args.query or args.query_file) and args.populate_db_path:
-        parser.error(
-            "Database population cannot be combined with direct queries. "
-            "Consider specifying --row-selection or --columns."
-        )
-
-    return args
-
-
-def get_cli_parser():
-    """Return a CLI parser (used by sphinx-argparse)"""
-    parser = argparse.ArgumentParser(description=DESCRIPTION)
-    add_cli_arguments(parser)
+    add_subcommand_help(parser, subparsers)
+    add_subcommand_populate(subparsers)
+    add_subcommand_process(subparsers)
+    add_subcommand_query(subparsers)
+    add_subcommand_list_processes(subparsers)
+    add_subcommand_list_complete_schema(subparsers)
+    add_subcommand_list_source_schema(subparsers)
+    add_subcommand_list_process_schema(subparsers)
+    add_subcommand_list_sources(subparsers)
+    add_subcommand_version(subparsers)
     return parser
 
 
 def main():
-    # pylint: disable=too-many-branches
-    # pylint: disable=too-many-statements
     """Program entry point"""
-    parser = argparse.ArgumentParser(description=DESCRIPTION)
-    args = parse_cli_arguments(parser)
+    parser = get_cli_parser()
+    args = parser.parse_args()
 
     # Setup debug logging and performance monitoring
-    debug.set_flags(args.debug)
+    if args.debug:
+        debug.set_flags(args.debug[0].split(","))
     if debug.enabled("stderr"):
         debug.set_output(sys.stderr)
     perf.log("Start")
 
-    if args.list_schema:
-        schema_list(parser, args.list_schema)
-        sys.exit(0)
-
     if args.version:
-        print(f"alexandria3k version {program_version()}")
+        print(f"a3k version {program_version()}")
         sys.exit(0)
 
-    crossref_instance = None
-    if args.crossref:
-        # pylint: disable-next=W0123
-        sample = eval(f"lambda path: {args.sample}")
-        crossref_instance = crossref.Crossref(
-            args.crossref, sample, args.attach_databases
-        )
-
-    if debug.enabled("virtual-counts"):
-        # Streaming interface
-        database_counts(crossref_instance.get_virtual_db())
-        debug.log("files-read", f"{FileCache.file_reads} files read")
-
-    if debug.enabled("virtual-data"):
-        # Streaming interface
-        database_dump(crossref_instance.get_virtual_db())
-        debug.log("files-read", f"{FileCache.file_reads} files read")
-
-    if args.row_selection_file:
-        args.row_selection = ""
-        with open(args.row_selection_file, encoding="utf-8") as query_input:
-            for line in query_input:
-                args.row_selection += line
-
-    if crossref_instance and args.populate_db_path:
-        crossref_instance.populate(
-            args.populate_db_path,
-            args.columns,
-            args.row_selection,
-        )
-        debug.log("files-read", f"{FileCache.file_reads} files read")
-        perf.log("Crossref table population")
-
-    if args.orcid:
-        orcid.populate(
-            args.populate_db_path,
-            args.orcid,
-            args.columns,
-            args.linked_records == "persons",
-            args.linked_records == "works",
-        )
-        perf.log("ORCID table population")
-
-    if args.ror:
-        ror.populate(args.populate_db_path, args.ror)
-        perf.log("ROR table population")
-
-    if args.query_file:
-        args.query = ""
-        with open(args.query_file, encoding="utf-8") as query_input:
-            for line in query_input:
-                args.query += line
-
-    if args.query:
-        if args.output:
-            # pylint: disable-next=R1732
-            csv_file = open(
-                args.output, "w", newline="", encoding=args.output_encoding
-            )
-        else:
-            sys.stdout.reconfigure(encoding=args.output_encoding)
-            csv_file = sys.stdout
-        csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
-        for rec in crossref_instance.query(args.query, args.partition):
-            if args.header:
-                csv_writer.writerow(crossref_instance.get_query_column_names())
-                args.header = False
-            csv_writer.writerow(rec)
-        csv_file.close()
-        debug.log("files-read", f"{FileCache.file_reads} files read")
-
-    if args.asjc:
-        csv_sources.populate_asjc(args.populate_db_path, args.asjc)
-    if args.doaj:
-        csv_sources.populate_open_access_journals(
-            args.populate_db_path, args.doaj
-        )
-    if args.funder_names:
-        csv_sources.populate_funder_names(
-            args.populate_db_path, args.funder_names
-        )
-    if args.journal_names:
-        csv_sources.populate_journal_names(
-            args.populate_db_path, args.journal_names
-        )
-
-    if args.execute == "link-aa-base-ror":
-        ror.link_author_affiliations(args.populate_db_path, link_to_top=False)
-    elif args.execute == "link-aa-top-ror":
-        ror.link_author_affiliations(args.populate_db_path, link_to_top=True)
-    elif args.execute == "link-works-asjcs":
-        csv_sources.link_works_asjcs(args.populate_db_path)
-    elif args.execute:
-        parser.error(f"Unknown execution argument: {args.execute}")
-
-    if debug.enabled("populated-counts"):
-        populated_db = sqlite3.connect(args.populate_db_path)
-        database_counts(populated_db)
-
-    if debug.enabled("populated-data"):
-        populated_db = sqlite3.connect(args.populate_db_path)
-        database_dump(populated_db)
-
-    if debug.enabled("populated-reports"):
-        populated_db = sqlite3.connect(args.populate_db_path)
-        populated_reports(populated_db)
+    # Handle subcommands
+    if args.command is not None:
+        args.func(args)
 
     debug.log("files-read", f"{FileCache.file_reads} files read")
+
+    return 0
 
 
 if __name__ == "__main__":

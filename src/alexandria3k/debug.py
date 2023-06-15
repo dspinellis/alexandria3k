@@ -64,18 +64,14 @@ def set_flags(flags):
     Enable the specified debug flags.
     The following flags are supported:
 
+    * exception: Raise an exception when an error occurs;
     * files-read: Counts of Crossref data files read;
     * link: Record linking operations;
     * sql: Executed SQL statements;
     * perf: Performance timings;
-    * populated-counts: Counts of the populated database;
-    * populated-data: Data of the populated database;
-    * populated-reports: Query results from the populated database;
     * progress: Report population progress;
     * sorted-tables: Topologically ordered Crossref query tables;
     * stderr: Log to standard error;
-    * virtual-counts: Counts of the virtual database;
-    * virtual-data: Data of the virtual database.
 
     :param flags: Flags to enable.
     :type flags: list

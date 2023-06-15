@@ -22,9 +22,9 @@
 -- Create general fields table from ids ending in 00
 DROP TABLE IF EXISTS asjc_general_fields;
 CREATE TABLE asjc_general_fields AS
-  SELECT Cast(id AS INTEGER) AS id, Replace(field, "General ", "") AS name
+  SELECT Cast(code AS INTEGER) AS id, Replace(field, "General ", "") AS name
   FROM asjc_import
-  WHERE id % 100 == 0
+  WHERE code % 100 == 0
 ;
 
 -- Create general fields table with own-generated ids
@@ -38,9 +38,9 @@ CREATE TABLE asjc_subject_areas AS
 -- Create asjcs table with ids to subject areas and general fields
 DROP TABLE IF EXISTS asjcs;
 CREATE TABLE asjcs AS
-SELECT asjc_import.id, field,
+SELECT asjc_import.code AS id, field,
   asjc_subject_areas.id AS subject_area_id,
-  (asjc_import.id / 100) * 100 AS general_field_id
+  (asjc_import.code / 100) * 100 AS general_field_id
 FROM asjc_import
 INNER JOIN asjc_subject_areas
   ON asjc_subject_areas.name = asjc_import.subject_area;

@@ -17,14 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  * Normalize open access journals table
+ * This could be done with a single command, but then it would fail as
+ * a whole if some columns were missing.
+ * In the current form individual statements can be skipped if needed.
  */
 
 -- Remove dash from ISSNs
-UPDATE open_access_journals
-  SET issn_print = REPLACE(issn_print, "-", ""),
-    issn_eprint = REPLACE(issn_eprint, "-", ""),
-    continues = REPLACE(REPLACE(continues, "-", ""), " ", ""),
-    continued_by = REPLACE(REPLACE(continued_by, "-", ""), " ", "");
+UPDATE open_access_journals SET issn_print = REPLACE(issn_print, "-", "");
+UPDATE open_access_journals SET issn_eprint = REPLACE(issn_eprint, "-", "");
+UPDATE open_access_journals SET continues = REPLACE(REPLACE(continues, "-", ""), " ", "");
+UPDATE open_access_journals SET continued_by = REPLACE(REPLACE(continued_by, "-", ""), " ", "");
 
 -- Make fields to be an integer
 UPDATE open_access_journals SET oaj_start = null WHERE oaj_start = '';

@@ -1,14 +1,14 @@
-Relational schemas
-------------------
+Schema diagrams
+---------------
 
 The complete schema of a fully-populated database appears below.
 Opening the image in a separate window will allow you to zoom it.
 
-Direct SQL queries can also be performed on the Crossref data set.
-
 .. figure:: ./schema/all.svg
    :alt: Complete data schema
 
+In addition,
+direct SQL queries can be performed on each data source's tables.
 Queries involving multiple scans of the tables (e.g. relational joins)
 should be performed by directing *alexandria3k* to perform them
 separately in each partition. This however means that aggregation
@@ -44,7 +44,8 @@ Other data
 ~~~~~~~~~~
 
 Other data include journal names, subjects (ASJCS), funders, and
-open access journals.
+open access journals, as well as join tables created through
+available processing steps.
 
 .. figure:: ./schema/other.svg
    :alt: Other data schema

@@ -22,25 +22,17 @@ import argparse
 import sys
 import unittest
 
-from alexandria3k.__main__ import parse_cli_arguments, DOAJ_DEFAULT
+from .test_dir import add_src_dir, td
+add_src_dir()
+
+from alexandria3k.__main__ import module_get_attribute, class_name
+from alexandria3k.data_sources.asjcs import DEFAULT_SOURCE
 
 
 class TestMain(unittest.TestCase):
-    def test_expand_orcid_ok(self):
-        args = parse_cli_arguments(
-            argparse.ArgumentParser(),
-            ["-d", "orcid", "od.tar.gz", "-p" "x.db"],
-        )
-        self.assertEqual(args.orcid, "od.tar.gz")
+    def test_module_get_attribute(self):
+        default = module_get_attribute("data_sources.asjcs", "DEFAULT_SOURCE")
+        self.assertEqual(DEFAULT_SOURCE, default)
 
-    def test_expand_doaj_ok(self):
-        args = parse_cli_arguments(
-            argparse.ArgumentParser(), ["-d", "doaj", "doaj.csv", "-p" "x.db"]
-        )
-        self.assertEqual(args.doaj, "doaj.csv")
-
-    def test_expand_doaj_defalt(self):
-        args = parse_cli_arguments(
-            argparse.ArgumentParser(), ["-d", "doaj", "-p" "x.db"]
-        )
-        self.assertEqual(args.doaj, DOAJ_DEFAULT)
+    def test_class_name(self):
+        self.assertEqual(class_name("funder-names"), "FunderNames")

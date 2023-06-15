@@ -1,9 +1,9 @@
 .depend
-reports
-rolap
-simple-rolap
-tables
 .depend.all
 journal-names
 nohup.out
 populate
+reports
+rolap
+simple-rolap
+tables

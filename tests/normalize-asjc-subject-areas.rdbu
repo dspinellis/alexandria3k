@@ -21,7 +21,7 @@
 
 BEGIN SETUP
 asjc_import:
-id	field			subject_area
+code	field			subject_area
 1000	Multidisciplinary	Multidisciplinary
 1100	"General Agricultural"	"Life Sciences"
 1101	"Biological Sciences"	"Life Sciences"
