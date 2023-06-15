@@ -28,7 +28,6 @@ import sqlite3
 import apsw
 
 from alexandria3k.common import (
-    add_columns,
     fail,
     get_string_resource,
     log_sql,
@@ -678,6 +677,26 @@ class DataSource:
                 """
             self.vdb.execute(log_sql(statement))
             perf.log(f"Populate {table}")
+
+        def add_columns(columns, tables, add_column):
+            """Call add column for each specified column or for all tables if
+            columns is not defined."""
+
+            # By default include all tables and columns
+            if not columns:
+                columns = []
+                for table in tables:
+                    columns.append(f"{table.get_name()}.*")
+
+            # A dictionary of columns to be populated for each table
+            for col in columns:
+                try:
+                    (table, column) = col.split(".")
+                except ValueError:
+                    fail(
+                        f"Invalid column specification: '{col}'; expected table.column or table.*."
+                    )
+                add_column(table, column)
 
         def create_database_schema(columns):
             """Create the populated database, if needed"""

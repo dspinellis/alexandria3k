@@ -8,5 +8,6 @@ The Python utility API comprises modules that are useful both to
    :maxdepth: 2
    :caption: Contents:
 
+   common
    debug
    perf

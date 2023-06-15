@@ -35,14 +35,14 @@ import urllib.request
 # pylint: disable-next=import-error
 import apsw
 
-from . import debug
+from alexandria3k import debug
 
 
 RE_URL = re.compile(r"\w+://")
 
 
 def is_unittest():
-    """ "Return True if the routine is executed in a unit test"""
+    """Return True if the routine is executed in a unit test."""
     return any(
         "unittest" in str(cls)
         # pylint: disable-next=protected-access
@@ -51,14 +51,26 @@ def is_unittest():
 
 
 def warn(message):
-    """Output a warning with the specified message"""
+    """
+    Output a warning on the standard error stream with the specified message.
+
+    :param message: The message to output.
+    :type message: str
+    """
     if is_unittest():
         return
     print(f"Warning: {message}", file=sys.stderr)
 
 
 def fail(message):
-    """Fail the program execution with the specified error message"""
+    """
+    Output an error message on the standard error stream with the specified
+    message.
+    Terminate the program's execution with an exit code of 1.
+
+    :param message: The message to output.
+    :type message: str
+    """
     if debug.enabled("exception"):
         # pylint: disable-next=broad-exception-raised
         raise Exception(message)
@@ -68,20 +80,41 @@ def fail(message):
 
 
 def ensure_unlinked(file_path):
-    """Ensure that the file at the specified path does not exist"""
+    """Ensure that the file at the specified path does not exist
+    by unlinking it, if needed.
+
+    :param file_path: Path to the file that must not exist.
+    :type file_path: str
+    """
     if os.path.exists(file_path):
         os.unlink(file_path)
 
 
 def query_result(cursor, query):
-    """Return the result of executing the specified query"""
+    """
+    Return the result of executing the specified query.
+
+    :param cursor: Database cursor to use for executing the query.
+    :type cursor: Cursor
+
+    :param query: The query to execute.
+    :type query: str
+    """
     result_set = cursor.execute(query)
     (result,) = result_set.fetchone()
     return result
 
 
 def table_exists(cursor, table_name):
-    """Return True if the specified table exists"""
+    """
+    Return True if the specified database table exists.
+
+    :param cursor: Database cursor to use for executing the required query.
+    :type cursor: Cursor
+
+    :param table_name: The table to check for existence.
+    :type table_name: str
+    """
     try:
         cursor.execute(f"SELECT Count(*) FROM {table_name}")
         return True
@@ -90,8 +123,17 @@ def table_exists(cursor, table_name):
 
 
 def ensure_table_exists(connection, table_name):
-    """Terminate the program with an error message if the specified table
-    does not exist"""
+    """
+    Terminate the program with an error message if the specified table
+    does not exist.
+
+    :param connection: The database connection to use for checking the
+        table's existence.
+    :type connection: Connection
+
+    :param table_name: The table to check for existence.
+    :type table_name: str
+    """
     cursor = connection.cursor()
     if not table_exists(cursor, table_name):
         fail(f"The required table '{table_name}' is not populated.")
@@ -99,8 +141,8 @@ def ensure_table_exists(connection, table_name):
 
 def set_fast_writing(database):
     """
-    Very fast inserts at the risk of possible data corruption in case of a
-    crash.
+    Implement very fast database inserts at the risk of possible data
+    corruption in case of a crash.
     We don't really care, because we assume the database is
     populated in one go from empty, and if it gets corrupted
     the process can be repeated.
@@ -111,6 +153,9 @@ def set_fast_writing(database):
     to 372 ms.
     See https://stackoverflow.com/a/58547438/20520 for measurements behind this
     approach.
+
+    :param database: Connection to the database to configure.
+    :type database: Connection
     """
     database.execute("PRAGMA synchronous = OFF")
     database.execute("PRAGMA journal_mode = OFF")
@@ -118,35 +163,19 @@ def set_fast_writing(database):
 
 
 def log_sql(statement):
-    """Return the specified SQL statement. If "sql" is set,
-    output a copy of the statement on the standard output"""
+    """
+    Return the specified SQL statement. If "sql" is set,
+    output a copy of the statement on the standard output.
+
+    :param statement: The statement that will ne executed.
+    :type statement: str
+    """
     debug.log("sql", statement)
     return statement
 
 
-def add_columns(columns, tables, add_column):
-    """Call add column for each specified column or for all tables if columns
-    is not defined"""
-
-    # By default include all tables and columns
-    if not columns:
-        columns = []
-        for table in tables:
-            columns.append(f"{table.get_name()}.*")
-
-    # A dictionary of columns to be populated for each table
-    for col in columns:
-        try:
-            (table, column) = col.split(".")
-        except ValueError:
-            fail(
-                f"Invalid column specification: '{col}'; expected table.column or table.*."
-            )
-        add_column(table, column)
-
-
 def program_version():
-    """Return a string identifying the program's version"""
+    """Return a string identifying the program's version."""
     try:
         # Installed version
         return metadata.version("alexandria3k")
@@ -161,13 +190,24 @@ def program_version():
 
 
 def is_url(url):
-    """Return true if url looks like a URL"""
+    """
+    Return true if url looks like a URL.
+
+    :param url: The URL to match
+    :type url: str
+    """
     return RE_URL.match(url)
 
 
 def data_from_uri_provider(source):
-    """Given a file path, a URL, or this package's resource path
-    return a readable source for its contents"""
+    """
+    Given a file path, a URL, or this package's resource path
+    return a readable source for its contents.
+
+    :param source: A file path, a URL, or an internal data source starting
+        with `resource:`.
+    :type source: str
+    """
     if source.startswith("resource:"):
         (_, file_path) = source.split(":")
         return BytesIO(pkgutil.get_data(__name__, file_path))
@@ -187,14 +227,25 @@ def data_from_uri_provider(source):
 
 
 def get_string_resource(file_path):
-    """Return the contents of the named file relative to the package's
-    source code directory"""
+    """
+    Return the contents of the named file relative to the package's
+    source code directory.
+
+    :param file_path: The file's file path relative to the `src/alexandria3k`
+        directory.
+    :type file_path: str
+    """
     return str(pkgutil.get_data(__name__, file_path), "utf-8")
 
 
 def remove_sqlite_comments(script):
     """Remove SQLite comments (-- and C-style) from the passed script.
-    This cannot handle comment characters embedded in strings."""
+    This cannot handle comment characters embedded in strings.
+
+    :param script: An SQL script, possibly multi-line, possibly containing
+        C-style block comments (`/* ... */`).
+    :type script: str
+    """
 
     # remove C-style comments
     script = re.sub(r"/\*.*?\*/", "", script, flags=re.DOTALL)
