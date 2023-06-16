@@ -72,7 +72,7 @@ In this case only the following steps are needed.
 * Add unit tests in the `tests/data_sources` directory.
 * Add a motivating example in the `examples` directory.
 
-For data sources available in more complex forms you must also define
+For data sources available in more complex forms you must also define.
 
 * an SQLite virtual table data source `VTSource`,
 * a cursor to iterate over the records of each table,
