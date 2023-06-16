@@ -46,7 +46,7 @@ All are available through the classes documented below.
 
 EOF
 
-bin/alexandria3k list-sources |
+bin/a3k list-sources |
   awk -F: '{print $1}' |
   sort |
   while read source ; do
@@ -75,7 +75,7 @@ Generated schema
 
 .. code:: sql
 
-$(bin/alexandria3k list-source-schema $source | sed 's/^/    /')
+$(bin/a3k list-source-schema $source | sed 's/^/    /')
 EOF
   done
 
@@ -97,7 +97,7 @@ All are available through the modules documented below.
 
 EOF
 
-bin/alexandria3k list-processes |
+bin/a3k list-processes |
   awk -F: '{print $1}' |
   sort |
   while read process ; do
@@ -125,6 +125,6 @@ Generated schema
 
 .. code:: sql
 
-$(bin/alexandria3k list-process-schema $process | sed 's/^/    /')
+$(bin/a3k list-process-schema $process | sed 's/^/    /')
 EOF
   done
