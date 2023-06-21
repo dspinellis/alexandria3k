@@ -437,7 +437,7 @@ class DataSource:
             In such a case the query is repeatedly run over each database
             partition (compressed JSON file) with `CONTAINER_ID` iterating
             sequentially to cover all partitions.
-            The query's result is the concatenation of the individal partition
+            The query's result is the concatenation of the individual partition
             results.
             Running queries with joins without partitioning will often result
             in quadratic (or worse) algorithmic complexity.
