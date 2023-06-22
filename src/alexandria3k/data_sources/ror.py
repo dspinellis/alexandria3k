@@ -58,7 +58,7 @@ class RorCursor:
 
     def __init__(self, table):
         """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
+        The table argument is a StreamingTable object"""
         self.table = table
         # Initialized in Filter()
         self.eof = False
@@ -121,7 +121,7 @@ class RorDetailsCursor(ElementsCursor):
 
     def __init__(self, table, parent_cursor):
         """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
+        The table argument is a StreamingTable object"""
         super().__init__(table, parent_cursor)
         self.extract_multiple = table.get_table_meta().get_extract_multiple()
 

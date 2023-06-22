@@ -63,7 +63,7 @@ class CsvCursor:
 
     def __init__(self, table):
         """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
+        The table argument is a StreamingTable object"""
         self.table = table
         # Initialized in Filter()
         self.eof = False
