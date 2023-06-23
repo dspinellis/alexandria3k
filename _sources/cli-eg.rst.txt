@@ -93,8 +93,10 @@ consider sampling just three containers with
 Database of COVID research
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following command creates an SQLite database with all Crossref data
-regarding publications that contain “COVID” in their title or abstract.
+The following command creates an *SQLite* database named ``covid.db``
+with all Crossref data regarding publications that contain “COVID”
+in their title or abstract.
+The created database can be opened with *SQLite*.
 
 .. code:: sh
 
@@ -149,7 +151,7 @@ following.
 Record selection from external database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following command creates an SQLite database with all Crossref data
+The following command creates an *SQLite* database with all Crossref data
 of works whose DOI appears in the attached database named
 ``selected.db``.
 
