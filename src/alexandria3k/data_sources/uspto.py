@@ -57,7 +57,7 @@ tables = [
                 "figures_number",
                 description="Excluded element figures-to-publish.",
             ),
-            ColumnMeta("drawnings_number"),
+            ColumnMeta("drawings_number"),
             ColumnMeta(
                 "microform_number", description="Optical microform appendix."
             ),
