@@ -29,6 +29,7 @@ from alexandria3k.data_source import (
     StreamingCachedContainerTable,
 )
 from alexandria3k import perf
+from alexandria3k.xml import get_element, getter, all_getter
 from alexandria3k.db_schema import ColumnMeta, TableMeta
 
 # pylint: disable=R0801
@@ -267,21 +268,6 @@ SERVICE = "{http://www.orcid.org/ns/service}"
 WORK = "{http://www.orcid.org/ns/work}"
 
 
-def get_element(tree, path):
-    """Return the text value of the specified element path of the given
-    tree."""
-    element = tree.find(path)
-    if element is None:
-        return None
-    return element.text
-
-
-def getter(path):
-    """Return a function to return an element with the specified
-    path from a given tree."""
-    return lambda tree: get_element(tree, path)
-
-
 def get_type_element_lower(tree, path, id_type):
     """Return the text value of <common:external-id-value> in the
     specified element path of the given tree if <common:external-id-type>
@@ -300,11 +286,6 @@ def type_getter_lower(path, id_type):
     """Return a function to return an element converted to lowercase
     with the specified path and <common:external-id-type> from a given tree."""
     return lambda tree: get_type_element_lower(tree, path, id_type)
-
-
-def all_getter(path):
-    """Return all elements from the specified path"""
-    return lambda tree: tree.findall(path)
 
 
 # Map from XML to relational schema

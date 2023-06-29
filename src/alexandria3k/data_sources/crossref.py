@@ -27,6 +27,7 @@ from alexandria3k.data_source import (
     ElementsCursor,
     ROWID_INDEX,
     StreamingCachedContainerTable,
+    ItemsCursor,
 )
 from alexandria3k.file_cache import get_file_cache
 from alexandria3k.db_schema import ColumnMeta, TableMeta
@@ -208,20 +209,9 @@ class VTSource:
         return self.data_files.get_container_name(fid)
 
 
-class FilesCursor:
+class FilesCursor(ItemsCursor):
     """A cursor over the items data files. Internal use only.
     Not used directly by an SQLite table."""
-
-    def __init__(self, table):
-        """Not part of the apsw VTCursor interface.
-        The table argument is a StreamingTable object"""
-        self.table = table
-        self.eof = False
-        # The following get initialized in Filter()
-        self.file_index = None
-        self.single_file = None
-        self.file_read = None
-        self.items = None
 
     def Filter(self, index_number, _index_name, constraint_args):
         """Always called first to initialize an iteration to the first
@@ -249,28 +239,10 @@ class FilesCursor:
             self.eof = True
             return
         self.file_index += 1
-        self.items = get_file_cache().read(
-            self.table.data_source[self.file_index]
-        )
+        self.items = get_file_cache().read(self.table.data_source[self.file_index])
         self.eof = False
         # The single file has been read. Set EOF in next Next call
         self.file_read = True
-
-    def Rowid(self):
-        """Return a unique id of the row along all records"""
-        return self.file_index
-
-    def current_row_value(self):
-        """Return the current row. Not part of the apsw API."""
-        return self.items
-
-    def Eof(self):
-        """Return True when the end of the table's records has been reached."""
-        return self.eof
-
-    def Close(self):
-        """Cursor's destructor, used for cleanup"""
-        self.items = None
 
 
 class CrossrefElementsCursor(ElementsCursor):
@@ -353,7 +325,6 @@ class WorksCursor(CrossrefElementsCursor):
         of the table according to the index"""
         self.files_cursor.Filter(index_number, index_name, constraint_args)
         self.eof = self.files_cursor.Eof()
-        # print("FILTER", index_number, constraint_args)
         if index_number & ROWID_INDEX:
             # This has never happened, so this is untested
             self.item_index = constraint_args[1]
@@ -573,41 +544,31 @@ tables = [
             ColumnMeta("id"),
             ColumnMeta("container_id"),
             ColumnMeta("doi", lambda row: dict_value(row, "DOI").lower()),
-            ColumnMeta(
-                "title", lambda row: tab_values(dict_value(row, "title"))
-            ),
+            ColumnMeta("title", lambda row: tab_values(dict_value(row, "title"))),
             ColumnMeta(
                 "published_year",
                 lambda row: array_value(
-                    first_value(
-                        dict_value(dict_value(row, "published"), "date-parts")
-                    ),
+                    first_value(dict_value(dict_value(row, "published"), "date-parts")),
                     0,
                 ),
             ),
             ColumnMeta(
                 "published_month",
                 lambda row: array_value(
-                    first_value(
-                        dict_value(dict_value(row, "published"), "date-parts")
-                    ),
+                    first_value(dict_value(dict_value(row, "published"), "date-parts")),
                     1,
                 ),
             ),
             ColumnMeta(
                 "published_day",
                 lambda row: array_value(
-                    first_value(
-                        dict_value(dict_value(row, "published"), "date-parts")
-                    ),
+                    first_value(dict_value(dict_value(row, "published"), "date-parts")),
                     2,
                 ),
             ),
             ColumnMeta(
                 "short_container_title",
-                lambda row: tab_values(
-                    dict_value(row, "short-container-title")
-                ),
+                lambda row: tab_values(dict_value(row, "short-container-title")),
             ),
             ColumnMeta(
                 "container_title",
@@ -619,23 +580,15 @@ tables = [
             ColumnMeta("subtype", lambda row: dict_value(row, "subtype")),
             ColumnMeta("page", lambda row: dict_value(row, "page")),
             ColumnMeta("volume", lambda row: dict_value(row, "volume")),
-            ColumnMeta(
-                "article_number", lambda row: dict_value(row, "article-number")
-            ),
+            ColumnMeta("article_number", lambda row: dict_value(row, "article-number")),
             ColumnMeta(
                 "journal_issue",
-                lambda row: dict_value(
-                    dict_value(row, "journal-issue"), "issue"
-                ),
+                lambda row: dict_value(dict_value(row, "journal-issue"), "issue"),
             ),
             ColumnMeta("issn_print", lambda row: issn_value(row, "print")),
-            ColumnMeta(
-                "issn_electronic", lambda row: issn_value(row, "electronic")
-            ),
+            ColumnMeta("issn_electronic", lambda row: issn_value(row, "electronic")),
             # Synthetic column, which can be used for population filtering
-            ColumnMeta(
-                "update_count", lambda row: len_value(row, "update-to")
-            ),
+            ColumnMeta("update_count", lambda row: len_value(row, "update-to")),
             # Columns to facilitate queries without requiring building
             # a references graph.
             ColumnMeta(
@@ -693,33 +646,21 @@ tables = [
             ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("issn", lambda row: dict_value(row, "issn")),
-            ColumnMeta(
-                "standards_body", lambda row: dict_value(row, "standards-body")
-            ),
+            ColumnMeta("standards_body", lambda row: dict_value(row, "standards-body")),
             ColumnMeta("issue", lambda row: dict_value(row, "issue")),
             ColumnMeta("key", lambda row: dict_value(row, "key")),
-            ColumnMeta(
-                "series_title", lambda row: dict_value(row, "series-title")
-            ),
+            ColumnMeta("series_title", lambda row: dict_value(row, "series-title")),
             ColumnMeta("isbn_type", lambda row: dict_value(row, "isbn-type")),
             ColumnMeta(
                 "doi_asserted_by",
                 lambda row: dict_value(row, "doi-asserted-by"),
             ),
-            ColumnMeta(
-                "first_page", lambda row: dict_value(row, "first-page")
-            ),
+            ColumnMeta("first_page", lambda row: dict_value(row, "first-page")),
             ColumnMeta("isbn", lambda row: dict_value(row, "isbn")),
-            ColumnMeta(
-                "doi", lambda row: normalized_doi(dict_value(row, "DOI"))
-            ),
+            ColumnMeta("doi", lambda row: normalized_doi(dict_value(row, "DOI"))),
             ColumnMeta("component", lambda row: dict_value(row, "component")),
-            ColumnMeta(
-                "article_title", lambda row: dict_value(row, "article-title")
-            ),
-            ColumnMeta(
-                "volume_title", lambda row: dict_value(row, "volume-title")
-            ),
+            ColumnMeta("article_title", lambda row: dict_value(row, "article-title")),
+            ColumnMeta("volume_title", lambda row: dict_value(row, "volume-title")),
             ColumnMeta("volume", lambda row: dict_value(row, "volume")),
             ColumnMeta("author", lambda row: dict_value(row, "author")),
             ColumnMeta(
@@ -727,13 +668,9 @@ tables = [
                 lambda row: dict_value(row, "standard-designator"),
             ),
             ColumnMeta("year", lambda row: dict_value(row, "year")),
-            ColumnMeta(
-                "unstructured", lambda row: dict_value(row, "unstructured")
-            ),
+            ColumnMeta("unstructured", lambda row: dict_value(row, "unstructured")),
             ColumnMeta("edition", lambda row: dict_value(row, "edition")),
-            ColumnMeta(
-                "journal_title", lambda row: dict_value(row, "journal-title")
-            ),
+            ColumnMeta("journal_title", lambda row: dict_value(row, "journal-title")),
             ColumnMeta("issn_type", lambda row: dict_value(row, "issn-type")),
         ],
     ),
@@ -747,14 +684,10 @@ tables = [
             ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("label", lambda row: dict_value(row, "label")),
-            ColumnMeta(
-                "doi", lambda row: lower_or_none(dict_value(row, "DOI"))
-            ),
+            ColumnMeta("doi", lambda row: lower_or_none(dict_value(row, "DOI"))),
             ColumnMeta(
                 "timestamp",
-                lambda row: dict_value(
-                    dict_value(row, "updated"), "timestamp"
-                ),
+                lambda row: dict_value(dict_value(row, "updated"), "timestamp"),
             ),
         ],
     ),
@@ -784,9 +717,7 @@ tables = [
                 "start_timestamp",
                 lambda row: dict_value(dict_value(row, "start"), "timestamp"),
             ),
-            ColumnMeta(
-                "delay_in_days", lambda row: dict_value(row, "delay-in-days")
-            ),
+            ColumnMeta("delay_in_days", lambda row: dict_value(row, "delay-in-days")),
         ],
     ),
     TableMeta(
@@ -799,9 +730,7 @@ tables = [
             ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("url", lambda row: dict_value(row, "URL")),
-            ColumnMeta(
-                "content_type", lambda row: dict_value(row, "content-type")
-            ),
+            ColumnMeta("content_type", lambda row: dict_value(row, "content-type")),
         ],
     ),
     TableMeta(
@@ -814,9 +743,7 @@ tables = [
             ColumnMeta("id"),
             ColumnMeta("container_id"),
             ColumnMeta("work_id"),
-            ColumnMeta(
-                "doi", lambda row: lower_or_none(dict_value(row, "DOI"))
-            ),
+            ColumnMeta("doi", lambda row: lower_or_none(dict_value(row, "DOI"))),
             ColumnMeta("name", lambda row: dict_value(row, "name")),
         ],
     ),
