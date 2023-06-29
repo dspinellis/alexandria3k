@@ -22,3 +22,6 @@ csv_source
 
 .. automodule:: csv_source
    :members:
+
+.. automodule:: xml
+   :members:

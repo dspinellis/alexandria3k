@@ -21,6 +21,7 @@ All are available through the classes documented below.
    journal_names
    orcid
    ror
+   uspto
 
 
 Data processing operations
