@@ -328,7 +328,7 @@ class DataSource:
             attach_databases = []
         for db_spec in attach_databases:
             try:
-                (db_name, db_path) = db_spec.split(":")
+                (db_name, db_path) = db_spec.split(":", 1)
             except ValueError:
                 fail(
                     f"Invalid database specification: '{db_spec}'; expected name:path"
@@ -537,7 +537,7 @@ class DataSource:
             tables in the database being populated prefixed by `populated`.
             Implicitly, if a main table is populated, its details tables
             will only get populated with the records associated with the
-            correspoing main table's record.
+            corresponding main table's record.
         :type condition: str, optional
 
 
