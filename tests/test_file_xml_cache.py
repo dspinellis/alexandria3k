@@ -33,6 +33,7 @@ class TestFileCache(unittest.TestCase):
     def setUpClass(self):
         # Create a new FileCache instance before each test
         self.file_cache = FileCache()
+        FileCache.parse_counter = 0
 
     def test_read_cached_data(self):
         # Test reading cached data
@@ -51,6 +52,16 @@ class TestFileCache(unittest.TestCase):
         self.assertEqual(result, self.file_cache.cached_data)
         # Assert that no parsing took place
         self.assertEqual(self.file_cache.parse_counter, 1)
+
+        self.file_cache.parse_counter = 0
+
+
+class TestFileCache(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        # Create a new FileCache instance before each test
+        self.file_cache = FileCache()
+        FileCache.parse_counter = 0
 
     def test_read_new_data(self):
         # Test reading and parsing new data
@@ -76,6 +87,16 @@ class TestFileCache(unittest.TestCase):
         # Assert that parsing took place
         self.assertEqual(FileCache.parse_counter, 2)
 
+        self.file_cache.parse_counter = 0
+
+
+class TestFileCache(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        # Create a new FileCache instance before each test
+        self.file_cache = FileCache()
+        FileCache.parse_counter = 0
+
     def test_cached_data(self):
         # Test that parse_counter increments when new data is read
         xml_chunk = "<patent><title>Test Patent</title></patent>"
@@ -92,3 +113,5 @@ class TestFileCache(unittest.TestCase):
 
         # Assert that parse_counter remains the same
         self.assertEqual(self.file_cache.parse_counter, 1)
+
+        self.file_cache.parse_counter = 0

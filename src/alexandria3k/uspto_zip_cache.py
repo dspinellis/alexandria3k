@@ -32,15 +32,22 @@ class UsptoZipCache:
 
     def __init__(self):
         self.cached_path = None
-        self.cached_data = None
+        self.cached_data = []
         self.file_name = None
 
-    def read(self, zip_path):
-        """Return a list of XML files in the specified zip file"""
+    def read(self, zip_path, sampling=lambda n: True):
+        """Return a list of XML containers in the specified zip file.
 
+        :param zip_path: Path to the Zip file.
+
+        :param sampling: callable
+        """
+
+        # Compare Zip path for caching.
         if zip_path == self.cached_path:
             return self.cached_data
 
+        self.cached_data = []
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
             # There is only one XML file inside the Zip file.
             xml_file = [
@@ -52,8 +59,19 @@ class UsptoZipCache:
             xml_content = zip_ref.read(self.file_name).decode("utf-8")
 
             # The first item of the list is None.
-            self.cached_data = xml_content.split(XML_DELIMITER)[1:]
+            patent_xml_files_list = xml_content.split(XML_DELIMITER)[1:]
 
+            # When sampling returns False it will skip the container.
+            # Sample the patents inside the Zip file by passing to the sampling
+            # function a tuple with the designator string being "container"
+            # and the second value being a string that contains all the
+            # contents of a unique US patent.
+            # (e.g. random.random() < 0.1 if data[0] == ""container"" else True)
+            self.cached_data = [
+                patent_xml
+                for patent_xml in patent_xml_files_list
+                if sampling(("container", patent_xml))
+            ]
             self.cached_path = zip_path
             UsptoZipCache.file_reads += 1
         return self.cached_data

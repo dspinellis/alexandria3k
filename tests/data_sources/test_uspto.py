@@ -35,9 +35,7 @@ from alexandria3k import debug
 
 
 DATABASE_PATH = td("tmp/uspto.db")
-ATTACHED_DATABASE_PATH = (
-    "C:/Users/junio/Desktop/alexandria3k-3/tests/tmp/attached_uspto.db"
-)
+ATTACHED_DATABASE_PATH = td("tmp/attached_uspto.db")
 
 
 def populate_attached():
@@ -58,9 +56,7 @@ class TestUsptoPopulateVanilla(PopulateQueries):
 
         FileCache.parse_counter = 0
         UsptoZipCache.file_reads = 0
-        cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data")
-        )
+        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -122,9 +118,7 @@ class TestUsptoPopulateVanilla(PopulateQueries):
             12,
         )
 
-        self.assertEqual(
-            self.cond_count("us_patents", "series_code = '17'"), 3
-        )
+        self.assertEqual(self.cond_count("us_patents", "series_code = '17'"), 3)
         self.assertEqual(FileCache.parse_counter, 14)
 
 
@@ -137,9 +131,7 @@ class TestUsptoPopulateMasterCondition(PopulateQueries):
         debug.set_flags(["sql", "dump-matched"])
 
         FileCache.parse_counter = 0
-        cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data")
-        )
+        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(DATABASE_PATH, None, "type = 'plant'")
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -162,12 +154,8 @@ class TestUsptoPopulateDetailCondition(PopulateQueries):
         FileCache.parse_counter = 0
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data")
-        )
-        cls.uspto.populate(
-            DATABASE_PATH, None, "icpr_classifications.subclass = 'G'"
-        )
+        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
+        cls.uspto.populate(DATABASE_PATH, None, "icpr_classifications.subclass = 'G'")
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -197,9 +185,7 @@ class TestUsptoPopulateMasterColumnNoCondition(PopulateQueries):
         FileCache.parse_counter = 0
 
         # debug.set_flags(["sql"])
-        cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data")
-        )
+        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(DATABASE_PATH, ["us_patents.type"])
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -231,9 +217,7 @@ class TestUsptoPopulateMasterColumnCondition(PopulateQueries):
         FileCache.parse_counter = 0
 
         debug.set_flags(["sql"])
-        cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data")
-        )
+        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(
             DATABASE_PATH,
             ["us_patents.drawings_number"],
@@ -269,9 +253,7 @@ class TestUsptoPopulateDetailConditionColumn(PopulateQueries):
         FileCache.parse_counter = 0
 
         debug.set_flags(["sql"])
-        cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data")
-        )
+        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(
             DATABASE_PATH,
             ["us_patents.drawings_number", "icpr_classifications.*"],
@@ -304,9 +286,7 @@ class TestUsptoPopulateMultipleConditionColumn(PopulateQueries):
         FileCache.parse_counter = 0
 
         debug.set_flags(["sql"])
-        cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data")
-        )
+        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(
             DATABASE_PATH,
             ["us_patents.figures_number"],
@@ -389,9 +369,7 @@ class TestUsptoQuery(unittest.TestCase):
     def test_patents(self):
         for partition in True, False:
             self.assertEqual(
-                record_count(
-                    self.uspto.query("SELECT * FROM us_patents", partition)
-                ),
+                record_count(self.uspto.query("SELECT * FROM us_patents", partition)),
                 14,
             )
         self.assertEqual(FileCache.parse_counter, 28)
@@ -427,9 +405,7 @@ class TestUsptoQuery(unittest.TestCase):
         for partition in True, False:
             self.assertEqual(
                 record_count(
-                    self.uspto.query(
-                        "SELECT * FROM icpr_classifications", partition
-                    )
+                    self.uspto.query("SELECT * FROM icpr_classifications", partition)
                 ),
                 30,
             )
@@ -437,11 +413,11 @@ class TestUsptoQuery(unittest.TestCase):
         FileCache.parse_counter = 0
 
     def test_patents_claims_condition(self):
-        for partition in True, False:
+        for partition in False, True:
             self.assertEqual(
                 record_count(
                     self.uspto.query(
-                        "SELECT us_patents.claims_number FROM us_patents LEFT JOIN"
+                        "SELECT us_patents.language FROM us_patents INNER JOIN"
                         + " icpr_classifications ON us_patents.container_id = "
                         + " icpr_classifications.patent_id WHERE us_patents.type = 'utility'"
                         + " AND icpr_classifications.symbol_position = 'F'",
@@ -453,12 +429,12 @@ class TestUsptoQuery(unittest.TestCase):
         FileCache.parse_counter = 0
 
     def test_patents_column_subset_condition(self):
-        for partition in True, False:
+        for partition in False, True:
             self.assertEqual(
                 record_count(
                     self.uspto.query(
-                        "SELECT us_patents.claims_number, icpr_classifications.main_group "
-                        + "FROM us_patents LEFT JOIN icpr_classifications ON us_patents."
+                        "SELECT us_patents.claims_number,  icpr_classifications.main_group "
+                        + "FROM us_patents INNER JOIN icpr_classifications ON us_patents."
                         + "container_id = icpr_classifications.patent_id WHERE us_patents.type"
                         + " = 'utility' AND icpr_classifications.symbol_position = 'L'",
                         partition,
@@ -500,3 +476,40 @@ class TestUsptoPopulateAttachedDatabaseCondition(PopulateQueries):
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 4)
         self.assertEqual(FileCache.parse_counter, 14)
+
+
+class TestUsptoSamplingContainer(PopulateQueries):
+    @classmethod
+    def setUpClass(cls):
+        if os.path.exists(DATABASE_PATH):
+            os.unlink(DATABASE_PATH)
+
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+        cls.uspto = uspto.Uspto(
+            td("data/April 2023 Patent Grant Bibliographic Data"),
+            sample=lambda data: True
+            if (data[0] == "path")
+            else True
+            if ("exercise" in data[1])
+            else False,
+        )
+        cls.uspto.populate(DATABASE_PATH)
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_import(
+        self,
+    ):
+        result = TestUsptoSamplingContainer.cursor.execute(
+            f"SELECT Count(*) from us_patents"
+        )
+        (count,) = result.fetchone()
+        self.assertEqual(count, 1)
+        self.assertEqual(UsptoZipCache.file_reads, 2)
+        UsptoZipCache.file_reads = 0

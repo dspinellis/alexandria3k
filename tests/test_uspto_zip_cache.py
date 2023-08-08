@@ -18,7 +18,6 @@
 #
 """Test of decompressing/extracting Zip files of US patent office"""
 
-import os
 import unittest
 
 from .test_dir import add_src_dir, td
@@ -27,55 +26,64 @@ add_src_dir()
 
 from alexandria3k.uspto_zip_cache import UsptoZipCache
 
-FILE_PATH = td("data/April 2023 Patent Grant Bibliographic Data")
+FILE_PATH_1 = td(
+    "data/April 2023 Patent Grant Bibliographic Data/ipgb20221025_wk43.zip"
+)
+FILE_PATH_2 = td(
+    "data/April 2023 Patent Grant Bibliographic Data/ipgb20230404_wk14.zip"
+)
 
 
-class TestUsptoZipCache(unittest.TestCase):
+class TestUsptoZipCachedRead(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.file_path = []
         self.file_cache = UsptoZipCache()
-
-        # Read through the directory
-        for file_name in os.listdir(FILE_PATH):
-            path = os.path.join(FILE_PATH, file_name)
-            if not os.path.isfile(path):
-                continue
-
-            self.file_path.append(path)
+        UsptoZipCache.file_reads = 0
 
     def test_read_cached_data(self):
         # Read the first zip file
-        data_1 = self.file_cache.read(self.file_path[0])
+        data_1 = self.file_cache.read(FILE_PATH_1)
         self.assertEqual(UsptoZipCache.file_reads, 1)
 
         # Read the same zip file again, data should be cached
-        data_1_cached = self.file_cache.read(self.file_path[0])
+        data_1_cached = self.file_cache.read(FILE_PATH_1)
         self.assertEqual(UsptoZipCache.file_reads, 1)
         self.assertEqual(data_1, data_1_cached)
 
+
+class TestUsptoNewRead(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.file_cache = UsptoZipCache()
+        UsptoZipCache.file_reads = 0
+
     def test_read_new_data(self):
         # Read the first zip file
-        data_2 = self.file_cache.read(self.file_path[0])
+        data_2 = self.file_cache.read(FILE_PATH_1)
         self.assertEqual(UsptoZipCache.file_reads, 1)
 
         # Read the same zip file again, data should be cached
-        data_2_cached = self.file_cache.read(self.file_path[1])
+        data_2_cached = self.file_cache.read(FILE_PATH_2)
         self.assertEqual(UsptoZipCache.file_reads, 2)
         self.assertNotEqual(data_2, data_2_cached)
+
+
+class TestUsptoExtraction(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.file_cache = UsptoZipCache()
+        UsptoZipCache.file_reads = 0
 
     def test_extracted_data(self):
         """Verify if the splitting of the contents inside the Zip
         is equal to the patents inside."""
 
         # Read the first zip file
-        data_1 = self.file_cache.read(self.file_path[0])
+        extracted_data_1 = self.file_cache.read(FILE_PATH_1)
         self.assertEqual(UsptoZipCache.file_reads, 1)
-        self.assertEqual(len(data_1), 11)
+        self.assertEqual(len(extracted_data_1), 11)
 
         # Read the second zip file
-        data_2 = self.file_cache.read(self.file_path[1])
+        extracted_data_2 = self.file_cache.read(FILE_PATH_2)
         self.assertEqual(UsptoZipCache.file_reads, 2)
-        self.assertEqual(len(data_2), 3)
-
-        UsptoZipCache.file_reads = 0
+        self.assertEqual(len(extracted_data_2), 3)
