@@ -86,8 +86,13 @@ def get_data_source_instance(args):
             "The data source {facility} requires the specification of a data location"
         )
 
+    # The sampling expression defaults to True or it can be
+    # given via the CI. One can manipulate the sampling function
+    # by using a variable called data as the input argument
+    # of the lambda function to access the input of the callable.
+    # (e.g. For USPTO sampling the input of the callable is a tuple)
     # pylint: disable-next=eval-used
-    sample = eval(f"lambda path: {args.sample}")
+    sample = eval(f"lambda data: {args.sample}")
 
     class_ = module_get_attribute(module, class_name(facility))
     return class_(data_location, sample, args.attach_databases)
@@ -156,10 +161,11 @@ def add_subcommand_populate(subparsers):
     parser.add_argument(
         "-s",
         "--sample",
-        # By default the function always returns True
         default="True",
         type=str,
-        help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
+        help="Python expression to sample the data (e.g. random.random() < 0.0002). "
+        + "The expression can also use a variable named data whose value is documented "
+        + "in the constructor API of each data source.",
     )
 
 
@@ -294,10 +300,11 @@ def add_subcommand_query(subparsers):
     parser.add_argument(
         "-s",
         "--sample",
-        # By default the function always returns True
         default="True",
         type=str,
-        help="Python expression to sample the Crossref tables (e.g. random.random() < 0.0002)",
+        help="Python expression to sample the data (e.g. random.random() < 0.0002). "
+        + "The expression can also use a variable named data whose value is documented "
+        + "in the constructor API of each data source.",
     )
 
 

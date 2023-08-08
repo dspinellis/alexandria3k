@@ -30,6 +30,7 @@ from alexandria3k.data_source import (
     ItemsCursor,
 )
 
+from alexandria3k.common import fail
 from alexandria3k.xml import agetter, all_getter, getter
 from alexandria3k.file_xml_cache import get_file_cache
 from alexandria3k.uspto_zip_cache import get_zip_cache
@@ -53,6 +54,7 @@ NAME_EXPRESSION = r"ipgb(.*?)\.zip"
 # https://developer.uspto.gov/product/patent-grant-bibliographic-dataxml
 
 
+# pylint: disable=too-many-instance-attributes
 class ZipFiles:
     """Iterate over all Zip files inside a directory
     and access its individual information.
@@ -73,7 +75,6 @@ class ZipFiles:
     """
 
     def __init__(self, directory, sample_container):
-        # TODO: Add sampling.
         # Collect the names of all available data files
         self.file_path = []
         self.unique_patent_xml_files = []
@@ -82,19 +83,25 @@ class ZipFiles:
         self.file_id = 0
         self.container_id = -1
         self.zip_path = None
+        # Sampling function defaults to (True, True).
+        self.sample = sample_container
 
         # Read through the directory
         for file_name in os.listdir(self.file_directory):
             path = os.path.join(self.file_directory, file_name)
             if not os.path.isfile(path):
                 continue
-
+            if not self.sample(("path", file_name)):
+                continue
             self.file_path.append(path)
+        # Raise error if file path list is empty.
+        if len(self.file_path) == 0:
+            fail("No Zip files paths were detected.")
 
     def get_zip_contents(self, path):
         """Return the a list of all the patent inside the Zip."""
         # Reading Zip file.
-        return get_zip_cache().read(path)
+        return get_zip_cache().read(path, self.sample)
 
     def get_xml_chunk(self, container_id):
         """Return a XML chunk using the container_id."""
@@ -149,6 +156,7 @@ class ZipFiles:
         """Return an iterator over the int identifiers of all chunks XML data files"""
         return self.zip_generator()
 
+    # pylint: disable=unused-argument
     def get_container_name(self, fid):
         """Return the name of the file."""
         return self.filename
@@ -187,6 +195,7 @@ class VTSource:
         return self.data_files.get_container_name(fid)
 
 
+# pylint: disable=too-many-instance-attributes
 class PatentsFilesCursor(ItemsCursor):
     """ "A cursor over the US patent XML data files inside a Zip file.
     If it is used through data_source partitioned data access within
@@ -242,7 +251,9 @@ class PatentsFilesCursor(ItemsCursor):
 
         self.container_id += 1
         # Zip file read.
-        self.xml_contents = get_zip_cache().read(self.current_file_path)
+        self.xml_contents = get_zip_cache().read(
+            self.current_file_path, self.table.data_source.sample
+        )
 
         if self.container_id >= len(self.xml_contents):
             # Zip file ended.
@@ -260,19 +271,24 @@ class PatentsFilesCursor(ItemsCursor):
                     )
                 )
                 self.xml_contents = get_zip_cache().read(
-                    self.current_file_path
+                    self.current_file_path, self.table.data_source.sample
                 )
             else:
                 # Returns when all Zip files have been read.
                 self.eof = True
                 return
 
+        # Check for EOF.
+        if len(self.xml_contents) == 0:
+            self.eof = True
+            return
+
         # Container parsing.
         self.items = get_file_cache().read(
             self.xml_contents[self.container_id], self.container_id
         )
         self.eof = False
-        # The single container has been read. Set EOF in next Next call
+        # The single container has been read. Set EOF in next Next call.
         self.file_read = True
 
     def get_container_id(self):
@@ -365,6 +381,7 @@ class PatentsCursor(PatentsElementsCursor):
         extract_function = self.table.get_value_extractor_by_ordinal(col)
         return extract_function(self.files_cursor.items)
 
+    # pylint: disable=arguments-differ
     def Filter(self, index_number, _index_name, constraint_args):
         """Always called first to initialize an iteration to the first row
         of the table according to the index"""
@@ -633,7 +650,24 @@ class Uspto(DataSource):
         data files are located
     :type uspto_directory: str
 
-    # TODO: Add sampling.
+    :param sample: A callable to control Zip file and container sampling.
+        It defaults to `lambda x: True`. The population or query method
+        will call this with a tuple as its argument, where the first value
+        is a designator string that can be either "path" or "container" and
+        the second value can be an USPTO Zip file path or a container respectively.
+        (e.g. sample(("path", "path/to/ipgb20221025_wk43.zip")) or
+        self.sample(("container", patent_content)).
+        A container represents a patent and its sampling occurs on the USPTO
+        zip cache file, during the reading of the Zip file paths.
+        Perform different sampling functionalities by passing a lambda expression.
+        The expression can use a variable named data to access the tuple values.
+        (e.g For sampling the last USPTO files of each year:
+        `lambda data: data[1].endswith("wk52.zip") if data[0] == "path" else True.
+        For passing all the Zip file paths and sampling all the patents that
+        have the word "exercise" in them:
+        `True if data[0] == ""path"" else  (True if (""exercise"" in data[1]) else False)`
+        )
+    :type sample: callable, optional
 
     :param attach_databases: A list of colon-joined tuples specifying
         a database name and its path, defaults to `None`.
