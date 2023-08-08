@@ -27,6 +27,7 @@ from alexandria3k.data_source import (
     ElementsCursor,
     ROWID_INDEX,
     StreamingCachedContainerTable,
+    ItemsCursor,
 )
 from alexandria3k.file_cache import get_file_cache
 from alexandria3k.db_schema import ColumnMeta, TableMeta
@@ -208,20 +209,9 @@ class VTSource:
         return self.data_files.get_container_name(fid)
 
 
-class FilesCursor:
+class FilesCursor(ItemsCursor):
     """A cursor over the items data files. Internal use only.
     Not used directly by an SQLite table."""
-
-    def __init__(self, table):
-        """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
-        self.table = table
-        self.eof = False
-        # The following get initialized in Filter()
-        self.file_index = None
-        self.single_file = None
-        self.file_read = None
-        self.items = None
 
     def Filter(self, index_number, _index_name, constraint_args):
         """Always called first to initialize an iteration to the first
@@ -255,22 +245,6 @@ class FilesCursor:
         self.eof = False
         # The single file has been read. Set EOF in next Next call
         self.file_read = True
-
-    def Rowid(self):
-        """Return a unique id of the row along all records"""
-        return self.file_index
-
-    def current_row_value(self):
-        """Return the current row. Not part of the apsw API."""
-        return self.items
-
-    def Eof(self):
-        """Return True when the end of the table's records has been reached."""
-        return self.eof
-
-    def Close(self):
-        """Cursor's destructor, used for cleanup"""
-        self.items = None
 
 
 class CrossrefElementsCursor(ElementsCursor):
@@ -353,7 +327,6 @@ class WorksCursor(CrossrefElementsCursor):
         of the table according to the index"""
         self.files_cursor.Filter(index_number, index_name, constraint_args)
         self.eof = self.files_cursor.Eof()
-        # print("FILTER", index_number, constraint_args)
         if index_number & ROWID_INDEX:
             # This has never happened, so this is untested
             self.item_index = constraint_args[1]

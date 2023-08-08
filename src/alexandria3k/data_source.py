@@ -236,6 +236,38 @@ class ElementsCursor:
         self.elements = None
 
 
+class ItemsCursor:
+    """A cursor over the items of data files. Internal use only.
+    Not used directly by an SQLite table."""
+
+    def __init__(self, table):
+        """Not part of the apsw VTCursor interface.
+        The table argument is a StreamingTable object"""
+        self.table = table
+        self.eof = False
+        # The following get initialized in Filter()
+        self.file_index = None
+        self.single_file = None
+        self.file_read = None
+        self.items = None
+
+    def Rowid(self):
+        """Return a unique id of the row along all records"""
+        return self.file_index
+
+    def current_row_value(self):
+        """Return the current row. Not part of the apsw API."""
+        return self.items
+
+    def Eof(self):
+        """Return True when the end of the table's records has been reached."""
+        return self.eof
+
+    def Close(self):
+        """Cursor's destructor, used for cleanup"""
+        self.items = None
+
+
 class _IndexManager:
     """Create database indexes, avoiding duplication, and allowing
     them to be dropped."""
@@ -328,7 +360,7 @@ class DataSource:
             attach_databases = []
         for db_spec in attach_databases:
             try:
-                (db_name, db_path) = db_spec.split(":")
+                (db_name, db_path) = db_spec.split(":", 1)
             except ValueError:
                 fail(
                     f"Invalid database specification: '{db_spec}'; expected name:path"
@@ -437,7 +469,7 @@ class DataSource:
             In such a case the query is repeatedly run over each database
             partition (compressed JSON file) with `CONTAINER_ID` iterating
             sequentially to cover all partitions.
-            The query's result is the concatenation of the individal partition
+            The query's result is the concatenation of the individual partition
             results.
             Running queries with joins without partitioning will often result
             in quadratic (or worse) algorithmic complexity.
@@ -537,7 +569,7 @@ class DataSource:
             tables in the database being populated prefixed by `populated`.
             Implicitly, if a main table is populated, its details tables
             will only get populated with the records associated with the
-            correspoing main table's record.
+            corresponding main table's record.
         :type condition: str, optional
 
 
