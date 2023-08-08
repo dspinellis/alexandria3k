@@ -100,7 +100,7 @@ class TestUsptoPopulateVanilla(PopulateQueries):
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 14)
-        self.assertEqual(self.record_count("icpr_classifications"), 30)
+        self.assertEqual(self.record_count("usp_icpr_classifications"), 30)
 
         self.assertEqual(
             self.record_count(
@@ -132,7 +132,7 @@ class TestUsptoPopulateMasterCondition(PopulateQueries):
 
         FileCache.parse_counter = 0
         cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
-        cls.uspto.populate(DATABASE_PATH, None, "type = 'plant'")
+        cls.uspto.populate(DATABASE_PATH, None, "us_patents.type = 'plant'")
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -143,7 +143,7 @@ class TestUsptoPopulateMasterCondition(PopulateQueries):
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 1)
-        self.assertEqual(self.record_count("icpr_classifications"), 2)
+        self.assertEqual(self.record_count("usp_icpr_classifications"), 2)
         self.assertEqual(FileCache.parse_counter, 14)
 
 
@@ -155,7 +155,9 @@ class TestUsptoPopulateDetailCondition(PopulateQueries):
         # debug.set_flags(["sql", "dump-matched"])
 
         cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
-        cls.uspto.populate(DATABASE_PATH, None, "icpr_classifications.subclass = 'G'")
+        cls.uspto.populate(
+            DATABASE_PATH, None, "usp_icpr_classifications.subclass = 'G'"
+        )
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
 
@@ -172,7 +174,7 @@ class TestUsptoPopulateDetailCondition(PopulateQueries):
         # "if a main table is populated, its details tables
         # will only get populated with the records associated with the
         # corresponding main table's record". That's why the icpr classifications are 5 and not 4.
-        self.assertEqual(self.record_count("icpr_classifications"), 5)
+        self.assertEqual(self.record_count("usp_icpr_classifications"), 5)
         self.assertEqual(FileCache.parse_counter, 14)
 
 
@@ -205,7 +207,7 @@ class TestUsptoPopulateMasterColumnNoCondition(PopulateQueries):
 
     def test_no_extra_tables(self):
         with self.assertRaises(sqlite3.OperationalError):
-            self.cond_field("icpr_classifications", "class_level", "true")
+            self.cond_field("usp_icpr_classifications", "class_level", "true")
 
 
 class TestUsptoPopulateMasterColumnCondition(PopulateQueries):
@@ -241,7 +243,7 @@ class TestUsptoPopulateMasterColumnCondition(PopulateQueries):
 
     def test_no_extra_tables(self):
         with self.assertRaises(sqlite3.OperationalError):
-            self.cond_field("icpr_classifications", "class_level", "true")
+            self.cond_field("usp_icpr_classifications", "class_level", "true")
 
 
 class TestUsptoPopulateDetailConditionColumn(PopulateQueries):
@@ -256,7 +258,7 @@ class TestUsptoPopulateDetailConditionColumn(PopulateQueries):
         cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(
             DATABASE_PATH,
-            ["us_patents.drawings_number", "icpr_classifications.*"],
+            ["us_patents.drawings_number", "usp_icpr_classifications.*"],
             "us_patents.type = 'reissue'",
         )
         cls.con = sqlite3.connect(DATABASE_PATH)
@@ -269,7 +271,7 @@ class TestUsptoPopulateDetailConditionColumn(PopulateQueries):
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 3)
-        self.assertEqual(self.record_count("icpr_classifications"), 13)
+        self.assertEqual(self.record_count("usp_icpr_classifications"), 13)
         self.assertEqual(FileCache.parse_counter, 14)
 
     def test_no_extra_fields(self):
@@ -290,7 +292,7 @@ class TestUsptoPopulateMultipleConditionColumn(PopulateQueries):
         cls.uspto.populate(
             DATABASE_PATH,
             ["us_patents.figures_number"],
-            "us_patents.type = 'utility' AND icpr_classifications.symbol_position = 'F'",
+            "us_patents.type = 'utility' AND usp_icpr_classifications.symbol_position = 'F'",
         )
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -310,7 +312,7 @@ class TestUsptoPopulateMultipleConditionColumn(PopulateQueries):
 
     def test_no_extra_tables(self):
         with self.assertRaises(sqlite3.OperationalError):
-            self.cond_field("icpr_classifications", "class_level", "true")
+            self.cond_field("usp_icpr_classifications", "class_level", "true")
 
 
 class TestUsptoTransitive(unittest.TestCase):
@@ -340,9 +342,9 @@ class TestUsptoTransitive(unittest.TestCase):
     def test_child(self):
         self.assertEqual(
             self.uspto.tables_transitive_closure(
-                ["icpr_classifications"], "us_patents"
+                ["usp_icpr_classifications"], "us_patents"
             ),
-            set(["us_patents", "icpr_classifications"]),
+            set(["us_patents", "usp_icpr_classifications"]),
         )
 
 
@@ -372,7 +374,7 @@ class TestUsptoQuery(unittest.TestCase):
                 record_count(self.uspto.query("SELECT * FROM us_patents", partition)),
                 14,
             )
-        self.assertEqual(FileCache.parse_counter, 28)
+        self.assertEqual(FileCache.parse_counter, 27)
         FileCache.parse_counter = 0
 
     def test_cache(self):
@@ -400,17 +402,129 @@ class TestUsptoQuery(unittest.TestCase):
             )
         self.assertEqual(FileCache.parse_counter, 28)
         FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
 
-    def test_icpr_classifications(self):
+    def test_usp_icpr_classifications(self):
         for partition in True, False:
             self.assertEqual(
                 record_count(
-                    self.uspto.query("SELECT * FROM icpr_classifications", partition)
+                    self.uspto.query(
+                        "SELECT * FROM usp_icpr_classifications", partition
+                    )
                 ),
                 30,
             )
-        self.assertEqual(FileCache.parse_counter, 27)
+        self.assertEqual(FileCache.parse_counter, 28)
         FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_cpc_classifications(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.uspto.query("SELECT * FROM usp_cpc_classifications", partition)
+                ),
+                20,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_related_documents(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.uspto.query("SELECT * FROM usp_related_documents", partition)
+                ),
+                22,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_field_of_classification(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.uspto.query(
+                        "SELECT * FROM usp_field_of_classification", partition
+                    )
+                ),
+                14,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_inventors(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.uspto.query("SELECT * FROM usp_inventors", partition)
+                ),
+                33,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_applicants(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.uspto.query("SELECT * FROM usp_applicants", partition)
+                ),
+                14,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_agents(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(self.uspto.query("SELECT * FROM usp_agents", partition)),
+                19,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_assignees(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.uspto.query("SELECT * FROM usp_assignees", partition)
+                ),
+                11,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_citations(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.uspto.query("SELECT * FROM usp_citations", partition)
+                ),
+                1073,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
+
+    def test_usp_patent_family(self):
+        for partition in True, False:
+            self.assertEqual(
+                record_count(
+                    self.uspto.query("SELECT * FROM usp_patent_family", partition)
+                ),
+                0,
+            )
+        self.assertEqual(FileCache.parse_counter, 28)
+        FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
 
     def test_patents_claims_condition(self):
         for partition in False, True:
@@ -418,31 +532,33 @@ class TestUsptoQuery(unittest.TestCase):
                 record_count(
                     self.uspto.query(
                         "SELECT us_patents.language FROM us_patents INNER JOIN"
-                        + " icpr_classifications ON us_patents.container_id = "
-                        + " icpr_classifications.patent_id WHERE us_patents.type = 'utility'"
-                        + " AND icpr_classifications.symbol_position = 'F'",
+                        + " usp_icpr_classifications ON us_patents.container_id = "
+                        + " usp_icpr_classifications.patent_id WHERE us_patents.type = 'utility'"
+                        + " AND usp_icpr_classifications.symbol_position = 'F'",
                         partition,
                     )
                 ),
                 6,
             )
         FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
 
     def test_patents_column_subset_condition(self):
         for partition in False, True:
             self.assertEqual(
                 record_count(
                     self.uspto.query(
-                        "SELECT us_patents.claims_number,  icpr_classifications.main_group "
-                        + "FROM us_patents INNER JOIN icpr_classifications ON us_patents."
-                        + "container_id = icpr_classifications.patent_id WHERE us_patents.type"
-                        + " = 'utility' AND icpr_classifications.symbol_position = 'L'",
+                        "SELECT us_patents.claims_number,  usp_icpr_classifications.main_group "
+                        + "FROM us_patents INNER JOIN usp_icpr_classifications ON us_patents."
+                        + "container_id = usp_icpr_classifications.patent_id WHERE us_patents.type"
+                        + " = 'utility' AND usp_icpr_classifications.symbol_position = 'L'",
                         partition,
                     )
                 ),
                 9,
             )
         FileCache.parse_counter = 0
+        UsptoZipCache.file_reads = 0
 
 
 class TestUsptoPopulateAttachedDatabaseCondition(PopulateQueries):

@@ -220,7 +220,7 @@ class PersonWorksCursor(PersonDetailsCursor):
 
 
 class PersonDetailsTableMeta(TableMeta):
-    """Table metadata for person details.  Objects of this
+    """Table metadata for person details. Objects of this
     class are injected with properties and columns common to all
     person details tables."""
 

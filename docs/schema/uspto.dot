@@ -1,2 +1,15 @@
 	node [fillcolor="#9fd6ff"];
-	us_patents -> icpr_classifications [headlabel="1…N", taillabel="1…N"];
+	us_patents;
+
+	us_patents -> usp_inventors [headlabel="1…N", taillabel="1"];
+	us_patents -> usp_applicants [headlabel="1…N", taillabel="1"];
+
+	edge  [headlabel="0…N", taillabel="1"];
+	us_patents -> usp_icpr_classifications
+	us_patents -> usp_cpc_classifications 
+	us_patents -> usp_related_documents 
+	us_patents -> usp_field_of_classification 
+	us_patents -> usp_agents 
+	us_patents -> usp_assignees 
+	us_patents -> usp_citations 
+	us_patents -> usp_patent_family 
