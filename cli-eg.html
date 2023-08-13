@@ -91,10 +91,10 @@ number of Crossref publications by year and publication type.</p>
 <div class="section" id="sampling">
 <h2>Sampling<a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h2>
 <p>The following command counts the number of publication that have or do
-not have an abstract in an approximately 1% sample of the data set’s
-containers. It uses a tab character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>) to separate the output
-fields. Through sampling the data containers it runs in a couple of
-minutes, rather than hours.</p>
+not have an abstract in a <em>deterministic</em> sample of approximately 1% of
+the data set’s containers. It uses a tab character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>) to separate
+the output fields. Through sampling the data containers it runs in a
+couple of minutes, rather than hours.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span>  <span class="se">\</span>
    --sample <span class="s1">&#39;random.random() &lt; 0.01&#39;</span> <span class="se">\</span>
    --field-separator <span class="s1">$&#39;\t&#39;</span> <span class="se">\</span>
@@ -109,6 +109,13 @@ minutes, rather than hours.</p>
 <p>For quick experiments, e.g. for verifying the queries of a full run,
 consider sampling just three containers with
 <code class="docutils literal notranslate"><span class="pre">--sample</span> <span class="pre">'random.random()</span> <span class="pre">&lt;</span> <span class="pre">0.0002'</span></code>.</p>
+<p>The deterministic way in which sampling is currently done means that
+each ‘random’ sample will produce the same results. This can be very
+useful in various scenarios, such as if you need replicable tests.
+If instead you need randomly different results <em>each time you sample</em>,
+you can re-seed the random number generator for each sample with
+<code class="docutils literal notranslate"><span class="pre">--sample</span> <span class="pre">'(</span> <span class="pre">random.seed()</span> <span class="pre">)</span> <span class="pre">or</span> <span class="pre">random.random()</span> <span class="pre">&lt;</span> <span class="pre">0.01'</span></code> or
+similar.</p>
 </div>
 <div class="section" id="database-of-covid-research">
 <h2>Database of COVID research<a class="headerlink" href="#database-of-covid-research" title="Permalink to this headline">¶</a></h2>
