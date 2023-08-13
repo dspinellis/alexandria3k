@@ -67,10 +67,10 @@ Sampling
 ~~~~~~~~
 
 The following command counts the number of publication that have or do
-not have an abstract in an approximately 1% sample of the data set’s
-containers. It uses a tab character (``\t``) to separate the output
-fields. Through sampling the data containers it runs in a couple of
-minutes, rather than hours.
+not have an abstract in a *deterministic* sample of approximately 1% of
+the data set’s containers. It uses a tab character (``\t``) to separate
+the output fields. Through sampling the data containers it runs in a
+couple of minutes, rather than hours.
 
 .. code:: sh
 
@@ -89,6 +89,15 @@ where ``count-no-abstract.sql`` contains:
 For quick experiments, e.g. for verifying the queries of a full run,
 consider sampling just three containers with
 ``--sample 'random.random() < 0.0002'``.
+
+The deterministic way in which sampling is currently done means that
+each 'random' sample will produce the same results. This can be very
+useful in various scenarios, such as if you need replicable tests.
+If instead you need randomly different results *each time you sample*,
+you can re-seed the random number generator for each sample with 
+``--sample '( random.seed() ) or random.random() < 0.01'`` or
+similar.
+
 
 Database of COVID research
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
