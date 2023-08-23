@@ -236,6 +236,38 @@ class ElementsCursor:
         self.elements = None
 
 
+class ItemsCursor:
+    """A cursor over the items of data files. Internal use only.
+    Not used directly by an SQLite table."""
+
+    def __init__(self, table):
+        """Not part of the apsw VTCursor interface.
+        The table argument is a StreamingTable object"""
+        self.table = table
+        self.eof = False
+        # The following get initialized in Filter()
+        self.file_index = None
+        self.single_file = None
+        self.file_read = None
+        self.items = None
+
+    def Rowid(self):
+        """Return a unique id of the row along all records"""
+        return self.file_index
+
+    def current_row_value(self):
+        """Return the current row. Not part of the apsw API."""
+        return self.items
+
+    def Eof(self):
+        """Return True when the end of the table's records has been reached."""
+        return self.eof
+
+    def Close(self):
+        """Cursor's destructor, used for cleanup"""
+        self.items = None
+
+
 class _IndexManager:
     """Create database indexes, avoiding duplication, and allowing
     them to be dropped."""
