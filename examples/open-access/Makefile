@@ -41,7 +41,7 @@ populate: $(CROSSREF_DIR)
 	touch $@
 
 reports/oa-is-cited-more.txt: oa-is-cited-more.py tables/oa_works
-	$(EXPENSIVE_DEPENDENCIES) ./oa-is-cited-more.py >$@
+	$(EXPENSIVE_DEPENDENCIES) $(TIME) ./oa-is-cited-more.py >$@
 
 reports/is-cited-by-is-normal.txt: is-cited-by-is-normal.py populate
-	$(EXPENSIVE_DEPENDENCIES) ./is-cited-by-is-normal.py >$@
+	$(EXPENSIVE_DEPENDENCIES) $(TIME) ./is-cited-by-is-normal.py >$@

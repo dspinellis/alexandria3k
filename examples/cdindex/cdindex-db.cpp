@@ -181,6 +181,13 @@ main(int argc, char *argv[])
     try {
         database cdb(argv[1]);
 
+        cdb << "CREATE INDEX IF NOT EXISTS works_id_idx ON works(id)";
+        cerr << "Index works_id_idx ready" << endl;
+
+        cdb << "CREATE INDEX IF NOT EXISTS work_references_work_id_idx"
+          " ON work_references(work_id)";
+        cerr << "Index work_references_work_id_idx ready" << endl;
+
 	if (use_random_values) {
 	    add_random_vertices(graph);
 	    add_random_edges(graph);

@@ -58,7 +58,7 @@ class RorCursor:
 
     def __init__(self, table):
         """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
+        The table argument is a StreamingTable object"""
         self.table = table
         # Initialized in Filter()
         self.eof = False
@@ -121,7 +121,7 @@ class RorDetailsCursor(ElementsCursor):
 
     def __init__(self, table, parent_cursor):
         """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
+        The table argument is a StreamingTable object"""
         super().__init__(table, parent_cursor)
         self.extract_multiple = table.get_table_meta().get_extract_multiple()
 
@@ -293,7 +293,8 @@ class VTSource:
 
     def Create(self, _db, _module_name, _db_name, table_name):
         """Create the specified virtual table by creating its schema
-        and an apsw table (a StramingTable instance) streaming over its data"""
+        and an apsw table (a StreamingTable instance) streaming over its data
+        """
         table = self.table_dict[table_name]
         return table.table_schema(), StreamingTable(
             table, self.table_dict, self.data_source, self.sample

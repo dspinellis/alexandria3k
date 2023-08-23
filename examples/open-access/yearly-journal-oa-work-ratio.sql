@@ -16,7 +16,6 @@ non_oa_journal_papers AS (
     LEFT JOIN rolap.oa_works ON works.id = oa_works.work_id
     WHERE published_year between 1945 and 2021
       AND oa_works.work_id is null
-      AND (works.issn_print is not null OR works.issn_electronic is not null)
     GROUP BY published_year
 )
 SELECT non_oa_journal_papers.published_year,

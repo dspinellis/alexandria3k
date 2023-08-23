@@ -175,7 +175,7 @@ class ElementsCursor:
 
     def __init__(self, table, parent_cursor):
         """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
+        The table argument is a StreamingTable object"""
         self.table = table
         self.parent_cursor = parent_cursor
         # Rows over which to iterate

@@ -30,8 +30,9 @@ jobs:
       - name: Lint
         run: |
           cd src
-          find . -name '*.py' | xargs pipenv run python -m pylint --rcfile ../.pylintrc
-
+          if [ $PYTHON_VER == 3.11 ] ; then find . -name '*.py' | xargs pipenv run python -m pylint --rcfile ../.pylintrc ; fi
+        env:
+          PYTHON_VER: ${{ matrix.python-version }}
       - name: Install rdbunit
         run: |
           git clone --depth=1 https://github.com/dspinellis/rdbunit.git

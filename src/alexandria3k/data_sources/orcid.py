@@ -145,7 +145,7 @@ class PersonDetailsCursor(ElementsCursor):
 
     def __init__(self, table, parent_cursor):
         """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
+        The table argument is a StreamingTable object"""
         super().__init__(table, parent_cursor)
         self.extract_multiple = table.get_table_meta().get_extract_multiple()
 

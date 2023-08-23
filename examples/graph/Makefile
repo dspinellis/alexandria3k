@@ -34,3 +34,6 @@ populate: $(CROSSREF_DIR)
 	  work_authors.work_id \
 	  work_authors.orcid
 	touch $@
+
+subject_hierarchy.svg: reports/subject-hierarchy-list.txt  subject-sankey.py
+	python subject-sankey.py
