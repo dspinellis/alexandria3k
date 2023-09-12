@@ -30,6 +30,12 @@
 	research_organizations;
 	ror_funder_ids;
 
+	// USPTO
+	node [fillcolor="#9fd6ff"];
+	"USPTO tables" [shape=box, margin="0.11,0.055"];
+	us_patents;
+	icpr_classifications;
+
 	// Shape schema tables
 	node [shape=plaintext,  margin=0];
 
@@ -61,4 +67,4 @@
 	work_subjects -> asjcs [headlabel="1", taillabel="1"];
 
 	edge [style="invis"];
-	{ rank = source; "Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ROR tables" -> "ORCID tables" -> "Alexandria3k tables"; }
+	{ rank = source; "Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ROR tables" -> "ORCID tables" -> "USPTO tables" -> "Alexandria3k tables"; }
