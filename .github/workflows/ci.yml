@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pipenv==2023.7.23
+          pip install pipenv
           cd src && pipenv install --dev
       - name: Run unit and integration tests
         run: cd src && pipenv run python -m unittest discover -s ..
