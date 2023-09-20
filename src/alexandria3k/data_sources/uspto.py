@@ -31,7 +31,7 @@ from alexandria3k.data_source import (
 )
 
 from alexandria3k.common import fail
-from alexandria3k.xml import agetter, all_getter, getter
+from alexandria3k.xml import agetter, all_getter, getter, get_element
 from alexandria3k.file_xml_cache import get_file_cache
 from alexandria3k.uspto_zip_cache import get_zip_cache
 from alexandria3k.db_schema import ColumnMeta, TableMeta
@@ -54,6 +54,7 @@ NAME_EXPRESSION = r"ipgb(.*?)\.zip"
 # https://developer.uspto.gov/product/patent-grant-bibliographic-dataxml
 
 
+# pylint: disable=too-many-lines
 # pylint: disable=too-many-instance-attributes
 class ZipFiles:
     """Iterate over all Zip files inside a directory
@@ -83,17 +84,23 @@ class ZipFiles:
         self.file_id = 0
         self.container_id = -1
         self.zip_path = None
-        # Sampling function defaults to (True, True).
         self.sample = sample_container
 
-        # Read through the directory
-        for file_name in os.listdir(self.file_directory):
-            path = os.path.join(self.file_directory, file_name)
-            if not os.path.isfile(path):
+        # Read through the directory that contains
+        # the weekly patent releases of each year.
+        for folder in os.listdir(self.file_directory):
+            year_folder_path = os.path.join(self.file_directory, folder)
+            if not os.path.isdir(year_folder_path):
                 continue
-            if not self.sample(("path", file_name)):
-                continue
-            self.file_path.append(path)
+            for file_name in os.listdir(year_folder_path):
+                path = os.path.join(year_folder_path, file_name)
+                if not path.endswith(".zip"):
+                    continue
+                if not os.path.isfile(path):
+                    continue
+                if not self.sample(("path", file_name)):
+                    continue
+                self.file_path.append(path)
         # Raise error if file path list is empty.
         if len(self.file_path) == 0:
             fail("No Zip files paths were detected.")
@@ -160,6 +167,12 @@ class ZipFiles:
     def get_container_name(self, fid):
         """Return the name of the file."""
         return self.filename
+
+
+def alternative_path_getter(path1, path2):
+    """Return all elements from the specified path. If
+    path1 doesn't work, use path2 as an alternative."""
+    return lambda tree: tree.findall(path1) or tree.findall(path2)
 
 
 class VTSource:
@@ -366,6 +379,7 @@ class PatentsCursor(PatentsElementsCursor):
         """Return a unique id of the row along all records"""
         return self.item_index
 
+    # pylint: disable=too-many-return-statements
     def Column(self, col):
         """Return the value of the column with ordinal col"""
         # print(f"Column {col}")
@@ -408,12 +422,12 @@ class PatentsCursor(PatentsElementsCursor):
         self.files_cursor.Close()
 
 
-class PatentsIpcrCurcor(PatentsElementsCursor):
+class PatentsDetailsCursor(PatentsElementsCursor):
     """A cursor over any of a patent's details data."""
 
     def __init__(self, table, parent_cursor):
         """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
+        The table argument is a StreamingTable object"""
         super().__init__(table, parent_cursor)
         self.extract_multiple = table.get_table_meta().get_extract_multiple()
 
@@ -424,16 +438,316 @@ class PatentsIpcrCurcor(PatentsElementsCursor):
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
-        if col == 0:  # id
-            return self.record_id()
+        if col == 0:
+            return self.parent_cursor.get_container_id()
+
+        if col == 1:
+            return self.parent_cursor.get_container_id()
+
+        return super().Column(col)
+
+
+class PatentsCpcCursor(PatentsElementsCursor):
+    """A cursor over any of a patent's Cooperative
+    Patent Classification scheme (CPC) data."""
+
+    def __init__(self, table, parent_cursor):
+        """Not part of the apsw VTCursor interface.
+        The table argument is a StreamingTable object"""
+        super().__init__(table, parent_cursor)
+        self.extract_multiple = all_getter(
+            "us-bibliographic-data-grant/classifications-cpc/*"
+        )
+
+        # The are two types of cpc classifications,
+        # `main-cpc` or `further-cpc`, in both cases
+        # the XML pattern are the same and given
+        # in the list below.
+        column_names = [
+            "classification-cpc/cpc-version-indicator/date",
+            "classification-cpc/section",
+            "classification-cpc/class",
+            "classification-cpc/subclass",
+            "classification-cpc/main-group",
+            "classification-cpc/subgroup",
+            "classification-cpc/symbol-position",
+            "classification-cpc/classification-value",
+            "classification-cpc/action-date/date",
+            "classification-cpc/generating-office/country",
+            "classification-cpc/classification-status",
+            "classification-cpc/classification-data-source",
+            "classification-cpc/scheme-origination-code",
+            "combination-set/group-number",
+            "combination-set/combination-rank/rank-number",
+        ]
+
+        self.column_contents = {
+            i + 3: value for i, value in enumerate(column_names)
+        }
+
+    def Rowid(self):
+        """Return a unique id of the row along all records.
+        This allows for 16k elements."""
+        return (self.parent_cursor.Rowid() << 14) | self.element_index
+
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:
+            return self.parent_cursor.get_container_id()
 
         if col == 1:
             return self.parent_cursor.get_container_id()
 
         if col == 2:
-            return self.parent_cursor.get_container_id()
+            return self.elements[self.record_id()].tag
+
+        if col >= 3:
+            return get_element(
+                self.elements[self.record_id()],
+                f"{self.column_contents[col]}",
+            )
 
         return super().Column(col)
+
+
+class PatentsRelatedDocumentsCursor(PatentsElementsCursor):
+    """A cursor over any of a patent's related documents data."""
+
+    def __init__(self, table, parent_cursor):
+        """Not part of the apsw VTCursor interface.
+        The table argument is a StreamingTable object"""
+        super().__init__(table, parent_cursor)
+        self.extract_multiple = all_getter(
+            "us-bibliographic-data-grant/us-related-documents/*"
+        )
+        column_names = [
+            "relation/parent-doc/document-id/doc-number",
+            "relation/parent-doc/document-id/kind",
+            "relation/parent-doc/document-id/name",
+            "relation/parent-doc/document-id/date",
+            "relation/parent-doc/parent-status",
+            "relation/parent-doc/parent-grant-document/document-id/doc-number",
+            "relation/parent-doc/parent-pct-document/document-id/doc-number",
+            "relation/parent-doc/international-filing-date",
+            "relation/child-doc/document-id/doc-number",
+            "relation/child-doc/document-id/kind",
+            "relation/child-doc/document-id/name",
+            "relation/child-doc/document-id/date",
+            "relation/child-doc/international-filing-date",
+            "document-id/doc-number",
+            "document-id/kind",
+            "document-id/name",
+            "document-id/date",
+            "us-provisional-application-status",
+            "document-corrected/document-id/doc-number",
+            "document-corrected/document-id/kind",
+            "document-corrected/document-id/name",
+            "document-corrected/document-id/date",
+            "type-of-correction",
+            "gazette-reference/gazette-num",
+            "gazette-reference/date",
+            "text",
+        ]
+
+        self.column_contents = {
+            i + 3: value for i, value in enumerate(column_names)
+        }
+
+    def Rowid(self):
+        """Return a unique id of the row along all records.
+        This allows for 16k elements."""
+        return (self.parent_cursor.Rowid() << 14) | self.element_index
+
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:
+            return self.parent_cursor.get_container_id()
+
+        if col == 1:
+            return self.parent_cursor.get_container_id()
+
+        if col == 2:
+            return self.elements[self.record_id()].tag
+
+        if col >= 3:
+            return get_element(
+                self.elements[self.record_id()],
+                f"{self.column_contents[col]}",
+            )
+
+        return super().Column(col)
+
+
+class PatentsAssigneesCursor(PatentsElementsCursor):
+    """A cursor over any of a patent's assignees data"""
+
+    def __init__(self, table, parent_cursor):
+        """Not part of the apsw VTCursor interface. The table argument is a
+        StreamingTable object. The data under the assignee element can be
+        either an entity called %name_group or an addressbook element.
+        However, under the addressbook element the data appear again as
+        %name_group, with some additional elements."""
+
+        super().__init__(table, parent_cursor)
+        # Get all the assignees
+        self.extract_multiple = all_getter(
+            "us-bibliographic-data-grant/assignees/*"
+        )
+
+        # Initialize a list of XML patterns to access the data of the
+        # assignee element. If an addressbook element exist under
+        # the assignee, then it is appended on the beginning of the string
+        # for matching the required elements.
+        column_names = [
+            "name",
+            "first-name",
+            "middle-name",
+            "last-name",
+            "orgname",
+            "suffix",
+            "iid",
+            "role",
+            "department",
+            "synonym",
+            "registered_number",
+            "email",
+            "url",
+            "text",
+            "addressbook/address/city",
+            "addressbook/address/state",
+            "addressbook/address/country",
+            "addressbook/address/postcode",
+        ]
+
+        self.column_contents = {
+            i + 3: value for i, value in enumerate(column_names)
+        }
+
+    def Rowid(self):
+        """Return a unique id of the row along all records.
+        This allows for 16k elements."""
+        return (self.parent_cursor.Rowid() << 14) | self.element_index
+
+    # pylint: disable=too-many-return-statements
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:
+            return self.parent_cursor.get_container_id()
+
+        if col == 1:
+            return self.parent_cursor.get_container_id()
+
+        if col == 2:
+            return self.elements[self.record_id()].tag
+
+        if col >= 3:
+            # Check if an addressbook element exists.
+            if self.elements[self.record_id()].find("addressbook"):
+                # Append addressbook string to meet XML pattern.
+                pattern = "addressbook/" + f"{self.column_contents[col]}"
+
+                return get_element(self.elements[self.record_id()], pattern)
+            # If false use the dictionary without addressbook.
+            return get_element(
+                self.elements[self.record_id()],
+                f"{self.column_contents[col]}",
+            )
+
+        return super().Column(col)
+
+
+class USPartiesTableMeta(TableMeta):
+    """Table metadata for US parties details. Applicants, inventors
+    and agents are under the US parties element. Objects of this
+    class are injected with properties and columns common to all
+    US parties tables."""
+
+    def __init__(self, name, **kwargs):
+        kwargs["foreign_key"] = "patent_id"
+        kwargs["parent_name"] = "us_patents"
+        kwargs["primary_key"] = "id"
+        kwargs["cursor_class"] = PatentsDetailsCursor
+        kwargs["columns"] = [
+            ColumnMeta("patent_id"),
+            ColumnMeta("container_id"),
+            ColumnMeta(
+                "sequence",
+                agetter("sequence"),
+            ),
+            ColumnMeta(
+                "name",
+                getter("addressbook/name"),
+            ),
+            ColumnMeta(
+                "first_name",
+                getter("addressbook/first-name"),
+            ),
+            ColumnMeta(
+                "middle_name",
+                getter("addressbook/middle-name"),
+            ),
+            ColumnMeta(
+                "last_name",
+                getter("addressbook/last-name"),
+            ),
+            ColumnMeta(
+                "org_name",
+                getter("addressbook/orgname"),
+            ),
+            ColumnMeta(
+                "suffix",
+                getter("addressbook/suffix"),
+            ),
+            ColumnMeta(
+                "iid",
+                getter("addressbook/iid"),
+            ),
+            ColumnMeta(
+                "role",
+                getter("addressbook/role"),
+            ),
+            ColumnMeta(
+                "department",
+                getter("addressbook/department"),
+            ),
+            ColumnMeta(
+                "synonym",
+                getter("addressbook/synonym"),
+            ),
+            ColumnMeta(
+                "registered_number",
+                getter("addressbook/registered_number"),
+            ),
+            ColumnMeta(
+                "email",
+                getter("addressbook/email"),
+            ),
+            ColumnMeta(
+                "url",
+                getter("addressbook/url"),
+            ),
+            ColumnMeta(
+                "text",
+                getter("addressbook/text"),
+            ),
+            ColumnMeta(
+                "city",
+                getter("addressbook/address/city"),
+            ),
+            ColumnMeta(
+                "state",
+                getter("addressbook/address/state"),
+            ),
+            ColumnMeta(
+                "country",
+                getter("addressbook/address/country"),
+            ),
+            ColumnMeta(
+                "postcode",
+                getter("addressbook/address/postcode"),
+            ),
+        ] + kwargs["columns"]
+        super().__init__(name, **kwargs)
 
 
 tables = [
@@ -469,11 +783,130 @@ tables = [
                 agetter("date-publ"),
             ),
             ColumnMeta(
+                "publication_reference_doc_number",
+                getter(
+                    "us-bibliographic-data-grant/publication-reference/document-id/doc-number"
+                ),
+            ),
+            ColumnMeta(
+                "publication_reference_kind",
+                getter(
+                    "us-bibliographic-data-grant/publication-reference/document-id/kind"
+                ),
+            ),
+            ColumnMeta(
+                "publication_reference_name",
+                getter(
+                    "us-bibliographic-data-grant/publication-reference/document-id/name"
+                ),
+            ),
+            ColumnMeta(
                 "type",
                 agetter(
                     "appl-type",
                     "us-bibliographic-data-grant/application-reference",
                 ),
+            ),
+            ColumnMeta(
+                "application_reference_doc_number",
+                getter(
+                    "us-bibliographic-data-grant/application-reference/document-id/doc-number"
+                ),
+            ),
+            ColumnMeta(
+                "application_reference_kind",
+                getter(
+                    "us-bibliographic-data-grant/application-reference/document-id/kind"
+                ),
+            ),
+            ColumnMeta(
+                "application_reference_name",
+                getter(
+                    "us-bibliographic-data-grant/application-reference/document-id/name"
+                ),
+            ),
+            ColumnMeta(
+                "application_reference_date",
+                getter(
+                    "us-bibliographic-data-grant/application-reference/document-id/date"
+                ),
+            ),
+            ColumnMeta(
+                "locarno_edition",
+                getter(
+                    "us-bibliographic-data-grant/classification-locarno/document-id/edition"
+                ),
+                description="Refers to Locarno Classification.",
+            ),
+            ColumnMeta(
+                "locarno_main_classification",
+                getter(
+                    "us-bibliographic-data-grant/classification-locarno/main-classification"
+                ),
+                description="Refers to Locarno Classification.",
+            ),
+            ColumnMeta(
+                "locarno_further_classification",
+                getter(
+                    "us-bibliographic-data-grant/classification-locarno/further-classification"
+                ),
+                description="Refers to Locarno Classification.",
+            ),
+            ColumnMeta(
+                "locarno_text",
+                getter(
+                    "us-bibliographic-data-grant/classification-locarno/text"
+                ),
+                description="Refers to Locarno Classification.",
+            ),
+            ColumnMeta(
+                "national_edition",
+                getter(
+                    "us-bibliographic-data-grant/classification-national/edition"
+                ),
+                description="Refers to National Classification.",
+            ),
+            ColumnMeta(
+                "national_main_classification",
+                getter(
+                    "us-bibliographic-data-grant/classification-national/main-classification"
+                ),
+                description="Refers to National Classification.",
+            ),
+            ColumnMeta(
+                "national_further_classification",
+                getter(
+                    "us-bibliographic-data-grant/classification-national/further-classification"
+                ),
+                description="Refers to National Classification.",
+            ),
+            ColumnMeta(
+                "national_additional_info",
+                getter(
+                    "us-bibliographic-data-grant/classification-national/additional-info"
+                ),
+                description="Refers to National Classification.",
+            ),
+            ColumnMeta(
+                "national_linked_indexing_code_group",
+                getter(
+                    "us-bibliographic-data-grant/classification-national/linked-indexing-code-group"
+                ),
+                description="Refers to National Classification.",
+            ),
+            ColumnMeta(
+                "national_unlinked_indexing_code",
+                getter(
+                    "us-bibliographic-data-grant/classification-national/unlinked-indexing-code"
+                ),
+                description="Refers to National Classification.",
+            ),
+            ColumnMeta(
+                "national_text",
+                getter(
+                    "us-bibliographic-data-grant/classification-national/text"
+                ),
+                description="Refers to National Classification.",
             ),
             ColumnMeta(
                 "series_code",
@@ -498,6 +931,10 @@ tables = [
                 getter("us-bibliographic-data-grant/number-of-claims"),
             ),
             ColumnMeta(
+                "exemplary_claim",
+                getter("us-bibliographic-data-grant/us-exemplary-claim"),
+            ),
+            ColumnMeta(
                 "figures_number",
                 getter(
                     "us-bibliographic-data-grant/figures/number-of-figures"
@@ -509,11 +946,6 @@ tables = [
                 getter(
                     "us-bibliographic-data-grant/figures/number-of-drawing-sheets"
                 ),
-            ),
-            ColumnMeta(
-                "microform_number",
-                getter("lang"),
-                description="UNCOMPLETEDOptical microform appendix.",
             ),
             ColumnMeta(
                 "primary_examiner_firstname",
@@ -552,36 +984,11 @@ tables = [
                 ),
             ),
             ColumnMeta(
-                "hague_filing_date",
-                getter(
-                    "us-bibliographic-data-grant/hague-agreement-data/international-filing-date"
-                ),
-            ),
-            ColumnMeta(
-                "hague_reg_pub_date",
-                getter(
-                    "us-bibliographic-data-grant/hague-agreement-data/"
-                    + "international-registration-publication-date"
-                ),
-            ),
-            ColumnMeta(
-                "hague_reg_date",
-                getter(
-                    "us-bibliographic-data-grant/hague-agreement-data/"
-                    + "international-registration-publication-date"
-                ),
-            ),
-            ColumnMeta(
                 "hague_reg_num",
                 getter(
                     "us-bibliographic-data-grant/hague-agreement-data/"
                     + "international-registration-number"
                 ),
-            ),
-            ColumnMeta(
-                "sir_flag",
-                agetter("sir-text", "us-bibliographic-data-grant/us-sir-flag"),
-                description="Statutory invention registration flag.",
             ),
             ColumnMeta(
                 "cpa_flag",
@@ -599,18 +1006,17 @@ tables = [
         ],
     ),
     TableMeta(
-        "icpr_classifications",
+        "usp_icpr_classifications",
         foreign_key="patent_id",
         parent_name="us_patents",
         primary_key="id",
-        cursor_class=PatentsIpcrCurcor,
+        cursor_class=PatentsDetailsCursor,
         extract_multiple=all_getter(
             "us-bibliographic-data-grant/classifications-ipcr/classification-ipcr"
         ),
         columns=[
-            ColumnMeta("id"),
-            ColumnMeta("container_id"),
             ColumnMeta("patent_id"),
+            ColumnMeta("container_id"),
             ColumnMeta(
                 "ipc_date",
                 getter("ipc-version-indicator/date"),
@@ -635,6 +1041,463 @@ tables = [
             ),
             ColumnMeta("class_status", getter("classification-status")),
             ColumnMeta("class_source", getter("classification-data-source")),
+        ],
+    ),
+    TableMeta(
+        "usp_cpc_classifications",
+        foreign_key="patent_id",
+        parent_name="us_patents",
+        primary_key="id",
+        cursor_class=PatentsCpcCursor,
+        extract_multiple=all_getter(
+            "us-bibliographic-data-grant/classifications-cpc"
+        ),
+        columns=[
+            ColumnMeta("patent_id"),
+            ColumnMeta("container_id"),
+            ColumnMeta(
+                "type",
+                getter("ipc-version-indicator/date"),
+                description="Main or further cpc.",
+            ),
+            ColumnMeta(
+                "cpc_version_indicator",
+                description="Date.",
+            ),
+            ColumnMeta("section"),
+            ColumnMeta("class"),
+            ColumnMeta("sub_class"),
+            ColumnMeta("main_group"),
+            ColumnMeta("sub_group"),
+            ColumnMeta("symbol_position"),
+            ColumnMeta("class_value"),
+            ColumnMeta("action_date"),
+            ColumnMeta("generating_office"),
+            ColumnMeta("class_status"),
+            ColumnMeta("class_data_source"),
+            ColumnMeta("scheme_origination_code"),
+            ColumnMeta("combination_group_number"),
+            ColumnMeta("combination_rank_number"),
+        ],
+    ),
+    TableMeta(
+        "usp_related_documents",
+        foreign_key="patent_id",
+        parent_name="us_patents",
+        primary_key="id",
+        cursor_class=PatentsRelatedDocumentsCursor,
+        columns=[
+            ColumnMeta("patent_id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("relation"),
+            ColumnMeta(
+                "parent_doc_number",
+            ),
+            ColumnMeta(
+                "parent_doc_kind",
+            ),
+            ColumnMeta(
+                "parent_doc_name",
+            ),
+            ColumnMeta(
+                "parent_doc_date",
+            ),
+            ColumnMeta(
+                "status",
+            ),
+            ColumnMeta(
+                "parent_grant_doc_number",
+            ),
+            ColumnMeta(
+                "parent_pct_doc_number",
+            ),
+            ColumnMeta(
+                "parent_filing_date",
+            ),
+            ColumnMeta(
+                "child_doc_number",
+            ),
+            ColumnMeta(
+                "child_doc_kind",
+            ),
+            ColumnMeta(
+                "child_doc_name",
+            ),
+            ColumnMeta(
+                "child_doc_date",
+            ),
+            ColumnMeta(
+                "child_filing_date",
+            ),
+            ColumnMeta(
+                "document_number",
+            ),
+            ColumnMeta(
+                "document_kind",
+            ),
+            ColumnMeta(
+                "document_name",
+            ),
+            ColumnMeta(
+                "document_date",
+            ),
+            ColumnMeta(
+                "provisional_application_status",
+            ),
+            ColumnMeta(
+                "corrected_document_doc_number",
+            ),
+            ColumnMeta(
+                "corrected_document_kind",
+            ),
+            ColumnMeta(
+                "corrected_document_name",
+            ),
+            ColumnMeta(
+                "corrected_document_date",
+            ),
+            ColumnMeta(
+                "type_of_correction",
+            ),
+            ColumnMeta(
+                "gazette_number",
+            ),
+            ColumnMeta(
+                "gazette_date",
+            ),
+            ColumnMeta(
+                "correction_text",
+            ),
+        ],
+    ),
+    TableMeta(
+        "usp_field_of_classification",
+        foreign_key="patent_id",
+        parent_name="us_patents",
+        primary_key="id",
+        cursor_class=PatentsDetailsCursor,
+        extract_multiple=all_getter(
+            "us-bibliographic-data-grant/us-field-of-classification-search"
+        ),
+        columns=[
+            ColumnMeta("patent_id"),
+            ColumnMeta("container_id"),
+            ColumnMeta(
+                "ipcr_classification",
+                getter("us-classifications-ipcr"),
+            ),
+            ColumnMeta(
+                "cpc_classification_text",
+                getter("classification-cpc-text"),
+            ),
+            ColumnMeta(
+                "cpc_classification_combination_text",
+                getter("classification-cpc-combination-text"),
+            ),
+            ColumnMeta(
+                "national_edition",
+                getter("classification-national/edition"),
+            ),
+            ColumnMeta(
+                "national_main",
+                getter("classification-national/main-classification"),
+            ),
+            ColumnMeta(
+                "national_further",
+                getter("classification-national/further-classification"),
+            ),
+            ColumnMeta(
+                "national_additional_info",
+                getter("classification-national/additional-info"),
+            ),
+            ColumnMeta(
+                "national_linked_code_group",
+                getter("classification-national/linked-indexing-code-group"),
+            ),
+            ColumnMeta(
+                "national_unlinked_code",
+                getter("classification-national/unlinked-indexing-code"),
+            ),
+            ColumnMeta(
+                "national_text",
+                getter("classification-national/text"),
+            ),
+        ],
+    ),
+    USPartiesTableMeta(
+        "usp_inventors",
+        extract_multiple=alternative_path_getter(
+            "us-bibliographic-data-grant/us-parties/inventors/inventor",
+            "us-bibliographic-data-grant/parties/inventors",
+        ),
+        columns=[
+            ColumnMeta(
+                "designation",
+                agetter("designation"),
+            ),
+            ColumnMeta(
+                "designated_country",
+                getter("designated-states/country"),
+            ),
+            ColumnMeta(
+                "designated_region",
+                getter("designated-states/region"),
+            ),
+        ],
+    ),
+    USPartiesTableMeta(
+        "usp_applicants",
+        extract_multiple=alternative_path_getter(
+            "us-bibliographic-data-grant/us-parties/us-applicants/us-applicant",
+            "us-bibliographic-data-grant/parties/applicants/applicant",
+        ),
+        columns=[
+            ColumnMeta(
+                "app_type",
+                agetter("app-type"),
+                description="Application type.",
+            ),
+            ColumnMeta(
+                "applicant_authority_category",
+                agetter("applicant-authority-category"),
+            ),
+            ColumnMeta(
+                "designation",
+                agetter("designation"),
+            ),
+            ColumnMeta(
+                "residence",
+                getter("residence/country"),
+            ),
+            ColumnMeta(
+                "us_rights",
+                getter("us-rights"),
+            ),
+            ColumnMeta(
+                "designated_country",
+                getter("designated-states/country"),
+            ),
+            ColumnMeta(
+                "designated_region",
+                getter("designated-states/region"),
+            ),
+            ColumnMeta(
+                "designated_country_inventor",
+                getter("designated-states-as-inventor/country"),
+            ),
+            ColumnMeta(
+                "designated_region_inventor",
+                getter("designated-states-as-inventor/region"),
+            ),
+        ],
+    ),
+    USPartiesTableMeta(
+        "usp_agents",
+        extract_multiple=alternative_path_getter(
+            "us-bibliographic-data-grant/us-parties/agents/agent",
+            "us-bibliographic-data-grant/parties/agents/agent",
+        ),
+        columns=[
+            ColumnMeta(
+                "rep_type",
+                agetter("rep-type"),
+                description="Representative type.",
+            ),
+        ],
+    ),
+    TableMeta(
+        "usp_assignees",
+        foreign_key="patent_id",
+        parent_name="us_patents",
+        primary_key="id",
+        cursor_class=PatentsAssigneesCursor,
+        extract_multiple=all_getter(
+            "us-bibliographic-data-grant/assignees/assignee"
+        ),
+        columns=[
+            ColumnMeta("patent_id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("name"),
+            ColumnMeta("first_name"),
+            ColumnMeta("middle_name"),
+            ColumnMeta("last_name"),
+            ColumnMeta("org_name"),
+            ColumnMeta("suffix"),
+            ColumnMeta("iid"),
+            ColumnMeta("role"),
+            ColumnMeta("department"),
+            ColumnMeta("synonym"),
+            ColumnMeta("registered_number"),
+            ColumnMeta("email"),
+            ColumnMeta("url"),
+            ColumnMeta("text"),
+            ColumnMeta("city"),
+            ColumnMeta("state"),
+            ColumnMeta("country"),
+            ColumnMeta("postcode"),
+        ],
+    ),
+    TableMeta(
+        "usp_citations",
+        foreign_key="patent_id",
+        parent_name="us_patents",
+        primary_key="id",
+        cursor_class=PatentsDetailsCursor,
+        extract_multiple=alternative_path_getter(
+            "us-bibliographic-data-grant/us-references-cited/us-citation",
+            "us-bibliographic-data-grant/references-cited/citation",
+        ),
+        columns=[
+            ColumnMeta("patent_id"),
+            ColumnMeta("container_id"),
+            ColumnMeta(
+                "patcit_num",
+                agetter(
+                    "num",
+                    "patcit",
+                ),
+                description="Patent Citation within abstract, description or claims.",
+            ),
+            ColumnMeta(
+                "nplcit_num",
+                agetter(
+                    "num",
+                    "nplcit",
+                ),
+                description="Non-Patent Literature (NPL) CITation.",
+            ),
+            ColumnMeta(
+                "nplcit_othercit",
+                getter("nplcit/othercit"),
+            ),
+            ColumnMeta(
+                "patcit_doc_number",
+                getter("patcit/document-id/doc-number"),
+            ),
+            ColumnMeta(
+                "patcit_country",
+                getter("patcit/document-id/country"),
+            ),
+            ColumnMeta(
+                "patcit_kind",
+                getter("patcit/document-id/kind"),
+            ),
+            ColumnMeta(
+                "patcit_date",
+                getter("patcit/document-id/date"),
+            ),
+            ColumnMeta(
+                "patcit_rel_passage",
+                getter("patcit/rel-passage/passage"),
+                description="Relevant passage within cited document.",
+            ),
+            ColumnMeta(
+                "patcit_rel_category",
+                getter("patcit/rel-passage/category"),
+                description="Relevant passage within cited document.",
+            ),
+            ColumnMeta(
+                "patcit_rel_claims",
+                getter("patcit/rel-passage/rel-claims"),
+            ),
+            ColumnMeta(
+                "category",
+                getter("category"),
+            ),
+            ColumnMeta(
+                "ipc_class_edition",
+                getter("classification-ipc/edition"),
+                description="International Patent Classification (IPC) data",
+            ),
+            ColumnMeta(
+                "ipc_class_main",
+                getter("classification-ipc/main-classification"),
+            ),
+            ColumnMeta(
+                "ipc_class_further",
+                getter("classification-ipc/further-classification"),
+            ),
+            ColumnMeta(
+                "cpc_class_text",
+                getter("classification-cpc-text"),
+                description="Unstructured classification cpc data.",
+            ),
+            ColumnMeta(
+                "national_class_country",
+                getter("classification-national/country"),
+            ),
+            ColumnMeta(
+                "national_class_edition",
+                getter("classification-national/edition"),
+            ),
+            ColumnMeta(
+                "national_class_main",
+                getter("classification-national/main-classification"),
+            ),
+            ColumnMeta(
+                "national_class_further",
+                getter("classification-national/further-classification"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "usp_patent_family",
+        foreign_key="patent_id",
+        parent_name="us_patents",
+        primary_key="id",
+        cursor_class=PatentsDetailsCursor,
+        extract_multiple=all_getter(
+            "us-bibliographic-data-grant/patent-family"
+        ),
+        columns=[
+            ColumnMeta("patent_id"),
+            ColumnMeta("container_id"),
+            ColumnMeta(
+                "priority_app_doc_number",
+                getter("priority-application/document-id/doc-number"),
+                description="Priority application number.",
+            ),
+            ColumnMeta(
+                "priority_app_country",
+                getter("priority-application/document-id/country"),
+            ),
+            ColumnMeta(
+                "priority_app_kind",
+                getter("priority-application/document-id/kind"),
+            ),
+            ColumnMeta(
+                "priority_app_name",
+                getter("priority-application/document-id/name"),
+            ),
+            ColumnMeta(
+                "priority_app_date",
+                getter("priority-application/document-id/date"),
+            ),
+            ColumnMeta(
+                "family_member_doc_number",
+                getter("family-member/document-id/doc-number"),
+                description="Priority application number.",
+            ),
+            ColumnMeta(
+                "family_member_country",
+                getter("family-member/document-id/country"),
+            ),
+            ColumnMeta(
+                "family_member_kind",
+                getter("family-member/document-id/kind"),
+            ),
+            ColumnMeta(
+                "family_member_name",
+                getter("family-member/document-id/name"),
+            ),
+            ColumnMeta(
+                "family_member_date",
+                getter("family-member/document-id/date"),
+            ),
+            ColumnMeta(
+                "text",
+                getter("priority-application/text"),
+            ),
         ],
     ),
 ]
