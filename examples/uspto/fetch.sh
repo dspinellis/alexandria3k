@@ -3,7 +3,13 @@
 # Fetch all USPTO bibliographic data for XML Version >= 4.0
 #
 
+# Fail on command errors and unset variables
+set -eu
+
 BASE=https://bulkdata.uspto.gov/data/patent/grant/redbook/bibliographic
+
+mkdir uspto-data
+cd uspto-data
 
 for year in $(seq 2005 $(date +%Y)) ; do
   mkdir -p $year
