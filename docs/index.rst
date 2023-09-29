@@ -15,6 +15,9 @@ set <https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-p
 (25 GB compressed, 435 GB uuncompressed), containing about 78 million
 author records, as well as data sets of funder bodies, journal names,
 open access journals, and research organizations.
+It is also compatible with the bibliographic text data from the 
+`US Patent and Trademark Office (USPTO) <https://bulkdata.uspto.gov>`__ 
+from 2005 to present (11 GB compressed).
 
 The *alexandria3k*
 package installation contains all elements required to run it. It does
