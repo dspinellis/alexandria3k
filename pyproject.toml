@@ -11,6 +11,7 @@ authors = [
 description = "Efficient relational database queries over the entire Crossref abnd ORCID data sets"
 readme = "README.md"
 requires-python = ">=3.7"
+license = {file = "LICENSE"}
 
 dependencies = [
   "apsw",
@@ -33,7 +34,9 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/dspinellis/alexandria3k"
+"Repository" = "https://github.com/dspinellis/alexandria3k.git"
 "Bug Tracker" = "https://github.com/dspinellis/alexandria3k/issues"
+"Documentation" = "https://dspinellis.github.io/alexandria3k/"
 
 [project.scripts]
 a3k = "alexandria3k.__main__:main"
