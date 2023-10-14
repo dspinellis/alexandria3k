@@ -32,11 +32,8 @@ jobs:
           if [ $PYTHON_VER == 3.11 ] ; then find . -name '*.py' | xargs pipenv run python -m pylint --rcfile ../.pylintrc ; fi
         env:
           PYTHON_VER: ${{ matrix.python-version }}
-      - name: Install rdbunit
+      - name: Install SQLite
         run: |
-          git clone --depth=1 https://github.com/dspinellis/rdbunit.git
-          cd rdbunit
-          sudo make install
           sudo apt-get install -y sqlite
       - name: Run SQL unit tests
         run: |
