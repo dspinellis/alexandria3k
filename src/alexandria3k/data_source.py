@@ -812,7 +812,7 @@ class DataSource:
 
             if debug.enabled("dump-matched"):
                 csv_writer = csv.writer(debug.get_output(), delimiter="\t")
-                for rec in self.vdb.execute("SELECT * FROM temp_matched"):
+                for rec in self.cursor.execute("SELECT * FROM temp_matched"):
                     csv_writer.writerow(rec)
 
             perf.log("Matched table creation")
