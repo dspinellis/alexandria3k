@@ -63,6 +63,54 @@ where ``count-year-type.sql`` contains:
    SELECT type AS name, Sum(number) FROM counts
      GROUP BY type
 
+Obtain top-five US Patent Office application countries from 2005 to 2022
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: sh
+
+   a3k query uspto 'uspto-data' \
+      --query-file top-applicants-per-year.sql>results.csv
+
+where ``top-applicants-per-year.sql`` contains:
+
+.. code:: sql
+
+   WITH ranked_countries AS (        
+         SELECT
+            SUBSTRING(date_published, 1, 4) AS year,
+            usp_applicants.country AS country,
+            COUNT(*) AS patent_count,
+            ROW_NUMBER() OVER(PARTITION BY SUBSTRING(date_published, 1, 4) ORDER BY COUNT(*) DESC) AS country_rank
+         FROM
+            us_patents
+         INNER JOIN
+            usp_applicants
+         ON
+            us_patents.container_id = usp_applicants.patent_id
+         GROUP BY
+            year, usp_applicants.country
+   ),
+   top_5_2022 AS (
+         SELECT
+            country
+         FROM
+            ranked_countries
+         WHERE
+            year = '2022' AND country_rank <= 5
+   )
+   SELECT
+         rc.year,
+         rc.country,
+         rc.patent_count
+   FROM
+         ranked_countries rc
+   JOIN
+         top_5_2022 t5
+   ON
+         rc.country = t5.country
+   ORDER BY
+         rc.year, rc.country;
+
 Sampling
 ~~~~~~~~
 
@@ -97,6 +145,31 @@ If instead you need randomly different results *each time you sample*,
 you can re-seed the random number generator for each sample with 
 ``--sample '( random.seed() ) or random.random() < 0.01'`` or
 similar.
+
+For the USPTO dataset sampling is performed through a
+provided tuple argument named **data**. The tuple's first value is
+a designator string that will be either "path" or "container".
+Thus, sampling can be done either on compressed files represented
+through the weekly issued patents (path) or on the patents' full text
+(container) located within the issued file.
+The tuple's second value is a USPTO Zip file path or the patent's text, respectively.
+
+For sampling the compressed files
+
+.. code:: sh
+
+   a3k query uspto 'uspto-data'  \
+      --sample 'random.random() < 0.5 if data[0] == ""path"" else True' \
+      --query "SELECT Count(*), relation FROM usp_related_documents GROUP BY relation"
+
+Or for sampling unique patents
+
+.. code:: sh
+
+   a3k query uspto 'uspto-data'  \
+      --sample 'random.random() < 0.5 if data[0] == ""container"" else True' \
+      --query "SELECT Count(*), relation FROM usp_related_documents GROUP BY relation"
+
 
 
 Database of COVID research

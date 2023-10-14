@@ -41,6 +41,45 @@ download the *summary file* of the ORCID Public Data File
 works on the compressed file; there is no need to expand it (it expands
 to about 0.5 TB).
 
+USPTO data
+~~~~~~~~~~
+
+You can populate a database with the bibliographic text (front page) of each
+patent application published weekly from 2003 to present. These data are published
+from the US Patent and Trademark Office (USPTO) and hence the data source acronym used in *alexandria3k*.
+Some of the key components of bibliographic data in a USPTO patent are
+title,
+inventors,
+assignee,
+publication date,
+references,
+citations,
+related documents, etc.
+
+Follow these steps to explore the USPTO patent bibliographic data with the magic of *alexandria3k*.
+
+**Downloading Data**:
+To access the required data, download it from the USPTO's bulk data page `here <https://bulkdata.uspto.gov/>`__.
+
+**Select the Correct Dataset**:
+There are various datasets available; ensure you select the "Patent Grant Bibliographic (Front Page) Text Data (JAN 1976 - PRESENT)" dataset. From there on you can choose weekly issued patent files from year 2005 to now.
+
+**Organizing Downloaded Data**:
+Organize the downloaded data by ensuring that each zip file is placed under a folder representing the year it was published. This step is crucial for operating properly.
+
+
+.. code-block:: text
+
+   /data
+   ├── 2023
+   │   ├── ipgb20230131_wk05.zip
+   │   └── ipgb20230207_wk06.zip
+   ├── 2010
+       ├── ipgb20100223_wk08.zip
+       └── ipgb20100302_wk09.zip
+
+The shell script *examples/uspto/fetch.sh* can be used to download all USPTO data.
+
 Other data sources
 ~~~~~~~~~~~~~~~~~~
 

@@ -5,7 +5,7 @@ After downloading the Crossref data you can use *alexandria3k* through
 its Python API or as a command-line tool.
 
 With *alexandria3k* you can process diverse sources of bibliographic
-data, such as Crossref, ORCID, DOAJ, and ROR.
+data, such as Crossref, ORCID, USPTO, DOAJ, and ROR.
 Specifically, you can perform the following actions.
 
 - Directly run ad hoc SQL queries on any of the supported data sets.
