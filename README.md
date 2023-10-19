@@ -1,3 +1,5 @@
+[![Alexandria3k CI](https://github.com/dspinellis/alexandria3k/actions/workflows/ci.yml/badge.svg)](https://github.com/dspinellis/alexandria3k/actions/workflows/ci.yml)
+
 ## Alexandria3k
 
 The _alexandria3k_ package supplies a library and a command-line tool
