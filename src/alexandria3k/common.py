@@ -159,7 +159,7 @@ def set_fast_writing(database):
     """
     database.execute("PRAGMA synchronous = OFF")
     database.execute("PRAGMA journal_mode = OFF")
-    database.execute("PRAGMA locking_mode = EXCLuSIVE")
+    database.execute("PRAGMA locking_mode = EXCLUSIVE")
 
 
 def log_sql(statement):
