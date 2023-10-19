@@ -363,6 +363,37 @@ Not part of the apsw API.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="data_source.ItemsCursor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ItemsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ItemsCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>A cursor over the items of data files. Internal use only.
+Not used directly by an SQLite table.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.ItemsCursor.Close">
+<span class="sig-name descname"><span class="pre">Close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ItemsCursor.Close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cursor’s destructor, used for cleanup</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.ItemsCursor.Eof">
+<span class="sig-name descname"><span class="pre">Eof</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ItemsCursor.Eof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True when the end of the table’s records has been reached.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.ItemsCursor.Rowid">
+<span class="sig-name descname"><span class="pre">Rowid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ItemsCursor.Rowid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a unique id of the row along all records</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.ItemsCursor.current_row_value">
+<span class="sig-name descname"><span class="pre">current_row_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ItemsCursor.current_row_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current row. Not part of the apsw API.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py data">
 <dt class="sig sig-object py" id="data_source.ROWID_COLUMN">
 <span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ROWID_COLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#data_source.ROWID_COLUMN" title="Permalink to this definition">¶</a></dt>
@@ -551,6 +582,20 @@ and an apsw table (a StreamingTable instance) streaming over its data</p>
 
 </dd></dl>
 
+<span class="target" id="module-xml"></span><p>Core XML support for Python.</p>
+<p>This package contains four sub-packages:</p>
+<dl class="simple">
+<dt>dom – The W3C Document Object Model.  This supports DOM Level 1 +</dt><dd><p>Namespaces.</p>
+</dd>
+</dl>
+<p>parsers – Python wrappers for XML parsers (currently only supports Expat).</p>
+<dl class="simple">
+<dt>sax – The Simple API for XML, developed by XML-Dev, led by David</dt><dd><p>Megginson and ported to Python by Lars Marius Garshol.  This
+supports the SAX 2 API.</p>
+</dd>
+<dt>etree – The ElementTree XML library.  This is a subset of the full</dt><dd><p>ElementTree XML release.</p>
+</dd>
+</dl>
 </div>
 </div>
 

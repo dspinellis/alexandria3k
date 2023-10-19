@@ -40,6 +40,14 @@ ROR data concern research organizations, identified through their DOI.
 .. figure:: ./schema/ror.svg
    :alt: ROR data schema
 
+USPTO data
+~~~~~~~~~~
+
+USPTO data are the metadata of US Patent Office granted patents.
+
+.. figure:: ./schema/uspto.svg
+   :alt: USPTO data schema
+
 Other data
 ~~~~~~~~~~
 

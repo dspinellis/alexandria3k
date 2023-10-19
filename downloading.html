@@ -69,6 +69,37 @@ download the <em>summary file</em> of the ORCID Public Data File
 works on the compressed file; there is no need to expand it (it expands
 to about 0.5 TB).</p>
 </div>
+<div class="section" id="uspto-data">
+<h2>USPTO data<a class="headerlink" href="#uspto-data" title="Permalink to this headline">¶</a></h2>
+<p>You can populate a database with the bibliographic text (front page) of each
+patent application published weekly from 2003 to present. These data are published
+from the US Patent and Trademark Office (USPTO) and hence the data source acronym used in <em>alexandria3k</em>.
+Some of the key components of bibliographic data in a USPTO patent are
+title,
+inventors,
+assignee,
+publication date,
+references,
+citations,
+related documents, etc.</p>
+<p>Follow these steps to explore the USPTO patent bibliographic data with the magic of <em>alexandria3k</em>.</p>
+<p><strong>Downloading Data</strong>:
+To access the required data, download it from the USPTO’s bulk data page <a class="reference external" href="https://bulkdata.uspto.gov/">here</a>.</p>
+<p><strong>Select the Correct Dataset</strong>:
+There are various datasets available; ensure you select the “Patent Grant Bibliographic (Front Page) Text Data (JAN 1976 - PRESENT)” dataset. From there on you can choose weekly issued patent files from year 2005 to now.</p>
+<p><strong>Organizing Downloaded Data</strong>:
+Organize the downloaded data by ensuring that each zip file is placed under a folder representing the year it was published. This step is crucial for operating properly.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/data
+├── 2023
+│   ├── ipgb20230131_wk05.zip
+│   └── ipgb20230207_wk06.zip
+├── 2010
+    ├── ipgb20100223_wk08.zip
+    └── ipgb20100302_wk09.zip
+</pre></div>
+</div>
+<p>The shell script <em>examples/uspto/fetch.sh</em> can be used to download all USPTO data.</p>
+</div>
 <div class="section" id="other-data-sources">
 <h2>Other data sources<a class="headerlink" href="#other-data-sources" title="Permalink to this headline">¶</a></h2>
 <p>The <em>alexandria3k</em> system can also add to a database the following
@@ -115,6 +146,7 @@ Organization Registry — ROR</a> (595k records)</p></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data downloading</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#crossref-data">Crossref data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#orcid-data">ORCID data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uspto-data">USPTO data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#other-data-sources">Other data sources</a></li>
 </ul>
 </li>
