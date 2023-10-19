@@ -1,7 +1,7 @@
-.depend
-.depend.all
 cdindex-db
 cdindex-db.exe
+.depend
+.depend.all
 fast-cdindex
 nohup.out
 populate

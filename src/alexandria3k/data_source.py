@@ -739,7 +739,7 @@ class DataSource:
             self.vdb.execute(
                 log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
             )
-            set_fast_writing(self.vdb)
+            set_fast_writing(self.vdb, "populated")
 
             self.index_manager = _IndexManager(self.vdb, self.root_name)
 

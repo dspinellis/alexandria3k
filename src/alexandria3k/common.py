@@ -139,7 +139,7 @@ def ensure_table_exists(connection, table_name):
         fail(f"The required table '{table_name}' is not populated.")
 
 
-def set_fast_writing(database):
+def set_fast_writing(connection, name="main"):
     """
     Implement very fast database inserts at the risk of possible data
     corruption in case of a crash.
@@ -154,12 +154,15 @@ def set_fast_writing(database):
     See https://stackoverflow.com/a/58547438/20520 for measurements behind this
     approach.
 
-    :param database: Connection to the database to configure.
-    :type database: Connection
+    :param connection: Connection to the database to configure.
+    :type connection: Connection
+
+    :param name: Name of the database to configure.
+    :type name: str, optional
     """
-    database.execute("PRAGMA synchronous = OFF")
-    database.execute("PRAGMA journal_mode = OFF")
-    database.execute("PRAGMA locking_mode = EXCLUSIVE")
+    connection.execute(f"PRAGMA {name}.synchronous = OFF")
+    connection.execute(f"PRAGMA {name}.journal_mode = OFF")
+    connection.execute(f"PRAGMA {name}.locking_mode = EXCLUSIVE")
 
 
 def log_sql(statement):
