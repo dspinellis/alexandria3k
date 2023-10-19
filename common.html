@@ -169,7 +169,7 @@ C-style block comments (<cite>/* … */</cite>).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="common.set_fast_writing">
-<span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">set_fast_writing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.set_fast_writing" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">set_fast_writing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'main'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.set_fast_writing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implement very fast database inserts at the risk of possible data
 corruption in case of a crash.
 We don’t really care, because we assume the database is
@@ -184,7 +184,10 @@ See <a class="reference external" href="https://stackoverflow.com/a/58547438/205
 approach.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>database</strong> (<em>Connection</em>) – Connection to the database to configure.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection</strong> (<em>Connection</em>) – Connection to the database to configure.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the database to configure.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
