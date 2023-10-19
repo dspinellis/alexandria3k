@@ -128,7 +128,7 @@ class TestUsptoPopulateMasterCondition(PopulateQueries):
         if os.path.exists(DATABASE_PATH):
             os.unlink(DATABASE_PATH)
 
-        debug.set_flags(["sql", "dump-matched"])
+        # debug.set_flags(["sql", "dump-matched"])
 
         FileCache.parse_counter = 0
         cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
@@ -218,7 +218,7 @@ class TestUsptoPopulateMasterColumnCondition(PopulateQueries):
         ensure_unlinked(DATABASE_PATH)
         FileCache.parse_counter = 0
 
-        debug.set_flags(["sql"])
+        # debug.set_flags(["sql"])
         cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(
             DATABASE_PATH,
@@ -254,7 +254,7 @@ class TestUsptoPopulateDetailConditionColumn(PopulateQueries):
         ensure_unlinked(DATABASE_PATH)
         FileCache.parse_counter = 0
 
-        debug.set_flags(["sql"])
+        # debug.set_flags(["sql"])
         cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(
             DATABASE_PATH,
@@ -287,7 +287,7 @@ class TestUsptoPopulateMultipleConditionColumn(PopulateQueries):
         ensure_unlinked(DATABASE_PATH)
         FileCache.parse_counter = 0
 
-        debug.set_flags(["sql"])
+        # debug.set_flags(["sql"])
         cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
         cls.uspto.populate(
             DATABASE_PATH,
