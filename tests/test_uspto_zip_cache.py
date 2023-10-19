@@ -27,10 +27,10 @@ add_src_dir()
 from alexandria3k.uspto_zip_cache import UsptoZipCache
 
 FILE_PATH_1 = td(
-    "data/April 2023 Patent Grant Bibliographic Data/2022/ipgb20221025_wk43.zip"
+    "data/uspto-2023-04/2022/ipgb20221025_wk43.zip"
 )
 FILE_PATH_2 = td(
-    "data/April 2023 Patent Grant Bibliographic Data/2023/ipgb20230404_wk14.zip"
+    "data/uspto-2023-04/2023/ipgb20230404_wk14.zip"
 )
 
 

@@ -8,6 +8,7 @@ export ROLAPDB?=rolap
 
 A3K?=a3k
 CROSSREF_DIR?=../common/Crossref-April-2022
+USPTO_DIR?=../common/uspto-data
 ORCID_SUMMARIES?=../common/ORCID_2022_10_summaries.tar.gz
 ROR?=../common/ror-v1.17.1-2022-12-16.zip
 
@@ -21,6 +22,9 @@ $(CROSSREF_DIR):
 	cd ../common && \
 	aria2c https://doi.org/10.13003/83b2gq && \
 	mv 'April 2022 Public Data File from Crossref' Crossref-April-2022
+
+$(USPTO_DIR):
+	cd ../common && ./fetch-uspto.sh
 
 $(ORCID_SUMMARIES):
 	curl -L https://orcid.figshare.com/ndownloader/files/37635374 >$@

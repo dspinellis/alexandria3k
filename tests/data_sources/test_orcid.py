@@ -132,7 +132,7 @@ class TestOrcidAuthorsOnly(unittest.TestCase):
         ensure_unlinked(DATABASE_PATH)
 
         # Add known authors
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(DATABASE_PATH)
 
         cls.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"))
@@ -176,7 +176,7 @@ class TestOrcidWorksOnly(unittest.TestCase):
         ensure_unlinked(DATABASE_PATH)
 
         # Add known authors
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(DATABASE_PATH)
 
         cls.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"))

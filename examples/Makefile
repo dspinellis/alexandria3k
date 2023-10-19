@@ -9,7 +9,8 @@
 TOP_DIR=$(shell readlink -f ..)
 
 # Use small data samples for all data files
-export CROSSREF_DIR?=$(TOP_DIR)/tests/data/sample
+export CROSSREF_DIR?=$(TOP_DIR)/tests/data/crossref-sample
+export USPTO_DIR?=$(TOP_DIR)/tests/data/uspto-2023-04
 export ORCID_SUMMARIES?=$(TOP_DIR)/tests/data/ORCID_2022_10_summaries.tar.gz
 export DBLP?=$(TOP_DIR)/tests/data/dblp.xml.gz
 export ROR?=$(TOP_DIR)/tests/data/ror.zip

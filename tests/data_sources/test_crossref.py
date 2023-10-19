@@ -118,7 +118,7 @@ class TestCrossrefPopulateVanilla(PopulateQueries):
         FileCache.file_reads = 0
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -237,7 +237,7 @@ class TestCrossrefPopulateMasterCondition(PopulateQueries):
         FileCache.file_reads = 0
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(DATABASE_PATH, None, "issn_print = '16191366'")
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -261,7 +261,7 @@ class TestCrossrefPopulateDetailCondition(PopulateQueries):
         FileCache.file_reads = 0
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(
             DATABASE_PATH, None, "work_authors.orcid = '0000-0002-5878-603X'"
         )
@@ -289,7 +289,7 @@ class TestCrossrefPopulateMasterColumnNoCondition(PopulateQueries):
         FileCache.file_reads = 0
 
         # debug.set_flags(["sql"])
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate( DATABASE_PATH, ["works.doi"])
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -320,7 +320,7 @@ class TestCrossrefPopulateMasterColumnCondition(PopulateQueries):
         FileCache.file_reads = 0
 
         # debug.set_flags(["sql"])
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(
             DATABASE_PATH,
             ["works.doi"],
@@ -356,7 +356,7 @@ class TestCrossrefPopulateDetailConditionColumns(PopulateQueries):
         FileCache.file_reads = 0
 
         # debug.set_flags(["sql"])
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(
             DATABASE_PATH,
             ["works.doi", "work_funders.*"],
@@ -395,7 +395,7 @@ class TestCrossrefPopulateMultipleConditionColumns(PopulateQueries):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
 
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(
             DATABASE_PATH,
             ["work_updates.label"],
@@ -432,7 +432,7 @@ class TestCrossrefTransitiveClosure(unittest.TestCase):
         FileCache.file_reads = 0
         populate_attached()
         cls.crossref = crossref.Crossref(
-            td("data/sample"),
+            td("data/crossref-sample"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
 
@@ -479,7 +479,7 @@ class TestCrossrefQuery(unittest.TestCase):
         FileCache.file_reads = 0
         populate_attached()
         cls.crossref = crossref.Crossref(
-            td("data/sample"),
+            td("data/crossref-sample"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
 
@@ -557,7 +557,7 @@ class TestCrossrefPopulateAttachedDatabaseCondition(PopulateQueries):
 
         # debug.set_flags(["sql"])
         cls.crossref = crossref.Crossref(
-            td("data/sample"),
+            td("data/crossref-sample"),
             attach_databases=[f"attached:{ATTACHED_DATABASE_PATH}"]
         )
         cls.crossref.populate(

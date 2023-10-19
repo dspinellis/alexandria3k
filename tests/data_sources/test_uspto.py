@@ -56,7 +56,7 @@ class TestUsptoPopulateVanilla(PopulateQueries):
 
         FileCache.parse_counter = 0
         UsptoZipCache.file_reads = 0
-        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
+        cls.uspto = uspto.Uspto(td("data/uspto-2023-04"))
         cls.uspto.populate(DATABASE_PATH)
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -131,7 +131,7 @@ class TestUsptoPopulateMasterCondition(PopulateQueries):
         # debug.set_flags(["sql", "dump-matched"])
 
         FileCache.parse_counter = 0
-        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
+        cls.uspto = uspto.Uspto(td("data/uspto-2023-04"))
         cls.uspto.populate(DATABASE_PATH, None, "us_patents.type = 'plant'")
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -154,7 +154,7 @@ class TestUsptoPopulateDetailCondition(PopulateQueries):
         FileCache.parse_counter = 0
         # debug.set_flags(["sql", "dump-matched"])
 
-        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
+        cls.uspto = uspto.Uspto(td("data/uspto-2023-04"))
         cls.uspto.populate(
             DATABASE_PATH, None, "usp_icpr_classifications.subclass = 'G'"
         )
@@ -187,7 +187,7 @@ class TestUsptoPopulateMasterColumnNoCondition(PopulateQueries):
         FileCache.parse_counter = 0
 
         # debug.set_flags(["sql"])
-        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
+        cls.uspto = uspto.Uspto(td("data/uspto-2023-04"))
         cls.uspto.populate(DATABASE_PATH, ["us_patents.type"])
         cls.con = sqlite3.connect(DATABASE_PATH)
         cls.cursor = cls.con.cursor()
@@ -219,7 +219,7 @@ class TestUsptoPopulateMasterColumnCondition(PopulateQueries):
         FileCache.parse_counter = 0
 
         # debug.set_flags(["sql"])
-        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
+        cls.uspto = uspto.Uspto(td("data/uspto-2023-04"))
         cls.uspto.populate(
             DATABASE_PATH,
             ["us_patents.drawings_number"],
@@ -255,7 +255,7 @@ class TestUsptoPopulateDetailConditionColumn(PopulateQueries):
         FileCache.parse_counter = 0
 
         # debug.set_flags(["sql"])
-        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
+        cls.uspto = uspto.Uspto(td("data/uspto-2023-04"))
         cls.uspto.populate(
             DATABASE_PATH,
             ["us_patents.drawings_number", "usp_icpr_classifications.*"],
@@ -288,7 +288,7 @@ class TestUsptoPopulateMultipleConditionColumn(PopulateQueries):
         FileCache.parse_counter = 0
 
         # debug.set_flags(["sql"])
-        cls.uspto = uspto.Uspto(td("data/April 2023 Patent Grant Bibliographic Data"))
+        cls.uspto = uspto.Uspto(td("data/uspto-2023-04"))
         cls.uspto.populate(
             DATABASE_PATH,
             ["us_patents.figures_number"],
@@ -324,7 +324,7 @@ class TestUsptoTransitive(unittest.TestCase):
 
         # debug.set_flags(["sql"])
         cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data"),
+            td("data/uspto-2023-04"),
             attach_databases=[f"attached_uspto:{ATTACHED_DATABASE_PATH}"],
         )
 
@@ -359,7 +359,7 @@ class TestUsptoQuery(unittest.TestCase):
 
         # debug.set_flags(["sql"])
         cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data"),
+            td("data/uspto-2023-04"),
             attach_databases=[f"attached_uspto:{ATTACHED_DATABASE_PATH}"],
         )
 
@@ -572,7 +572,7 @@ class TestUsptoPopulateAttachedDatabaseCondition(PopulateQueries):
 
         # debug.set_flags(["sql"])
         cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data"),
+            td("data/uspto-2023-04"),
             attach_databases=[f"attached_uspto:{ATTACHED_DATABASE_PATH}"],
         )
         cls.uspto.populate(
@@ -603,7 +603,7 @@ class TestUsptoSamplingContainer(PopulateQueries):
         FileCache.parse_counter = 0
         UsptoZipCache.file_reads = 0
         cls.uspto = uspto.Uspto(
-            td("data/April 2023 Patent Grant Bibliographic Data"),
+            td("data/uspto-2023-04"),
             sample=lambda data: True
             if (data[0] == "path")
             else True

@@ -1,20 +1,14 @@
 #
-# CI placeholder for USPTO example
+# Run USPTO example queries
 #
 
-export RDBMS?=sqlite
-export ROLAPDB?=rolap
+export MAINDB?=uspto
+export DEPENDENCIES=populate
 
-A3K?=a3k
+include ../common/Makefile
 
-V?=1
-TIME?=time
-export SQLITE_TMPDIR?=.
-
-include simple-rolap/Makefile
-
-simple-rolap/Makefile:
-	git clone https://github.com/dspinellis/simple-rolap
-
-depclean:
-	rm -f $(DEPENDENCIES)
+# Populate database with USPTO data
+populate: $(USPTO_DIR)
+	$(TIME) $(A3K) --debug progress \
+	  populate "$(MAINDB).db" uspto "$(USPTO_DIR)"
+	touch $@

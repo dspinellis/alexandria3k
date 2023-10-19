@@ -34,7 +34,7 @@ class TestTsort(unittest.TestCase):
     def setUp(self):
         # debug.set_flags(["sql"])
         FileCache.file_reads = 0
-        self.crossref = crossref.Crossref(td("data/sample"))
+        self.crossref = crossref.Crossref(td("data/crossref-sample"))
 
     def tsort_add_meta(self, table_names):
         """Add Crossref metadata and call tsort"""

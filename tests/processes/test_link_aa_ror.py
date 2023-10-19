@@ -49,7 +49,7 @@ class TestRorLink(unittest.TestCase):
         cls.ror.populate(DATABASE_PATH)
 
         # Needed to test author-ror linking
-        cls.crossref = crossref.Crossref(td("data/sample"))
+        cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(DATABASE_PATH)
 
         cls.con = apsw.Connection(DATABASE_PATH)
