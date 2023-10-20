@@ -92,7 +92,7 @@ Linting
 Plugin documentation
 ~~~~~~~~~~~~~~~~~~~~
 
-When data source of processing plugins are added the Python API
+When data source or processing plugins are added the Python API
 documentation must be updated as follows.
 
 .. code:: sh
