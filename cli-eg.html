@@ -88,48 +88,10 @@ number of Crossref publications by year and publication type.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="obtain-top-five-us-patent-office-application-countries-from-2005-to-2022">
-<h2>Obtain top-five US Patent Office application countries from 2005 to 2022<a class="headerlink" href="#obtain-top-five-us-patent-office-application-countries-from-2005-to-2022" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="obtain-patent-office-granted-patents-by-type">
+<h2>Obtain Patent Office granted patents by type<a class="headerlink" href="#obtain-patent-office-granted-patents-by-type" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query uspto <span class="s1">&#39;uspto-data&#39;</span> <span class="se">\</span>
-   --query-file top-applicants-per-year.sql&gt;results.csv
-</pre></div>
-</div>
-<p>where <code class="docutils literal notranslate"><span class="pre">top-applicants-per-year.sql</span></code> contains:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span> <span class="n">ranked_countries</span> <span class="k">AS</span> <span class="p">(</span>
-      <span class="k">SELECT</span>
-         <span class="k">SUBSTRING</span><span class="p">(</span><span class="n">date_published</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">AS</span> <span class="k">year</span><span class="p">,</span>
-         <span class="n">usp_applicants</span><span class="p">.</span><span class="n">country</span> <span class="k">AS</span> <span class="n">country</span><span class="p">,</span>
-         <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">AS</span> <span class="n">patent_count</span><span class="p">,</span>
-         <span class="n">ROW_NUMBER</span><span class="p">()</span> <span class="n">OVER</span><span class="p">(</span><span class="n">PARTITION</span> <span class="k">BY</span> <span class="k">SUBSTRING</span><span class="p">(</span><span class="n">date_published</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">DESC</span><span class="p">)</span> <span class="k">AS</span> <span class="n">country_rank</span>
-      <span class="k">FROM</span>
-         <span class="n">us_patents</span>
-      <span class="k">INNER</span> <span class="k">JOIN</span>
-         <span class="n">usp_applicants</span>
-      <span class="k">ON</span>
-         <span class="n">us_patents</span><span class="p">.</span><span class="n">container_id</span> <span class="o">=</span> <span class="n">usp_applicants</span><span class="p">.</span><span class="n">patent_id</span>
-      <span class="k">GROUP</span> <span class="k">BY</span>
-         <span class="k">year</span><span class="p">,</span> <span class="n">usp_applicants</span><span class="p">.</span><span class="n">country</span>
-<span class="p">),</span>
-<span class="n">top_5_2022</span> <span class="k">AS</span> <span class="p">(</span>
-      <span class="k">SELECT</span>
-         <span class="n">country</span>
-      <span class="k">FROM</span>
-         <span class="n">ranked_countries</span>
-      <span class="k">WHERE</span>
-         <span class="k">year</span> <span class="o">=</span> <span class="s1">&#39;2022&#39;</span> <span class="k">AND</span> <span class="n">country_rank</span> <span class="o">&lt;=</span> <span class="mi">5</span>
-<span class="p">)</span>
-<span class="k">SELECT</span>
-      <span class="n">rc</span><span class="p">.</span><span class="k">year</span><span class="p">,</span>
-      <span class="n">rc</span><span class="p">.</span><span class="n">country</span><span class="p">,</span>
-      <span class="n">rc</span><span class="p">.</span><span class="n">patent_count</span>
-<span class="k">FROM</span>
-      <span class="n">ranked_countries</span> <span class="n">rc</span>
-<span class="k">JOIN</span>
-      <span class="n">top_5_2022</span> <span class="n">t5</span>
-<span class="k">ON</span>
-      <span class="n">rc</span><span class="p">.</span><span class="n">country</span> <span class="o">=</span> <span class="n">t5</span><span class="p">.</span><span class="n">country</span>
-<span class="k">ORDER</span> <span class="k">BY</span>
-      <span class="n">rc</span><span class="p">.</span><span class="k">year</span><span class="p">,</span> <span class="n">rc</span><span class="p">.</span><span class="n">country</span><span class="p">;</span>
+   --query <span class="s1">&#39;SELECT type, Count(*) FROM us_patents GROUP BY type&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -361,7 +323,7 @@ the following.</p>
 <li class="toctree-l2"><a class="reference internal" href="#show-doi-and-title-of-all-publications">Show DOI and title of all publications</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">Save DOI and title of 2021 publications in a CSV file suitable for Excel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#count-crossref-publications-by-year-and-type">Count Crossref publications by year and type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#obtain-top-five-us-patent-office-application-countries-from-2005-to-2022">Obtain top-five US Patent Office application countries from 2005 to 2022</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obtain-patent-office-granted-patents-by-type">Obtain Patent Office granted patents by type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sampling">Sampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#database-of-covid-research">Database of COVID research</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#publications-graph">Publications graph</a></li>

@@ -63,53 +63,14 @@ where ``count-year-type.sql`` contains:
    SELECT type AS name, Sum(number) FROM counts
      GROUP BY type
 
-Obtain top-five US Patent Office application countries from 2005 to 2022
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Obtain Patent Office granted patents by type
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: sh
 
    a3k query uspto 'uspto-data' \
-      --query-file top-applicants-per-year.sql>results.csv
+      --query 'SELECT type, Count(*) FROM us_patents GROUP BY type'
 
-where ``top-applicants-per-year.sql`` contains:
-
-.. code:: sql
-
-   WITH ranked_countries AS (        
-         SELECT
-            SUBSTRING(date_published, 1, 4) AS year,
-            usp_applicants.country AS country,
-            COUNT(*) AS patent_count,
-            ROW_NUMBER() OVER(PARTITION BY SUBSTRING(date_published, 1, 4) ORDER BY COUNT(*) DESC) AS country_rank
-         FROM
-            us_patents
-         INNER JOIN
-            usp_applicants
-         ON
-            us_patents.container_id = usp_applicants.patent_id
-         GROUP BY
-            year, usp_applicants.country
-   ),
-   top_5_2022 AS (
-         SELECT
-            country
-         FROM
-            ranked_countries
-         WHERE
-            year = '2022' AND country_rank <= 5
-   )
-   SELECT
-         rc.year,
-         rc.country,
-         rc.patent_count
-   FROM
-         ranked_countries rc
-   JOIN
-         top_5_2022 t5
-   ON
-         rc.country = t5.country
-   ORDER BY
-         rc.year, rc.country;
 
 Sampling
 ~~~~~~~~
