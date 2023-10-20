@@ -13,10 +13,11 @@ In addition, the Crossref data set can be linked with the `ORCID summary
 data
 set <https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file->`__
 (25 GB compressed, 435 GB uuncompressed), containing about 78 million
-author records, as well as data sets of funder bodies, journal names,
+author records,
+the `US Patent and Trademark Office issued patents <https://bulkdata.uspto.gov>`__ 
+(11 GB compressed, 115 GB uncompressed), containing about 5.4 million records,
+as well as data sets of funder bodies, journal names,
 open access journals, and research organizations.
-It is also compatible with the bibliographic text data from the 
-`US Patent and Trademark Office (USPTO) <https://bulkdata.uspto.gov>`__ 
 from 2005 to present (11 GB compressed).
 
 The *alexandria3k*

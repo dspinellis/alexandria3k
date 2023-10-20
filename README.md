@@ -15,7 +15,11 @@ In addition,
 the Crossref data set can be linked with
 the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (25 GB compressed, 435 GB uncompressed),
-  containing about 78 million author records, as well as
+  containing about 78 million author records,
+the [United States Patent Office issued patents](https://bulkdata.uspto.gov/)
+  (11 GB compressed, 115 GB uncompressed),
+  containing about 5.4 million records,
+as well as
 data sets of
 funder bodies,
 journal names,
