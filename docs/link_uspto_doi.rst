@@ -1,4 +1,4 @@
-Link USPTO citations with their DOI
+Link USPTO non-patent literature citations with their DOI
 ===================================
 
 .. Automatically generated file. Do not modify by hand.

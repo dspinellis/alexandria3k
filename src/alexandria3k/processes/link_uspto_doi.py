@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Link USPTO citations with their DOI"""
+"""Link USPTO non-patent literature citations with their DOI"""
 
 import re
 
