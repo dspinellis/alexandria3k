@@ -4,7 +4,7 @@ Alexandria3k documentation
 The *alexandria3k* package supplies a library and a command-line tool
 providing efficient relational query access to diverse publication open
 data sets.
-The most important one is the entire `Crossref data
+The largest one is the entire `Crossref data
 set <https://www.nature.com/articles/d41586-022-02926-y>`__ (157 GB
 compressed, 1 TB uncompressed). This contains publication metadata from
 about 134 million publications from all major international publishers
