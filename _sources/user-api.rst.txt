@@ -39,4 +39,5 @@ All are available through the modules documented below.
 
    link_aa_base_ror
    link_aa_top_ror
+   link_uspto_doi
    link_works_asjcs

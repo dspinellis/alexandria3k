@@ -78,7 +78,9 @@ Organize the downloaded data by ensuring that each zip file is placed under a fo
        ├── ipgb20100223_wk08.zip
        └── ipgb20100302_wk09.zip
 
-The shell script *examples/uspto/fetch.sh* can be used to download all USPTO data.
+The shell script ``examples/common/fetch-uspto.sh`` or the
+``$(USPTO_DIR)`` dependency of the ``examples/common/Makefile``,
+which uses it can be used to download all USPTO data.
 
 Other data sources
 ~~~~~~~~~~~~~~~~~~
