@@ -40,6 +40,8 @@
 <g id="edge1" class="edge">
 <title>persons&#45;&gt;person_researcher_urls</title>
 <path fill="none" stroke="black" d="M1178.81,-438.25C1000.96,-436.48 338.93,-422.32 169,-310 132.16,-285.65 108.71,-240.45 95.18,-205.29"/>
+<text text-anchor="middle" x="79.18" y="-209.09" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1174.81" y="-442.05" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_countries -->
 <g id="node3" class="node">
@@ -57,6 +59,8 @@
 <g id="edge2" class="edge">
 <title>persons&#45;&gt;person_countries</title>
 <path fill="none" stroke="black" d="M1178.82,-437.82C1015.38,-434.49 447.25,-415.4 307,-310 271.17,-283.07 253.52,-233.32 245.12,-197.65"/>
+<text text-anchor="middle" x="229.12" y="-201.45" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1174.82" y="-426.62" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_keywords -->
 <g id="node4" class="node">
@@ -74,6 +78,8 @@
 <g id="edge3" class="edge">
 <title>persons&#45;&gt;person_keywords</title>
 <path fill="none" stroke="black" d="M1178.88,-436.55C1032.2,-429.28 563.56,-399.38 447,-310 411.46,-282.75 393.42,-233.32 384.65,-197.8"/>
+<text text-anchor="middle" x="368.65" y="-201.6" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1182.88" y="-440.35" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_external_identifiers -->
 <g id="node5" class="node">
@@ -93,6 +99,8 @@
 <g id="edge4" class="edge">
 <title>persons&#45;&gt;person_external_identifiers</title>
 <path fill="none" stroke="black" d="M1178.72,-432.99C1059.57,-417.48 735.25,-370.64 648,-310 613.58,-286.08 588.13,-246.1 571.53,-212.87"/>
+<text text-anchor="middle" x="555.53" y="-216.67" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1174.72" y="-421.79" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_distinctions -->
 <g id="node6" class="node">
@@ -122,6 +130,8 @@
 <g id="edge5" class="edge">
 <title>persons&#45;&gt;person_distinctions</title>
 <path fill="none" stroke="black" d="M1178.91,-436.06C1096.33,-429.31 916.63,-404.04 805,-310 797.21,-303.43 790.11,-295.9 783.66,-287.76"/>
+<text text-anchor="middle" x="767.66" y="-291.56" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1182.91" y="-424.86" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_educations -->
 <g id="node7" class="node">
@@ -151,6 +161,8 @@
 <g id="edge6" class="edge">
 <title>persons&#45;&gt;person_educations</title>
 <path fill="none" stroke="black" d="M1178.79,-426.17C1122.53,-408.54 1025.23,-371.31 963,-310 956.04,-303.15 949.58,-295.55 943.6,-287.51"/>
+<text text-anchor="middle" x="927.6" y="-291.31" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1174.79" y="-414.97" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_employments -->
 <g id="node8" class="node">
@@ -180,6 +192,8 @@
 <g id="edge7" class="edge">
 <title>persons&#45;&gt;person_employments</title>
 <path fill="none" stroke="black" d="M1178.92,-381.78C1162.55,-359.83 1144.27,-334.19 1129,-310 1124.46,-302.81 1119.92,-295.35 1115.44,-287.76"/>
+<text text-anchor="middle" x="1099.44" y="-291.56" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1174.92" y="-385.58" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_invited_positions -->
 <g id="node9" class="node">
@@ -209,6 +223,8 @@
 <g id="edge8" class="edge">
 <title>persons&#45;&gt;person_invited_positions</title>
 <path fill="none" stroke="black" d="M1223,-381.67C1223,-354.52 1223,-320.8 1223,-287.77"/>
+<text text-anchor="middle" x="1207" y="-291.57" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1219" y="-370.47" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_memberships -->
 <g id="node10" class="node">
@@ -238,6 +254,8 @@
 <g id="edge9" class="edge">
 <title>persons&#45;&gt;person_memberships</title>
 <path fill="none" stroke="black" d="M1267.08,-381.78C1283.45,-359.83 1301.73,-334.19 1317,-310 1321.54,-302.81 1326.08,-295.35 1330.56,-287.76"/>
+<text text-anchor="middle" x="1314.56" y="-291.56" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1263.08" y="-370.58" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_qualifications -->
 <g id="node11" class="node">
@@ -267,6 +285,8 @@
 <g id="edge10" class="edge">
 <title>persons&#45;&gt;person_qualifications</title>
 <path fill="none" stroke="black" d="M1267.07,-426.02C1323.16,-408.23 1420.3,-370.83 1483,-310 1490.07,-303.15 1496.66,-295.55 1502.79,-287.51"/>
+<text text-anchor="middle" x="1486.79" y="-291.31" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1271.07" y="-414.82" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_services -->
 <g id="node12" class="node">
@@ -296,6 +316,8 @@
 <g id="edge11" class="edge">
 <title>persons&#45;&gt;person_services</title>
 <path fill="none" stroke="black" d="M1267.01,-436.24C1350.39,-429.79 1533.18,-405 1647,-310 1654.84,-303.45 1662,-295.93 1668.51,-287.8"/>
+<text text-anchor="middle" x="1652.51" y="-291.6" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1271.01" y="-440.04" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_fundings -->
 <g id="node13" class="node">
@@ -328,6 +350,8 @@
 <g id="edge12" class="edge">
 <title>persons&#45;&gt;person_fundings</title>
 <path fill="none" stroke="black" d="M1267.31,-433.65C1388.1,-419.67 1719.86,-376.03 1805,-310 1807.84,-307.8 1810.59,-305.46 1813.24,-303.01"/>
+<text text-anchor="middle" x="1797.24" y="-306.81" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1271.31" y="-422.45" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_peer_reviews -->
 <g id="node14" class="node">
@@ -357,6 +381,8 @@
 <g id="edge13" class="edge">
 <title>persons&#45;&gt;person_peer_reviews</title>
 <path fill="none" stroke="black" d="M1267.05,-435.88C1408.63,-426.71 1849.36,-392.02 1962,-310 1970.79,-303.6 1978.71,-295.95 1985.83,-287.54"/>
+<text text-anchor="middle" x="1969.83" y="-291.34" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1263.05" y="-439.68" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_research_resources -->
 <g id="node15" class="node">
@@ -380,6 +406,8 @@
 <g id="edge14" class="edge">
 <title>persons&#45;&gt;person_research_resources</title>
 <path fill="none" stroke="black" d="M1267.09,-436.94C1427.64,-430.53 1979.26,-402.12 2125,-310 2150.75,-293.72 2171.44,-268.32 2187.27,-242.8"/>
+<text text-anchor="middle" x="2171.27" y="-246.6" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1271.09" y="-440.74" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_works -->
 <g id="node16" class="node">
@@ -397,6 +425,8 @@
 <g id="edge15" class="edge">
 <title>persons&#45;&gt;person_works</title>
 <path fill="none" stroke="black" d="M1267.22,-436.07C1462.85,-424.95 2244.71,-376.62 2330,-310 2364.45,-283.09 2378.44,-233.34 2384.12,-197.66"/>
+<text text-anchor="middle" x="2368.12" y="-201.46" font-family="Arial" font-size="14.00">0…N</text>
+<text text-anchor="middle" x="1271.22" y="-424.87" font-family="Arial" font-size="14.00">1</text>
 </g>
 </g>
 </svg>
