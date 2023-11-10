@@ -1,6 +1,7 @@
 	node [fillcolor="#a6ce39"];
 	persons;
 
+	edge  [headlabel="0…N", taillabel="1"];
 	persons -> person_researcher_urls;
 	persons -> person_countries;
 	persons -> person_keywords;
