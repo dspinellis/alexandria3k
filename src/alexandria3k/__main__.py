@@ -190,7 +190,11 @@ def add_subcommand_process(subparsers):
     parser.add_argument(
         "process",
         choices=facility_names("processes"),
-        help="Name of the process to perform",
+        help=(
+            "Name of the process to perform;"
+            "see the data processing operations in the Alexandria3k "
+            "Python user API documentation for more details"
+        ),
     )
 
 
