@@ -112,6 +112,7 @@ documentation must be updated as follows.
    # While in the top-level directory
    bin/update-app-eg
 
+This requires an installed version of `Pandoc <https://pandoc.org/>`__.
 
 Database schema diagrams
 ~~~~~~~~~~~~~~~~~~~~~~~~
