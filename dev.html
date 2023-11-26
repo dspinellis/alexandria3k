@@ -71,7 +71,10 @@ top-level directory as follows:</p>
 code’s format, as well as building the package and the documentation
 when a new commit is pushed to GitHub.
 Before doing so, it’s advisable to perform these actions locally,
-as detailed in the following sections.</p>
+as detailed in the following sections.
+In addition, testing, formatting, and linting can be easilly configured
+to be run as a fast Git pre-commit hook by running the following commands
+at the top-level directory.</p>
 </div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
@@ -124,6 +127,7 @@ documentation must be updated as follows.</p>
 bin/update-app-eg
 </pre></div>
 </div>
+<p>This requires an installed version of <a class="reference external" href="https://pandoc.org/">Pandoc</a>.</p>
 </div>
 <div class="section" id="database-schema-diagrams">
 <h2>Database schema diagrams<a class="headerlink" href="#database-schema-diagrams" title="Permalink to this headline">¶</a></h2>

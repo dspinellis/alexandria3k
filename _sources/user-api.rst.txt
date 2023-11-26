@@ -1,7 +1,7 @@
+.. WARNING: Automatically generated file. Do not modify by hand.
+
 Python user API
 ===============
-
-.. Automatically generated file. Do not modify by hand.
 
 Data sources
 ~~~~~~~~~~~~
