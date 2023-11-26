@@ -54,6 +54,7 @@ to be run as a fast Git pre-commit hook by running the following commands
 at the top-level directory.
 
 .. code:: sh
+
    printf '#!/bin/sh\nbin/pre-commit\n' >.git/hooks/pre-commit
    chmod +x .git/hooks/pre-commit
 

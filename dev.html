@@ -75,6 +75,10 @@ as detailed in the following sections.
 In addition, testing, formatting, and linting can be easilly configured
 to be run as a fast Git pre-commit hook by running the following commands
 at the top-level directory.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">printf</span> <span class="s1">&#39;#!/bin/sh\nbin/pre-commit\n&#39;</span> &gt;.git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+</pre></div>
+</div>
 </div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
