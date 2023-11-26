@@ -49,6 +49,14 @@ code's format, as well as building the package and the documentation
 when a new commit is pushed to GitHub.
 Before doing so, it's advisable to perform these actions locally,
 as detailed in the following sections.
+In addition, testing, formatting, and linting can be easilly configured
+to be run as a fast Git pre-commit hook by running the following commands
+at the top-level directory.
+
+.. code:: sh
+
+   printf '#!/bin/sh\nbin/pre-commit\n' >.git/hooks/pre-commit
+   chmod +x .git/hooks/pre-commit
 
 Testing
 ~~~~~~~

@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+# Alexandria3k Crossref bibliographic metadata processing
+# Copyright (C) 2023  Diomidis Spinellis
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Pre-commit checks that can be installed as a Git pre-commit hook
+#
+# Make them part of the Git workflow by running at the top-level directory:
+# printf '#!/bin/sh\nbin/pre-commit\n' >.git/hooks/pre-commit
+# chmod +x .git/hooks/pre-commit
+#
+
+set -eu
+
+echo Python unit and integration tests
+python3 -m unittest discover -s .
+
+echo SQL unit tests
+for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
+
+echo Code formatting
+find src -name '*.py' | xargs black -l 79
+
+echo Linting
+find src -name '*.py' | xargs python -m pylint --rcfile .pylintrc
+
