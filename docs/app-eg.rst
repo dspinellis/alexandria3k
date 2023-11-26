@@ -1,3 +1,5 @@
+.. WARNING: Automatically generated file. Do not modify by hand.
+
 Application examples
 ====================
 

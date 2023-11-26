@@ -17,4 +17,8 @@ sed '
   /](/s|(|(https://github.com/dspinellis/alexandria3k/tree/main/examples/|
 }
 '  examples/README.md |
-pandoc -o docs/app-eg.rst
+{
+  echo ".. WARNING: Automatically generated file. Do not modify by hand."
+  echo
+  pandoc -t rst -o -
+} >docs/app-eg.rst
