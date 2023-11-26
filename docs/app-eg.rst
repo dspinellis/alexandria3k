@@ -61,5 +61,5 @@ The following examples are available.
    works <https://github.com/dspinellis/alexandria3k/tree/main/examples/tawfik>`__
 -  `Fully-indexed Crossref database
    sample <https://github.com/dspinellis/alexandria3k/tree/main/examples/sample>`__
--  `Top five US Patent Office applications by country and year  
-   <https://github.com/dspinellis/alexandria3k/tree/main/examples/uspto>`__
+-  `Top five US Patent Office applications by country and
+   year <https://github.com/dspinellis/alexandria3k/tree/main/examples/uspto>`__

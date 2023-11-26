@@ -43,3 +43,4 @@ The following examples are available.
 * [Calculate the works' CD-5 index using the Python API or a pre-populated database](cdindex)
 * [Investigate the CD-5 index of Dan Tawfik's works](tawfik)
 * [Fully-indexed Crossref database sample](sample)
+* [Top five US Patent Office applications by country and year](uspto)
