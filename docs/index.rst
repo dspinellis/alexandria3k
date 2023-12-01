@@ -27,15 +27,13 @@ party relational or graph database. It can therefore be used
 out-of-the-box for performing reproducible publication research on the
 desktop.
 
-Pre-print and citation
-----------------------
+Publication
+-----------
 
 Details about the rationale, design, implementation, and use of this
 software can be found in the following paper.
 
-Diomidis Spinellis. Open Reproducible Systematic Publication Research.
-arXiv:2301.13312, January 2023.
-`doi 10.48550/arXiv.2301.13312 <https://doi.org/10.48550/arXiv.2301.13312>`__
+Diomidis Spinellis. Open reproducible scientometric research with Alexandria3k. *PLoS ONE* 18(11): e0294946. November 2023. `doi: 10.1371/journal.pone.0294946 <https://doi.org/10.1371/journal.pone.0294946>`__
 
 Package name derivation
 -----------------------

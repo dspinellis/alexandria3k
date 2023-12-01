@@ -35,11 +35,11 @@ publication research on the desktop.
 
 ## Documentation
 
-The complete reference and use documentation for *alexandria3k*  can be found [here](https://dspinellis.github.io/alexandria3k/).
+The complete reference and use documentation for _alexandria3k_  can be found [here](https://dspinellis.github.io/alexandria3k/).
 
-## Pre-print and citation
+## Publication
 
 Details about the rationale, design, implementation, and use of this software
 can be found in the following paper.
 
-Diomidis Spinellis. Open Reproducible Systematic Publication Research. arXiv:2301.13312, February 2023. https://doi.org/10.48550/arXiv.2301.13312
+Diomidis Spinellis. Open reproducible scientometric research with Alexandria3k. _PLoS ONE_ 18(11): e0294946. November 2023. [doi: 10.1371/journal.pone.0294946](https://doi.org/10.1371/journal.pone.0294946)
