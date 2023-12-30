@@ -53,6 +53,25 @@ def external_ids_getter(id_name):
     return lambda row: external_ids_all(id_name, row)
 
 
+def external_grid_ids_all(id_name, row):
+    """Return combined ids for all rows or an empty string if not specified"""
+    external_ids = row.get("external_ids")
+    if not external_ids:
+        return []
+    ids = external_ids.get(id_name)
+    if ids:
+        return [ids["all"]]
+    return []
+
+
+def external_ids_getter_grid(id_name):
+    """Return a function that can be applied to a row and return the
+    external ids associated with the grid id type residing under the
+    "all" branch. It is different from the external_ids_getter function
+    because the "all" field under grid is not a list but a string."""
+    return lambda row: external_grid_ids_all(id_name, row)
+
+
 class RorCursor:
     """A virtual table cursor over the read ROR main data."""
 
@@ -174,9 +193,9 @@ class RorDetailsTableMeta(TableMeta):
         kwargs["primary_key"] = "id"
         kwargs["cursor_class"] = RorDetailsCursor
         kwargs["columns"] = [
-            ColumnMeta("id"),
-            ColumnMeta("ror_id"),
-        ] + kwargs["columns"]
+                                ColumnMeta("id"),
+                                ColumnMeta("ror_id"),
+                            ] + kwargs["columns"]
         super().__init__(name, **kwargs)
 
 
@@ -244,7 +263,15 @@ tables = [
             ColumnMeta("postcode", lambda row: row["postcode"]),
         ],
     ),
-    # OrgRef and GRID are deprecated, so we are not supporting these fields
+    # OrgRef is deprecated, so we are not supporting that field
+    # Even though GRID is deprecated, we are including it for ground truth for author-affiliation disambiguation
+    RorDetailsTableMeta(
+        "ror_grid",
+        extract_multiple=external_ids_getter_grid("GRID"),
+        columns=[
+            ColumnMeta("grid", lambda value: value),
+        ],
+    ),
     RorDetailsTableMeta(
         "ror_funder_ids",
         extract_multiple=external_ids_getter("FundRef"),
@@ -329,10 +356,10 @@ class Ror(DataSource):
     """
 
     def __init__(
-        self,
-        ror_file,
-        sample=lambda n: True,
-        attach_databases=None,
+            self,
+            ror_file,
+            sample=lambda n: True,
+            attach_databases=None,
     ):
         super().__init__(
             VTSource(ror_file, sample),
