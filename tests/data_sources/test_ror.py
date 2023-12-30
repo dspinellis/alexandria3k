@@ -89,6 +89,16 @@ class TestRorPopulate(unittest.TestCase):
         self.assertTrue(("501100001779",) in rows)
         self.assertTrue(("501100006532",) in rows)
 
+    def test_grid_ids(self):
+        result = TestRorPopulate.cursor.execute(
+            """SELECT grid FROM ror_grid WHERE ror_id=(
+                    SELECT id FROM research_organizations WHERE
+                        ror_path='04j757h98')"""
+        )
+        rows = list(result)
+        self.assertEqual(len(rows), 1)
+        self.assertTrue(("grid.1019.9",) in rows)
+
     def test_ror_types(self):
         result = TestRorPopulate.cursor.execute(
             """SELECT type FROM ror_types WHERE ror_id=(
