@@ -181,6 +181,7 @@ class RorDetailsTableMeta(TableMeta):
 
 
 tables = [
+    # Although deprecated, we are adding it as an additional organization identifier
     TableMeta(
         "research_organizations",
         cursor_class=RorCursor,
@@ -193,6 +194,7 @@ tables = [
             ColumnMeta(
                 "country_code", lambda row: row["country"]["country_code"]
             ),
+            ColumnMeta("grid", lambda row: row["external_ids"]["GRID"]["all"]),
         ],
     ),
     RorDetailsTableMeta(
@@ -244,7 +246,7 @@ tables = [
             ColumnMeta("postcode", lambda row: row["postcode"]),
         ],
     ),
-    # OrgRef and GRID are deprecated, so we are not supporting these fields
+    # OrgRef is deprecated, so we are not supporting this field
     RorDetailsTableMeta(
         "ror_funder_ids",
         extract_multiple=external_ids_getter("FundRef"),
