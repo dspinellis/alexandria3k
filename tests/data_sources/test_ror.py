@@ -70,6 +70,7 @@ class TestRorPopulate(unittest.TestCase):
             status,
             established,
             country_code,
+            grid,
         ) = result.fetchone()
         self.assertEqual(id, 0)
         self.assertEqual(ror_path, "019wvm592")
@@ -77,6 +78,7 @@ class TestRorPopulate(unittest.TestCase):
         self.assertEqual(status, "active")
         self.assertEqual(established, 1946)
         self.assertEqual(country_code, "AU")
+        self.assertEqual(grid, "grid.1001.0")
 
     def test_funder_ids(self):
         result = TestRorPopulate.cursor.execute(
