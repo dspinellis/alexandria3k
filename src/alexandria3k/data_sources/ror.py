@@ -181,7 +181,6 @@ class RorDetailsTableMeta(TableMeta):
 
 
 tables = [
-    # Although deprecated, we are adding it as an additional organization identifier
     TableMeta(
         "research_organizations",
         cursor_class=RorCursor,
@@ -194,6 +193,8 @@ tables = [
             ColumnMeta(
                 "country_code", lambda row: row["country"]["country_code"]
             ),
+            # Although deprecated, we are adding it as an additional
+            # organization identifier, as it provides useful ground truth data.
             ColumnMeta("grid", lambda row: row["external_ids"]["GRID"]["all"]),
         ],
     ),
