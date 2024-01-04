@@ -177,6 +177,30 @@ or an increasing counter over a streamed collection.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="data_source.DataFiles">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">DataFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_container</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>The source of the compressed data files</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.DataFiles.get_container_iterator">
+<span class="sig-name descname"><span class="pre">get_container_iterator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataFiles.get_container_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator over the int identifiers of all data files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.DataFiles.get_container_name">
+<span class="sig-name descname"><span class="pre">get_container_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataFiles.get_container_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the file corresponding to the specified fid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.DataFiles.get_file_array">
+<span class="sig-name descname"><span class="pre">get_file_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataFiles.get_file_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the array of data files</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="data_source.DataSource">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">DataSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataSource" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a meta-data object that supports queries over its
@@ -359,6 +383,27 @@ Not part of the apsw API.</p>
 <dt class="sig sig-object py" id="data_source.ElementsCursor.record_id">
 <span class="sig-name descname"><span class="pre">record_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ElementsCursor.record_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the record’s identifier. Not part of the apsw API.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="data_source.FilesCursor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">FilesCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_file_cache</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.FilesCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>A cursor that iterates over the files in a directory
+Not used directly by an SQLite table</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.FilesCursor.Filter">
+<span class="sig-name descname"><span class="pre">Filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_index_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.FilesCursor.Filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Always called first to initialize an iteration to the first
+(possibly constrained) row of the table</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_source.FilesCursor.Next">
+<span class="sig-name descname"><span class="pre">Next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.FilesCursor.Next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advance reading to the next available file. Files are assumed to be
+non-empty.</p>
 </dd></dl>
 
 </dd></dl>
