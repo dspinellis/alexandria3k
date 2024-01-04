@@ -59,3 +59,23 @@ def agetter(attr_name, path=None):
 def all_getter(path):
     """Return all elements from the specified path"""
     return lambda tree: tree.findall(path)
+
+
+def getter_by_attribute(attr_name, value, path=None):
+    """Return the text of the first element where the specified attribute equals the specified value
+    will return None if no element is found."""
+
+    def fgetter(tree):
+        elements = tree.findall(path) if path else [tree]
+        for element in elements:
+            if element.get(attr_name) == value:
+                return element.text
+        return None
+
+    return fgetter
+
+
+def lower(func):
+    """Return a function that returns the lower case of the value
+    returned by the specified function."""
+    return lambda x: func(x).lower()

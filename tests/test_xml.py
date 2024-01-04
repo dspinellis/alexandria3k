@@ -36,6 +36,8 @@ class TestXMLFunctions(unittest.TestCase):
                 <us-bibliographic-data-grant attribute="Value2">
                     <element1>Value1</element1>
                     <element2 id="2">Text</element2>
+                    <element id="3">Value3</element>
+                    <element id="4">Value4</element>
                 </us-bibliographic-data-grant>
             </us-patent-grant>
         """
@@ -67,22 +69,16 @@ class TestXMLFunctions(unittest.TestCase):
         )
 
     def test_get_attribute_root(self):
-        self.assertEqual(
-            get_attribute(self.tree, "file"), "US11617522-20230404.XML"
-        )
+        self.assertEqual(get_attribute(self.tree, "file"), "US11617522-20230404.XML")
 
     def test_get_attribute_existing_element(self):
         self.assertEqual(
-            get_attribute(
-                self.tree, "attribute", "us-bibliographic-data-grant"
-            ),
+            get_attribute(self.tree, "attribute", "us-bibliographic-data-grant"),
             "Value2",
         )
 
     def test_get_attribute_non_existing_element(self):
-        self.assertIsNone(
-            get_attribute(self.tree, "attribute", "non_existent_element")
-        )
+        self.assertIsNone(get_attribute(self.tree, "attribute", "non_existent_element"))
 
     def test_getter(self):
         path = "us-bibliographic-data-grant/element2"
@@ -92,9 +88,7 @@ class TestXMLFunctions(unittest.TestCase):
     def test_agetter_root(self):
         attribute_name = "file"
         attribute_getter = agetter(attribute_name)
-        self.assertEqual(
-            attribute_getter(self.tree), "US11617522-20230404.XML"
-        )
+        self.assertEqual(attribute_getter(self.tree), "US11617522-20230404.XML")
 
     def test_agetter_existing_element(self):
         attribute_name = "id"
@@ -112,9 +106,17 @@ class TestXMLFunctions(unittest.TestCase):
         path = "us-bibliographic-data-grant/"
         all_elements_getter = all_getter(path)
         elements = all_elements_getter(self.tree)
-        self.assertEqual(len(elements), 2)
+        self.assertEqual(len(elements), 4)
         self.assertEqual(elements[0].text, "Value1")
+
+    def test_getter_by_attribute(self):
+        attribute_name = "id"
+        attribute_value = "4"
+        path = "us-bibliographic-data-grant/"
+        element_getter = getter_by_attribute(attribute_name, attribute_value, path)
+        self.assertEqual(element_getter(self.tree), "Value4")
 
 
 if __name__ == "__main__":
     unittest.main()
+

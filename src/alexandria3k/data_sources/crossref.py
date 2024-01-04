@@ -19,54 +19,23 @@
 """Crossref publication data"""
 
 import abc
-import os
 
 from alexandria3k.data_source import (
-    CONTAINER_INDEX,
+    ROWID_INDEX,
+    DataFiles,
     DataSource,
     ElementsCursor,
-    ROWID_INDEX,
+    FilesCursor,
     StreamingCachedContainerTable,
-    ItemsCursor,
 )
-from alexandria3k.file_cache import get_file_cache
 from alexandria3k.db_schema import ColumnMeta, TableMeta
-
+from alexandria3k.file_cache import get_file_cache
 
 DEFAULT_SOURCE = None
 
 # Method names coming from apsw start with uppercase
 # pylint: disable=invalid-name
 # pylint: disable=too-many-lines
-
-
-class DataFiles:
-    """The source of the compressed JSON data files"""
-
-    def __init__(self, directory, sample_container):
-        # Collect the names of all available data files
-        self.data_files = []
-        counter = 1
-        for file_name in os.listdir(directory):
-            path = os.path.join(directory, file_name)
-            if not os.path.isfile(path):
-                continue
-            if not sample_container(path):
-                continue
-            counter += 1
-            self.data_files.append(path)
-
-    def get_file_array(self):
-        """Return the array of data files"""
-        return self.data_files
-
-    def get_container_iterator(self):
-        """Return an iterator over the int identifiers of all data files"""
-        return range(0, len(self.data_files))
-
-    def get_container_name(self, fid):
-        """Return the name of the file corresponding to the specified fid"""
-        return self.data_files[fid]
 
 
 def dict_value(dictionary, key):
@@ -186,7 +155,7 @@ class VTSource:
     tables."""
 
     def __init__(self, data_directory, sample):
-        self.data_files = DataFiles(data_directory, sample)
+        self.data_files = DataFiles(data_directory, sample, ".gz")
         self.table_dict = {t.get_name(): t for t in tables}
 
     def Create(self, _db, _module_name, _db_name, table_name):
@@ -207,44 +176,6 @@ class VTSource:
     def get_container_name(self, fid):
         """Return the name of the file corresponding to the specified fid"""
         return self.data_files.get_container_name(fid)
-
-
-class FilesCursor(ItemsCursor):
-    """A cursor over the items data files. Internal use only.
-    Not used directly by an SQLite table."""
-
-    def Filter(self, index_number, _index_name, constraint_args):
-        """Always called first to initialize an iteration to the first
-        (possibly constrained) row of the table"""
-        # print(f"Filter n={index_number} c={constraint_args}")
-
-        if index_number == 0:
-            # No index; iterate through all the files
-            self.file_index = -1
-            self.single_file = False
-        elif index_number & CONTAINER_INDEX:
-            # Index; constraint reading through the specified file
-            self.single_file = True
-            self.file_read = False
-            self.file_index = constraint_args[0] - 1
-        self.Next()
-
-    def Next(self):
-        """Advance reading to the next available file. Files are assumed to be
-        non-empty."""
-        if self.single_file and self.file_read:
-            self.eof = True
-            return
-        if self.file_index + 1 >= len(self.table.data_source):
-            self.eof = True
-            return
-        self.file_index += 1
-        self.items = get_file_cache().read(
-            self.table.data_source[self.file_index]
-        )
-        self.eof = False
-        # The single file has been read. Set EOF in next Next call
-        self.file_read = True
 
 
 class CrossrefElementsCursor(ElementsCursor):
@@ -287,7 +218,7 @@ class WorksCursor(CrossrefElementsCursor):
 
     def __init__(self, table):
         super().__init__(table, None)
-        self.files_cursor = FilesCursor(table)
+        self.files_cursor = FilesCursor(table, get_file_cache)
         # Initialized in Filter()
         self.item_index = None
 

@@ -27,6 +27,7 @@ import sqlite3
 # pylint: disable-next=import-error
 import apsw
 
+from alexandria3k import debug, perf
 from alexandria3k.common import (
     fail,
     get_string_resource,
@@ -35,8 +36,6 @@ from alexandria3k.common import (
     set_fast_writing,
     warn,
 )
-from alexandria3k import debug
-from alexandria3k import perf
 from alexandria3k.tsort import tsort
 
 SINGLE_PARTITION_INDEX = "SINGLE_PARTITION"
@@ -266,6 +265,49 @@ class ItemsCursor:
     def Close(self):
         """Cursor's destructor, used for cleanup"""
         self.items = None
+
+
+class FilesCursor(ItemsCursor):
+    """A cursor that iterates over the files in a directory
+    Not used directly by an SQLite table"""
+
+    def __init__(self, table, get_file_cache):
+        """Not part of the apsw VTCursor interface.
+        The table argument is a StreamingTable object"""
+        super().__init__(table)
+        self.get_file_cache = get_file_cache
+
+    def Filter(self, index_number, _index_name, constraint_args):
+        """Always called first to initialize an iteration to the first
+        (possibly constrained) row of the table"""
+        if index_number == 0:
+            # No index; iterate through all the files
+            self.file_index = -1
+            self.single_file = False
+        elif index_number & CONTAINER_INDEX:
+            # Index; constraint reading through the specified file
+            self.single_file = True
+            self.file_read = False
+            self.file_index = constraint_args[0] - 1
+        self.Next()
+
+    def Next(self):
+        """Advance reading to the next available file. Files are assumed to be
+        non-empty."""
+        if self.single_file and self.file_read:
+            self.eof = True
+            return
+        if self.file_index + 1 >= len(self.table.data_source):
+            self.eof = True
+            return
+
+        self.file_index += 1
+        self.items = self.get_file_cache().read(
+            self.table.data_source[self.file_index]
+        )
+        self.eof = False
+        # The single file has been read. Set EOF in next Next call
+        self.file_read = True
 
 
 class _IndexManager:
@@ -872,3 +914,35 @@ class DataSource:
         self.vdb.close()
         for table in self.population_columns:
             run_post_population_script(table)
+
+
+class DataFiles:
+    """The source of the compressed data files"""
+
+    def __init__(self, directory, sample_container, file_extension=None):
+        # Collect the names of all available data files
+        self.data_files = []
+        counter = 1
+        for file_name in os.listdir(directory):
+            path = os.path.join(directory, file_name)
+            if not os.path.isfile(path):
+                continue
+            if not sample_container(path):
+                continue
+            if file_extension and not path.endswith(file_extension):
+                # MacOS creates a .DS_Store file by default
+                continue
+            counter += 1
+            self.data_files.append(path)
+
+    def get_file_array(self):
+        """Return the array of data files"""
+        return self.data_files
+
+    def get_container_iterator(self):
+        """Return an iterator over the int identifiers of all data files"""
+        return range(0, len(self.data_files))
+
+    def get_container_name(self, fid):
+        """Return the name of the file corresponding to the specified fid"""
+        return self.data_files[fid]
