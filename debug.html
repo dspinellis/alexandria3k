@@ -65,7 +65,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="debug.log">
-<span class="sig-prename descclassname"><span class="pre">debug.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#debug.log" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">debug.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flush</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#debug.log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Output the specified message if the corresponding flag is enabled.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -89,6 +89,7 @@ The following flags are supported:</p>
 <li><p>sql: Executed SQL statements;</p></li>
 <li><p>perf: Performance timings;</p></li>
 <li><p>progress: Report population progress;</p></li>
+<li><p>progress_bar: Display a progress bar;</p></li>
 <li><p>sorted-tables: Topologically ordered Crossref query tables;</p></li>
 <li><p>stderr: Log to standard error;</p></li>
 </ul>
