@@ -190,6 +190,7 @@ tables = [
             ColumnMeta("name", lambda row: row["name"]),
             ColumnMeta("status", lambda row: row["status"]),
             ColumnMeta("established", lambda row: row["established"]),
+            ColumnMeta("city", lambda row: row["addresses"][0]["city"]),
             ColumnMeta(
                 "country_code", lambda row: row["country"]["country_code"]
             ),

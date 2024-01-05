@@ -69,6 +69,7 @@ class TestRorPopulate(unittest.TestCase):
             name,
             status,
             established,
+            city,
             country_code,
             grid,
         ) = result.fetchone()
@@ -77,6 +78,7 @@ class TestRorPopulate(unittest.TestCase):
         self.assertEqual(name, "Australian National University")
         self.assertEqual(status, "active")
         self.assertEqual(established, 1946)
+        self.assertEqual(city, "Canberra")
         self.assertEqual(country_code, "AU")
         self.assertEqual(grid, "grid.1001.0")
 
