@@ -124,6 +124,7 @@ class ColumnMeta:
         self.value_extractor = value_extractor
         self.description = kwargs.get("description")
         self.rowid = kwargs.get("rowid")
+        self.data_type = kwargs.get("data_type")
 
     def get_name(self):
         """Return column's name"""
@@ -136,7 +137,7 @@ class ColumnMeta:
             # visible and stable row identifier.
             # See https://sqlite.org/forum/info/f78ca38d8d6bf67f
             return f"{self.name} INTEGER PRIMARY KEY"
-        return self.name
+        return f"{self.name} {self.data_type}" if self.data_type else self.name
 
     def get_description(self):
         """Return column's description, if any"""

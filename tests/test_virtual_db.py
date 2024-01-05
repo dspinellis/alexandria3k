@@ -37,6 +37,7 @@ class TestTableMeta(unittest.TestCase):
                 ColumnMeta("id", rowid=True),
                 ColumnMeta("cname1"),
                 ColumnMeta("cname2", extractor),
+                ColumnMeta("cname3", data_type="INTEGER"),
             ],
             primary_key="cname1",
             foreign_key="cname2",
@@ -55,7 +56,8 @@ class TestTableMeta(unittest.TestCase):
         self.assertEqual(table.get_value_extractor_by_name("cname1"), None)
         self.assertEqual(table.get_value_extractor_by_name("cname2"), extractor)
 
-        self.assertEqual(table.table_schema(), "CREATE TABLE tname(\n  id INTEGER PRIMARY KEY,\n  cname1,\n  cname2\n);\n")
-        self.assertEqual(table.insert_statement(), "INSERT INTO tname(id, cname1, cname2) VALUES (?, ?, ?);")
+        self.assertEqual(table.table_schema(), "CREATE TABLE tname(\n  id INTEGER PRIMARY KEY,\n  cname1,\n  cname2,\n  cname3 INTEGER\n);\n")
+        self.assertEqual(table.insert_statement(), "INSERT INTO tname(id, cname1, cname2, cname3) VALUES (?, ?, ?, ?);")
         self.assertEqual(table.get_column_definition_by_name("cname2"), "cname2")
         self.assertEqual(table.get_column_definition_by_name("id"), "id INTEGER PRIMARY KEY")
+        self.assertEqual(table.get_column_definition_by_name("cname3"), "cname3 INTEGER")
