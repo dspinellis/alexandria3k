@@ -464,6 +464,7 @@ def get_cli_parser():
     populated-data: Data of the populated database;
     populated-reports: Query results from the populated database;
     progress: Report population progress;
+    progress_bar: Display a progress bar;
     sorted-tables: Topologically ordered Crossref query tables;
     stderr: Log to standard error;
 """,

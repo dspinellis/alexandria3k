@@ -70,6 +70,7 @@ def set_flags(flags):
     * sql: Executed SQL statements;
     * perf: Performance timings;
     * progress: Report population progress;
+    * progress_bar: Display a progress bar;
     * sorted-tables: Topologically ordered Crossref query tables;
     * stderr: Log to standard error;
 
@@ -93,7 +94,7 @@ def enabled(flag):
     return flag in enabled_flags
 
 
-def log(flag, message):
+def log(flag, message, flush=True, end="\n"):
     """
     Output the specified message if the corresponding flag is enabled.
 
@@ -104,4 +105,4 @@ def log(flag, message):
     :type message: str
     """
     if flag in enabled_flags:
-        print(message, file=output, flush=True)
+        print(message, file=output, flush=flush, end=end)

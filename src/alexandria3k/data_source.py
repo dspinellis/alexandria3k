@@ -57,6 +57,9 @@ CONTAINER_INDEX = 1
 ROWID_INDEX = 2
 """int: database table index using the row id."""
 
+PROGRESS_BAR_LENGTH = 50
+"""int: length of the progress bar printed during database population."""
+
 
 class StreamingTable:
     """An apsw table streaming over data of the supplied table metadata"""
@@ -277,6 +280,25 @@ class FilesCursor(ItemsCursor):
         super().__init__(table)
         self.get_file_cache = get_file_cache
 
+    def debug_progress_bar(self):
+        """Print a progress bar"""
+        total_length = len(self.table.data_source)
+        current_progress = self.file_index + 1
+
+        percent = current_progress / total_length * 100
+        progress_marker = int(
+            PROGRESS_BAR_LENGTH * current_progress / total_length
+        )
+        progress_bar = "#" * progress_marker + "-" * (
+            PROGRESS_BAR_LENGTH - progress_marker
+        )
+        debug.log(
+            "progress_bar",
+            f"\r[{progress_bar}] {percent:.2f}% | "
+            f"Processed {current_progress} out of {total_length} files",
+            end="",
+        )
+
     def Filter(self, index_number, _index_name, constraint_args):
         """Always called first to initialize an iteration to the first
         (possibly constrained) row of the table"""
@@ -308,6 +330,8 @@ class FilesCursor(ItemsCursor):
         self.eof = False
         # The single file has been read. Set EOF in next Next call
         self.file_read = True
+
+        self.debug_progress_bar()
 
 
 class _IndexManager:
