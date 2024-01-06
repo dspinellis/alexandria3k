@@ -271,6 +271,7 @@ tables = [
             ColumnMeta(
                 "revised_year",
                 getter("MedlineCitation/DateRevised/Year"),
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "revised_month",
