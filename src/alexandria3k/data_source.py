@@ -29,7 +29,7 @@ import apsw
 
 from alexandria3k import debug, perf
 from alexandria3k.common import (
-    fail,
+    Alexandria3kError,
     get_string_resource,
     log_sql,
     remove_sqlite_comments,
@@ -428,10 +428,10 @@ class DataSource:
         for db_spec in attach_databases:
             try:
                 (db_name, db_path) = db_spec.split(":", 1)
-            except ValueError:
-                fail(
+            except ValueError as exc:
+                raise Alexandria3kError(
                     f"Invalid database specification: '{db_spec}'; expected name:path"
-                )
+                ) from exc
             attach_command = f"ATTACH DATABASE '{db_path}' AS {db_name}"
             try_sql_execute(self.vdb, attach_command)
             self.attached_databases.append(db_name)
@@ -449,10 +449,8 @@ class DataSource:
         """Return the metadata of the specified table"""
         try:
             return self.table_dict[name]
-        except KeyError:
-            fail(f"Unknown table name: '{name}'.")
-            # NOTREACHED
-            return None
+        except KeyError as exc:
+            raise Alexandria3kError(f"Unknown table name: '{name}'.") from exc
 
     def tables_transitive_closure(self, table_list, top):
         """Return the transitive closure of all named tables
@@ -791,10 +789,10 @@ class DataSource:
             for col in columns:
                 try:
                     (table, column) = col.split(".")
-                except ValueError:
-                    fail(
+                except ValueError as exc:
+                    raise Alexandria3kError(
                         f"Invalid column specification: '{col}'; expected table.column or table.*."
-                    )
+                    ) from exc
                 add_column(table, column)
 
         def create_database_schema(columns):

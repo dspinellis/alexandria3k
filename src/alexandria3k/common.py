@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Functions common to multiple modules"""
+"""Functionality common to multiple modules"""
 
 try:
     from importlib import metadata
@@ -41,6 +41,26 @@ from alexandria3k import debug
 RE_URL = re.compile(r"\w+://")
 
 
+class Alexandria3kError(Exception):
+    """An exception raised by errors detected by the Alexandria3k API.
+    These errors are caught by the CLI and displayed only through their
+    message."""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class Alexandria3kInternalError(Exception):
+    """An exception raised by internal errors detected by the Alexandria3k
+    API.  These errors are propagated to the top level and are not caught
+    by the CLI, this resulting in a reportable stack trace."""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
 def is_unittest():
     """Return True if the routine is executed in a unit test."""
     return any(
@@ -60,23 +80,6 @@ def warn(message):
     if is_unittest():
         return
     print(f"Warning: {message}", file=sys.stderr)
-
-
-def fail(message):
-    """
-    Output an error message on the standard error stream with the specified
-    message.
-    Terminate the program's execution with an exit code of 1.
-
-    :param message: The message to output.
-    :type message: str
-    """
-    if debug.enabled("exception"):
-        # pylint: disable-next=broad-exception-raised
-        raise Exception(message)
-    print(f"Error: {message}", file=sys.stderr)
-    print("Terminating program execution.", file=sys.stderr)
-    sys.exit(1)
 
 
 def ensure_unlinked(file_path):
@@ -136,7 +139,9 @@ def ensure_table_exists(connection, table_name):
     """
     cursor = connection.cursor()
     if not table_exists(cursor, table_name):
-        fail(f"The required table '{table_name}' is not populated.")
+        raise Alexandria3kError(
+            f"The required table '{table_name}' is not populated."
+        )
 
 
 def set_fast_writing(connection, name="main"):
@@ -194,9 +199,9 @@ def try_sql_execute(execution_context, statement):
     try:
         return execution_context.execute(log_sql(statement))
     except apsw.SQLError as exception:
-        fail(f"SQL statement '{statement}' failed: {exception}.")
-        # NOTREACHED
-        return None
+        raise Alexandria3kError(
+            f"SQL statement '{statement}' failed: {exception}."
+        ) from exception
 
 
 def program_version():
@@ -246,9 +251,9 @@ def data_from_uri_provider(source):
         return open(source, "rb")
     # pylint: disable-next=broad-except
     except Exception as exception:
-        fail(f"Unable to read data from '{source}': {exception}.")
-        # NOTREACHED
-        return None
+        raise Alexandria3kError(
+            f"Unable to read data from '{source}': {exception}."
+        ) from exception
 
 
 def get_string_resource(file_path):
