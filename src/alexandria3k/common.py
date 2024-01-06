@@ -167,14 +167,36 @@ def set_fast_writing(connection, name="main"):
 
 def log_sql(statement):
     """
-    Return the specified SQL statement. If "sql" is set,
-    output a copy of the statement on the standard output.
+    Return the specified SQL statement. If the debug "sql" value
+    is set, output a copy of the statement on the standard output.
 
-    :param statement: The statement that will ne executed.
+    :param statement: The statement that will be executed.
     :type statement: str
     """
     debug.log("sql", statement)
     return statement
+
+
+def try_sql_execute(execution_context, statement):
+    """
+    Return the result of executing the specified SQL statement.
+    The statement is logged through log_sql. If the satement's
+    execution fails the program terminates with the failure's error message.
+    output a copy of the statement on the standard output.
+
+    :param execution_context: The context in which the execute method will
+        be called to evaluate the statement.
+    :type statement: Union[Connection, Cursor]
+
+    :param statement: The statement that will be executed.
+    :type statement: str
+    """
+    try:
+        return execution_context.execute(log_sql(statement))
+    except apsw.SQLError as exception:
+        fail(f"SQL statement '{statement}' failed: {exception}.")
+        # NOTREACHED
+        return None
 
 
 def program_version():

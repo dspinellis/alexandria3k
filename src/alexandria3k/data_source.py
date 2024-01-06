@@ -34,6 +34,7 @@ from alexandria3k.common import (
     log_sql,
     remove_sqlite_comments,
     set_fast_writing,
+    try_sql_execute,
     warn,
 )
 from alexandria3k.tsort import tsort
@@ -432,7 +433,7 @@ class DataSource:
                     f"Invalid database specification: '{db_spec}'; expected name:path"
                 )
             attach_command = f"ATTACH DATABASE '{db_path}' AS {db_name}"
-            self.vdb.execute(log_sql(attach_command))
+            try_sql_execute(self.vdb, attach_command)
             self.attached_databases.append(db_name)
             self.attach_commands.append(attach_command)
 
@@ -549,7 +550,7 @@ class DataSource:
 
         # Easy case
         if not partition:
-            for row in self.cursor.execute(log_sql(query)):
+            for row in try_sql_execute(self.cursor, query):
                 yield row
             return
 
@@ -596,7 +597,7 @@ class DataSource:
                     )
                 )
             self.cursor = partition.cursor()
-            for row in self.cursor.execute(log_sql(query)):
+            for row in try_sql_execute(self.cursor, query):
                 yield row
             for table_name in self.query_columns:
                 partition.execute(log_sql(f"DROP TABLE {table_name}"))
