@@ -43,7 +43,8 @@
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">Alexandria3kError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.Alexandria3kError" title="Permalink to this definition">¶</a></dt>
 <dd><p>An exception raised by errors detected by the Alexandria3k API.
 These errors are caught by the CLI and displayed only through their
-message.</p>
+message.  API clients might want to catch these errors and report
+them in a friendly manner.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -51,7 +52,7 @@ message.</p>
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">Alexandria3kInternalError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.Alexandria3kInternalError" title="Permalink to this definition">¶</a></dt>
 <dd><p>An exception raised by internal errors detected by the Alexandria3k
 API.  These errors are propagated to the top level and are not caught
-by the CLI, this resulting in a reportable stack trace.</p>
+by the CLI, thus resulting in a reportable stack trace.</p>
 </dd></dl>
 
 <dl class="py function">
