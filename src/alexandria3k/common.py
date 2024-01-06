@@ -44,7 +44,8 @@ RE_URL = re.compile(r"\w+://")
 class Alexandria3kError(Exception):
     """An exception raised by errors detected by the Alexandria3k API.
     These errors are caught by the CLI and displayed only through their
-    message."""
+    message.  API clients might want to catch these errors and report
+    them in a friendly manner."""
 
     def __init__(self, message):
         self.message = message
@@ -54,7 +55,7 @@ class Alexandria3kError(Exception):
 class Alexandria3kInternalError(Exception):
     """An exception raised by internal errors detected by the Alexandria3k
     API.  These errors are propagated to the top level and are not caught
-    by the CLI, this resulting in a reportable stack trace."""
+    by the CLI, thus resulting in a reportable stack trace."""
 
     def __init__(self, message):
         self.message = message
