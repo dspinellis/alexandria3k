@@ -37,7 +37,23 @@
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k</span> <span class="kn">import</span> <span class="n">common</span>
 </pre></div>
 </div>
-<span class="target" id="module-common"></span><p>Functions common to multiple modules</p>
+<span class="target" id="module-common"></span><p>Functionality common to multiple modules</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="common.Alexandria3kError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">Alexandria3kError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.Alexandria3kError" title="Permalink to this definition">¶</a></dt>
+<dd><p>An exception raised by errors detected by the Alexandria3k API.
+These errors are caught by the CLI and displayed only through their
+message.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="common.Alexandria3kInternalError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">Alexandria3kInternalError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.Alexandria3kInternalError" title="Permalink to this definition">¶</a></dt>
+<dd><p>An exception raised by internal errors detected by the Alexandria3k
+API.  These errors are propagated to the top level and are not caught
+by the CLI, this resulting in a reportable stack trace.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="common.data_from_uri_provider">
 <span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">data_from_uri_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.data_from_uri_provider" title="Permalink to this definition">¶</a></dt>
@@ -75,19 +91,6 @@ by unlinking it, if needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – Path to the file that must not exist.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="common.fail">
-<span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">fail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#common.fail" title="Permalink to this definition">¶</a></dt>
-<dd><p>Output an error message on the standard error stream with the specified
-message.
-Terminate the program’s execution with an exit code of 1.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – The message to output.</p>
 </dd>
 </dl>
 </dd></dl>
