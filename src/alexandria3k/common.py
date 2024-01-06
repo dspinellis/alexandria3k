@@ -119,7 +119,7 @@ def table_exists(cursor, table_name):
     :type table_name: str
     """
     try:
-        cursor.execute(f"SELECT Count(*) FROM {table_name}")
+        cursor.execute(f"SELECT 1 FROM {table_name}")
         return True
     except (sqlite3.OperationalError, apsw.SQLError):
         return False
