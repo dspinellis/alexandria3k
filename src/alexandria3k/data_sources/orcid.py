@@ -21,7 +21,11 @@
 import tarfile
 import xml.etree.ElementTree as ET
 
-from alexandria3k.common import fail, warn
+from alexandria3k.common import (
+    Alexandria3kError,
+    Alexandria3kInternalError,
+    warn,
+)
 from alexandria3k.data_source import (
     CONTAINER_INDEX,
     DataSource,
@@ -106,7 +110,9 @@ class PersonsCursor:
             self.file_read = False
             self.item_index = constraint_args[0]
         else:
-            fail("Unknown index specified")
+            raise Alexandria3kInternalError(
+                f"Unknown index ({index_number}) specified"
+            )
         self.Next()  # Move to first row
 
     def Next(self):
@@ -623,10 +629,8 @@ def get_table_meta_by_name(name):
     """Return the metadata of the specified table"""
     try:
         return table_dict[name]
-    except KeyError:
-        fail(f"Unknown table name: '{name}'.")
-        # NOTREACHED
-        return None
+    except KeyError as exc:
+        raise Alexandria3kError(f"Unknown table name: '{name}'.") from exc
 
 
 def order_columns_by_schema(table_name, column_names):
@@ -714,7 +718,7 @@ class TarFiles:
         )
         if orcid_xml is None:
             # Identify error records
-            warn("Error parsing {self.orcid}")
+            warn(f"Error parsing {self.orcid}")
             self.element_tree = ErrorElement()
         else:
             assert self.orcid == orcid_xml.text
@@ -741,7 +745,7 @@ class TarFiles:
     def get_container_name(self, file_id):
         """Return the name of the file corresponding to the specified fid"""
         if file_id != self.file_id:
-            fail("Stale container id {file_id}")
+            raise Alexandria3kInternalError(f"Stale container id {file_id}")
         return f"{self.orcid}.xml"
 
 

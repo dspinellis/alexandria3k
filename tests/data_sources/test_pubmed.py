@@ -30,7 +30,7 @@ from alexandria3k.common import ensure_unlinked
 from alexandria3k.data_sources import pubmed
 from alexandria3k.file_cache import FileCache
 
-from ..common import PopulateQueries
+from ..common import PopulateQueries, record_count
 
 DATABASE_PATH = td("tmp/pubmed.db")
 
@@ -72,3 +72,30 @@ class TestPubmedPopulateVanilla(PopulateQueries):
             self.cond_field("pubmed_articles", "doi", "id = '36464820'"),
             "10.5946/ce.2022.114",
         )
+
+
+class TestPubmedPopulateMasterColumnCondition(PopulateQueries):
+    """Verify column specification and population of single table"""
+
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+        FileCache.file_reads = 0
+
+        # debug.set_flags(["sql"])
+        cls.pubmed = pubmed.Pubmed(td("data/pubmed-sample"))
+        cls.pubmed.populate(
+            DATABASE_PATH,
+            ["pubmed_articles.doi"],
+            "pubmed_articles.revised_year BETWEEN 2018 AND 2020",
+        )
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_counts(self):
+        self.assertEqual(self.record_count("pubmed_articles"), 2)

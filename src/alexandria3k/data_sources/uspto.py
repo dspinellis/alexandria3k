@@ -30,7 +30,7 @@ from alexandria3k.data_source import (
     ItemsCursor,
 )
 
-from alexandria3k.common import fail
+from alexandria3k.common import Alexandria3kError
 from alexandria3k.xml import agetter, all_getter, getter, get_element
 from alexandria3k.file_xml_cache import get_file_cache
 from alexandria3k.uspto_zip_cache import get_zip_cache
@@ -103,7 +103,7 @@ class ZipFiles:
                 self.file_path.append(path)
         # Raise error if file path list is empty.
         if len(self.file_path) == 0:
-            fail("No Zip files paths were detected.")
+            raise Alexandria3kError("No Zip files paths were detected.")
 
     def get_zip_contents(self, path):
         """Return the a list of all the patent inside the Zip."""

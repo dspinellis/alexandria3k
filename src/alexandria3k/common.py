@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Functions common to multiple modules"""
+"""Functionality common to multiple modules"""
 
 try:
     from importlib import metadata
@@ -41,6 +41,27 @@ from alexandria3k import debug
 RE_URL = re.compile(r"\w+://")
 
 
+class Alexandria3kError(Exception):
+    """An exception raised by errors detected by the Alexandria3k API.
+    These errors are caught by the CLI and displayed only through their
+    message.  API clients might want to catch these errors and report
+    them in a friendly manner."""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class Alexandria3kInternalError(Exception):
+    """An exception raised by internal errors detected by the Alexandria3k
+    API.  These errors are propagated to the top level and are not caught
+    by the CLI, thus resulting in a reportable stack trace."""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
 def is_unittest():
     """Return True if the routine is executed in a unit test."""
     return any(
@@ -60,23 +81,6 @@ def warn(message):
     if is_unittest():
         return
     print(f"Warning: {message}", file=sys.stderr)
-
-
-def fail(message):
-    """
-    Output an error message on the standard error stream with the specified
-    message.
-    Terminate the program's execution with an exit code of 1.
-
-    :param message: The message to output.
-    :type message: str
-    """
-    if debug.enabled("exception"):
-        # pylint: disable-next=broad-exception-raised
-        raise Exception(message)
-    print(f"Error: {message}", file=sys.stderr)
-    print("Terminating program execution.", file=sys.stderr)
-    sys.exit(1)
 
 
 def ensure_unlinked(file_path):
@@ -116,7 +120,7 @@ def table_exists(cursor, table_name):
     :type table_name: str
     """
     try:
-        cursor.execute(f"SELECT Count(*) FROM {table_name}")
+        cursor.execute(f"SELECT 1 FROM {table_name}")
         return True
     except (sqlite3.OperationalError, apsw.SQLError):
         return False
@@ -136,7 +140,9 @@ def ensure_table_exists(connection, table_name):
     """
     cursor = connection.cursor()
     if not table_exists(cursor, table_name):
-        fail(f"The required table '{table_name}' is not populated.")
+        raise Alexandria3kError(
+            f"The required table '{table_name}' is not populated."
+        )
 
 
 def set_fast_writing(connection, name="main"):
@@ -167,14 +173,36 @@ def set_fast_writing(connection, name="main"):
 
 def log_sql(statement):
     """
-    Return the specified SQL statement. If "sql" is set,
-    output a copy of the statement on the standard output.
+    Return the specified SQL statement. If the debug "sql" value
+    is set, output a copy of the statement on the standard output.
 
-    :param statement: The statement that will ne executed.
+    :param statement: The statement that will be executed.
     :type statement: str
     """
     debug.log("sql", statement)
     return statement
+
+
+def try_sql_execute(execution_context, statement):
+    """
+    Return the result of executing the specified SQL statement.
+    The statement is logged through log_sql. If the satement's
+    execution fails the program terminates with the failure's error message.
+    output a copy of the statement on the standard output.
+
+    :param execution_context: The context in which the execute method will
+        be called to evaluate the statement.
+    :type statement: Union[Connection, Cursor]
+
+    :param statement: The statement that will be executed.
+    :type statement: str
+    """
+    try:
+        return execution_context.execute(log_sql(statement))
+    except apsw.SQLError as exception:
+        raise Alexandria3kError(
+            f"SQL statement '{statement}' failed: {exception}."
+        ) from exception
 
 
 def program_version():
@@ -224,9 +252,9 @@ def data_from_uri_provider(source):
         return open(source, "rb")
     # pylint: disable-next=broad-except
     except Exception as exception:
-        fail(f"Unable to read data from '{source}': {exception}.")
-        # NOTREACHED
-        return None
+        raise Alexandria3kError(
+            f"Unable to read data from '{source}': {exception}."
+        ) from exception
 
 
 def get_string_resource(file_path):

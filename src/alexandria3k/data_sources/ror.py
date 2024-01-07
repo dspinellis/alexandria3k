@@ -194,9 +194,15 @@ tables = [
             ColumnMeta(
                 "country_code", lambda row: row["country"]["country_code"]
             ),
-            # Although deprecated, we are adding it as an additional
-            # organization identifier, as it provides useful ground truth data.
-            ColumnMeta("grid", lambda row: row["external_ids"]["GRID"]["all"]),
+            # Although deprecated, we are adding it as an additional organization identifier, as
+            # it provides useful to determine the ground truth data. Some organizations may not
+            # have a GRID identifier, so we need to make sure it doesn't raise any errors.
+            ColumnMeta(
+                "grid",
+                lambda row: row.get("external_ids", {})
+                .get("GRID", {})
+                .get("all"),
+            ),
         ],
     ),
     RorDetailsTableMeta(

@@ -29,11 +29,12 @@ import apsw
 
 from alexandria3k import debug, perf
 from alexandria3k.common import (
-    fail,
+    Alexandria3kError,
     get_string_resource,
     log_sql,
     remove_sqlite_comments,
     set_fast_writing,
+    try_sql_execute,
     warn,
 )
 from alexandria3k.tsort import tsort
@@ -56,6 +57,9 @@ CONTAINER_INDEX = 1
 
 ROWID_INDEX = 2
 """int: database table index using the row id."""
+
+PROGRESS_BAR_LENGTH = 50
+"""int: length of the progress bar printed during database population."""
 
 
 class StreamingTable:
@@ -277,6 +281,25 @@ class FilesCursor(ItemsCursor):
         super().__init__(table)
         self.get_file_cache = get_file_cache
 
+    def debug_progress_bar(self):
+        """Print a progress bar"""
+        total_length = len(self.table.data_source)
+        current_progress = self.file_index + 1
+
+        percent = current_progress / total_length * 100
+        progress_marker = int(
+            PROGRESS_BAR_LENGTH * current_progress / total_length
+        )
+        progress_bar = "#" * progress_marker + "-" * (
+            PROGRESS_BAR_LENGTH - progress_marker
+        )
+        debug.log(
+            "progress_bar",
+            f"\r[{progress_bar}] {percent:.2f}% | "
+            f"Processed {current_progress} out of {total_length} files",
+            end="",
+        )
+
     def Filter(self, index_number, _index_name, constraint_args):
         """Always called first to initialize an iteration to the first
         (possibly constrained) row of the table"""
@@ -308,6 +331,8 @@ class FilesCursor(ItemsCursor):
         self.eof = False
         # The single file has been read. Set EOF in next Next call
         self.file_read = True
+
+        self.debug_progress_bar()
 
 
 class _IndexManager:
@@ -403,12 +428,12 @@ class DataSource:
         for db_spec in attach_databases:
             try:
                 (db_name, db_path) = db_spec.split(":", 1)
-            except ValueError:
-                fail(
+            except ValueError as exc:
+                raise Alexandria3kError(
                     f"Invalid database specification: '{db_spec}'; expected name:path"
-                )
+                ) from exc
             attach_command = f"ATTACH DATABASE '{db_path}' AS {db_name}"
-            self.vdb.execute(log_sql(attach_command))
+            try_sql_execute(self.vdb, attach_command)
             self.attached_databases.append(db_name)
             self.attach_commands.append(attach_command)
 
@@ -424,10 +449,8 @@ class DataSource:
         """Return the metadata of the specified table"""
         try:
             return self.table_dict[name]
-        except KeyError:
-            fail(f"Unknown table name: '{name}'.")
-            # NOTREACHED
-            return None
+        except KeyError as exc:
+            raise Alexandria3kError(f"Unknown table name: '{name}'.") from exc
 
     def tables_transitive_closure(self, table_list, top):
         """Return the transitive closure of all named tables
@@ -525,7 +548,7 @@ class DataSource:
 
         # Easy case
         if not partition:
-            for row in self.cursor.execute(log_sql(query)):
+            for row in try_sql_execute(self.cursor, query):
                 yield row
             return
 
@@ -572,7 +595,7 @@ class DataSource:
                     )
                 )
             self.cursor = partition.cursor()
-            for row in self.cursor.execute(log_sql(query)):
+            for row in try_sql_execute(self.cursor, query):
                 yield row
             for table_name in self.query_columns:
                 partition.execute(log_sql(f"DROP TABLE {table_name}"))
@@ -766,10 +789,10 @@ class DataSource:
             for col in columns:
                 try:
                     (table, column) = col.split(".")
-                except ValueError:
-                    fail(
+                except ValueError as exc:
+                    raise Alexandria3kError(
                         f"Invalid column specification: '{col}'; expected table.column or table.*."
-                    )
+                    ) from exc
                 add_column(table, column)
 
         def create_database_schema(columns):

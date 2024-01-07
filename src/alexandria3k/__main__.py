@@ -27,8 +27,9 @@ import random
 import shutil
 import sys
 import textwrap
+import traceback
 
-from alexandria3k.common import fail, program_version
+from alexandria3k.common import Alexandria3kError, program_version
 from alexandria3k import debug
 from alexandria3k.file_cache import FileCache
 from alexandria3k import perf
@@ -82,8 +83,8 @@ def get_data_source_instance(args):
     default_source = module_get_attribute(module, "DEFAULT_SOURCE")
     data_location = args.data_location or default_source
     if not data_location:
-        fail(
-            "The data source {facility} requires the specification of a data location"
+        raise Alexandria3kError(
+            f"The data source {facility} requires the specification of a data location"
         )
 
     # The sampling expression defaults to True or it can be
@@ -455,7 +456,6 @@ def get_cli_parser():
         default=[],
         # NOTE: Keep in sync with list in debug.py
         help="""Output debuggging information according to the comma-separated arguments.
-    exception: Raise an exception when an error occurs;
     files-read: Counts of Crossref data files read;
     link: Record linking operations;
     sql: Executed SQL statements;
@@ -464,7 +464,9 @@ def get_cli_parser():
     populated-data: Data of the populated database;
     populated-reports: Query results from the populated database;
     progress: Report population progress;
+    progress_bar: Display a progress bar;
     sorted-tables: Topologically ordered Crossref query tables;
+    stacktrace: Produce a stack trace when an error occurs;
     stderr: Log to standard error;
 """,
     )
@@ -492,8 +494,8 @@ def get_cli_parser():
     return parser
 
 
-def main():
-    """Program entry point"""
+def error_raising_main():
+    """Program entry point. May raise Alexandria3kError."""
     parser = get_cli_parser()
     args = parser.parse_args()
 
@@ -515,6 +517,19 @@ def main():
     debug.log("files-read", f"{FileCache.file_reads} files read")
 
     return 0
+
+
+def main():
+    """Program entry point that catches API's exceptions to print
+    more helpful message."""
+    try:
+        error_raising_main()
+    except Alexandria3kError as message:
+        if debug.enabled("stacktrace"):
+            traceback.print_stack()
+        print(f"Error: {message}", file=sys.stderr)
+        print("Terminating program execution.", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

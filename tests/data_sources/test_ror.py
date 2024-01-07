@@ -27,6 +27,7 @@ import ahocorasick
 import apsw
 
 from ..test_dir import add_src_dir, td
+
 add_src_dir()
 
 from alexandria3k.common import ensure_unlinked, query_result
@@ -57,7 +58,7 @@ class TestRorPopulate(unittest.TestCase):
             "SELECT Count(*) from research_organizations"
         )
         (count,) = result.fetchone()
-        self.assertEqual(count, 28)
+        self.assertEqual(count, 29)
 
     def test_organization(self):
         result = TestRorPopulate.cursor.execute(
@@ -81,6 +82,28 @@ class TestRorPopulate(unittest.TestCase):
         self.assertEqual(city, "Canberra")
         self.assertEqual(country_code, "AU")
         self.assertEqual(grid, "grid.1001.0")
+
+    def test_blank_external_ids(self):
+        result = TestRorPopulate.cursor.execute(
+            "SELECT * from main.research_organizations "
+            "WHERE research_organizations.ror_path='02f4ks689'"
+        )
+        (
+            id,
+            ror_path,
+            name,
+            status,
+            established,
+            country_code,
+            grid,
+        ) = result.fetchone()
+        self.assertEqual(id, 28)
+        self.assertEqual(ror_path, "02f4ks689")
+        self.assertEqual(name, "Axiom Data Science")
+        self.assertEqual(status, "active")
+        self.assertEqual(established, 2007)
+        self.assertEqual(country_code, "US")
+        self.assertEqual(grid, None)
 
     def test_funder_ids(self):
         result = TestRorPopulate.cursor.execute(
@@ -207,7 +230,9 @@ class TestRorPopulateSample(unittest.TestCase):
             os.unlink(DATABASE_PATH)
 
         random.seed("alexandria3k")
-        cls.ror = ror.Ror(td("data/ror.zip"), lambda _name: random.random() < 0.25)
+        cls.ror = ror.Ror(
+            td("data/ror.zip"), lambda _name: random.random() < 0.25
+        )
         cls.ror.populate(DATABASE_PATH)
 
         cls.con = apsw.Connection(DATABASE_PATH)
