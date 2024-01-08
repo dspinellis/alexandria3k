@@ -190,10 +190,6 @@ tables = [
             ColumnMeta("name", lambda row: row["name"]),
             ColumnMeta("status", lambda row: row["status"]),
             ColumnMeta("established", lambda row: row["established"]),
-            ColumnMeta("city", lambda row: row["addresses"][0]["city"]),
-            ColumnMeta(
-                "country_code", lambda row: row["country"]["country_code"]
-            ),
             # Although deprecated, we are adding it as an additional organization identifier, as
             # it provides useful to determine the ground truth data. Some organizations may not
             # have a GRID identifier, so we need to make sure it doesn't raise any errors.
@@ -203,6 +199,23 @@ tables = [
                 .get("GRID", {})
                 .get("all"),
             ),
+            # Each research organization has only 1 address. They have been folded into this table.
+            # This is a simplified address schema. Add more field when ROR settles it.
+            ColumnMeta(
+                "address_city", lambda row: row["addresses"][0]["city"]
+            ),
+            ColumnMeta(
+                "address_state", lambda row: row["addresses"][0]["state"]
+            ),
+            ColumnMeta(
+                "address_postcode", lambda row: row["addresses"][0]["postcode"]
+            ),
+            ColumnMeta(
+                "address_country_code",
+                lambda row: row["country"]["country_code"],
+            ),
+            ColumnMeta("address_lat", lambda row: row["addresses"][0]["lat"]),
+            ColumnMeta("address_lng", lambda row: row["addresses"][0]["lng"]),
         ],
     ),
     RorDetailsTableMeta(
@@ -239,19 +252,6 @@ tables = [
         columns=[
             ColumnMeta("type", lambda row: row["type"]),
             ColumnMeta("ror_path", lambda row: row["id"][16:]),
-        ],
-    ),
-    RorDetailsTableMeta(
-        "ror_addresses",
-        extract_multiple=lambda row: row["addresses"],
-        columns=[
-            # ROR will simplify the current address schema.
-            # Add more fields when ROR settles it.
-            ColumnMeta("lat", lambda row: row["lat"]),
-            ColumnMeta("lng", lambda row: row["lng"]),
-            ColumnMeta("city", lambda row: row["city"]),
-            ColumnMeta("state", lambda row: row["state"]),
-            ColumnMeta("postcode", lambda row: row["postcode"]),
         ],
     ),
     # OrgRef is deprecated, so we are not supporting this field
