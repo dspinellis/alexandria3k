@@ -70,16 +70,26 @@ class TestRorPopulate(unittest.TestCase):
             name,
             status,
             established,
-            country_code,
             grid,
+            city,
+            state,
+            postcode,
+            country_code,
+            latitude,
+            longitude,
         ) = result.fetchone()
         self.assertEqual(id, 0)
         self.assertEqual(ror_path, "019wvm592")
         self.assertEqual(name, "Australian National University")
         self.assertEqual(status, "active")
         self.assertEqual(established, 1946)
-        self.assertEqual(country_code, "AU")
         self.assertEqual(grid, "grid.1001.0")
+        self.assertEqual(city, "Canberra")
+        self.assertEqual(state, "Australian Capital Territory")
+        self.assertEqual(postcode, None)
+        self.assertEqual(country_code, "AU")
+        self.assertEqual(latitude, -35.2778)
+        self.assertEqual(longitude, 149.1205)
 
     def test_blank_external_ids(self):
         result = TestRorPopulate.cursor.execute(
@@ -92,16 +102,26 @@ class TestRorPopulate(unittest.TestCase):
             name,
             status,
             established,
-            country_code,
             grid,
+            city,
+            state,
+            postcode,
+            country_code,
+            latitude,
+            longitude,
         ) = result.fetchone()
         self.assertEqual(id, 28)
         self.assertEqual(ror_path, "02f4ks689")
         self.assertEqual(name, "Axiom Data Science")
         self.assertEqual(status, "active")
         self.assertEqual(established, 2007)
-        self.assertEqual(country_code, "US")
         self.assertEqual(grid, None)
+        self.assertEqual(city, "Anchorage")
+        self.assertEqual(state, None)
+        self.assertEqual(postcode, None)
+        self.assertEqual(country_code, "US")
+        self.assertEqual(latitude, 61.21806)
+        self.assertEqual(longitude, -149.90028)
 
     def test_funder_ids(self):
         result = TestRorPopulate.cursor.execute(
@@ -175,27 +195,6 @@ class TestRorPopulate(unittest.TestCase):
             (
                 "Child",
                 "048t93218",
-            )
-            in rows
-        )
-
-    def test_ror_addresses(self):
-        result = TestRorPopulate.cursor.execute(
-            """SELECT * FROM ror_addresses WHERE ror_id=(
-                    SELECT id FROM research_organizations WHERE
-                        ror_path='02bfwt286')"""
-        )
-        rows = list(result)
-        self.assertEqual(len(rows), 1)
-        self.assertTrue(
-            (
-                16384,
-                1,
-                -37.9083,
-                145.138,
-                "Melbourne",
-                "Victoria",
-                None,
             )
             in rows
         )
