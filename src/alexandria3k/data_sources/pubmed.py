@@ -19,49 +19,64 @@
 """Pubmed publication data"""
 
 from alexandria3k.data_source import (
+    CONTAINER_ID_COLUMN,
     ROWID_INDEX,
     DataFiles,
     DataSource,
-    ElementsCursor,
     FilesCursor,
     StreamingCachedContainerTable,
 )
 from alexandria3k.db_schema import ColumnMeta, TableMeta
 from alexandria3k.file_pubmed_cache import get_file_cache
-from alexandria3k.xml import agetter, getter, getter_by_attribute, lower
+from alexandria3k.xml import (
+    XMLCursor,
+    agetter,
+    all_getter,
+    get_root_text,
+    getter,
+    getter_by_attribute,
+    lower,
+)
 
 # Method names coming from apsw start with uppercase
 # pylint: disable=invalid-name
+# pylint: disable=too-many-lines
 
 DEFAULT_SOURCE = None
 
+FILENAME_FORMAT = r"pubmed.*\.xml\.gz"
 
-class ArticlesElementsCursor(ElementsCursor):
-    """A cursor over Pubmed items. Gets all the articles
+
+class ArticlesElementsCursor(XMLCursor):
+    """A cursor over Pubmed items. Gets all the elements
     inside an xml file and then iterates over them."""
 
-    def Next(self):
-        """Advance to the next element."""
-        while True:
-            # End of File of article cursor.
-            if self.parent_cursor.Eof():
-                self.eof = True
-                return
-            if self.element_index + 1 < len(self.elements):
-                # Moves to the next element if it exists.
-                self.element_index += 1
-                self.eof = False
-                return
-            self.parent_cursor.Next()
-            self.elements = None
+    row_id_left_shift = None
 
     def Rowid(self):
-        """Return a unique id of the row along all records"""
-        return self.parent_cursor.Rowid()
+        """Return a unique id of the row along all records.
+        This allows for 16k authors. There is a Physics paper with 5k
+        authors."""
+        return (
+            self.parent_cursor.Rowid() << self.row_id_left_shift
+        ) | self.element_index
+
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:  # id
+            return self.record_id()
+        if col == 1:
+            return self.container_id()
+        if col == 2:  # work_id
+            return self.parent_cursor.Rowid()
+
+        return super().Column(col)
 
 
 class ArticlesCursor(ArticlesElementsCursor):
     """Cursor over Pubmed articles"""
+
+    row_id_left_shift = 20
 
     def __init__(self, table):
         """Not part of the apsw VTCursor interface.
@@ -107,6 +122,125 @@ class ArticlesCursor(ArticlesElementsCursor):
         Not part of the apsw API."""
         return self.files_cursor.Rowid()
 
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:
+            return self.Rowid()
+
+        if col == CONTAINER_ID_COLUMN:
+            return self.container_id()
+
+        extract_function = self.table.get_value_extractor_by_ordinal(col)
+        return extract_function(self.current_row_value())
+
+
+class AuthorsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed authors"""
+
+    row_id_left_shift = 14
+
+
+class AffiliationCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed author affiliations"""
+
+    row_id_left_shift = 4
+
+
+class InvestigatorsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed investigators"""
+
+    row_id_left_shift = 10
+
+
+class AbstractsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed abstracts"""
+
+    row_id_left_shift = 14
+
+
+class OtherAbstractsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed other abstracts"""
+
+    row_id_left_shift = 14
+
+
+class OtherAbstractTextsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed other abstract texts"""
+
+    row_id_left_shift = 5
+
+
+class HistoryCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed history"""
+
+    row_id_left_shift = 14
+
+
+class ChemicalsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed chemicals"""
+
+    row_id_left_shift = 14
+
+
+class MeshHeadingsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed mesh headings"""
+
+    row_id_left_shift = 14
+
+
+class SupplementMeshsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed supplement meshs"""
+
+    row_id_left_shift = 4
+
+
+class CommentsCorrectionsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed comments corrections"""
+
+    row_id_left_shift = 14
+
+
+class KeywordsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed keywords"""
+
+    row_id_left_shift = 14
+
+
+class GrantsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed grants"""
+
+    row_id_left_shift = 14
+
+
+class DataBanksCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed data banks"""
+
+    row_id_left_shift = 10
+
+
+class DataBankAccessionsCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed data bank accessions"""
+
+    row_id_left_shift = 5
+
+
+class ReferencesCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed references"""
+
+    row_id_left_shift = 20
+
+
+class ReferenceArticlesCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed reference articles"""
+
+    row_id_left_shift = 5
+
+
+class PublicationTypeListCursor(ArticlesElementsCursor):
+    """Cursor over Pubmed publication type list"""
+
+    row_id_left_shift = 20
+
 
 class VTSource:
     """Virtual table data source. This gets registered with the apsw
@@ -114,7 +248,9 @@ class VTSource:
     tables."""
 
     def __init__(self, data_directory, sample):
-        self.data_files = DataFiles(data_directory, sample, ".gz")
+        self.data_files = DataFiles(
+            data_directory, sample, file_name_regex=FILENAME_FORMAT
+        )
         self.table_dict = {t.get_name(): t for t in tables}
         self.sample = sample
 
@@ -145,8 +281,12 @@ tables = [
     TableMeta(
         "pubmed_articles",
         columns=[
-            ColumnMeta("id", getter("MedlineCitation/PMID")),
+            ColumnMeta("id"),
             ColumnMeta("container_id"),
+            ColumnMeta(
+                "pubmed_id",
+                getter("MedlineCitation/PMID"),
+            ),
             ColumnMeta(
                 "doi",
                 lower(
@@ -180,14 +320,27 @@ tables = [
                 description="Journal ISSN",
             ),
             ColumnMeta(
+                "journal_issn_type",
+                agetter("IssnType", "MedlineCitation/Article/Journal/ISSN"),
+            ),
+            ColumnMeta(
+                "journal_cited_medium",
+                agetter(
+                    "CitedMedium",
+                    "MedlineCitation/Article/Journal/JournalIssue",
+                ),
+            ),
+            ColumnMeta(
                 "journal_volume",
                 getter("MedlineCitation/Article/Journal/JournalIssue/Volume"),
                 description="Journal volume",
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "journal_issue",
                 getter("MedlineCitation/Article/Journal/JournalIssue/Issue"),
                 description="Journal issue",
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "journal_year",
@@ -195,6 +348,7 @@ tables = [
                     "MedlineCitation/Article/Journal/JournalIssue/PubDate/Year"
                 ),
                 description="Journal year",
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "journal_month",
@@ -202,6 +356,7 @@ tables = [
                     "MedlineCitation/Article/Journal/JournalIssue/PubDate/Month"
                 ),
                 description="Journal month",
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "journal_day",
@@ -209,16 +364,54 @@ tables = [
                     "MedlineCitation/Article/Journal/JournalIssue/PubDate/Day"
                 ),
                 description="Journal day",
+                data_type="INTEGER",
+            ),
+            ColumnMeta(
+                "journal_medline_date",
+                getter(
+                    "MedlineCitation/Article/Journal/JournalIssue/PubDate/MedlineDate"
+                ),
+                description="Journal Medline date",
             ),
             ColumnMeta(
                 "journal_ISO_abbreviation",
-                getter("MedlineCitation/Article/Journal/IsoAbbreviation"),
+                getter("MedlineCitation/Article/Journal/ISOAbbreviation"),
                 description="Journal ISO abbreviation",
+            ),
+            ColumnMeta(
+                "article_date_year",
+                getter("MedlineCitation/Article/ArticleDate/Year"),
+                data_type="INTEGER",
+            ),
+            ColumnMeta(
+                "article_date_month",
+                getter("MedlineCitation/Article/ArticleDate/Month"),
+                data_type="INTEGER",
+            ),
+            ColumnMeta(
+                "article_date_day",
+                getter("MedlineCitation/Article/ArticleDate/Day"),
+                data_type="INTEGER",
+            ),
+            ColumnMeta(
+                "article_date_type",
+                agetter("DateType", "MedlineCitation/Article/ArticleDate"),
             ),
             ColumnMeta(
                 "pagination",
                 getter("MedlineCitation/Article/Pagination/MedlinePgn"),
                 description="Pagination",
+            ),
+            ColumnMeta(
+                "elocation_id", getter("MedlineCitation/Article/ELocationID")
+            ),
+            ColumnMeta(
+                "elocation_id_type",
+                agetter("EIdType", "MedlineCitation/Article/ELocationID"),
+            ),
+            ColumnMeta(
+                "elocation_id_valid",
+                agetter("ValidYN", "MedlineCitation/Article/ELocationID"),
             ),
             ColumnMeta(
                 "language",
@@ -229,7 +422,12 @@ tables = [
                 "title", getter("MedlineCitation/Article/ArticleTitle")
             ),
             ColumnMeta(
-                "country",
+                "vernacular_title",
+                getter("MedlineCitation/Article/VernacularTitle"),
+                description="Original title",
+            ),
+            ColumnMeta(
+                "journal_country",
                 getter("MedlineCitation/MedlineJournalInfo/Country"),
             ),
             ColumnMeta(
@@ -259,14 +457,17 @@ tables = [
             ColumnMeta(
                 "completed_year",
                 getter("MedlineCitation/DateCompleted/Year"),
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "completed_month",
                 getter("MedlineCitation/DateCompleted/Month"),
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "completed_day",
                 getter("MedlineCitation/DateCompleted/Day"),
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "revised_year",
@@ -276,14 +477,587 @@ tables = [
             ColumnMeta(
                 "revised_month",
                 getter("MedlineCitation/DateRevised/Month"),
+                data_type="INTEGER",
             ),
             ColumnMeta(
                 "revised_day",
                 getter("MedlineCitation/DateRevised/Day"),
+                data_type="INTEGER",
+            ),
+            ColumnMeta(
+                "coi_statement",
+                getter("MedlineCitation/CoiStatement"),
+            ),
+            ColumnMeta(
+                "medline_citation_status",
+                agetter("Status", "MedlineCitation"),
+            ),
+            ColumnMeta(
+                "medline_citation_owner",
+                agetter("Owner", "MedlineCitation"),
+            ),
+            ColumnMeta(
+                "medline_citation_version",
+                agetter("VersionID", "MedlineCitation"),
+            ),
+            ColumnMeta(
+                "medline_citation_indexing_method",
+                agetter("IndexingMethod", "MedlineCitation"),
+            ),
+            ColumnMeta(
+                "medline_citation_version_date",
+                agetter("VersionDate", "MedlineCitation"),
+            ),
+            ColumnMeta(
+                "keyword_list_owner",
+                agetter("Owner", "MedlineCitation/KeywordList"),
+            ),
+            ColumnMeta(
+                "publication_status", getter("PubmedData/PublicationStatus")
+            ),
+            ColumnMeta(
+                "abstract_copyright_information",
+                getter(
+                    "MedlineCitation/Article/Abstract/CopyrightInformation"
+                ),
+            ),
+            ColumnMeta(
+                "other_abstract_copyright_information",
+                getter("MedlineCitation/OtherAbstract/CopyrightInformation"),
             ),
         ],
         cursor_class=ArticlesCursor,
-    )
+    ),
+    TableMeta(
+        "pubmed_authors",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "MedlineCitation/Article/AuthorList/Author"
+        ),
+        cursor_class=AuthorsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "given",
+                getter("ForeName"),
+            ),
+            ColumnMeta(
+                "family",
+                getter("LastName"),
+            ),
+            ColumnMeta(
+                "suffix",
+                getter("Suffix"),
+            ),
+            ColumnMeta(
+                "initials",
+                getter("Initials"),
+            ),
+            ColumnMeta(
+                "valid",
+                agetter("ValidYN"),
+            ),
+            ColumnMeta(
+                "identifier",
+                getter("Identifier"),
+            ),
+            ColumnMeta(
+                "identifier_source",
+                agetter("Source", "Identifier"),
+            ),
+            ColumnMeta("collective_name", getter("CollectiveName")),
+        ],
+    ),
+    TableMeta(
+        "pubmed_author_affiliations",
+        foreign_key="author_id",
+        parent_name="pubmed_authors",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "AffiliationInfo",
+        ),
+        extract_multiple_parent=all_getter(
+            "MedlineCitation/Article/AuthorList/Author"
+        ),
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("author_id"),
+            ColumnMeta(
+                "affiliation",
+                getter("Affiliation"),
+            ),
+            ColumnMeta(
+                "identifier",
+                getter("Identifier"),
+            ),
+        ],
+        cursor_class=AffiliationCursor,
+    ),
+    TableMeta(
+        "pubmed_investigators",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "MedlineCitation/InvestigatorList/Investigator"
+        ),
+        cursor_class=InvestigatorsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "given",
+                getter("ForeName"),
+            ),
+            ColumnMeta(
+                "family",
+                getter("LastName"),
+            ),
+            ColumnMeta(
+                "suffix",
+                getter("Suffix"),
+            ),
+            ColumnMeta(
+                "initials",
+                getter("Initials"),
+            ),
+            ColumnMeta(
+                "valid",
+                agetter("ValidYN"),
+            ),
+            ColumnMeta(
+                "identifier",
+                getter("Identifier"),
+            ),
+            ColumnMeta(
+                "identifier_source",
+                agetter("Source", "Identifier"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_investigator_affiliations",
+        foreign_key="investigator_id",
+        parent_name="pubmed_investigators",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "AffiliationInfo",
+        ),
+        extract_multiple_parent=all_getter(
+            "MedlineCitation/InvestigatorList/Investigator"
+        ),
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("investigator_id"),
+            ColumnMeta(
+                "affiliation",
+                getter("Affiliation"),
+            ),
+            ColumnMeta(
+                "identifier",
+                getter("Identifier"),
+            ),
+        ],
+        cursor_class=AffiliationCursor,
+    ),
+    TableMeta(
+        "pubmed_abstracts",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "MedlineCitation/Article/Abstract/AbstractText"
+        ),
+        cursor_class=AbstractsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "label",
+                agetter("Label"),
+                description="Abstract label",
+            ),
+            ColumnMeta(
+                "text",
+                get_root_text(),
+                description="Abstract text",
+            ),
+            ColumnMeta(
+                "nlm_category",
+                agetter("NlmCategory"),
+            ),
+            ColumnMeta(
+                "copyright_information", getter("CopyrightInformation")
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_other_abstracts",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter("MedlineCitation/OtherAbstract"),
+        cursor_class=OtherAbstractsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "abstract_type",
+                agetter("Type"),
+            ),
+            ColumnMeta(
+                "language",
+                agetter("Language"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_other_abstract_texts",
+        foreign_key="abstract_id",
+        parent_name="pubmed_other_abstracts",
+        primary_key="id",
+        extract_multiple=all_getter("AbstractText"),
+        extract_multiple_parent=all_getter("MedlineCitation/OtherAbstract"),
+        cursor_class=OtherAbstractTextsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("abstract_id"),
+            ColumnMeta(
+                "text",
+                get_root_text(),
+            ),
+            ColumnMeta(
+                "label",
+                agetter("Label"),
+            ),
+            ColumnMeta(
+                "nlm_category",
+                agetter("NlmCategory"),
+            ),
+            ColumnMeta(
+                "copyright_information", getter("CopyrightInformation")
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_history",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter("PubmedData/History/PubMedPubDate"),
+        cursor_class=HistoryCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "publication_status",
+                agetter("PubStatus"),
+            ),
+            ColumnMeta("year", getter("Year"), data_type="INTEGER"),
+            ColumnMeta("month", getter("Month"), data_type="INTEGER"),
+            ColumnMeta("day", getter("Day"), data_type="INTEGER"),
+            ColumnMeta("hour", getter("Hour"), data_type="INTEGER"),
+            ColumnMeta("minute", getter("Minute"), data_type="INTEGER"),
+        ],
+    ),
+    TableMeta(
+        "pubmed_chemicals",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter("MedlineCitation/ChemicalList/Chemical"),
+        cursor_class=ChemicalsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "registry_number",
+                getter("RegistryNumber"),
+            ),
+            ColumnMeta(
+                "name_of_substance",
+                getter("NameOfSubstance"),
+            ),
+            ColumnMeta(
+                "unique_identifier",
+                agetter("UI", "NameOfSubstance"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_meshs",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "MedlineCitation/MeshHeadingList/MeshHeading"
+        ),
+        cursor_class=MeshHeadingsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "descriptor_name",
+                getter("DescriptorName"),
+            ),
+            ColumnMeta(
+                "descriptor_unique_identifier",
+                agetter("UI", "DescriptorName"),
+            ),
+            ColumnMeta(
+                "descriptor_major_topic",
+                agetter("MajorTopicYN", "DescriptorName"),
+            ),
+            ColumnMeta(
+                "descriptor_type",
+                agetter("Type", "DescriptorName"),
+            ),
+            ColumnMeta(
+                "qualifier_name",
+                getter("QualifierName"),
+            ),
+            ColumnMeta(
+                "qualifier_major_topic",
+                agetter("MajorTopicYN", "QualifierName"),
+            ),
+            ColumnMeta(
+                "qualifier_unique_identifier",
+                agetter("UI", "QualifierName"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_supplement_meshs",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "MedlineCitation/SupplMeshList/SupplMeshName"
+        ),
+        cursor_class=SupplementMeshsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "supplement_mesh_name",
+                get_root_text(),
+            ),
+            ColumnMeta(
+                "unique_identifier",
+                agetter("UI"),
+            ),
+            ColumnMeta(
+                "mesh_type",
+                agetter("Type"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_comments_corrections",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "MedlineCitation/CommentsCorrectionsList/CommentsCorrections"
+        ),
+        cursor_class=CommentsCorrectionsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "ref_type",
+                agetter("RefType"),
+                description="Reference type",
+            ),
+            ColumnMeta(
+                "ref_source",
+                getter("RefSource"),
+                description="Reference source",
+            ),
+            ColumnMeta(
+                "pmid",
+                getter("PMID"),
+                description="PubMed identifier",
+            ),
+            ColumnMeta(
+                "pmid_version",
+                agetter("Version", "PMID"),
+                description="PubMed identifier version",
+            ),
+            ColumnMeta(
+                "note",
+                getter("Note"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_keywords",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter("MedlineCitation/KeywordList/Keyword"),
+        cursor_class=KeywordsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "keyword",
+                get_root_text(),
+                description="Keyword",
+            ),
+            ColumnMeta(
+                "major_topic",
+                agetter("MajorTopicYN"),
+                description="Keyword major topic",
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_grants",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter("MedlineCitation/Article/GrantList/Grant"),
+        cursor_class=GrantsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "grant_id",
+                getter("GrantID"),
+                description="Grant identifier",
+            ),
+            ColumnMeta(
+                "acronym",
+                getter("Acronym"),
+                description="Acronym",
+            ),
+            ColumnMeta(
+                "agency",
+                getter("Agency"),
+                description="Agency",
+            ),
+            ColumnMeta(
+                "country",
+                getter("Country"),
+                description="Country",
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_data_banks",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "MedlineCitation/Article/DataBankList/DataBank"
+        ),
+        cursor_class=DataBanksCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "data_bank_name",
+                getter("DataBankName"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_data_bank_accessions",
+        foreign_key="data_bank_id",
+        parent_name="pubmed_data_banks",
+        primary_key="id",
+        extract_multiple=all_getter("AccessionNumberList"),
+        extract_multiple_parent=all_getter(
+            "MedlineCitation/Article/DataBankList/DataBank"
+        ),
+        cursor_class=DataBankAccessionsCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("data_bank_id"),
+            ColumnMeta(
+                "accession_number",
+                getter("AccessionNumber"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_references",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter("PubmedData/ReferenceList/Reference"),
+        cursor_class=ReferencesCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta(
+                "citation",
+                getter("Citation"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_reference_articles",
+        foreign_key="reference_id",
+        parent_name="pubmed_references",
+        primary_key="id",
+        extract_multiple=all_getter("ArticleIdList"),
+        extract_multiple_parent=all_getter(
+            "PubmedData/ReferenceList/Reference"
+        ),
+        cursor_class=ReferenceArticlesCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("reference_id"),
+            ColumnMeta(
+                "article_id",
+                getter("ArticleId"),
+            ),
+            ColumnMeta(
+                "id_type",
+                agetter("IdType", "ArticleId"),
+            ),
+        ],
+    ),
+    TableMeta(
+        "pubmed_publication_types",
+        foreign_key="article_id",
+        parent_name="pubmed_articles",
+        primary_key="id",
+        extract_multiple=all_getter(
+            "MedlineCitation/Article/PublicationTypeList/PublicationType"
+        ),
+        cursor_class=PublicationTypeListCursor,
+        columns=[
+            ColumnMeta("id"),
+            ColumnMeta("container_id"),
+            ColumnMeta("article_id"),
+            ColumnMeta("publication_type", get_root_text()),
+            ColumnMeta("unique_identifier", agetter("UI")),
+        ],
+    ),
 ]
 
 

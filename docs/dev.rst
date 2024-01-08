@@ -108,6 +108,8 @@ documentation must be updated as follows.
    # While in the top-level directory
    bin/update-python-api
 
+For users on MacOS, this might require installing the 
+`GNU sed <https://formulae.brew.sh/formula/gnu-sed>`__ package.
 
 Application examples documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

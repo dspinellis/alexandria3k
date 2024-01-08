@@ -21,21 +21,24 @@
 import os
 import re
 
+from alexandria3k.common import Alexandria3kError
 from alexandria3k.data_source import (
     CONTAINER_INDEX,
     ROWID_INDEX,
     DataSource,
-    ElementsCursor,
-    StreamingCachedContainerTable,
     ItemsCursor,
+    StreamingCachedContainerTable,
 )
-
-from alexandria3k.common import Alexandria3kError
-from alexandria3k.xml import agetter, all_getter, getter, get_element
+from alexandria3k.db_schema import ColumnMeta, TableMeta
 from alexandria3k.file_xml_cache import get_file_cache
 from alexandria3k.uspto_zip_cache import get_zip_cache
-from alexandria3k.db_schema import ColumnMeta, TableMeta
-
+from alexandria3k.xml import (
+    XMLCursor,
+    agetter,
+    all_getter,
+    get_element,
+    getter,
+)
 
 # Bulk data can be found here. https://bulkdata.uspto.gov
 # Patent Grant Bibliographic (Front Page) Text Data (JAN 1976 - PRESENT)
@@ -309,46 +312,10 @@ class PatentsFilesCursor(ItemsCursor):
         return self.container_id
 
 
-class PatentsElementsCursor(ElementsCursor):
+class PatentsElementsCursor(XMLCursor):
     """A cursor over USPTO items. It depends on the
     extract multiple table property. Gets all the elements
     below a patent and then iterates over them."""
-
-    def __init__(self, table, parent_cursor):
-        """Not part of the apsw VTCursor interface.
-        The table agument is a StreamingTable object"""
-        super().__init__(table, parent_cursor)
-        self.extract_multiple = table.get_table_meta().get_extract_multiple()
-
-    def Next(self):
-        """Advance to the next element."""
-        while True:
-            # End of File of patent cursor.
-            if self.parent_cursor.Eof():
-                self.eof = True
-                return
-            if not self.elements:
-                # Gets elements of parent patent.
-                self.elements = self.extract_multiple(
-                    self.parent_cursor.current_row_value()
-                )
-                self.element_index = -1
-            if not self.elements:
-                # If parent has no element moves to the next patent.
-                self.parent_cursor.Next()
-                self.elements = None
-                continue
-            if self.element_index + 1 < len(self.elements):
-                # Moves to the next element if it exists.
-                self.element_index += 1
-                self.eof = False
-                return
-            self.parent_cursor.Next()
-            self.elements = None
-
-    def Rowid(self):
-        """Return a unique id of the row along all records"""
-        return self.parent_cursor.Rowid()
 
 
 class PatentsCursor(PatentsElementsCursor):

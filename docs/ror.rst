@@ -21,7 +21,13 @@ Generated schema
       name,
       status,
       established,
-      country_code
+      grid,
+      address_city,
+      address_state,
+      address_postcode,
+      address_country_code,
+      address_lat,
+      address_lng
     );
     
     CREATE TABLE ror_types(
@@ -53,16 +59,6 @@ Generated schema
       ror_id,
       type,
       ror_path
-    );
-    
-    CREATE TABLE ror_addresses(
-      id,
-      ror_id,
-      lat,
-      lng,
-      city,
-      state,
-      postcode
     );
     
     CREATE TABLE ror_funder_ids(

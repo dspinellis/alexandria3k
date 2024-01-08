@@ -116,7 +116,24 @@ class TestXMLFunctions(unittest.TestCase):
         element_getter = getter_by_attribute(attribute_name, attribute_value, path)
         self.assertEqual(element_getter(self.tree), "Value4")
 
+    def test_lower(self):
+        path = "us-bibliographic-data-grant/element1"
+        element_getter = getter(path)
+        lower_element_getter = lower(element_getter)
+        self.assertEqual(lower_element_getter(self.tree), "value1")
+
+    def test_lower_none_value(self):
+        path = "us-bibliographic-data-grant/elementx"
+        element_getter = getter(path)
+        lower_element_getter = lower(element_getter)
+        self.assertEqual(lower_element_getter(self.tree), None)
+
+    def test_get_root_text(self):
+        path = "us-bibliographic-data-grant/"
+        all_elements_getter = all_getter(path)
+        element = all_elements_getter(self.tree)[0]
+        self.assertEqual(get_root_text()(element), "Value1")
+
 
 if __name__ == "__main__":
     unittest.main()
-

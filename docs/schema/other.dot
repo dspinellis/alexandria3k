@@ -36,6 +36,11 @@
 	"USPTO tables" [shape=box, margin="0.11,0.055"];
 	usp_citations;
 
+	// Pubmed
+	node [fillcolor="#f78152"];
+	"PubMed tables" [shape=box, margin="0.11,0.055"];
+	pubmed_articles;
+
 	// Shape schema tables
 	node [shape=plaintext,  margin=0];
 
@@ -67,6 +72,7 @@
 	work_subjects -> asjcs [headlabel="1", taillabel="1"];
 	usp_nplcit_dois -> works [taillabel="1" headlabel="1"];
 	usp_citations  -> usp_nplcit_dois [taillabel="0…1" headlabel="1"];
+	pubmed_articles -> works [taillabel="0…1" headlabel="0…1"];
 
 	edge [style="invis"];
-	{ rank = source; "Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ROR tables" -> "ORCID tables" -> "USPTO tables" -> "Alexandria3k tables"; }
+	{ rank = source; "Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ROR tables" -> "ORCID tables" -> "USPTO tables" -> "PubMed tables" -> "Alexandria3k tables"; }
