@@ -36,7 +36,7 @@
 	"USPTO tables" [shape=box, margin="0.11,0.055"];
 	usp_citations;
 
-	// Pubmed
+	// PubMed
 	node [fillcolor="#f78152"];
 	"PubMed tables" [shape=box, margin="0.11,0.055"];
 	pubmed_articles;

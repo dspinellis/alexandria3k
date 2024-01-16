@@ -1,5 +1,5 @@
 #
-# Alexandria3k Pubmed bibliographic metadata processing
+# Alexandria3k PubMed bibliographic metadata processing
 # Copyright (C) 2023 Bas Verlooy
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Pubmed import integration tests"""
+"""PubMed import integration tests"""
 
 import os
 import sqlite3

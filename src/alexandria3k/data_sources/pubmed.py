@@ -1,5 +1,5 @@
 #
-# Alexandria3k Pubmed bibliographic metadata processing
+# Alexandria3k PubMed bibliographic metadata processing
 # Copyright (C) 2023 Bas Verlooy
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Pubmed publication data"""
+"""PubMed publication data"""
 
 from alexandria3k.data_source import (
     CONTAINER_ID_COLUMN,
@@ -48,7 +48,7 @@ FILENAME_FORMAT = r"pubmed.*\.xml\.gz"
 
 
 class ArticlesElementsCursor(XMLCursor):
-    """A cursor over Pubmed items. Gets all the elements
+    """A cursor over PubMed items. Gets all the elements
     inside an xml file and then iterates over them."""
 
     row_id_left_shift = None
@@ -74,7 +74,7 @@ class ArticlesElementsCursor(XMLCursor):
 
 
 class ArticlesCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed articles"""
+    """Cursor over PubMed articles"""
 
     row_id_left_shift = 20
 
@@ -135,109 +135,109 @@ class ArticlesCursor(ArticlesElementsCursor):
 
 
 class AuthorsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed authors"""
+    """Cursor over PubMed authors"""
 
     row_id_left_shift = 14
 
 
 class AffiliationCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed author affiliations"""
+    """Cursor over PubMed author affiliations"""
 
     row_id_left_shift = 4
 
 
 class InvestigatorsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed investigators"""
+    """Cursor over PubMed investigators"""
 
     row_id_left_shift = 10
 
 
 class AbstractsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed abstracts"""
+    """Cursor over PubMed abstracts"""
 
     row_id_left_shift = 14
 
 
 class OtherAbstractsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed other abstracts"""
+    """Cursor over PubMed other abstracts"""
 
     row_id_left_shift = 14
 
 
 class OtherAbstractTextsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed other abstract texts"""
+    """Cursor over PubMed other abstract texts"""
 
     row_id_left_shift = 5
 
 
 class HistoryCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed history"""
+    """Cursor over PubMed history"""
 
     row_id_left_shift = 14
 
 
 class ChemicalsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed chemicals"""
+    """Cursor over PubMed chemicals"""
 
     row_id_left_shift = 14
 
 
 class MeshHeadingsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed mesh headings"""
+    """Cursor over PubMed mesh headings"""
 
     row_id_left_shift = 14
 
 
 class SupplementMeshsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed supplement meshs"""
+    """Cursor over PubMed supplement meshs"""
 
     row_id_left_shift = 4
 
 
 class CommentsCorrectionsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed comments corrections"""
+    """Cursor over PubMed comments corrections"""
 
     row_id_left_shift = 14
 
 
 class KeywordsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed keywords"""
+    """Cursor over PubMed keywords"""
 
     row_id_left_shift = 14
 
 
 class GrantsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed grants"""
+    """Cursor over PubMed grants"""
 
     row_id_left_shift = 14
 
 
 class DataBanksCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed data banks"""
+    """Cursor over PubMed data banks"""
 
     row_id_left_shift = 10
 
 
 class DataBankAccessionsCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed data bank accessions"""
+    """Cursor over PubMed data bank accessions"""
 
     row_id_left_shift = 5
 
 
 class ReferencesCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed references"""
+    """Cursor over PubMed references"""
 
     row_id_left_shift = 20
 
 
 class ReferenceArticlesCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed reference articles"""
+    """Cursor over PubMed reference articles"""
 
     row_id_left_shift = 5
 
 
 class PublicationTypeListCursor(ArticlesElementsCursor):
-    """Cursor over Pubmed publication type list"""
+    """Cursor over PubMed publication type list"""
 
     row_id_left_shift = 20
 
@@ -1072,7 +1072,7 @@ class Pubmed(DataSource):
     :param sample: A callable to control container sampling, defaults
         to `lambda n: True`.
         The population or query method will call this argument
-        for each Pubmed container file with each container's file
+        for each PubMed container file with each container's file
         name as its argument.  When the callable returns `True` the
         container file will get processed, when it returns `False` the
         container will get skipped.
