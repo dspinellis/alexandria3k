@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Patent grant bibliographic (front page) text data (JAN 1976 - present)" href="uspto.html" />
-    <link rel="prev" title="Open Researcher and Contributor ID (ORCID) data" href="orcid.html" />
+    <link rel="prev" title="Pubmed publication data" href="pubmed.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -133,7 +133,13 @@ in quadratic (or worse) algorithmic complexity.</p></li>
   <span class="n">name</span><span class="p">,</span>
   <span class="n">status</span><span class="p">,</span>
   <span class="n">established</span><span class="p">,</span>
-  <span class="n">country_code</span>
+  <span class="n">grid</span><span class="p">,</span>
+  <span class="n">address_city</span><span class="p">,</span>
+  <span class="n">address_state</span><span class="p">,</span>
+  <span class="n">address_postcode</span><span class="p">,</span>
+  <span class="n">address_country_code</span><span class="p">,</span>
+  <span class="n">address_lat</span><span class="p">,</span>
+  <span class="n">address_lng</span>
 <span class="p">);</span>
 
 <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_types</span><span class="p">(</span>
@@ -165,16 +171,6 @@ in quadratic (or worse) algorithmic complexity.</p></li>
   <span class="n">ror_id</span><span class="p">,</span>
   <span class="k">type</span><span class="p">,</span>
   <span class="n">ror_path</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_addresses</span><span class="p">(</span>
-  <span class="n">id</span><span class="p">,</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="n">lat</span><span class="p">,</span>
-  <span class="n">lng</span><span class="p">,</span>
-  <span class="n">city</span><span class="p">,</span>
-  <span class="k">state</span><span class="p">,</span>
-  <span class="n">postcode</span>
 <span class="p">);</span>
 
 <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">ror_funder_ids</span><span class="p">(</span>
@@ -242,7 +238,7 @@ in quadratic (or worse) algorithmic complexity.</p></li>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="user-api.html">Python user API</a><ul>
-      <li>Previous: <a href="orcid.html" title="previous chapter">Open Researcher and Contributor ID (ORCID) data</a></li>
+      <li>Previous: <a href="pubmed.html" title="previous chapter">Pubmed publication data</a></li>
       <li>Next: <a href="uspto.html" title="next chapter">Patent grant bibliographic (front page) text data (JAN 1976 - present)</a></li>
   </ul></li>
   </ul></li>

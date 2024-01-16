@@ -111,6 +111,12 @@ These can be contributed to <em>alexandria3k</em> or used in parallel with it.</
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="db_schema.TableMeta.get_parent_extract_multiple">
+<span class="sig-name descname"><span class="pre">get_parent_extract_multiple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#db_schema.TableMeta.get_parent_extract_multiple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the function for obtaining multiple records from the parent table</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="db_schema.TableMeta.get_parent_name">
 <span class="sig-name descname"><span class="pre">get_parent_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#db_schema.TableMeta.get_parent_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the name of the main table of which this has details</p>
@@ -178,7 +184,7 @@ or an increasing counter over a streamed collection.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.DataFiles">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">DataFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_container</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataFiles" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">DataFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_container</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataFiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>The source of the compressed data files</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="data_source.DataFiles.get_container_iterator">

@@ -82,6 +82,19 @@ The shell script ``examples/common/fetch-uspto.sh`` or the
 ``$(USPTO_DIR)`` dependency of the ``examples/common/Makefile``,
 which uses it can be used to download all USPTO data.
 
+Pubmed data
+~~~~~~~~~~~
+
+You can populate a database with the data from the Pubmed/Medline database
+from the National Library of Medicine (NLM). The data is available from
+`here <https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/>`__.
+You can also download the data from the FTP server which is documented in 
+`this readme file <https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt>`__.
+Some data is overlapping with the Crossref dataset, but the Pubmed data
+contains additional information such as MeSH terms and grants. Also it complements
+the Crossref data as for example some affiliations are only available in the Pubmed data.
+
+
 Other data sources
 ~~~~~~~~~~~~~~~~~~
 
