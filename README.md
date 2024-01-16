@@ -11,8 +11,17 @@ The largest one is the entire
 This contains publication metadata from about 134 million publications from
 all major international publishers with full citation data for 60 million
 of them.
+Alternatively, works can be selected from the
+[PubMed](https://pubmed.ncbi.nlm.nih.gov/)
+data set which comprises more than 36 million citations
+for biomedical literature from
+[MEDLINE](https://www.nlm.nih.gov/medline/medline_overview.html),
+life science journals, and online books,
+with rich domain-specific metadata,
+such as [MeSH](https://www.nlm.nih.gov/mesh/meshhome.html) indexing,
+funding, genetic, and chemical details.
 In addition,
-the Crossref data set can be linked with
+the Crossref and PubMed data sets can be linked with
 the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (25 GB compressed, 435 GB uncompressed),
   containing about 78 million author records,
