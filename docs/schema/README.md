@@ -4,6 +4,12 @@ Below are the database schemata associated with the corresponding data sets.
 ## Crossref
 ![Crossref database schema](./crossref.svg)
 
+## PubMed
+![PubMed database schema](./pubmed.svg)
+
+## USPTO
+![USPTO database schema](./uspto.svg)
+
 ## ORCID
 ![ORCID database schema](./orcid.svg)
 
