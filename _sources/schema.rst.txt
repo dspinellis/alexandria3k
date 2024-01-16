@@ -24,6 +24,15 @@ Crossref data concern works, identified through their DOI.
 .. figure:: ./schema/crossref.svg
    :alt: Crossref data schema
 
+PubMed data
+~~~~~~~~~~~
+
+PubMed data concern citations from the biomedical literature also
+identified through their DOI,
+
+.. figure:: ./schema/pubmed.svg
+   :alt: PubMed data schema
+
 ORCID data
 ~~~~~~~~~~
 
