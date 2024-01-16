@@ -9,7 +9,17 @@ set <https://www.nature.com/articles/d41586-022-02926-y>`__ (157 GB
 compressed, 1 TB uncompressed). This contains publication metadata from
 about 134 million publications from all major international publishers
 with full citation data for 60 million of them.
-In addition, the Crossref data set can be linked with the `ORCID summary
+Alternatively, works can be selected from the
+`PubMed <https://pubmed.ncbi.nlm.nih.gov/>`__
+data set which comprises more than 36 million citations
+for biomedical literature from
+`MEDLINE <https://www.nlm.nih.gov/medline/medline_overview.html>`__,
+life science journals, and online books,
+with rich domain-specific metadata,
+such as `MeSH <https://www.nlm.nih.gov/mesh/meshhome.html>`__ indexing,
+funding, genetic, and chemical details.
+In addition,
+the Crossref and PubMed data sets can be linked with the `ORCID summary
 data
 set <https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file->`__
 (25 GB compressed, 435 GB uuncompressed), containing about 78 million
