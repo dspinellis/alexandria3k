@@ -37,6 +37,11 @@ publication research on the desktop.
 
 The complete reference and use documentation for _alexandria3k_  can be found [here](https://dspinellis.github.io/alexandria3k/).
 
+## Major contributors
+
+* [Aggelos Margkas](https://github.com/AggelosMargkas): US patents
+* [Bas Verlooy](https://github.com/BasVerlooy): PubMed
+
 ## Publication
 
 Details about the rationale, design, implementation, and use of this software
