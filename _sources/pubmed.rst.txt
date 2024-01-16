@@ -1,4 +1,4 @@
-Pubmed publication data
+PubMed publication data
 =======================
 
 .. Automatically generated file. Do not modify by hand.
