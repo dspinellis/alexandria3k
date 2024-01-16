@@ -35,6 +35,7 @@ class TableMeta:
 
         self.cursor_class = kwargs.get("cursor_class")
         self.extract_multiple = kwargs.get("extract_multiple")
+        self.extract_multiple_parent = kwargs.get("extract_multiple_parent")
         self.columns = kwargs["columns"]
         self.post_population_script = kwargs.get("post_population_script")
 
@@ -86,6 +87,10 @@ class TableMeta:
     def get_extract_multiple(self):
         """Return the function for obtaining multiple records"""
         return self.extract_multiple
+
+    def get_parent_extract_multiple(self):
+        """Return the function for obtaining multiple records from the parent table"""
+        return self.extract_multiple_parent
 
     def get_post_population_script(self):
         """Return the SQL command to run after the table is populated"""

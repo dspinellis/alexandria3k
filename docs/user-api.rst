@@ -20,6 +20,7 @@ All are available through the classes documented below.
    funder_names
    journal_names
    orcid
+   pubmed
    ror
    uspto
 

@@ -41,10 +41,8 @@ class FileCache:
         if path == self.cached_path:
             return self.cached_data
 
-        # print(f"READ FILE {path}")
         with gzip.open(path, "rb") as uncompressed_file:
-            file_content = uncompressed_file.read()
-            self.cached_data = ET.fromstring(file_content)
+            self.cached_data = ET.parse(uncompressed_file).getroot()
         self.cached_path = path
         FileCache.file_reads += 1
         return self.cached_data

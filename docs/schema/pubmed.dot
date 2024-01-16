@@ -1,0 +1,23 @@
+	node [fillcolor="#f78152"];
+	pubmed_articles;
+
+	edge  [headlabel="0…N", taillabel="1"];
+	pubmed_articles -> pubmed_authors;
+	pubmed_articles -> pubmed_abstracts;
+	pubmed_articles -> pubmed_keywords;
+	pubmed_articles -> pubmed_chemicals;
+	pubmed_articles -> pubmed_investigators;
+	pubmed_articles -> pubmed_comments_corrections;
+	pubmed_articles -> pubmed_other_abstracts;
+	pubmed_articles -> pubmed_grants;
+	pubmed_articles -> pubmed_data_banks;
+	pubmed_articles -> pubmed_publication_types;
+	pubmed_articles -> pubmed_meshs;
+	pubmed_articles -> pubmed_supplement_meshs;
+	pubmed_articles -> pubmed_references;
+	pubmed_articles -> pubmed_history;
+	pubmed_authors -> pubmed_author_affiliations;
+	pubmed_investigators -> pubmed_investigator_affiliations;
+	pubmed_data_banks -> pubmed_data_bank_accessions;
+	pubmed_other_abstracts -> pubmed_other_abstract_texts;
+	pubmed_references -> pubmed_reference_articles;

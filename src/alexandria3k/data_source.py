@@ -20,6 +20,7 @@
 virtual database tables."""
 
 import abc
+import re
 import csv
 import os
 import sqlite3
@@ -942,7 +943,13 @@ class DataSource:
 class DataFiles:
     """The source of the compressed data files"""
 
-    def __init__(self, directory, sample_container, file_extension=None):
+    def __init__(
+        self,
+        directory,
+        sample_container,
+        file_extension=None,
+        file_name_regex=None,
+    ):
         # Collect the names of all available data files
         self.data_files = []
         counter = 1
@@ -954,6 +961,8 @@ class DataFiles:
                 continue
             if file_extension and not path.endswith(file_extension):
                 # MacOS creates a .DS_Store file by default
+                continue
+            if file_name_regex and not re.match(file_name_regex, file_name):
                 continue
             counter += 1
             self.data_files.append(path)

@@ -22,6 +22,7 @@
 # module xml.etree.ElementTree used for parsing and
 # creating XML data. For more information check:
 # https://docs.python.org/3/library/xml.etree.elementtree.html
+from alexandria3k.data_source import ElementsCursor
 
 
 def get_element(tree, path):
@@ -76,6 +77,60 @@ def getter_by_attribute(attr_name, value, path=None):
 
 
 def lower(func):
-    """Return a function that returns the lower case of the value
-    returned by the specified function."""
-    return lambda x: func(x).lower()
+    """Return a function that returns the lower case of the result of
+    the specified function."""
+
+    def lfunc(tree):
+        element = func(tree)
+        return element.lower() if element else None
+
+    return lfunc
+
+
+def get_root_text():
+    """Return the root element of the given tree."""
+    return lambda tree: tree.text
+
+
+class XMLCursor(ElementsCursor):
+    """An XML cursor that returns the text of the specified element
+    path."""
+
+    def __init__(self, table, parent_cursor):
+        """Not part of the apsw VTCursor interface.
+        The table agument is a StreamingTable object"""
+        super().__init__(table, parent_cursor)
+        self.extract_multiple = table.get_table_meta().get_extract_multiple()
+        self.parent_extract_multiple = (
+            table.get_table_meta().get_parent_extract_multiple()
+        )
+
+    def Next(self):
+        """Advance to the next element."""
+        while True:
+            if self.parent_cursor.Eof():
+                self.eof = True
+                return
+            if not self.elements:
+                self.elements = self.extract_multiple(
+                    self.parent_cursor.current_row_value()
+                )
+                if not self.elements and self.parent_extract_multiple:
+                    self.elements = self.parent_extract_multiple(
+                        self.parent_cursor.current_row_value()
+                    )
+                self.element_index = -1
+            if not self.elements:
+                self.parent_cursor.Next()
+                self.elements = None
+                continue
+            if self.element_index + 1 < len(self.elements):
+                self.element_index += 1
+                self.eof = False
+                return
+            self.parent_cursor.Next()
+            self.elements = None
+
+    def Rowid(self):
+        """Return a unique id of the row along all records"""
+        return self.parent_cursor.Rowid()
