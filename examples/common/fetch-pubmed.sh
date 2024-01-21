@@ -8,8 +8,8 @@ set -eu
 
 BASE=https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/
 
-mkdir -p pubmed-data
-cd pubmed-data
+mkdir -p pubmed
+cd pubmed
 
 # Obtain last baseline file from README.txt
 last=$(curl --silent https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt |
