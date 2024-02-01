@@ -52,6 +52,9 @@ html_theme_options = {
     'description': 'Local relational access to openly-available publication data sets',
     'github_user': 'dspinellis',
     'github_repo': 'alexandria3k',
+    'github_banner': True,
+    'github_type': 'star',
+    'github_count': True,
     # Add a custom sidebar template
     'extra_nav_links': {
         "Version: " + release: None
