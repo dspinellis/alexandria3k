@@ -8,7 +8,7 @@ set -eu
 
 BASE=https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/
 
-mkdir pubmed-data
+mkdir -p pubmed-data
 cd pubmed-data
 
 # Obtain last baseline file from README.txt
@@ -17,6 +17,8 @@ last=$(curl --silent https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt |
 
 for n in $(seq 1 $last) ; do
   file_name=$(printf 'pubmed24n%04d.xml.gz' $n)
+
+  test -r $file_name && continue
 
   curl --silent $BASE/$file_name >$file_name
 done
