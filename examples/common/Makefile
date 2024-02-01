@@ -11,6 +11,7 @@ CROSSREF_DIR?=../common/Crossref-April-2022
 USPTO_DIR?=../common/uspto-data
 ORCID_SUMMARIES?=../common/ORCID_2022_10_summaries.tar.gz
 ROR?=../common/ror-v1.17.1-2022-12-16.zip
+PUBMED_DIR?=../common/pubmed
 
 V?=1
 TIME?=time
@@ -25,6 +26,9 @@ $(CROSSREF_DIR):
 
 $(USPTO_DIR):
 	cd ../common && ./fetch-uspto.sh
+
+$(PUBMED_DIR):
+	cd ../common && ./fetch-pubmed.sh
 
 $(ORCID_SUMMARIES):
 	curl -L https://orcid.figshare.com/ndownloader/files/37635374 >$@
