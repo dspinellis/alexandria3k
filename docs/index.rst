@@ -11,7 +11,8 @@ about 134 million publications from all major international publishers
 with full citation data for 60 million of them.
 Alternatively, works can be selected from the
 `PubMed <https://pubmed.ncbi.nlm.nih.gov/>`__
-data set which comprises more than 36 million citations
+data set (43 GB compressed, 327 GB uncompressed),
+which comprises more than 36 million citations
 for biomedical literature from
 `MEDLINE <https://www.nlm.nih.gov/medline/medline_overview.html>`__,
 life science journals, and online books,
