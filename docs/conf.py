@@ -54,7 +54,7 @@ html_theme_options = {
     'github_repo': 'alexandria3k',
     'github_banner': True,
     'github_type': 'star',
-    'github_count': True,
+    'github_count': 'true',
     # Add a custom sidebar template
     'extra_nav_links': {
         "Version: " + release: None
