@@ -6,16 +6,25 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import sys
+from datetime import datetime
 import os
+import sys
+import toml
 
 sys.path.append("../src")
 sys.path.append("../src/alexandria3k")
 
-project = "alexandria3k"
-copyright = "2022-2023, Diomidis Spinellis"
-author = "Diomidis Spinellis"
-release = "2.5.0"
+# Fetch current project data from pyproject.toml
+conf_dir_path = os.path.dirname(__file__)
+toml_path = os.path.join(conf_dir_path, '..', 'pyproject.toml')
+with open(toml_path, 'r') as toml_file:
+    pyproject_data = toml.load(toml_file)
+
+
+project = pyproject_data["project"]["name"]
+author = pyproject_data["project"]["authors"][0]["name"]
+release = pyproject_data["project"]["version"]
+copyright = f"2022-{datetime.now().year}, {author}"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
