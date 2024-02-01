@@ -49,12 +49,11 @@ html_context = {
     "release": release,
 }
 html_theme_options = {
-    'description': 'Your project description',
+    'description': 'Local relational access to openly-available publication data sets',
     'github_user': 'dspinellis',
     'github_repo': 'alexandria3k',
     # Add a custom sidebar template
     'extra_nav_links': {
-        "Project Version": None,
         "Version: " + release: None
     }
 }
