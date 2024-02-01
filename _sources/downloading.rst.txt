@@ -80,7 +80,7 @@ Organize the downloaded data by ensuring that each zip file is placed under a fo
 
 The shell script ``examples/common/fetch-uspto.sh`` or the
 ``$(USPTO_DIR)`` dependency of the ``examples/common/Makefile``,
-which uses it can be used to download all USPTO data.
+which uses it, can be used to download all USPTO data.
 
 PubMed data
 ~~~~~~~~~~~
@@ -96,6 +96,11 @@ but the PubMed data contain additional information
 such as MeSH terms and grants.
 They also complement the Crossref data as for example some affiliations
 are only available in the PubMed data.
+
+The shell script ``examples/common/fetch-pubmed.sh`` or the
+``$(PUBMED_DIR)`` dependency of the ``examples/common/Makefile``,
+which uses it, can be used to download all PubMed data.
+
 
 
 Other data sources
