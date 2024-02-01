@@ -86,13 +86,16 @@ PubMed data
 ~~~~~~~~~~~
 
 You can populate a database with the data from the PubMed/MEDLINE database
-from the National Library of Medicine (NLM). The data is available from
+from the National Library of Medicine (NLM).
+The data are available from
 `here <https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/>`__.
-You can also download the data from the FTP server which is documented in 
+You can also download the data from the FTP server which is documented in
 `this readme file <https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt>`__.
-Some data is overlapping with the Crossref dataset, but the PubMed data
-contains additional information such as MeSH terms and grants. Also it complements
-the Crossref data as for example some affiliations are only available in the PubMed data.
+Publication data are overlapping with the Crossref dataset,
+but the PubMed data contain additional information
+such as MeSH terms and grants.
+They also complement the Crossref data as for example some affiliations
+are only available in the PubMed data.
 
 
 Other data sources
