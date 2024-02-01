@@ -23,7 +23,8 @@ with open(toml_path, 'r') as toml_file:
 
 project = pyproject_data["project"]["name"]
 author = pyproject_data["project"]["authors"][0]["name"]
-release = pyproject_data["project"]["version"]
+version = pyproject_data["project"]["version"]
+release = version
 copyright = f"2022-{datetime.now().year}, {author}"
 
 # -- General configuration ---------------------------------------------------
@@ -43,6 +44,21 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # in some pages not to work properly.
 html_theme = "alabaster"
 html_static_path = []
+html_context = {
+    "display_version": True,
+    "release": release,
+}
+html_theme_options = {
+    'description': 'Your project description',
+    'github_user': 'dspinellis',
+    'github_repo': 'alexandria3k',
+    # Add a custom sidebar template
+    'extra_nav_links': {
+        "Project Version": None,
+        "Version: " + release: None
+    }
+}
+
 
 man_pages = [
     ("cli", "a3k", "Process bibliographic data sources", ["Diomidis Spinellis"], 1)
