@@ -104,7 +104,7 @@ software_search = " OR ".join(
 c.execute(
     f"""
     SELECT year, COUNT(DISTINCT(article_id)) FROM (
-        SELECT article_id, year from fts_abstracts
+        SELECT article_id, year FROM fts_abstracts
         WHERE text MATCH '{software_search}' or title MATCH '{software_search}'
         GROUP BY article_id, year
     )
@@ -120,8 +120,8 @@ def query_software(software):
 
     c.execute(
         f"""
-        SELECT year, COUNT(distinct(article_id)) FROM (
-            SELECT article_id, year from fts_abstracts
+        SELECT year, COUNT(DISTINCT(article_id)) FROM (
+            SELECT article_id, year FROM fts_abstracts
             WHERE text MATCH '{software_search}' or title MATCH '{software_search}'
             GROUP BY article_id, year
         )
@@ -187,20 +187,20 @@ def plot_comparison(dataframe, original_df, year=None):
     max_percentage = max(
         df_plot["Percentage"].max(), df_plot["Original_Percentage"].max()
     )
-    max_tick = np.ceil(max_percentage / 5) * 5
+    max_tick = round(max_percentage)
 
     fig, ax = plt.subplots(figsize=(12, 8))
     x = np.arange(len(df_plot["Software"]))
     width = 0.35
 
-    rects1 = ax.barh(
+    ax.barh(
         x - width / 2,
         df_plot["Percentage"],
         width,
         label="Alexandria3K",
         color="darkorange",
     )
-    rects2 = ax.barh(
+    ax.barh(
         x + width / 2,
         df_plot["Original_Percentage"].fillna(0),
         width,
@@ -217,7 +217,13 @@ def plot_comparison(dataframe, original_df, year=None):
     ax.set_yticklabels(df_plot["Software"])
     ax.legend()
 
-    plt.show()
+    fig = plt.gcf()
+    fig.set_size_inches(6, 6)
+    fig.set_facecolor("w")
+    if not year:
+        fig.savefig("software_usage_total.svg", bbox_inches="tight")
+    else:
+        fig.savefig(f"sotware_usage_{year}.svg", bbox_inches="tight")
 
 plot_comparison(df, df_original)
 
