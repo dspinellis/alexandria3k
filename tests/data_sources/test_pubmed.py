@@ -129,6 +129,21 @@ class TestPubmedPopulateVanilla(PopulateQueries):
             self.cond_field("pubmed_authors", "family", "given = 'David R'"), "Elwood"
         )
 
+    def test_author_orcid(self):
+        """Test that both ORCID with and without URL prefix are accepted"""
+        self.assertEqual(
+            self.cond_field(
+                "pubmed_authors", "identifier", "given = 'A' AND family = 'Flach'"
+            ),
+            "0000-0002-4314-996X",
+        )
+        self.assertEqual(
+            self.cond_field(
+                "pubmed_authors", "identifier", "given = 'I' AND family = 'Wood'"
+            ),
+            "0000-0001-4314-996X",
+        )
+
 
 class TestPubmedPopulateMasterCondition(PopulateQueries):
     @classmethod

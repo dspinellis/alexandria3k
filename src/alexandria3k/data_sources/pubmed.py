@@ -47,6 +47,21 @@ DEFAULT_SOURCE = None
 FILENAME_FORMAT = r"pubmed.*\.xml\.gz"
 
 
+def author_identifier(func):
+    """Return the ORCID identifier of the author,
+    it might start with the URL, but sometimes it doesn't"""
+
+    def orcid(tree):
+        element = func(tree)
+        if element is None:
+            return None
+        if element.startswith("https://orcid.org/"):
+            return element[18:]
+        return element
+
+    return orcid
+
+
 class ArticlesElementsCursor(XMLCursor):
     """A cursor over PubMed items. Gets all the elements
     inside an xml file and then iterates over them."""
@@ -76,7 +91,7 @@ class ArticlesElementsCursor(XMLCursor):
 class ArticlesCursor(ArticlesElementsCursor):
     """Cursor over PubMed articles"""
 
-    row_id_left_shift = 20
+    row_id_left_shift = 18
 
     def __init__(self, table):
         """Not part of the apsw VTCursor interface.
@@ -86,8 +101,9 @@ class ArticlesCursor(ArticlesElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records"""
-        # Allow for 16k items per file
-        return (self.files_cursor.Rowid() << 14) | (self.element_index)
+        return (self.files_cursor.Rowid() << self.row_id_left_shift) | (
+            self.element_index
+        )
 
     # pylint: disable=arguments-differ
     def Filter(self, index_number, _index_name, constraint_args):
@@ -563,7 +579,7 @@ tables = [
             ),
             ColumnMeta(
                 "identifier",
-                getter("Identifier"),
+                author_identifier(getter("Identifier")),
             ),
             ColumnMeta(
                 "identifier_source",

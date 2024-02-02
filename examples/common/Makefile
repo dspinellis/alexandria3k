@@ -11,7 +11,7 @@ CROSSREF_DIR?=../common/Crossref-April-2022
 USPTO_DIR?=../common/uspto-data
 ORCID_SUMMARIES?=../common/ORCID_2022_10_summaries.tar.gz
 ROR?=../common/ror-v1.17.1-2022-12-16.zip
-PUBMED_DIR?=../common/pubmed-data
+PUBMED_DIR?=../common/pubmed
 
 V?=1
 TIME?=time
@@ -27,14 +27,14 @@ $(CROSSREF_DIR):
 $(USPTO_DIR):
 	cd ../common && ./fetch-uspto.sh
 
+$(PUBMED_DIR):
+	cd ../common && ./fetch-pubmed.sh
+
 $(ORCID_SUMMARIES):
 	curl -L https://orcid.figshare.com/ndownloader/files/37635374 >$@
 
 $(ROR):
 	curl -L 'https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1' >$@
-
-$(PUBMED_DIR):
-	cd ../common && ./fetch-pubmed.sh
 
 # TODO when using this Makefile: Add rule in including Makefile named
 # "populate" to populate the database with required data

@@ -1,21 +1,24 @@
-#!/bin/bash
+#!/bin/sh
+#
+# Fetch baseline PubMed bibliographic data
+#
 
-# downloads all MEDLINE/Pubmed citations in the annual baseline.
-mkdir pubmed-data
+# Fail on command errors and unset variables
+set -eu
+
+BASE=https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/
+
+mkdir -p pubmed-data
 cd pubmed-data
 
-# each year the file names change, so we need to get the current year
-year=$(date +'%y')
+# Obtain last baseline file from README.txt
+last=$(curl --silent https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt |
+  sed -n '/pubmed24n0001/s/.*pubmed24n\([^.]*\)\.xml.*/\1/p')
 
-for i in $(seq 1 972); do
-    if ((i < 10)); then
-        fname="ftp://ftp.ncbi.nlm.nih.gov/pubmed/baseline/pubmed${year}n000$i.xml.gz"
-    elif ((i < 100)); then
-        fname="ftp://ftp.ncbi.nlm.nih.gov/pubmed/baseline/pubmed${year}n00$i.xml.gz"
-    else
-        fname="ftp://ftp.ncbi.nlm.nih.gov/pubmed/baseline/pubmed${year}n0$i.xml.gz"
-    fi
-    echo "Downloading: $fname"
-    wget $fname
-    sleep 2
+for n in $(seq 1 $last) ; do
+  file_name=$(printf 'pubmed24n%04d.xml.gz' $n)
+
+  test -r $file_name && continue
+
+  curl --silent $BASE/$file_name >$file_name
 done
