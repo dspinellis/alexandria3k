@@ -346,8 +346,8 @@
 <!-- PubMed tables -->
 <g id="node21" class="node">
 <title>PubMed tables</title>
-<polygon fill="#f78152" stroke="black" points="990,-1739 883,-1739 883,-1703 990,-1703 990,-1739"/>
-<text text-anchor="middle" x="936.5" y="-1717.3" font-family="Arial" font-size="14.00" fill="#000000">PubMed tables</text>
+<polygon fill="#326599" stroke="black" points="990,-1739 883,-1739 883,-1703 990,-1703 990,-1739"/>
+<text text-anchor="middle" x="936.5" y="-1717.3" font-family="Arial" font-size="14.00" fill="#ffffff">PubMed tables</text>
 </g>
 <!-- USPTO tables&#45;&gt;PubMed tables -->
 <!-- usp_citations -->
@@ -367,8 +367,8 @@
 <!-- pubmed_articles -->
 <g id="node22" class="node">
 <title>pubmed_articles</title>
-<polygon fill="#f78152" stroke="black" points="343.5,-1498.5 227.5,-1498.5 227.5,-1462.5 343.5,-1462.5 343.5,-1498.5"/>
-<text text-anchor="middle" x="285.5" y="-1476.8" font-family="Arial" font-size="14.00" fill="#000000">pubmed_articles</text>
+<polygon fill="#326599" stroke="black" points="343.5,-1498.5 227.5,-1498.5 227.5,-1462.5 343.5,-1462.5 343.5,-1498.5"/>
+<text text-anchor="middle" x="285.5" y="-1476.8" font-family="Arial" font-size="14.00" fill="#ffffff">pubmed_articles</text>
 </g>
 <!-- pubmed_articles&#45;&gt;works -->
 <g id="edge17" class="edge">
