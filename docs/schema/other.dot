@@ -1,5 +1,5 @@
 	// Alexandria3k tables
-	node [fillcolor="#d3d3d3"];
+	node [fillcolor="#d3d3d3", fontcolor="#000000"];
 	"Alexandria3k tables" [shape=box, margin="0.11,0.055"];
 	asjcs;
 	works_asjcs;

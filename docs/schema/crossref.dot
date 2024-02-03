@@ -1,4 +1,4 @@
-	node [fillcolor="#ffc62c"];
+	node [fillcolor="#ffc62c", fontcolor="#000000"];
 	works;
 	work_authors;
 	works -> work_authors [headlabel="1…N", taillabel="1"];

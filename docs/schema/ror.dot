@@ -1,4 +1,4 @@
-	node [fillcolor="#53baa1"];
+	node [fillcolor="#53baa1", fontcolor="#000000"];
 	research_organizations;
 
 	research_organizations -> ror_types [headlabel="1…N", taillabel="1"];

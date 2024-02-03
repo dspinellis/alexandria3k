@@ -1,4 +1,4 @@
-	node [fillcolor="#a6ce39"];
+	node [fillcolor="#a6ce39", fontcolor="#000000"];
 	persons;
 
 	edge  [headlabel="0…N", taillabel="1"];

@@ -1,4 +1,4 @@
-	node [fillcolor="#f78152"];
+	node [fillcolor="#326599", fontcolor="#ffffff"];
 	pubmed_articles;
 
 	edge  [headlabel="0…N", taillabel="1"];
