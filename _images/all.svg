@@ -1995,8 +1995,8 @@
 <!-- PubMed tables -->
 <g id="node78" class="node">
 <title>PubMed tables</title>
-<polygon fill="#f78152" stroke="black" points="4480.5,-4105 4373.5,-4105 4373.5,-4069 4480.5,-4069 4480.5,-4105"/>
-<text text-anchor="middle" x="4427" y="-4083.3" font-family="Arial" font-size="14.00" fill="#000000">PubMed tables</text>
+<polygon fill="#326599" stroke="black" points="4480.5,-4105 4373.5,-4105 4373.5,-4069 4480.5,-4069 4480.5,-4105"/>
+<text text-anchor="middle" x="4427" y="-4083.3" font-family="Arial" font-size="14.00" fill="#ffffff">PubMed tables</text>
 </g>
 <!-- USPTO tables&#45;&gt;PubMed tables -->
 <!-- PubMed tables&#45;&gt;Alexandria3k tables -->
