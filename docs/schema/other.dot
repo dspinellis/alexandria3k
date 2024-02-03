@@ -12,7 +12,7 @@
 	node [shape=box, margin="0.11,0.055"];
 
 	// Crossref
-	node [fillcolor="#ffc62c"];
+	node [fillcolor="#ffc62c", fontcolor="#000000"];
 	"Main Crossref tables" [shape=box, margin="0.11,0.055"];
 	works;
 	work_authors;
@@ -20,24 +20,24 @@
 	work_funders;
 
 	// ORCID
-	node [fillcolor="#a6ce39"];
+	node [fillcolor="#a6ce39", fontcolor="#000000"];
 	"ORCID tables" [shape=box, margin="0.11,0.055"];
 	persons;
 	person_works;
 
 	// ROR
-	node [fillcolor="#53baa1"];
+	node [fillcolor="#53baa1", fontcolor="#000000"];
 	"ROR tables" [shape=box, margin="0.11,0.055"];
 	research_organizations;
 	ror_funder_ids;
 
 	// USPTO
-	node [fillcolor="#9fd6ff"];
+	node [fillcolor="#9fd6ff", fontcolor="#000000"];
 	"USPTO tables" [shape=box, margin="0.11,0.055"];
 	usp_citations;
 
 	// PubMed
-	node [fillcolor="#f78152"];
+	node [fillcolor="#326599", fontcolor="#ffffff"];
 	"PubMed tables" [shape=box, margin="0.11,0.055"];
 	pubmed_articles;
 
@@ -50,11 +50,11 @@
 
 
 	edge  [headlabel="0…1", taillabel="1"];
-	node [fillcolor="#fa9a87"];
+	node [fillcolor="#fa9a87", fontcolor="#000000"];
 	"DOAJ table" [shape=box, margin="0.11,0.055"];
 	open_access_journals;
 
-	node [fillcolor="#3db1c8"];
+	node [fillcolor="#3db1c8", fontcolor="#000000"];
 	"Additional Crossref tables" [shape=box, margin="0.11,0.055"];
 	works -> open_access_journals;
 	work_funders -> funder_names;
