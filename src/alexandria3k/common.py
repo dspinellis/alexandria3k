@@ -188,7 +188,6 @@ def try_sql_execute(execution_context, statement):
     Return the result of executing the specified SQL statement.
     The statement is logged through log_sql. If the satement's
     execution fails the program terminates with the failure's error message.
-    output a copy of the statement on the standard output.
 
     :param execution_context: The context in which the execute method will
         be called to evaluate the statement.
