@@ -42,7 +42,7 @@ jobs:
         run: |
           for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
       - name: Build package
-        run: cd src && pipenv run python -m build ..
+        run: cd src && pipenv run hatch build ..
       - name: Create virtual environment for installation
         run: |
           pip install virtualenv
