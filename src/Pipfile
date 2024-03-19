@@ -10,6 +10,7 @@ pyahocorasick = "*"
 
 [dev-packages]
 black = "*"
+hatch = "*"
 pylint = "*"
 sphinx = "*"
 sphinx-argparse = "*"
