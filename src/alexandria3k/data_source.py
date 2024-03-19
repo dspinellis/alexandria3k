@@ -549,8 +549,7 @@ class DataSource:
 
         # Easy case
         if not partition:
-            for row in try_sql_execute(self.cursor, query):
-                yield row
+            yield from try_sql_execute(self.cursor, query)
             return
 
         # Even when restricting multiple JOINs with container_id
@@ -596,8 +595,7 @@ class DataSource:
                     )
                 )
             self.cursor = partition.cursor()
-            for row in try_sql_execute(self.cursor, query):
-                yield row
+            yield from try_sql_execute(self.cursor, query)
             for table_name in self.query_columns:
                 partition.execute(log_sql(f"DROP TABLE {table_name}"))
 
