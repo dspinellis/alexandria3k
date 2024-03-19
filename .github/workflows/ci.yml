@@ -51,6 +51,7 @@ jobs:
         run: |
           cd test-a3k
           . bin/activate
+          ls ../dist
           python3 -m pip install --use-pep517 ../dist/alexandria3k-*.whl
       - name: Run built package
         run: |
