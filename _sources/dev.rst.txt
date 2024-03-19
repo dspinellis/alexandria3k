@@ -145,7 +145,7 @@ Building
 .. code:: sh
 
    # While in the top-level directory
-   python3 -m build
+   hatch build
 
 Documentation building
 ~~~~~~~~~~~~~~~~~~~~~~
