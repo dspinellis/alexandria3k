@@ -145,7 +145,9 @@ Building
 .. code:: sh
 
    # While in the top-level directory
-   hatch build
+   hatch build dist/
+
+This will result in built files being placed in the ``dist`` directory.
 
 Documentation building
 ~~~~~~~~~~~~~~~~~~~~~~
