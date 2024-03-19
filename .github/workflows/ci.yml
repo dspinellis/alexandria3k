@@ -43,7 +43,6 @@ jobs:
           for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
       - name: Build package
         run: |
-          mkdir -p dist
           cd src
           pipenv run hatch build ../dist/
       - name: Create virtual environment for installation
