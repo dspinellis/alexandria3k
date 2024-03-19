@@ -42,7 +42,10 @@ jobs:
         run: |
           for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
       - name: Build package
-        run: cd src && pipenv run hatch build ..
+        run: |
+          mkdir -p dist
+          cd src
+          pipenv run hatch build ../dist/
       - name: Create virtual environment for installation
         run: |
           pip install virtualenv
@@ -51,7 +54,6 @@ jobs:
         run: |
           cd test-a3k
           . bin/activate
-          ls ../dist
           python3 -m pip install --use-pep517 ../dist/alexandria3k-*.whl
       - name: Run built package
         run: |
