@@ -36,9 +36,6 @@ $(ORCID_SUMMARIES):
 $(ROR):
 	curl -L 'https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1' >$@
 
-$(PUBMED_DIR):
-	cd ../common && ./fetch-pubmed.sh
-
 # TODO when using this Makefile: Add rule in including Makefile named
 # "populate" to populate the database with required data
 
