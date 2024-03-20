@@ -16,7 +16,7 @@ populate: $(PUBMED_DIR)
 	  --columns pubmed_articles.id \
 	    pubmed_articles.pubmed_id \
 	    pubmed_articles.completed_year \
-		pubmed_articles.journal_year \		
+	    pubmed_articles.journal_year \
 	    pubmed_articles.title \
 	    pubmed_abstracts.article_id \
 	    pubmed_abstracts.text \
