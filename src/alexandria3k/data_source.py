@@ -326,9 +326,11 @@ class FilesCursor(ItemsCursor):
             return
 
         self.file_index += 1
-        self.items = self.get_file_cache().read(
-            self.table.data_source[self.file_index]
-        )
+        path = self.table.data_source[self.file_index]
+        try:
+            self.items = self.get_file_cache().read(path)
+        except EOFError as exc:
+            raise Alexandria3kError(f"Error reading file {path}") from exc
         self.eof = False
         # The single file has been read. Set EOF in next Next call
         self.file_read = True
