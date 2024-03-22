@@ -53,6 +53,10 @@ class TableMeta:
         A columns array can be used to specify which columns to include."""
         if not columns or "*" in columns:
             columns = [f"  {c.get_definition()}" for c in self.columns]
+        else:
+            columns = [
+                f"  {self.get_column_definition_by_name(c)}" for c in columns
+            ]
         # A comma-separated list of the table's columns
         column_list = ",\n".join(columns)
         return f"CREATE TABLE {prefix}{self.name}(\n" + column_list + "\n);\n"
