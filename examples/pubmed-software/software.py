@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sqlite3
 
 import matplotlib.pyplot as plt
@@ -93,7 +95,7 @@ SOFTWARE_LIST = {
 }
 
 
-conn = sqlite3.connect("pubmed.db")
+conn = sqlite3.connect("rolap.db")
 c = conn.cursor()
 
 all_software = [[s["name"]] + s["synonyms"] for s in SOFTWARE_LIST.values()]

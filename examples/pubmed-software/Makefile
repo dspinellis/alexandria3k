@@ -22,3 +22,6 @@ populate: $(PUBMED_DIR)
 	    pubmed_abstracts.text \
 	  --row-selection 'COALESCE(pubmed_articles.completed_year, pubmed_articles.journal_year) IN (1997, 2007, 2017)'
 	touch $@
+
+software_usage_total.svg: tables/fts_abstracts software.py
+	python software.py

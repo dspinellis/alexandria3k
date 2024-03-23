@@ -1,6 +1,11 @@
 .depend
 .depend.all
+populate
 reports
 rolap
 simple-rolap
 tables
+software_usage_total.svg
+sotware_usage_1997.svg
+sotware_usage_2007.svg
+sotware_usage_2017.svg
