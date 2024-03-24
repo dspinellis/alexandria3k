@@ -45,3 +45,37 @@ The following examples are available.
 * [Fully-indexed Crossref database sample](sample)
 * [Top five US Patent Office applications by country and year](uspto)
 * [Replicate study on software used in PubMed articles](pubmed-software)
+
+## Published results
+The following queries have been used to publish derived figures and tables.
+
+* [Yearly availability of Crossref elements](https://doi.org/10.1371/journal.pone.0294946.g001) derived from
+  * [crossref-standalone/yearly-abstracts.sql](./crossref-standalone/yearly-abstracts.sql)
+  * [graph/yearly-work-subjects.sql](./graph/yearly-work-subjects.sql)
+  * [graph/yearly-work-funders.sql](./graph/yearly-work-funders.sql)
+  * [graph/yearly-work-links.sql](./graph/yearly-work-links.sql)
+  * [graph/yearly-work-references.sql](./graph/yearly-work-references.sql)
+  * [graph/yearly-work-authors.sql](./graph/yearly-work-authors.sql)
+  * [graph/yearly-authors-orcid.sql](./graph/yearly-authors-orcid.sql)
+  * [graph/yearly-author-affiliations.sql](./graph/yearly-author-affiliations.sql)
+  * [graph/yearly-references-doi.sql](./graph/yearly-references-doi.sql)
+  * [graph/yearly-funders-doi.sql](./graph/yearly-funders-doi.sql)
+  * [graph/yearly-funder-awards.sql](./graph/yearly-funder-awards.sql)
+* [Number and properties of Crossref records](https://doi.org/10.1371/journal.pone.0294946.t001) derived from [graph/metrics.sql](./graph/metrics.sql)
+* [Number of ORCID records](https://doi.org/10.1371/journal.pone.0294946.t002) derived from [graph/metrics.sql](./graph/metrics.sql)
+* [ Evolution of scientific publishing metrics in the post-WW2 period](https://doi.org/10.1371/journal.pone.0294946.g002) derived from
+  * [graph/yearly-authors-per-work.sql](./graph/yearly-authors-per-work.sql)
+  * [author-productivity/author-productivity.sql](./author-productivity/author-productivity.sql)
+  * [graph/yearly-works.sql](./graph/yearly-works.sql)
+  * [open-access/yearly-oa-journal-works.sql](./open-access/yearly-oa-journal-works.sql)
+  * [graph/yearly-citations-per-paper.sql](./graph/yearly-citations-per-paper.sql)
+  * [graph/yearly-references-per-paper.sql](./graph/yearly-references-per-paper.sql)
+  * [crossref-standalone/yearly-journals.sql](./crossref-standalone/yearly-journals.sql)
+  * [yearly-numpages/yearly-numpages.sql](./yearly-numpages/yearly-numpages.sql)
+  * [graph/yearly-proportion-of-cited-papers.sql](./graph/yearly-proportion-of-cited-papers.sql)
+  * [graph/yearly-2y-impact-factor.sql](./graph/yearly-2y-impact-factor.sql)
+  * [graph/yearly-20y-impact-factor.sql](./graph/yearly-20y-impact-factor.sql)
+  * [cdindex/yearly-cdindex.sql](./cdindex/yearly-cdindex.sql)
+* [Number of research synthesis studies published each year in the period 1971–2021](https://doi.org/10.1371/journal.pone.0294946.g003) derived from [research-synthesis/a3k-queries/research-synthesis.sql](./research-synthesis/a3k-queries/research-synthesis.sql)
+* [Evolution of subject coverage and publications 1945–2021](https://doi.org/10.1371/journal.pone.0294946.g004) derived from [graph/general-field-publications-list.sql](./graph/general-field-publications-list.sql)
+* [Citations from COVID research to COVID research over time](https://doi.org/10.1371/journal.pone.0294946.g005) derived from [covid/inner-citations.sql](./covid/inner-citations.sql)

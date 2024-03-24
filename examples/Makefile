@@ -32,12 +32,15 @@ export EXPENSIVE_DEPENDENCIES?=true
 
 SUBDIRS?=$(shell find . -mindepth 1 -maxdepth 1 -type d)
 
-.PHONY: all $(SUBDIRS) clean
+.PHONY: all $(SUBDIRS) verify-links clean
 
 all: $(SUBDIRS)
 
 $(SUBDIRS):
 	$(MAKE) -C $@
+
+verify-links:
+	sed -n 's|.*(\./\([^)]*\).*|\1|p' README.md | xargs ls >/dev/null
 
 clean:
 	for dir in $(SUBDIRS); do \
