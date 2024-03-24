@@ -66,9 +66,13 @@ studies</a></p></li>
 structure</a></p></li>
 <li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/open-access">Examine the evolution and impact of open access journal
 papers</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/crossref-standalone">Report metrics associated with the Crossref data
+set</a></p></li>
 <li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/orcid">Report metrics associated with ORCID
 data</a></p></li>
-<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/covid">Obtain measures associated with COVID-19
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/ror-metrics">Report research organization registry
+metrics</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/covid">Obtain data associated with COVID-19
 research</a></p></li>
 <li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/impact-factor-2021">Calculate the 2021 journal impact
 factor</a></p></li>
@@ -78,8 +82,6 @@ journals</a></p></li>
 venues</a></p></li>
 <li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/person-h5">Calculate h5-index of persons and study their citation
 graph</a></p></li>
-<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/crossref-standalone">Report metrics associated with the Crossref data
-set</a></p></li>
 <li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/author-productivity">Calculate relative yearly author
 productivity</a></p></li>
 <li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/yearly-numpages">Calculate the average size of an article’s pages each
@@ -93,7 +95,69 @@ works</a></p></li>
 sample</a></p></li>
 <li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/uspto">Top five US Patent Office applications by country and
 year</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/pubmed-software">Replicate study on software used in PubMed
+articles</a></p></li>
 </ul>
+<div class="section" id="published-results">
+<h2>Published results<a class="headerlink" href="#published-results" title="Permalink to this headline">¶</a></h2>
+<p>The following queries have been used to publish derived figures and
+tables.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doi.org/10.1371/journal.pone.0294946.g001">Yearly availability of Crossref
+elements</a>
+derived from</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./crossref-standalone/yearly-abstracts.sql">crossref-standalone/yearly-abstracts.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-work-subjects.sql">graph/yearly-work-subjects.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-work-funders.sql">graph/yearly-work-funders.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-work-links.sql">graph/yearly-work-links.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-work-references.sql">graph/yearly-work-references.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-work-authors.sql">graph/yearly-work-authors.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-authors-orcid.sql">graph/yearly-authors-orcid.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-author-affiliations.sql">graph/yearly-author-affiliations.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-references-doi.sql">graph/yearly-references-doi.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-funders-doi.sql">graph/yearly-funders-doi.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-funder-awards.sql">graph/yearly-funder-awards.sql</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://doi.org/10.1371/journal.pone.0294946.t001">Number and properties of Crossref
+records</a>
+derived from <a class="reference external" href="./graph/metrics.sql">graph/metrics.sql</a></p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1371/journal.pone.0294946.t002">Number of ORCID
+records</a>
+derived from <a class="reference external" href="./graph/metrics.sql">graph/metrics.sql</a></p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1371/journal.pone.0294946.g002">Evolution of scientific publishing metrics in the post-WW2
+period</a> derived
+from</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-authors-per-work.sql">graph/yearly-authors-per-work.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./author-productivity/author-productivity.sql">author-productivity/author-productivity.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-works.sql">graph/yearly-works.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./open-access/yearly-oa-journal-works.sql">open-access/yearly-oa-journal-works.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-citations-per-paper.sql">graph/yearly-citations-per-paper.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-references-per-paper.sql">graph/yearly-references-per-paper.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./crossref-standalone/yearly-journals.sql">crossref-standalone/yearly-journals.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./yearly-numpages/yearly-numpages.sql">yearly-numpages/yearly-numpages.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-proportion-of-cited-papers.sql">graph/yearly-proportion-of-cited-papers.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-2y-impact-factor.sql">graph/yearly-2y-impact-factor.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./graph/yearly-20y-impact-factor.sql">graph/yearly-20y-impact-factor.sql</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples/./cdindex/yearly-cdindex.sql">cdindex/yearly-cdindex.sql</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://doi.org/10.1371/journal.pone.0294946.g003">Number of research synthesis studies published each year in the
+period
+1971–2021</a>
+derived from
+<a class="reference external" href="./research-synthesis/a3k-queries/research-synthesis.sql">research-synthesis/a3k-queries/research-synthesis.sql</a></p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1371/journal.pone.0294946.g004">Evolution of subject coverage and publications
+1945–2021</a>
+derived from
+<a class="reference external" href="./graph/general-field-publications-list.sql">graph/general-field-publications-list.sql</a></p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1371/journal.pone.0294946.g005">Citations from COVID research to COVID research over
+time</a> derived
+from <a class="reference external" href="./covid/inner-citations.sql">covid/inner-citations.sql</a></p></li>
+</ul>
+</div>
 </div>
 
 
@@ -128,7 +192,10 @@ year</a></p></li>
 <li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Application examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Application examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#published-results">Published results</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a></li>
