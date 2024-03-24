@@ -181,7 +181,7 @@ def plot_comparison(dataframe, original_df, year=None):
         total_count = df_plot["Count"].sum()
         df_plot["Percentage"] = (df_plot["Count"] / total_count) * 100
         original_plot = original_df[original_df["Year"] == "total"].copy()
-        title = "Software usage percentage (All Years Combined)"
+        title = "Software usage; all years combined"
 
     df_plot = df_plot.merge(original_plot, on="Software", how="left")
     df_plot = df_plot.sort_values(by="Original_Percentage", ascending=True)
@@ -206,7 +206,7 @@ def plot_comparison(dataframe, original_df, year=None):
         x + width / 2,
         df_plot["Original_Percentage"].fillna(0),
         width,
-        label="Original",
+        label="Masuadi et al. (2021)",
         color="green",
     )
 
