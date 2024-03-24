@@ -33,7 +33,7 @@ echo SQL unit tests
 for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
 
 echo Code formatting
-find src -name '*.py' | xargs black -l 79
+find src -name '*.py' | xargs black -l 79 --check
 
 echo Linting
 find src -name '*.py' | xargs python -m pylint --rcfile .pylintrc
