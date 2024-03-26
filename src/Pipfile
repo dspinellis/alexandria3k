@@ -7,6 +7,8 @@ name = "pypi"
 apsw = "*"
 importlib-metadata = "*"
 pyahocorasick = "*"
+openai = "*"
+levenshtein = "*"
 
 [dev-packages]
 black = "*"
