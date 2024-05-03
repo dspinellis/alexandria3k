@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+title: Alexandria3k
+message: >-
+  If you use this software, please cite, using the metadata from this file,
+  both the article from preferred-citation and the software itself.
+preferred-citation:
+  date-released: "2023-11-01"
+  doi: "10.1371/journal.pone.0294946"
+  title: "Open Reproducible Scientometric Research with Alexandria3k"
+  authors:
+    - family-names: "Spinellis"
+      given-names: "Diomidis"
+  type: "article"
+  volume: "18"
+  journal: "PLoS ONE"
+  publisher: "Public Library of Science"
+  start: "e0294946"
+type: software
+authors:
+  - given-names: Diomidis
+    family-names: Spinellis
+    email: dds@aueb.gr
+    affiliation: Athens University of Economics and Business
+    orcid: 'https://orcid.org/0000-0003-4231-1897'
+  - given-names: Bas
+    family-names: Verlooy
+  - given-names: Aggelos
+    family-names: Margkas
+repository-code: 'https://github.com/dspinellis/alexandria3k'
+keywords:
+  - Alexandria3k
+  - Citation analysis
+  - Bibliometrics
+  - Scientometrics
+  - SQLite
+  - Patents
+  - Crossref
+  - ORCID
+  - ROR
+  - MEDLINE
+license: GPL-3.0
