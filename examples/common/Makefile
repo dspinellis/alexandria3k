@@ -7,7 +7,7 @@ export RDBMS?=sqlite
 export ROLAPDB?=rolap
 
 A3K?=a3k
-CROSSREF_DIR?=../common/Crossref-April-2022
+CROSSREF_DIR?=../common/Crossref-April-2024
 USPTO_DIR?=../common/uspto-data
 ORCID_SUMMARIES?=../common/ORCID_2022_10_summaries.tar.gz
 ROR?=../common/ror-v1.17.1-2022-12-16.zip
