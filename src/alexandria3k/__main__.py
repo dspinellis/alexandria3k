@@ -99,10 +99,83 @@ def get_data_source_instance(args):
     return class_(data_location, sample, args.attach_databases)
 
 
+def download(args):
+    """Download data using the specified data source."""
+    args.validate_args(args)
+    data_source_instance = get_data_source_instance(args)
+    extra_args = args.extra_args if args.extra_args is not None else []
+    data_source_instance.download(
+        database=args.database,
+        sql_query=args.sql_query,
+        data_location=args.data_location,
+        *extra_args,
+    )
+    perf.log(f"Data downloaded and saved to {args.data_location}")
+
+
+def validate_args(args):
+    """Validate that both database and sql_query are either both provided or both omitted."""
+    if bool(args.database) != bool(args.sql_query):
+        raise argparse.ArgumentTypeError(
+            "Both --database and --sql-query must be provided together or not at all."
+        )
+    return args
+
+
+def add_subcommand_download(subparsers):
+    """Add the arguments of the download subcommand."""
+    parser = subparsers.add_parser(
+        "download", help="Download data using the specified data source."
+    )
+    parser.set_defaults(func=download)
+    parser.add_argument(
+        "-d", "--database", help="File path of the database to use", nargs="?"
+    )
+    parser.add_argument(
+        "data_name",
+        choices=facility_names("data_sources"),
+        help="Name of the data source to use",
+    )
+    parser.add_argument(
+        "--sql-query",
+        type=str,
+        help="SQL query to retrieve the data for downloading",
+    )
+    parser.add_argument(
+        "data_location",
+        type=str,
+        help="File or directory path to save the downloaded data",
+    )
+    parser.add_argument(
+        "--extra_args",
+        nargs="*",
+        help="Additional arguments for the data source (e.g. URL, key, file path)",
+    )
+    parser.add_argument(
+        "-s",
+        "--sample",
+        default="True",
+        type=str,
+        help="Python expression to sample the data (e.g. random.random() < 0.0002). "
+        + "The expression can also use a variable named data whose value is documented "
+        + "in the constructor API of each data source.",
+    )
+    parser.add_argument(
+        "-a",
+        "--attach-databases",
+        nargs="+",
+        type=str,
+        help="Databases to attach for the row selection expression",
+    )
+    # Add a custom validation function to the parser
+    parser.set_defaults(validate_args=validate_args)
+
+
 def populate(args):
     """Populate the specified database from the specified data source."""
 
     data_source_instance = get_data_source_instance(args)
+
     if args.row_selection_file:
         with open(args.row_selection_file, encoding="utf-8") as file:
             args.row_selection = file.read()
@@ -130,9 +203,11 @@ def add_subcommand_populate(subparsers):
         help="Name of the data source to use",
     )
     parser.add_argument(
-        "data_location", nargs="?", help="Path or URL of the source's data"
+        "data_location",
+        nargs="?",
+        type=str,
+        help="Path or URL of the source's data",
     )
-
     parser.add_argument(
         "-a",
         "--attach-databases",
@@ -491,6 +566,7 @@ def get_cli_parser():
     add_subcommand_list_process_schema(subparsers)
     add_subcommand_list_sources(subparsers)
     add_subcommand_version(subparsers)
+    add_subcommand_download(subparsers)
     return parser
 
 
