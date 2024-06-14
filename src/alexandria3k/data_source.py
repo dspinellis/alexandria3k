@@ -282,10 +282,11 @@ class FilesCursor(ItemsCursor):
         super().__init__(table)
         self.get_file_cache = get_file_cache
 
-    def debug_progress_bar(self):
+    def debug_progress_bar(self, current_progress=None, total_length=None):
         """Print a progress bar"""
-        total_length = len(self.table.data_source)
-        current_progress = self.file_index + 1
+        if current_progress is None:
+            total_length = len(self.table.data_source)
+            current_progress = self.file_index + 1
 
         percent = current_progress / total_length * 100
         progress_marker = int(
@@ -604,6 +605,25 @@ class DataSource:
     def get_query_column_names(self):
         """Return the column names associated with an executing query"""
         return [description[0] for description in self.cursor.description]
+
+    def download(self, data_location, database=None, sql_query=None):
+        """
+        Download the data source to the specified data location.
+
+        :param data_location : The file or directory path to store for the downloaded data.
+        :type data_location: object
+
+        :param database: An optional path, specifying an SQLite database
+        to use for retrieving the records to populate.
+        :type database: str, optional
+
+        :param sql_query: An SQL `SELECT` query specifying the required data,
+            defaults to `None`.
+        :type sql_query: str, optional
+        """
+        raise Alexandria3kError(
+            "This data source does not support downloading."
+        )
 
     # pylint: disable-next=too-many-locals
     def populate(
