@@ -38,7 +38,7 @@
 <p><p>a3k: Relational interface to publication metadata</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">a3k</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DEBUG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
-           <span class="p">{</span><span class="n">help</span><span class="p">,</span><span class="n">populate</span><span class="p">,</span><span class="n">process</span><span class="p">,</span><span class="n">query</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">processes</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">complete</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">source</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">sources</span><span class="p">,</span><span class="n">version</span><span class="p">}</span>
+           <span class="p">{</span><span class="n">help</span><span class="p">,</span><span class="n">populate</span><span class="p">,</span><span class="n">process</span><span class="p">,</span><span class="n">query</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">processes</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">complete</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">source</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">sources</span><span class="p">,</span><span class="n">version</span><span class="p">,</span><span class="n">download</span><span class="p">}</span>
            <span class="o">...</span>
 </pre></div>
 </div>
@@ -46,7 +46,7 @@
 <h2>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>command</kbd></dt>
-<dd><p>Possible choices: help, populate, process, query, list-processes, list-complete-schema, list-source-schema, list-process-schema, list-sources, version</p>
+<dd><p>Possible choices: help, populate, process, query, list-processes, list-complete-schema, list-source-schema, list-process-schema, list-sources, version, download</p>
 <p>Name of the a3k operation to perform.</p>
 </dd>
 </dl>
@@ -94,7 +94,7 @@ stderr: Log to standard error;</p>
              <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">COLUMNS</span> <span class="p">[</span><span class="n">COLUMNS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">R</span> <span class="n">ROW_SELECTION_FILE</span><span class="p">]</span>
              <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ROW_SELECTION</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
              <span class="n">database</span>
-             <span class="p">{</span><span class="n">asjcs</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">orcid</span><span class="p">}</span>
+             <span class="p">{</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">orcid</span><span class="p">}</span>
              <span class="p">[</span><span class="n">data_location</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -105,7 +105,7 @@ stderr: Log to standard error;</p>
 <dd><p>File path of the database to populate</p>
 </dd>
 <dt><kbd>data_name</kbd></dt>
-<dd><p>Possible choices: asjcs, ror, uspto, crossref, funder-names, pubmed, doaj, journal-names, orcid</p>
+<dd><p>Possible choices: issn-subject-codes, journal-names, funder-names, doaj, crossref, asjcs, uspto, ror, pubmed, orcid</p>
 <p>Name of the data source to use</p>
 </dd>
 <dt><kbd>data_location</kbd></dt>
@@ -140,7 +140,7 @@ stderr: Log to standard error;</p>
 <p>Run a processing step on the specified database.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">process</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
             <span class="n">database</span>
-            <span class="p">{</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">}</span>
+            <span class="p">{</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">}</span>
 </pre></div>
 </div>
 <div class="section" id="positional-arguments_repeat2">
@@ -150,7 +150,7 @@ stderr: Log to standard error;</p>
 <dd><p>file path of the database to run the process on</p>
 </dd>
 <dt><kbd>process</kbd></dt>
-<dd><p>Possible choices: link-uspto-doi, link-aa-top-ror, link-aa-base-ror, link-works-asjcs</p>
+<dd><p>Possible choices: link-works-asjcs, link-aa-top-ror, link-uspto-doi, link-aa-base-ror</p>
 <p>Name of the process to perform;see the data processing operations in the Alexandria3k Python user API documentation for more details</p>
 </dd>
 </dl>
@@ -162,7 +162,7 @@ stderr: Log to standard error;</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">query</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
           <span class="p">[</span><span class="o">-</span><span class="n">E</span> <span class="n">OUTPUT_ENCODING</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">F</span> <span class="n">FIELD_SEPARATOR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">H</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">P</span><span class="p">]</span>
           <span class="p">(</span><span class="o">-</span><span class="n">Q</span> <span class="n">QUERY_FILE</span> <span class="o">|</span> <span class="o">-</span><span class="n">q</span> <span class="n">QUERY</span><span class="p">)</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
-          <span class="p">{</span><span class="n">asjcs</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">orcid</span><span class="p">}</span>
+          <span class="p">{</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">orcid</span><span class="p">}</span>
           <span class="p">[</span><span class="n">data_location</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -170,7 +170,7 @@ stderr: Log to standard error;</p>
 <h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>data_name</kbd></dt>
-<dd><p>Possible choices: asjcs, ror, uspto, crossref, funder-names, pubmed, doaj, journal-names, orcid</p>
+<dd><p>Possible choices: issn-subject-codes, journal-names, funder-names, doaj, crossref, asjcs, uspto, ror, pubmed, orcid</p>
 <p>Name of the data source to use</p>
 </dd>
 <dt><kbd>data_location</kbd></dt>
@@ -234,14 +234,14 @@ stderr: Log to standard error;</p>
 <h3>list-source-schema<a class="headerlink" href="#list-source-schema" title="Permalink to this headline">¶</a></h3>
 <p>List all data source schemas (default) or the specified one.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">source</span><span class="o">-</span><span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-                       <span class="p">[{</span><span class="n">asjcs</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">orcid</span><span class="p">}]</span>
+                       <span class="p">[{</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">orcid</span><span class="p">}]</span>
 </pre></div>
 </div>
 <div class="section" id="positional-arguments_repeat4">
 <h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat4" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>facility</kbd></dt>
-<dd><p>Possible choices: asjcs, ror, uspto, crossref, funder-names, pubmed, doaj, journal-names, orcid</p>
+<dd><p>Possible choices: issn-subject-codes, journal-names, funder-names, doaj, crossref, asjcs, uspto, ror, pubmed, orcid</p>
 </dd>
 </dl>
 </div>
@@ -250,14 +250,14 @@ stderr: Log to standard error;</p>
 <h3>list-process-schema<a class="headerlink" href="#list-process-schema" title="Permalink to this headline">¶</a></h3>
 <p>List the schema of all processes (default) or of the specified one.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-                        <span class="p">[{</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">}]</span>
+                        <span class="p">[{</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">}]</span>
 </pre></div>
 </div>
 <div class="section" id="positional-arguments_repeat5">
 <h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>facility</kbd></dt>
-<dd><p>Possible choices: link-uspto-doi, link-aa-top-ror, link-aa-base-ror, link-works-asjcs</p>
+<dd><p>Possible choices: link-works-asjcs, link-aa-top-ror, link-uspto-doi, link-aa-base-ror</p>
 </dd>
 </dl>
 </div>
@@ -274,6 +274,50 @@ stderr: Log to standard error;</p>
 <p>Report program version</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">version</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="download">
+<h3>download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h3>
+<p>Download data using the specified data source.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="p">[</span><span class="n">DATABASE</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">sql</span><span class="o">-</span><span class="n">query</span> <span class="n">SQL_QUERY</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">extra_args</span> <span class="p">[</span><span class="n">EXTRA_ARGS</span> <span class="p">[</span><span class="n">EXTRA_ARGS</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
+             <span class="p">{</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">orcid</span><span class="p">}</span>
+             <span class="n">data_location</span>
+</pre></div>
+</div>
+<div class="section" id="positional-arguments_repeat6">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>data_name</kbd></dt>
+<dd><p>Possible choices: issn-subject-codes, journal-names, funder-names, doaj, crossref, asjcs, uspto, ror, pubmed, orcid</p>
+<p>Name of the data source to use</p>
+</dd>
+<dt><kbd>data_location</kbd></dt>
+<dd><p>File or directory path to save the downloaded data</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="named-arguments_repeat3">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>-d, --database</kbd></dt>
+<dd><p>File path of the database to use</p>
+</dd>
+<dt><kbd>--sql-query</kbd></dt>
+<dd><p>SQL query to retrieve the data for downloading</p>
+</dd>
+<dt><kbd>--extra_args</kbd></dt>
+<dd><p>Additional arguments for the data source (e.g. URL, key, file path)</p>
+</dd>
+<dt><kbd>-s, --sample</kbd></dt>
+<dd><p>Python expression to sample the data (e.g. random.random() &lt; 0.0002). The expression can also use a variable named data whose value is documented in the constructor API of each data source.</p>
+<p>Default: “True”</p>
+</dd>
+<dt><kbd>-a, --attach-databases</kbd></dt>
+<dd><p>Databases to attach for the row selection expression</p>
+</dd>
+</dl>
 </div>
 </div>
 </div>

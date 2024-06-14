@@ -235,6 +235,27 @@ specified dictionary</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="data_source.DataSource.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sql_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataSource.download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the data source to the specified data location.</p>
+<p>:param data_location : The file or directory path to store for the downloaded data.
+:type data_location: object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>database</strong> – An optional path, specifying an SQLite database</p>
+</dd>
+</dl>
+<p>to use for retrieving the records to populate.
+:type database: str, optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sql_query</strong> (<em>str</em><em>, </em><em>optional</em>) – An SQL <cite>SELECT</cite> query specifying the required data,
+defaults to <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="data_source.DataSource.get_query_column_names">
 <span class="sig-name descname"><span class="pre">get_query_column_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataSource.get_query_column_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the column names associated with an executing query</p>
@@ -414,7 +435,7 @@ non-empty.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="data_source.FilesCursor.debug_progress_bar">
-<span class="sig-name descname"><span class="pre">debug_progress_bar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.FilesCursor.debug_progress_bar" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">debug_progress_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.FilesCursor.debug_progress_bar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print a progress bar</p>
 </dd></dl>
 
