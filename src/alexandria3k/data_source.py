@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Queries and database population through (possibly partitioned)
-virtual database tables."""
+"""A module supporting queries and database population through
+(possibly partitioned) virtual database tables."""
 
 import abc
 import re
@@ -39,6 +39,8 @@ from alexandria3k.common import (
     warn,
 )
 from alexandria3k.tsort import tsort
+
+# pylint: disable=too-many-lines
 
 SINGLE_PARTITION_INDEX = "SINGLE_PARTITION"
 """str: denote a table with a single partition by setting or comparing for
@@ -64,7 +66,29 @@ PROGRESS_BAR_LENGTH = 50
 
 
 class StreamingTable:
-    """An apsw table streaming over data of the supplied table metadata"""
+    """
+    An apsw table streaming over data of the supplied table metadata
+
+    :param table_meta: The table's metadata.
+    :type table_meta: TableMeta
+
+    :param table_dict: A map from table names to their metadata.
+    :type table_dict: dict[str, TableMeta]
+
+    :param data_source: An object that is used to supply the database
+        elements.  Its type depends on the requirements of the subclass
+        inheriting DataSource.
+    :type data_source: object
+
+    :param sample: A callable to control container sampling, defaults
+        to `lambda n: True`.
+        The population or query method will call this argument
+        for each Crossref container file with each container's file
+        name as its argument.  When the callable returns `True` the
+        container file will get processed, when it returns `False` the
+        container will get skipped.
+    :type sample: callable, optional
+    """
 
     def __init__(
         self, table_meta, table_dict, data_source, sample=lambda x: True
@@ -375,9 +399,13 @@ class DataSource:
     Create a meta-data object that supports queries over its
     (virtual) tables and the population of an SQLite database with its
     data.
+    This is an abstract parent class of concrete data source classes
+    that implement each data source, such as Crossref, PubMed,
+    ORCID, and USPTO.
 
-    :param data_source: An object that shall supply the database elements
-        Its type depends on the requirements of the specific class.
+    :param data_source: An object that shall supply the database elements.
+        Its type depends on the requirements of the subclass inheriting
+        DataSource.
     :type data_source: object
 
     :param tables: A list of the table metadata associated with the data source
@@ -961,7 +989,7 @@ class DataSource:
 
 
 class DataFiles:
-    """The source of the compressed data files"""
+    """The source of compressed data files"""
 
     def __init__(
         self,

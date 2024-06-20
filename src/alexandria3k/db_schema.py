@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Virtual database table schema definition."""
+"""A module supporting virtual database table schema definition."""
 
 
 class TableMeta:

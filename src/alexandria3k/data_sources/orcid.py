@@ -44,6 +44,7 @@ DEFAULT_SOURCE = None
 # pylint: disable-next=too-many-instance-attributes
 class PersonsCursor:
     """A virtual table cursor over persons data.
+    Each person corresponds to a single XML file.
     If it is used through data_source partitioned data access
     within the context of a TarFiles iterator,
     it shall return the single element of the TarFiles iterator.
