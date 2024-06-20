@@ -80,7 +80,7 @@ class ZipFiles:
 
     def __init__(self, directory, sample_container):
         # Collect the names of all available data files
-        self.file_path = []
+        self.file_paths = []
         self.unique_patent_xml_files = []
         self.file_directory = directory
         self.filename = None
@@ -103,9 +103,9 @@ class ZipFiles:
                     continue
                 if not self.sample(("path", file_name)):
                     continue
-                self.file_path.append(path)
+                self.file_paths.append(path)
         # Raise error if file path list is empty.
-        if len(self.file_path) == 0:
+        if len(self.file_paths) == 0:
             raise Alexandria3kError("No Zip files paths were detected.")
 
     def get_zip_contents(self, path):
@@ -123,7 +123,7 @@ class ZipFiles:
         """A generator function iterating over the Zip files and the
         containers inside."""
         # pylint: disable-next=consider-using-with
-        for path in self.file_path:
+        for path in self.file_paths:
             # Access contents inside Zip for enumeration, no parsing.
             self.unique_patent_xml_files = self.get_zip_contents(path)
             self.filename = self.get_filename(path)
@@ -138,7 +138,7 @@ class ZipFiles:
 
     def get_current_zip_path_by_id(self, zip_file_id):
         """Return the path of the current Zip file, using id."""
-        self.zip_path = self.file_path[zip_file_id]
+        self.zip_path = self.file_paths[zip_file_id]
         return self.zip_path
 
     def get_filename(self, path):
@@ -160,7 +160,7 @@ class ZipFiles:
 
     def length_of_zip_files(self):
         """Return the length of the array of data files"""
-        return len(self.file_path)
+        return len(self.file_paths)
 
     def get_container_iterator(self):
         """Return an iterator over the int identifiers of all chunks XML data files"""
