@@ -879,7 +879,7 @@ class TarFiles:
             # Obtain DOI prefix from file name to avoid extraction and parsing
             (_dot, doi_prefix, file_name) = self.tar_info.name.split("/")
             self.doi_prefix = doi_prefix
-            self.data_files.append(file_name)
+            self.data_files.append(doi_prefix + '/' + file_name)
             self.file_index += 1
             yield self.file_index
         yield None
