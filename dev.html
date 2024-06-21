@@ -80,6 +80,16 @@ chmod +x .git/hooks/pre-commit
 </pre></div>
 </div>
 </div>
+<div class="section" id="debugging-and-logging">
+<h2>Debugging and logging<a class="headerlink" href="#debugging-and-logging" title="Permalink to this headline">¶</a></h2>
+<p>Much of the <em>alexandria3k</em> code is executed by means of callbacks
+through the <em>SQLite</em> <em>apsw</em> module.
+This makes it difficult to trace and debug.
+The liberal use of <code class="docutils literal notranslate"><span class="pre">print</span></code> statements is your friend.
+In addition, <em>alexandria3k</em> offers many debug options,
+which you should be using for troubleshooting.
+Run <code class="docutils literal notranslate"><span class="pre">a3k</span> <span class="pre">--help</span></code> to see which options are available.</p>
+</div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="python-unit-and-integration-tests">
@@ -204,6 +214,7 @@ is documented in the
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#development-environment">Development environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#continuous-integration">Continuous integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging-and-logging">Debugging and logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-formatting">Code formatting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#linting">Linting</a></li>
