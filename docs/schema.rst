@@ -19,10 +19,26 @@ times (once for every partition).
 Crossref data
 ~~~~~~~~~~~~~
 
-Crossref data concern works, identified through their DOI.
+Crossref data concern published works, identified through their DOI.
 
 .. figure:: ./schema/crossref.svg
    :alt: Crossref data schema
+
+DataCite data
+~~~~~~~~~~~~~
+
+DataCite data concern published data, identified through their DOI.
+
+.. figure:: ./schema/datacite.svg
+   :alt: DataCite data schema
+
+ORCID data
+~~~~~~~~~~
+
+ORCID data concern work authors, identified through their ORCID.
+
+.. figure:: ./schema/orcid.svg
+   :alt: ORCID data schema
 
 PubMed data
 ~~~~~~~~~~~
@@ -32,14 +48,6 @@ identified through their DOI,
 
 .. figure:: ./schema/pubmed.svg
    :alt: PubMed data schema
-
-ORCID data
-~~~~~~~~~~
-
-ORCID data concern work authors, identified through their ORCID.
-
-.. figure:: ./schema/orcid.svg
-   :alt: ORCID data schema
 
 ROR data
 ~~~~~~~~
