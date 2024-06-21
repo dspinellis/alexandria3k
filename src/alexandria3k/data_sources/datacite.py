@@ -1,5 +1,5 @@
 #
-# Alexandria3k Datacite bibliographic metadata processing
+# Alexandria3k DataCite bibliographic metadata processing
 # Copyright (C) 2023-2024 Evgenia Pampidi and Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Datacite publication data"""
+"""DataCite publication data"""
 
 import abc
 import json
@@ -58,7 +58,7 @@ def dict_value(dictionary, key):
 
 
 class DataciteElementsCursor(ElementsCursor):
-    """A cursor over Datacite elements.  It depends on the implementation
+    """A cursor over DataCite elements.  It depends on the implementation
     of the abstract method element_name."""
 
     __metaclass__ = abc.ABCMeta
@@ -1024,11 +1024,11 @@ class VTSource:
 
 class Datacite(DataSource):
     """
-    Create an object containing Datacite meta-data that supports
+    Create an object containing DataCite meta-data that supports
     queries over its (virtual) table and the population of an SQLite database
     with its data.
 
-    :param data_source: The file path to the Datacite .tar.gz file
+    :param data_source: The file path to the DataCite .tar.gz file
     :type data_source: str
 
     :param sample: A callable to row sampling, defaults to `lambda n: True`.
