@@ -103,10 +103,12 @@ def log(flag, message, flush=True, end="\n"):
     :param message: Message to output.
     :type message: str
     """
+    if not flag in enabled_flags:
+        return
+    # The CSV output closes stdout, so check and raise.
     if output.closed:
         # Cannot use Alexandria3kError here, due to circular import
         raise ValueError(
             "Attempting to log onto closed stdout. Log to stderr."
         )
-    if flag in enabled_flags:
-        print(message, file=output, flush=flush, end=end)
+    print(message, file=output, flush=flush, end=end)
