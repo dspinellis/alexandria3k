@@ -58,6 +58,19 @@ at the top-level directory.
    printf '#!/bin/sh\nbin/pre-commit\n' >.git/hooks/pre-commit
    chmod +x .git/hooks/pre-commit
 
+
+Debugging and logging
+~~~~~~~~~~~~~~~~~~~~~
+
+Much of the *alexandria3k* code is executed by means of callbacks
+through the *SQLite* *apsw* module.
+This makes it difficult to trace and debug.
+The liberal use of ``print`` statements is your friend.
+In addition, *alexandria3k* offers many debug options,
+which you should be using for troubleshooting.
+Run ``a3k --help`` to see which options are available.
+
+
 Testing
 ~~~~~~~
 
@@ -108,7 +121,7 @@ documentation must be updated as follows.
    # While in the top-level directory
    bin/update-python-api
 
-For users on MacOS, this might require installing the 
+For users on MacOS, this might require installing the
 `GNU sed <https://formulae.brew.sh/formula/gnu-sed>`__ package.
 
 Application examples documentation
