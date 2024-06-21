@@ -260,7 +260,8 @@ class ElementsCursor:
 
     def Close(self):
         """Cursor's destructor, used for cleanup"""
-        self.parent_cursor.Close()
+        if self.parent_cursor:
+            self.parent_cursor.Close()
         self.elements = None
 
 
