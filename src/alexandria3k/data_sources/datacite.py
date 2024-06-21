@@ -457,7 +457,7 @@ class FundingReferencesCursor(DataciteElementsCursor):
 
 tables = [
     TableMeta(
-        "works",
+        "dc_works",
         cursor_class=WorksCursor,
         columns=[
             ColumnMeta("id"),
@@ -510,9 +510,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_creators",
+        "dc_work_creators",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=CreatorsCursor,
         columns=[
@@ -527,9 +527,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "creator_name_identifiers",
+        "dc_creator_name_identifiers",
         foreign_key="creator_id",
-        parent_name="work_creators",
+        parent_name="dc_work_creators",
         primary_key="id",
         cursor_class=NameIdentifierCursor,
         columns=[
@@ -547,9 +547,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "creator_affiliations",
+        "dc_creator_affiliations",
         foreign_key="creator_id",
-        parent_name="work_creators",
+        parent_name="dc_work_creators",
         primary_key="id",
         cursor_class=AffiliationsCursor,
         columns=[
@@ -559,9 +559,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_titles",
+        "dc_work_titles",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=TitlesCursor,
         columns=[
@@ -573,9 +573,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_subjects",
+        "dc_work_subjects",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=SubjectsCursor,
         columns=[
@@ -590,9 +590,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_contributors",
+        "dc_work_contributors",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=ContributorsCursor,
         columns=[
@@ -611,9 +611,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "contributor_name_identifiers",
+        "dc_contributor_name_identifiers",
         foreign_key="contributor_id",
-        parent_name="work_contributors",
+        parent_name="dc_work_contributors",
         primary_key="id",
         cursor_class=NameIdentifierCursor,
         columns=[
@@ -631,9 +631,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "contributor_affiliations",
+        "dc_contributor_affiliations",
         foreign_key="contributor_id",
-        parent_name="work_contributors",
+        parent_name="dc_work_contributors",
         primary_key="id",
         cursor_class=AffiliationsCursor,
         columns=[
@@ -643,9 +643,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_dates",
+        "dc_work_dates",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=DatesCursor,
         columns=[
@@ -656,9 +656,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_related_identifiers",
+        "dc_work_related_identifiers",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=RelatedIdentifiersCursor,
         columns=[
@@ -686,9 +686,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_sizes",
+        "dc_work_sizes",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=SizesCursor,
         columns=[
@@ -698,9 +698,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_formats",
+        "dc_work_formats",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=FormatsCursor,
         columns=[
@@ -710,9 +710,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_rights",
+        "dc_work_rights",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=RightsCursor,
         columns=[
@@ -723,9 +723,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_descriptions",
+        "dc_work_descriptions",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=DescriptionsCursor,
         columns=[
@@ -741,9 +741,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_geo_locations",
+        "dc_work_geo_locations",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=GeoLocationCursor,
         columns=[
@@ -814,9 +814,9 @@ tables = [
         ],
     ),
     TableMeta(
-        "work_funding_references",
+        "dc_work_funding_references",
         foreign_key="work_id",
-        parent_name="works",
+        parent_name="dc_works",
         primary_key="id",
         cursor_class=FundingReferencesCursor,
         columns=[
