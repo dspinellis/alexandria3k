@@ -34,6 +34,23 @@ Save DOI and title of 2021 publications in a CSV file suitable for Excel
      --output 2021.csv \
      --output-encoding use utf-8-sig
 
+Show Crossref publications with more than 50 authors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This query works by joining the ``works`` table with the
+``work_authors`` table.
+The ``--partition`` option specifies that this join can be performed
+separately on each container file, allowing the query's execution in
+a single pass.
+Without this option, the query would take millenia to complete.
+
+.. code:: sh
+   a3k query crossref 'April 2024 Public Data File from Crossref/' \
+   --partition --query 'SELECT doi, Count(*) AS author_number
+     FROM works LEFT JOIN work_authors
+       ON work_authors.work_id = works.id
+     GROUP BY doi HAVING Count(*) > 50'
+
 Count Crossref publications by year and type
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
