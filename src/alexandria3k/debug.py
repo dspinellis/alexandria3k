@@ -32,7 +32,6 @@ Use example:
 
 import sys
 
-
 enabled_flags = set()
 
 # Output: by default stdout, but can be set
@@ -104,5 +103,10 @@ def log(flag, message, flush=True, end="\n"):
     :param message: Message to output.
     :type message: str
     """
+    if output.closed:
+        # Cannot use Alexandria3kError here, due to circular import
+        raise ValueError(
+            "Attempting to log onto closed stdout. Log to stderr."
+        )
     if flag in enabled_flags:
         print(message, file=output, flush=flush, end=end)
