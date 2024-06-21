@@ -7,7 +7,7 @@ set -e
 
 for format in svg pdf ; do
   # Create individual schema diagrams
-  for schema in crossref orcid ror uspto pubmed ; do
+  for schema in crossref orcid ror uspto pubmed datacite ; do
     (
       cat docs/schema/schema-head.dot docs/schema/$schema.dot
       bin/a3k list-source-schema $schema | bin/schema2dot.sed
@@ -27,7 +27,7 @@ for format in svg pdf ; do
 
   # Create combined schema diagram
   (
-    ( cd docs/schema ; cat schema-head.dot crossref.dot orcid.dot ror.dot uspto.dot pubmed.dot other.dot )
+    ( cd docs/schema ; cat schema-head.dot crossref.dot orcid.dot ror.dot uspto.dot pubmed.dot datacite.dot other.dot )
     ( bin/a3k list-source-schema ; bin/a3k list-process-schema ) |
       bin/schema2dot.sed
   ) | dot -T$format  -o docs/schema/all.$format

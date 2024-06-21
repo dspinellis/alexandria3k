@@ -41,6 +41,10 @@
 	"PubMed tables" [shape=box, margin="0.11,0.055"];
 	pubmed_articles;
 
+	node [fillcolor="#00b0e1", fontcolor="#000000"];
+	"DataCite tables" [shape=box, margin="0.11,0.055"];
+	dc_works;
+
 	// Shape schema tables
 	node [shape=plaintext,  margin=0];
 
@@ -54,7 +58,7 @@
 	"DOAJ table" [shape=box, margin="0.11,0.055"];
 	open_access_journals;
 
-	node [fillcolor="#3db1c8", fontcolor="#000000"];
+	node [fillcolor="#dfa60c", fontcolor="#000000"];
 	"Additional Crossref tables" [shape=box, margin="0.11,0.055"];
 	works -> open_access_journals;
 	work_funders -> funder_names;
@@ -75,4 +79,4 @@
 	pubmed_articles -> works [taillabel="0…1" headlabel="0…1"];
 
 	edge [style="invis"];
-	{ rank = source; "Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ROR tables" -> "ORCID tables" -> "USPTO tables" -> "PubMed tables" -> "Alexandria3k tables"; }
+	{ rank = source; "Main Crossref tables" -> "Additional Crossref tables" -> "DOAJ table" -> "ROR tables" -> "ORCID tables" -> "USPTO tables" -> "PubMed tables" -> "DataCite tables" ->"Alexandria3k tables"; }
