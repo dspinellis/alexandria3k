@@ -868,7 +868,7 @@ class TarFiles:
             raise Alexandria3kError(f"Error reading file {file_path}") from exc
 
         # For the progress bar
-        self.file_position = 0
+        self.bytes_read = 0
         self.file_size = os.path.getsize(file_path)
 
     def tar_file_generator(self):
@@ -890,21 +890,24 @@ class TarFiles:
             if self.file_index == file_index:
                 if self.cached_file_contents_index != self.file_index:
                     reader = self.tar.extractfile(self.tar_info)
-                    self.file_position = reader.tell()
                     self.cached_file_contents = reader.read()
+                    self.bytes_read += len(self.cached_file_contents)
                     self.cached_file_contents_index = self.file_index
                 return self.cached_file_contents
             index = next(self.generator)
             if index is None:
                 return None
 
-    def get_file_position(self):
-        """Return the current position within the tar file"""
-        return self.file_position
+    def get_bytes_read(self):
+        """Return the number of uncompressed bytes read from the tar file"""
+        return self.bytes_read
 
     def get_file_size(self):
-        """Return tar file size"""
-        return self.file_size
+        """Return an estimate of the uncompressed tar file size"""
+        # Numbers obtained from a 2024 download
+        COMPRESSED_SIZE = 23278506008
+        UNCOMPRESSED_SIZE = 212034252800
+        return self.file_size * UNCOMPRESSED_SIZE / COMPRESSED_SIZE
 
     def get_file_path(self):
         """Return tar file path"""
@@ -931,8 +934,9 @@ class TarFilesCursor(ItemsCursor):
 
     def debug_progress_bar(self):
         """Print a progress bar"""
-        total_length = self.data_source.get_file_size()
-        current_progress = self.data_source.get_file_position()
+        GB = 1024 * 1024 * 1024
+        total_length = self.data_source.get_file_size() / GB
+        current_progress = self.data_source.get_bytes_read() / GB
 
         percent = current_progress / total_length * 100
         progress_marker = int(
@@ -944,7 +948,7 @@ class TarFilesCursor(ItemsCursor):
         debug.log(
             "progress_bar",
             f"\r[{progress_bar}] {percent:.2f}% | "
-            f"Processed {current_progress} out of {total_length} bytes",
+            f"Processed {current_progress:.0f} GB out of ~{total_length:.0f} GB",
             end="",
         )
 
