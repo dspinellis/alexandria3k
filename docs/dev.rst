@@ -171,13 +171,16 @@ is documented in the
 
 Adding a new data source
 ~~~~~~~~~~~~~~~~~~~~~~~~
-Adding a new data source to *alexandria3k* involves the following steps.
+Adding a new data source plugin to *alexandria3k* involves the following steps.
 
 * Create a file in ``src/alexandria3k/data_sources/`` that implements the
   data source access.
   There you need to define the data's class, its schema,
   cursors for fetching the data items, and, optionally, a method for
   downloading its data.
+  The data source's name for the CLI is all lowercase (e.g. ``datacite``),
+  for the class name with an initial capital (e.g. ``Datacite``), and in
+  the documentation and schema's as formally spelled (e.g. ``DataCtire``).
   All table rows have an ``id`` field, with a unique identifier for that
   table across all table rows.
   As detail table indices are reset for each record, the identifier
@@ -203,3 +206,5 @@ Adding a new data source to *alexandria3k* involves the following steps.
 * Add the schema in ``bin/update-schema``, run it to regenerate the schema
   diagrams, and, after they are correct, add the generated SVG file, and
   commit the new and updated files.
+* Update the plugin documentation and the schema diagrams as documented
+  elsewhere in this guide.
