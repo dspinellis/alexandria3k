@@ -23,16 +23,12 @@ import json
 import os
 import tarfile
 
-from alexandria3k.common import (
-    Alexandria3kError,
-    Alexandria3kInternalError,
-    warn,
-)
+from alexandria3k.common import Alexandria3kError
+
 from alexandria3k.data_source import (
     CONTAINER_INDEX,
     PROGRESS_BAR_LENGTH,
     ROWID_INDEX,
-    DataFiles,
     DataSource,
     ElementsCursor,
     ItemsCursor,
@@ -40,8 +36,7 @@ from alexandria3k.data_source import (
 )
 
 from alexandria3k.db_schema import ColumnMeta, TableMeta
-from alexandria3k import debug, perf
-from alexandria3k.db_schema import ColumnMeta, TableMeta
+from alexandria3k import debug
 
 DEFAULT_SOURCE = None
 
@@ -49,12 +44,15 @@ DEFAULT_SOURCE = None
 # pylint: disable=invalid-name
 # pylint: disable=too-many-lines
 
-
 def dict_value(dictionary, key):
     """Return the value of dictionary for key or None if it doesn't exist"""
     if not dictionary:
         return None
     return dictionary.get(key)
+
+def float_value(string):
+    """Return the float value of a string or None if None is passed"""
+    return float(string) if string else None
 
 
 class DataciteElementsCursor(ElementsCursor):
@@ -90,26 +88,6 @@ class DataciteElementsCursor(ElementsCursor):
                 return
             self.parent_cursor.Next()
             self.elements = None
-
-
-class RightsCursor(DataciteElementsCursor):
-    """A cursor over the work items' rights data."""
-
-    def element_name(self):
-        """The work key from which to retrieve the elements. Not part of the
-        apsw API."""
-        return "rightsList"
-
-    def Rowid(self):
-        """Return a unique id of the row along all records.
-        This allows for 1M rights"""
-        return (self.parent_cursor.Rowid() << 20) | self.element_index
-
-    def Column(self, col):
-        """Return the value of the column with ordinal col"""
-        if col == 0:  # work_id
-            return self.parent_cursor.Rowid()
-        return super().Column(col)
 
 
 class WorksCursor(DataciteElementsCursor):
@@ -349,38 +327,18 @@ class RelatedIdentifiersCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class SizesCursor(DataciteElementsCursor):
-    """A cursor over the work items' sizes data."""
+class RightsCursor(DataciteElementsCursor):
+    """A cursor over the work items' rights data."""
 
     def element_name(self):
         """The work key from which to retrieve the elements. Not part of the
         apsw API."""
-        return "sizes"
+        return "rightsList"
 
     def Rowid(self):
         """Return a unique id of the row along all records.
-        This allows for 128 sizes"""
-        return (self.parent_cursor.Rowid() << 7) | self.element_index
-
-    def Column(self, col):
-        """Return the value of the column with ordinal col"""
-        if col == 0:  # work_id
-            return self.parent_cursor.Rowid()
-        return super().Column(col)
-
-
-class FormatsCursor(DataciteElementsCursor):
-    """A cursor over the work items' formats data."""
-
-    def element_name(self):
-        """The work key from which to retrieve the elements. Not part of the
-        apsw API."""
-        return "formats"
-
-    def Rowid(self):
-        """Return a unique id of the row along all records.
-        This allows for 128 formats"""
-        return (self.parent_cursor.Rowid() << 7) | self.element_index
+        This allows for 1M rights"""
+        return (self.parent_cursor.Rowid() << 20) | self.element_index
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
@@ -493,6 +451,8 @@ tables = [
                 ),
             ),
             ColumnMeta("language", lambda row: dict_value(row, "language")),
+            ColumnMeta("sizes", lambda row: str(dict_value(row, "sizes"))),
+            ColumnMeta("formats", lambda row: str(dict_value(row, "formats"))),
             ColumnMeta(
                 "schema_version", lambda row: dict_value(row, "schemaVersion")
             ),
@@ -565,9 +525,8 @@ tables = [
         primary_key="id",
         cursor_class=TitlesCursor,
         columns=[
-            ColumnMeta("id"),
-            ColumnMeta("container_id"),
             ColumnMeta("work_id"),
+            ColumnMeta("container_id"),
             ColumnMeta("title", lambda row: dict_value(row, "title")),
             ColumnMeta("title_type", lambda row: dict_value(row, "titleType")),
         ],
@@ -686,30 +645,6 @@ tables = [
         ],
     ),
     TableMeta(
-        "dc_work_sizes",
-        foreign_key="work_id",
-        parent_name="dc_works",
-        primary_key="id",
-        cursor_class=SizesCursor,
-        columns=[
-            ColumnMeta("work_id"),
-            ColumnMeta("container_id"),
-            ColumnMeta("size", lambda row: dict_value(row, "sizes")),
-        ],
-    ),
-    TableMeta(
-        "dc_work_formats",
-        foreign_key="work_id",
-        parent_name="dc_works",
-        primary_key="id",
-        cursor_class=FormatsCursor,
-        columns=[
-            ColumnMeta("work_id"),
-            ColumnMeta("container_id"),
-            ColumnMeta("format", lambda row: dict_value(row, "formats")),
-        ],
-    ),
-    TableMeta(
         "dc_work_rights",
         foreign_key="work_id",
         parent_name="dc_works",
@@ -719,7 +654,19 @@ tables = [
             ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("rights", lambda row: dict_value(row, "rights")),
+            ColumnMeta(
+                "lang", lambda row: dict_value(row, "lang")
+            ),
             ColumnMeta("rights_uri", lambda row: dict_value(row, "rightsUri")),
+            ColumnMeta(
+                "rights_identifier", 
+                lambda row: dict_value(row, "rightsIdentifier")
+            ),
+            ColumnMeta(
+                "rights_identifier_scheme",
+                lambda row: dict_value(row, "rightsIdentifierScheme"),
+            ),
+            ColumnMeta("scheme_uri", lambda row: dict_value(row, "schemeUri")),
         ],
     ),
     TableMeta(
@@ -750,66 +697,52 @@ tables = [
             ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta(
+                "geo_location_place",
+                lambda row: dict_value(row, "geoLocationPlace"),
+            ),
+            ColumnMeta(
                 "geo_location_point",
-                [
-                    {
-                        (
-                            lambda row: dict_value(
-                                dict_value(row, "geoLocationPoint")
-                            ),
-                            "pointLongitude",
-                        )
-                    },
-                    {
-                        (
-                            lambda row: dict_value(
-                                dict_value(row, "geoLocationPoint")
-                            ),
-                            "pointLatitude",
-                        )
-                    },
-                ],
+                lambda row: str(
+                    [
+                        float_value(
+                            dict_value(
+                                dict_value(row, "geoLocationPoint"), "pointLongitude"
+                            )
+                        ),
+                        float_value(
+                            dict_value(
+                                dict_value(row, "geoLocationPoint"), "pointLatitude"
+                            )
+                        ),
+                    ]
+                ),
             ),
             ColumnMeta(
                 "geo_location_box",
-                [
-                    {
-                        (
-                            lambda row: dict_value(
-                                dict_value(row, "geoLocationPoint")
-                            ),
-                            "westBoundLongitude",
-                        )
-                    },
-                    {
-                        (
-                            lambda row: dict_value(
-                                dict_value(row, "geoLocationPoint")
-                            ),
-                            "eastBoundLongitude",
-                        )
-                    },
-                    {
-                        (
-                            lambda row: dict_value(
-                                dict_value(row, "geoLocationPoint")
-                            ),
-                            "southBoundLatitude",
-                        )
-                    },
-                    {
-                        (
-                            lambda row: dict_value(
-                                dict_value(row, "geoLocationPoint")
-                            ),
-                            "northBoundLatitude",
-                        )
-                    },
-                ],
-            ),
-            ColumnMeta(
-                "geo_location_place",
-                lambda row: dict_value(row, "geoLocationPlace"),
+                lambda row: str(
+                    [
+                        float_value(
+                            dict_value(
+                                dict_value(row, "geoLocationBox"), "westBoundLongitude"
+                            )
+                        ),
+                        float_value(
+                            dict_value(
+                                dict_value(row, "geoLocationBox"), "eastBoundLongitude"
+                            )
+                        ),
+                        float_value(
+                            dict_value(
+                                dict_value(row, "geoLocationBox"), "southBoundLatitude"
+                            )
+                        ),
+                        float_value(
+                            dict_value(
+                                dict_value(row, "geoLocationBox"), "northBoundLatitude"
+                            )
+                        ),
+                    ]
+                ),
             ),
         ],
     ),
@@ -887,15 +820,23 @@ class TarFiles:
     def get_file_contents(self, file_index):
         """Return the contents of the file at the specified index"""
         while True:
-            if self.file_index == file_index:
-                if self.cached_file_contents_index != self.file_index:
-                    reader = self.tar.extractfile(self.tar_info)
-                    self.cached_file_contents = reader.read()
-                    self.bytes_read += len(self.cached_file_contents)
-                    self.cached_file_contents_index = self.file_index
-                return self.cached_file_contents
-            index = next(self.generator)
-            if index is None:
+            try:
+                if self.file_index == file_index:
+                    if self.cached_file_contents_index != self.file_index:
+                        reader = self.tar.extractfile(self.tar_info)
+                        self.cached_file_contents = reader.read()
+                        self.bytes_read += len(self.cached_file_contents)
+                        self.cached_file_contents_index = self.file_index
+                    return self.cached_file_contents
+                index = next(self.generator)
+                if index is None:
+                    return None
+            except tarfile.ReadError as e:
+                if "unexpected end of data" in str(e):
+                    return None
+                else:
+                    raise
+            except StopIteration as e:
                 return None
 
     def get_bytes_read(self):
