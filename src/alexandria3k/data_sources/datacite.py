@@ -44,11 +44,13 @@ DEFAULT_SOURCE = None
 # pylint: disable=invalid-name
 # pylint: disable=too-many-lines
 
+
 def dict_value(dictionary, key):
     """Return the value of dictionary for key or None if it doesn't exist"""
     if not dictionary:
         return None
     return dictionary.get(key)
+
 
 def float_value(string):
     """Return the float value of a string or None if None is passed"""
@@ -95,12 +97,11 @@ class WorksCursor(DataciteElementsCursor):
 
     def __init__(self, table):
         super().__init__(table, None)
-        self.files_cursor = TarFilesCursor(
-            table, table.data_source.get_file_path()
-        )
+        self.files_cursor = TarFilesCursor(table)
         # Initialized in Filter()
         self.item_index = None
         self.cached_json_item_index = None
+        self.json_data = None
 
     def element_name(self):
         """The work key from which to retrieve the elements. Not part of the
@@ -480,6 +481,7 @@ tables = [
             ColumnMeta("container_id"),
             ColumnMeta("work_id"),
             ColumnMeta("name", lambda row: dict_value(row, "name")),
+            ColumnMeta("name_type", lambda row: dict_value(row, "nameType")),
             ColumnMeta("given_name", lambda row: dict_value(row, "givenName")),
             ColumnMeta(
                 "family_name", lambda row: dict_value(row, "familyName")
@@ -654,13 +656,11 @@ tables = [
             ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("rights", lambda row: dict_value(row, "rights")),
-            ColumnMeta(
-                "lang", lambda row: dict_value(row, "lang")
-            ),
+            ColumnMeta("lang", lambda row: dict_value(row, "lang")),
             ColumnMeta("rights_uri", lambda row: dict_value(row, "rightsUri")),
             ColumnMeta(
-                "rights_identifier", 
-                lambda row: dict_value(row, "rightsIdentifier")
+                "rights_identifier",
+                lambda row: dict_value(row, "rightsIdentifier"),
             ),
             ColumnMeta(
                 "rights_identifier_scheme",
@@ -706,12 +706,14 @@ tables = [
                     [
                         float_value(
                             dict_value(
-                                dict_value(row, "geoLocationPoint"), "pointLongitude"
+                                dict_value(row, "geoLocationPoint"),
+                                "pointLongitude",
                             )
                         ),
                         float_value(
                             dict_value(
-                                dict_value(row, "geoLocationPoint"), "pointLatitude"
+                                dict_value(row, "geoLocationPoint"),
+                                "pointLatitude",
                             )
                         ),
                     ]
@@ -723,22 +725,26 @@ tables = [
                     [
                         float_value(
                             dict_value(
-                                dict_value(row, "geoLocationBox"), "westBoundLongitude"
+                                dict_value(row, "geoLocationBox"),
+                                "westBoundLongitude",
                             )
                         ),
                         float_value(
                             dict_value(
-                                dict_value(row, "geoLocationBox"), "eastBoundLongitude"
+                                dict_value(row, "geoLocationBox"),
+                                "eastBoundLongitude",
                             )
                         ),
                         float_value(
                             dict_value(
-                                dict_value(row, "geoLocationBox"), "southBoundLatitude"
+                                dict_value(row, "geoLocationBox"),
+                                "southBoundLatitude",
                             )
                         ),
                         float_value(
                             dict_value(
-                                dict_value(row, "geoLocationBox"), "northBoundLatitude"
+                                dict_value(row, "geoLocationBox"),
+                                "northBoundLatitude",
                             )
                         ),
                     ]
@@ -778,6 +784,7 @@ tables = [
 ]
 
 
+# pylint: disable-next=too-many-instance-attributes
 class TarFiles:
     """The source of the files residing in the tar.gz file"""
 
@@ -787,12 +794,13 @@ class TarFiles:
         sample,
     ):
         self.file_path = file_path
-        self.sample = sample  # TODO
+        self.sample = sample
         self.doi_prefix = None
         self.data_files = []
         self.file_index = -1
         self.reader = None
         self.cached_file_contents_index = None
+        self.cached_file_contents = None
         self.generator = self.tar_file_generator()
 
         try:
@@ -811,11 +819,12 @@ class TarFiles:
                 continue
             # Obtain DOI prefix from file name to avoid extraction and parsing
             (_dot, doi_prefix, file_name) = self.tar_info.name.split("/")
+            if not self.sample(file_name):
+                continue
             self.doi_prefix = doi_prefix
-            self.data_files.append(doi_prefix + '/' + file_name)
+            self.data_files.append(doi_prefix + "/" + file_name)
             self.file_index += 1
             yield self.file_index
-        yield None
 
     def get_file_contents(self, file_index):
         """Return the contents of the file at the specified index"""
@@ -828,15 +837,11 @@ class TarFiles:
                         self.bytes_read += len(self.cached_file_contents)
                         self.cached_file_contents_index = self.file_index
                     return self.cached_file_contents
-                index = next(self.generator)
-                if index is None:
-                    return None
+                next(self.generator)
             except tarfile.ReadError as e:
                 if "unexpected end of data" in str(e):
                     return None
-                else:
-                    raise
-            except StopIteration as e:
+            except StopIteration:
                 return None
 
     def get_bytes_read(self):
@@ -867,7 +872,7 @@ class TarFilesCursor(ItemsCursor):
     """A cursor that iterates over the elements in a tar file
     Not used directly by an SQLite table"""
 
-    def __init__(self, table, file_path):
+    def __init__(self, table):
         """Not part of the apsw VTCursor interface.
         The table argument is a StreamingTable object"""
         super().__init__(table)
