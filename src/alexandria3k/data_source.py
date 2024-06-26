@@ -265,6 +265,122 @@ class ElementsCursor:
         self.elements = None
 
 
+class NestedElementsCursor(ElementsCursor):
+    """An abstract cursor designed to facilitate iterating over elements nested within a
+    parent element. It depends on the implementation of the abstract method element_name.
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def element_name(self):
+        """The record key from which to retrieve the nested elements from the current row
+        of the parent cursor. Not part of the apsw API."""
+        return
+
+    def Next(self):
+        """Advance reading to the next available nested element. If the
+        current list of elements is exhausted, it fetches the next list from the
+        parent cursor."""
+        while True:
+            if self.parent_cursor.Eof():
+                self.eof = True
+                return
+            if not self.elements:
+                self.elements = self.parent_cursor.current_row_value().get(
+                    self.element_name()
+                )
+                self.element_index = -1
+            if not self.elements:
+                self.parent_cursor.Next()
+                self.elements = None
+                continue
+            if self.element_index + 1 < len(self.elements):
+                self.element_index += 1
+                self.eof = False
+                return
+            self.parent_cursor.Next()
+            self.elements = None
+
+
+class RecordsCursor(NestedElementsCursor):
+    """
+    A cursor for iterating over records within nested elements.
+
+    A record could correspond to e.g. the metadata of a publication.
+    Multiple records can appear in a file.
+
+    :param table: A StreamingTable object representing the table structure.
+    :type table: StreamingTable
+
+    :param file_cursor: A cursor that iterates over the elements in a file.
+    The behavior of this cursor may depend on whether the file is compressed and
+    the type of file being processed.
+    :type file_cursor: object
+    """
+
+    def __init__(self, table, files_cursor):
+        super().__init__(table, None)
+        self.files_cursor = files_cursor
+        # Initialized in Filter()
+        self.item_index = None
+
+    def element_name(self):
+        """The work key from which to retrieve the elements. Not part of the
+        apsw API."""
+        return None
+
+    def Eof(self):
+        """Return True when the end of the table's records has been reached."""
+        return self.eof
+
+    def Rowid(self):
+        """Return a unique id of the row along all records"""
+        # Allow for 16k items per file (currently 5k)
+        return (self.files_cursor.Rowid() << 14) | (self.item_index)
+
+    @abc.abstractmethod
+    def current_row_value(self):
+        """Return the current row. Not part of the apsw API."""
+        return
+
+    def container_id(self):
+        """Return the id of the container containing the data being fetched.
+        Not part of the apsw API."""
+        return self.files_cursor.Rowid()
+
+    def Column(self, col):
+        """Return the value of the column with ordinal col"""
+        if col == 0:  # id
+            return self.Rowid()
+
+        return super().Column(col)
+
+    # pylint: disable=arguments-differ
+    def Filter(self, index_number, index_name, constraint_args):
+        """Always called first to initialize an iteration to the first row
+        of the table according to the index"""
+        self.files_cursor.Filter(index_number, index_name, constraint_args)
+        self.eof = self.files_cursor.Eof()
+        if index_number & ROWID_INDEX:
+            # This has never happened, so this is untested
+            self.item_index = constraint_args[1]
+        else:
+            self.item_index = 0
+
+    def Next(self):
+        """Advance to the next item."""
+        self.item_index += 1
+        if self.item_index >= len(self.files_cursor.items):
+            self.item_index = 0
+            self.files_cursor.Next()
+            self.eof = self.files_cursor.eof
+
+    def Close(self):
+        """Cursor's destructor, used for cleanup"""
+        self.files_cursor.Close()
+
+
 class ItemsCursor:
     """A cursor over the items of data files. Internal use only.
     Not used directly by an SQLite table."""
