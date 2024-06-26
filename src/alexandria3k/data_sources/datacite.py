@@ -18,7 +18,6 @@
 #
 """DataCite publication data"""
 
-import abc
 import json
 import os
 import tarfile
@@ -28,10 +27,10 @@ from alexandria3k.common import Alexandria3kError
 from alexandria3k.data_source import (
     CONTAINER_INDEX,
     PROGRESS_BAR_LENGTH,
-    ROWID_INDEX,
     DataSource,
-    ElementsCursor,
     ItemsCursor,
+    NestedElementsCursor,
+    RecordsCursor,
     StreamingCachedContainerTable,
 )
 
@@ -57,65 +56,14 @@ def float_value(string):
     return float(string) if string else None
 
 
-class DataciteElementsCursor(ElementsCursor):
-    """A cursor over DataCite elements.  It depends on the implementation
-    of the abstract method element_name."""
-
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def element_name(self):
-        """The work key from which to retrieve the elements. Not part of the
-        apsw API."""
-        return
-
-    def Next(self):
-        """Advance reading to the next available element."""
-        while True:
-            if self.parent_cursor.Eof():
-                self.eof = True
-                return
-            if not self.elements:
-                self.elements = self.parent_cursor.current_row_value().get(
-                    self.element_name()
-                )
-                self.element_index = -1
-            if not self.elements:
-                self.parent_cursor.Next()
-                self.elements = None
-                continue
-            if self.element_index + 1 < len(self.elements):
-                self.element_index += 1
-                self.eof = False
-                return
-            self.parent_cursor.Next()
-            self.elements = None
-
-
-class WorksCursor(DataciteElementsCursor):
+class WorksCursor(RecordsCursor):
     """A cursor over the works data."""
 
     def __init__(self, table):
         super().__init__(table, None)
         self.files_cursor = TarFilesCursor(table)
-        # Initialized in Filter()
-        self.item_index = None
         self.cached_json_item_index = None
         self.json_data = None
-
-    def element_name(self):
-        """The work key from which to retrieve the elements. Not part of the
-        apsw API."""
-        return None
-
-    def Eof(self):
-        """Return True when the end of the table's records has been reached."""
-        return self.eof
-
-    def Rowid(self):
-        """Return a unique id of the row along all records"""
-        # Allow for 16k items per file (currently 5k)
-        return (self.files_cursor.Rowid() << 14) | (self.item_index)
 
     def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
@@ -127,40 +75,8 @@ class WorksCursor(DataciteElementsCursor):
             self.cached_json_item_index = self.item_index
         return self.json_data
 
-    def container_id(self):
-        """Return the id of the container containing the data being fetched.
-        Not part of the apsw API."""
-        return self.files_cursor.Rowid()
 
-    def Column(self, col):
-        """Return the value of the column with ordinal col"""
-        if col == 0:  # id
-            return self.Rowid()
-
-        return super().Column(col)
-
-    # pylint: disable=arguments-differ
-    def Filter(self, index_number, index_name, constraint_args):
-        """Always called first to initialize an iteration to the first row
-        of the table according to the index"""
-        self.files_cursor.Filter(index_number, index_name, constraint_args)
-        self.eof = self.files_cursor.Eof()
-        if index_number & ROWID_INDEX:
-            # This has never happened, so this is untested
-            self.item_index = constraint_args[1]
-        else:
-            self.item_index = 0
-
-    def Next(self):
-        """Advance to the next item."""
-        self.item_index += 1
-        if self.item_index >= len(self.files_cursor.items):
-            self.item_index = 0
-            self.files_cursor.Next()
-            self.eof = self.files_cursor.eof
-
-
-class CreatorsCursor(DataciteElementsCursor):
+class CreatorsCursor(NestedElementsCursor):
     """A cursor over the items' creators data."""
 
     def element_name(self):
@@ -184,7 +100,7 @@ class CreatorsCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class AffiliationsCursor(DataciteElementsCursor):
+class AffiliationsCursor(NestedElementsCursor):
     """A cursor over the creators'/contributors' affiliation data."""
 
     def element_name(self):
@@ -204,7 +120,7 @@ class AffiliationsCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class NameIdentifierCursor(DataciteElementsCursor):
+class NameIdentifierCursor(NestedElementsCursor):
     """A cursor over the creators'/contributors' name identifier data."""
 
     def element_name(self):
@@ -224,7 +140,7 @@ class NameIdentifierCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class TitlesCursor(DataciteElementsCursor):
+class TitlesCursor(NestedElementsCursor):
     """A cursor over the work items' subject data."""
 
     def element_name(self):
@@ -244,7 +160,7 @@ class TitlesCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class SubjectsCursor(DataciteElementsCursor):
+class SubjectsCursor(NestedElementsCursor):
     """A cursor over the work items' subject data."""
 
     def element_name(self):
@@ -264,7 +180,7 @@ class SubjectsCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class ContributorsCursor(DataciteElementsCursor):
+class ContributorsCursor(NestedElementsCursor):
     """A cursor over the items' contributors data."""
 
     def element_name(self):
@@ -288,7 +204,7 @@ class ContributorsCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class DatesCursor(DataciteElementsCursor):
+class DatesCursor(NestedElementsCursor):
     """A cursor over the work items' dates data."""
 
     def element_name(self):
@@ -308,7 +224,7 @@ class DatesCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class RelatedIdentifiersCursor(DataciteElementsCursor):
+class RelatedIdentifiersCursor(NestedElementsCursor):
     """A cursor over the work items' related identifier data."""
 
     def element_name(self):
@@ -328,7 +244,7 @@ class RelatedIdentifiersCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class RightsCursor(DataciteElementsCursor):
+class RightsCursor(NestedElementsCursor):
     """A cursor over the work items' rights data."""
 
     def element_name(self):
@@ -338,8 +254,8 @@ class RightsCursor(DataciteElementsCursor):
 
     def Rowid(self):
         """Return a unique id of the row along all records.
-        This allows for 1M rights"""
-        return (self.parent_cursor.Rowid() << 20) | self.element_index
+        This allows for 1k rights"""
+        return (self.parent_cursor.Rowid() << 10) | self.element_index
 
     def Column(self, col):
         """Return the value of the column with ordinal col"""
@@ -348,7 +264,7 @@ class RightsCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class DescriptionsCursor(DataciteElementsCursor):
+class DescriptionsCursor(NestedElementsCursor):
     """A cursor over the work items' description data."""
 
     def element_name(self):
@@ -368,7 +284,7 @@ class DescriptionsCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class GeoLocationCursor(DataciteElementsCursor):
+class GeoLocationCursor(NestedElementsCursor):
     """A cursor over the work items' geo-location data."""
 
     def element_name(self):
@@ -388,7 +304,7 @@ class GeoLocationCursor(DataciteElementsCursor):
         return super().Column(col)
 
 
-class FundingReferencesCursor(DataciteElementsCursor):
+class FundingReferencesCursor(NestedElementsCursor):
     """A cursor over the work items' funding references data."""
 
     def element_name(self):
@@ -784,6 +700,7 @@ tables = [
 ]
 
 
+# pylint: disable=consider-using-with
 # pylint: disable-next=too-many-instance-attributes
 class TarFiles:
     """The source of the files residing in the tar.gz file"""
