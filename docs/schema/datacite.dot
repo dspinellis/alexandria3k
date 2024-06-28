@@ -1,18 +1,21 @@
 	node [fillcolor="#00b0e1", fontcolor="#000000"];
 	dc_works;
-	dc_work_geo_locations;
-	dc_work_funding_references;
-	dc_work_titles;
-	dc_creator_name_identifiers;
-	dc_work_contributors;
-	dc_work_sizes;
-	dc_work_subjects;
-	dc_work_descriptions;
-	dc_contributor_name_identifiers;
-	dc_work_formats;
-	dc_work_related_identifiers;
-	dc_work_dates;
-	dc_work_rights;
-	dc_contributor_affiliations;
 	dc_work_creators;
-	dc_creator_affiliations;
+	dc_work_contributors;
+
+	dc_works -> dc_work_creators [headlabel="1…N", taillabel="1"];
+	dc_works -> dc_work_titles [headlabel="1…N", taillabel="1"];
+	
+	edge [headlabel="0…N", taillabel="1"];
+	dc_work_creators -> dc_creator_name_identifiers;
+	dc_work_creators -> dc_creator_affiliations;
+	dc_works -> dc_work_subjects;
+	dc_works -> dc_work_contributors;
+	dc_work_contributors -> dc_contributor_name_identifiers;
+	dc_work_contributors -> dc_contributor_affiliations;
+	dc_works -> dc_work_dates;
+	dc_works -> dc_work_related_identifiers;
+	dc_works -> dc_work_rights;
+	dc_works -> dc_work_geo_locations;
+	dc_works -> dc_work_descriptions; 
+	dc_works -> dc_work_funding_references;	
