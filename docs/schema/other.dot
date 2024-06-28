@@ -45,13 +45,9 @@
 	node [fillcolor="#00b0e1", fontcolor="#000000"];
 	"DataCite tables" [shape=box, margin="0.11,0.055"];
 	dc_works;
-	dc_work_creators;
-	dc_work_contributors;
 	dc_work_funding_references;
-
-	edge [headlabel="0…N", taillabel="1"];
-	dc_work_creators -> dc_creator_name_identifiers;
-	dc_work_contributors -> dc_contributor_name_identifiers;
+	dc_creator_name_identifiers;
+	dc_contributor_name_identifiers;
 
 	// Shape schema tables
 	node [shape=plaintext,  margin=0];
