@@ -45,6 +45,25 @@ Iterate through the DOI and title of all publications
    for (doi, title) in crossref_instance.query('SELECT DOI, title FROM works'):
        print(doi, title)
 
+Iterate through Crossref publications with more than 50 authors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This query works by joining the ``works`` table with the
+``work_authors`` table.
+The ``partition=True`` argument specifies that this join can be performed
+separately on each container file, allowing the query's execution in
+a single pass.
+Without this option, the query would take millenia to complete.
+
+.. code:: py
+   for (doi, author_number) in crossref_instance.query("""
+     SELECT doi, Count(*) AS author_number
+       FROM works LEFT JOIN work_authors
+         ON work_authors.work_id = works.id
+       GROUP BY doi HAVING Count(*) > 50
+     """, partition=True):
+       print(doi, author_number)
+
 Create a dictionary of which 2021 publications were funded by each body
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

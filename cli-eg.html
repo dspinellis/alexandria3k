@@ -63,6 +63,15 @@ directory.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="show-crossref-publications-with-more-than-50-authors">
+<h2>Show Crossref publications with more than 50 authors<a class="headerlink" href="#show-crossref-publications-with-more-than-50-authors" title="Permalink to this headline">¶</a></h2>
+<p>This query works by joining the <code class="docutils literal notranslate"><span class="pre">works</span></code> table with the
+<code class="docutils literal notranslate"><span class="pre">work_authors</span></code> table.
+The <code class="docutils literal notranslate"><span class="pre">--partition</span></code> option specifies that this join can be performed
+separately on each container file, allowing the query’s execution in
+a single pass.
+Without this option, the query would take millenia to complete.</p>
+</div>
 <div class="section" id="count-crossref-publications-by-year-and-type">
 <h2>Count Crossref publications by year and type<a class="headerlink" href="#count-crossref-publications-by-year-and-type" title="Permalink to this headline">¶</a></h2>
 <p>This query performs a single pass through the data set to obtain the
@@ -331,6 +340,7 @@ the following.</p>
 <li class="toctree-l2"><a class="reference internal" href="#obtain-list-of-available-commands">Obtain list of available commands</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#show-doi-and-title-of-all-publications">Show DOI and title of all publications</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">Save DOI and title of 2021 publications in a CSV file suitable for Excel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#show-crossref-publications-with-more-than-50-authors">Show Crossref publications with more than 50 authors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#count-crossref-publications-by-year-and-type">Count Crossref publications by year and type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#obtain-patent-office-granted-patents-by-type">Obtain Patent Office granted patents by type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sampling">Sampling</a></li>

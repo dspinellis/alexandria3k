@@ -16,8 +16,10 @@ All are available through the classes documented below.
 
    asjcs
    crossref
+   datacite
    doaj
    funder_names
+   issn_subject_codes
    journal_names
    orcid
    pubmed

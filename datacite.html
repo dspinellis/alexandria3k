@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DataCite publication data &#8212; alexandria3k 3.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Directory of Open Access Journals" href="doaj.html" />
+    <link rel="prev" title="Crossref publication data" href="crossref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="datacite-publication-data">
+<h1>DataCite publication data<a class="headerlink" href="#datacite-publication-data" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources</span> <span class="kn">import</span> <span class="n">datacite</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="data_sources.datacite.Datacite">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_sources.datacite.</span></span><span class="sig-name descname"><span class="pre">Datacite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=&lt;function</span> <span class="pre">Datacite.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.datacite.Datacite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object containing DataCite meta-data that supports
+queries over its (virtual) table and the population of an SQLite database
+with its data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_source</strong> (<em>str</em>) – The file path to the DataCite .tar.gz file</p></li>
+<li><p><strong>sample</strong> (<em>callable</em><em>, </em><em>optional</em>) – A callable to row sampling, defaults to <cite>lambda n: True</cite>.
+The population or query method will call this argument
+for each record with the record’s data as its argument.  When the
+callable returns <cite>True</cite> the record will get processed, when it
+returns <cite>False</cite> the record will get skipped.</p></li>
+<li><p><strong>attach_databases</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of colon-joined tuples specifying
+a database name and its path, defaults to <cite>None</cite>.
+The specified databases are attached and made available to the
+query and the population condition through the specified database
+name.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="data_sources.datacite.Datacite.populate">
+<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.datacite.Datacite.populate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate the specified SQLite database using the data specified
+in the object constructor’s call.
+The database is created if it does not exist.
+If it exists, the tables to be populated are dropped
+(if they exist) and recreated anew as specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to populate.</p></li>
+<li><p><strong>columns</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of strings specifying the columns to
+populate, defaults to <cite>None</cite>.  The strings are of the form
+<cite>table_name.column_name</cite> or <cite>table_name.*</cite>.</p></li>
+<li><p><strong>condition</strong> (<em>str</em><em>, </em><em>optional</em>) – <a class="reference external" href="https://www.sqlite.org/syntax/expr.html">SQL expression</a> specifying the rows to include
+in the database’s population, defaults to <cite>None</cite>.
+The expression can contain references to the table’s columns,
+to tables in attached databases prefixed by their name, and
+tables in the database being populated prefixed by <cite>populated</cite>.
+Implicitly, if a main table is populated, its details tables
+will only get populated with the records associated with the
+corresponding main table’s record.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_sources.datacite.Datacite.query">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_sources.datacite.Datacite.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the specified query on the virtual database using the data
+specified in the object constructor’s call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – An SQL <cite>SELECT</cite> query specifying the required data.</p></li>
+<li><p><strong>partition</strong> (<em>bool</em><em>, </em><em>optional</em>) – When true the query will run separately in each
+container, defaults to <cite>False</cite>.
+Queries involving table joins will run substantially faster
+if access to each table’s records is restricted with
+an expression <cite>table_name.container_id = CONTAINER_ID</cite>, and
+the <cite>partition</cite> argument is set to true.
+In such a case the query is repeatedly run over each database
+partition (compressed JSON file) with <cite>CONTAINER_ID</cite> iterating
+sequentially to cover all partitions.
+The query’s result is the concatenation of the individual partition
+results.
+Running queries with joins without partitioning will often result
+in quadratic (or worse) algorithmic complexity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An iterable over the query’s results.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>iterable</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="generated-schema">
+<h2>Generated schema<a class="headerlink" href="#generated-schema" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_works</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">identifier</span><span class="p">,</span>
+  <span class="n">identifier_type</span><span class="p">,</span>
+  <span class="n">doi</span><span class="p">,</span>
+  <span class="n">publisher</span><span class="p">,</span>
+  <span class="n">publication_year</span><span class="p">,</span>
+  <span class="n">resource_type</span><span class="p">,</span>
+  <span class="n">resource_type_general</span><span class="p">,</span>
+  <span class="k">language</span><span class="p">,</span>
+  <span class="n">sizes</span><span class="p">,</span>
+  <span class="n">formats</span><span class="p">,</span>
+  <span class="n">schema_version</span><span class="p">,</span>
+  <span class="n">metadata_version</span><span class="p">,</span>
+  <span class="n">url</span><span class="p">,</span>
+  <span class="n">created</span><span class="p">,</span>
+  <span class="n">registered</span><span class="p">,</span>
+  <span class="n">published</span><span class="p">,</span>
+  <span class="n">updated</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_creators</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">name</span><span class="p">,</span>
+  <span class="n">name_type</span><span class="p">,</span>
+  <span class="n">given_name</span><span class="p">,</span>
+  <span class="n">family_name</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_creator_name_identifiers</span><span class="p">(</span>
+  <span class="n">creator_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">name_identifier</span><span class="p">,</span>
+  <span class="n">name_identifier_scheme</span><span class="p">,</span>
+  <span class="n">scheme_uri</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_creator_affiliations</span><span class="p">(</span>
+  <span class="n">creator_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">name</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_titles</span><span class="p">(</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">title</span><span class="p">,</span>
+  <span class="n">title_type</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_subjects</span><span class="p">(</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">subject</span><span class="p">,</span>
+  <span class="n">subject_scheme</span><span class="p">,</span>
+  <span class="n">scheme_uri</span><span class="p">,</span>
+  <span class="n">value_uri</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_contributors</span><span class="p">(</span>
+  <span class="n">id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">contributor_type</span><span class="p">,</span>
+  <span class="n">name</span><span class="p">,</span>
+  <span class="n">family_name</span><span class="p">,</span>
+  <span class="n">given_name</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_contributor_name_identifiers</span><span class="p">(</span>
+  <span class="n">contributor_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">name_identifier</span><span class="p">,</span>
+  <span class="n">name_identifier_scheme</span><span class="p">,</span>
+  <span class="n">scheme_uri</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_contributor_affiliations</span><span class="p">(</span>
+  <span class="n">contributor_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">name</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_dates</span><span class="p">(</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="nb">date</span><span class="p">,</span>
+  <span class="n">date_type</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_related_identifiers</span><span class="p">(</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">related_identifier</span><span class="p">,</span>
+  <span class="n">related_identifier_type</span><span class="p">,</span>
+  <span class="n">relation_type</span><span class="p">,</span>
+  <span class="n">related_metadata_scheme</span><span class="p">,</span>
+  <span class="n">scheme_uri</span><span class="p">,</span>
+  <span class="n">scheme_type</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_rights</span><span class="p">(</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">rights</span><span class="p">,</span>
+  <span class="n">lang</span><span class="p">,</span>
+  <span class="n">rights_uri</span><span class="p">,</span>
+  <span class="n">rights_identifier</span><span class="p">,</span>
+  <span class="n">rights_identifier_scheme</span><span class="p">,</span>
+  <span class="n">scheme_uri</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_descriptions</span><span class="p">(</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">description</span><span class="p">,</span>
+  <span class="n">description_type</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_geo_locations</span><span class="p">(</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">geo_location_place</span><span class="p">,</span>
+  <span class="n">geo_location_point</span><span class="p">,</span>
+  <span class="n">geo_location_box</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">dc_work_funding_references</span><span class="p">(</span>
+  <span class="n">work_id</span><span class="p">,</span>
+  <span class="n">container_id</span><span class="p">,</span>
+  <span class="n">funder_name</span><span class="p">,</span>
+  <span class="n">funder_identifier</span><span class="p">,</span>
+  <span class="n">funder_identifier_type</span><span class="p">,</span>
+  <span class="n">award_number</span><span class="p">,</span>
+  <span class="n">award_uri</span><span class="p">,</span>
+  <span class="n">award_title</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">alexandria3k</a></h1>
+
+
+
+<p class="blurb">Local relational access to openly-available publication data sets</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=dspinellis&repo=alexandria3k&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-eg.html">Command line examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app-eg.html">Application examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="user-api.html">Python user API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="user-api.html#data-sources">Data sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-api.html#data-processing-operations">Data processing operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev.html">Development processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev-plugin.html">Plugin development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ: Frequently asked questions</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="None">Version: 3.2.0</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="user-api.html">Python user API</a><ul>
+      <li>Previous: <a href="crossref.html" title="previous chapter">Crossref publication data</a></li>
+      <li>Next: <a href="doaj.html" title="next chapter">Directory of Open Access Journals</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022-2024, Diomidis Spinellis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/datacite.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -71,6 +71,15 @@ created by specifying the data directory.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="iterate-through-crossref-publications-with-more-than-50-authors">
+<h2>Iterate through Crossref publications with more than 50 authors<a class="headerlink" href="#iterate-through-crossref-publications-with-more-than-50-authors" title="Permalink to this headline">¶</a></h2>
+<p>This query works by joining the <code class="docutils literal notranslate"><span class="pre">works</span></code> table with the
+<code class="docutils literal notranslate"><span class="pre">work_authors</span></code> table.
+The <code class="docutils literal notranslate"><span class="pre">partition=True</span></code> argument specifies that this join can be performed
+separately on each container file, allowing the query’s execution in
+a single pass.
+Without this option, the query would take millenia to complete.</p>
+</div>
 <div class="section" id="create-a-dictionary-of-which-2021-publications-were-funded-by-each-body">
 <h2>Create a dictionary of which 2021 publications were funded by each body<a class="headerlink" href="#create-a-dictionary-of-which-2021-publications-were-funded-by-each-body" title="Permalink to this headline">¶</a></h2>
 <p>Here <code class="docutils literal notranslate"><span class="pre">partition=True</span></code> is passed to the <code class="docutils literal notranslate"><span class="pre">query</span></code> method in order to
@@ -264,6 +273,7 @@ ORCID will be added.</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python API examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#create-a-crossref-object">Create a Crossref object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#iterate-through-the-doi-and-title-of-all-publications">Iterate through the DOI and title of all publications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iterate-through-crossref-publications-with-more-than-50-authors">Iterate through Crossref publications with more than 50 authors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-a-dictionary-of-which-2021-publications-were-funded-by-each-body">Create a dictionary of which 2021 publications were funded by each body</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#database-of-covid-research">Database of COVID research</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reference-graph">Reference graph</a></li>

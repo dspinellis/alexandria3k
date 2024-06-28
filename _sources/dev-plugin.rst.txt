@@ -87,9 +87,9 @@ each containing multiple works),
 `orcid` (a compressed *tar* file containing an XML file for each author),
 and `ror` (a single compressed JSON file).
 All these data sources implement partitioning.
-In addition, the `crossref` and `orcid` data sources implement indexing
-over partitions that allows efficient sampling by skipping unneeded
-containers.
+In addition, the `crossref`, `orcid`, and `datacite` data sources
+implement indexing over partitions,
+which allows efficient sampling by skipping unneeded containers.
 
 Data processing plugins
 ~~~~~~~~~~~~~~~~~~~~~~~
