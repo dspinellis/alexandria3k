@@ -11,7 +11,7 @@ The largest one is the entire
 This contains publication metadata from about 134 million publications from
 all major international publishers with full citation data for 60 million
 of them.
-Alternatively, works can be selected from the
+Alternatively, scientific publications can be selected from the
 [PubMed](https://pubmed.ncbi.nlm.nih.gov/)
 data set (43 GB compressed, 327 GB uncompressed),
 which comprises more than 36 million citations
@@ -21,11 +21,14 @@ life science journals, and online books,
 with rich domain-specific metadata,
 such as [MeSH](https://www.nlm.nih.gov/mesh/meshhome.html) indexing,
 funding, genetic, and chemical details.
-In addition,
-the Crossref and PubMed data sets can be linked with
+Other data sets that can be used or linked together are
 the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (25 GB compressed, 435 GB uncompressed),
   containing about 78 million author records,
+the [DataCite](https://datacite.org/) set of research outputs and resources,
+such as data, pre-prints, images, and samples,
+(22 GB compressed, 197 GB uncompressed),
+containing about 50 million work entries,
 the [United States Patent Office issued patents](https://bulkdata.uspto.gov/)
   (11 GB compressed, 115 GB uncompressed),
   containing about 5.4 million records,
@@ -51,6 +54,7 @@ The complete reference and use documentation for _alexandria3k_  can be found [h
 
 * [Aggelos Margkas](https://github.com/AggelosMargkas): US patents
 * [Bas Verlooy](https://github.com/BasVerlooy): PubMed
+* [Evgenia Pampidi](https://github.com/evgepab): DataCite
 
 ## Publication
 
