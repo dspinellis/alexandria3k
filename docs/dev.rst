@@ -180,7 +180,7 @@ Adding a new data source plugin to *alexandria3k* involves the following steps.
   downloading its data.
   The data source's name for the CLI is all lowercase (e.g. ``datacite``),
   for the class name with an initial capital (e.g. ``Datacite``), and in
-  the documentation and schema's as formally spelled (e.g. ``DataCtire``).
+  the documentation and schema's as formally spelled (e.g. ``DataCite``).
   All table rows have an ``id`` field, with a unique identifier for that
   table across all table rows.
   As detail table indices are reset for each record, the identifier
