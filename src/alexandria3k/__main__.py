@@ -589,6 +589,8 @@ def error_raising_main():
     # Handle subcommands
     if args.command is not None:
         args.func(args)
+    else:
+        parser.error("No subcommand provided")
 
     debug.log("files-read", f"{FileCache.file_reads} files read")
 
