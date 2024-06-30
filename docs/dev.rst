@@ -171,40 +171,5 @@ is documented in the
 
 Adding a new data source
 ~~~~~~~~~~~~~~~~~~~~~~~~
-Adding a new data source plugin to *alexandria3k* involves the following steps.
-
-* Create a file in ``src/alexandria3k/data_sources/`` that implements the
-  data source access.
-  There you need to define the data's class, its schema,
-  cursors for fetching the data items, and, optionally, a method for
-  downloading its data.
-  The data source's name for the CLI is all lowercase (e.g. ``datacite``),
-  for the class name with an initial capital (e.g. ``Datacite``), and in
-  the documentation and schema's as formally spelled (e.g. ``DataCite``).
-  All table rows have an ``id`` field, with a unique identifier for that
-  table across all table rows.
-  As detail table indices are reset for each record, the identifier
-  typically incorporates also the identifiers of the parent tables.
-  It is easiest to base this on an existing data source:
-  * The data sources ``asjcs``, ``doaj``, ``funder_names``, ``journal_names``
-    map a single CSV dataset into a single relational table.
-  * ``crossref`` maps a set of compressed JSON files, all residing in
-    a single directory, and each containing multiple works.
-  * ``datacite`` maps a compressed tar file, containing files residing
-    in a non-flat structure.  Each file contains 1000 JSON records, separated
-    by newlines.
-  * ``orcid`` maps a compressed tar file that has in nested directories one
-    XML file for each person.
-  * ``pubmed`` maps a set of compressed XML files, all residing in
-    a single directory, and each containing multiple works.
-* Add a small subset of the data in ``tests/data/``.
-* Create a file with unit and integration tests in ``tests/data_sources/``.
-* Create a file with the data source's schema in ``docs/schema/``.
-  Use a color associated with the data source's logo.
-* Add a legend for the schema's tables in ``docs/schema/other.dot``.
-* Add the schema's SVG in ``docs/schema.rst``.
-* Add the schema in ``bin/update-schema``, run it to regenerate the schema
-  diagrams, and, after they are correct, add the generated SVG file, and
-  commit the new and updated files.
-* Update the plugin documentation and the schema diagrams as documented
-  elsewhere in this guide.
+Adding a new data source to *alexandria3k* involves the addition of a
+new plugin, as described in :doc:`dev-plugin`.
