@@ -172,49 +172,8 @@ is documented in the
 </div>
 <div class="section" id="adding-a-new-data-source">
 <h2>Adding a new data source<a class="headerlink" href="#adding-a-new-data-source" title="Permalink to this headline">¶</a></h2>
-<p>Adding a new data source plugin to <em>alexandria3k</em> involves the following steps.</p>
-<ul>
-<li><p>Create a file in <code class="docutils literal notranslate"><span class="pre">src/alexandria3k/data_sources/</span></code> that implements the
-data source access.
-There you need to define the data’s class, its schema,
-cursors for fetching the data items, and, optionally, a method for
-downloading its data.
-The data source’s name for the CLI is all lowercase (e.g. <code class="docutils literal notranslate"><span class="pre">datacite</span></code>),
-for the class name with an initial capital (e.g. <code class="docutils literal notranslate"><span class="pre">Datacite</span></code>), and in
-the documentation and schema’s as formally spelled (e.g. <code class="docutils literal notranslate"><span class="pre">DataCite</span></code>).
-All table rows have an <code class="docutils literal notranslate"><span class="pre">id</span></code> field, with a unique identifier for that
-table across all table rows.
-As detail table indices are reset for each record, the identifier
-typically incorporates also the identifiers of the parent tables.
-It is easiest to base this on an existing data source:
-* The data sources <code class="docutils literal notranslate"><span class="pre">asjcs</span></code>, <code class="docutils literal notranslate"><span class="pre">doaj</span></code>, <code class="docutils literal notranslate"><span class="pre">funder_names</span></code>, <code class="docutils literal notranslate"><span class="pre">journal_names</span></code></p>
-<blockquote>
-<div><p>map a single CSV dataset into a single relational table.</p>
-</div></blockquote>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">crossref</span></code> maps a set of compressed JSON files, all residing in
-a single directory, and each containing multiple works.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">datacite</span></code> maps a compressed tar file, containing files residing
-in a non-flat structure.  Each file contains 1000 JSON records, separated
-by newlines.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">orcid</span></code> maps a compressed tar file that has in nested directories one
-XML file for each person.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pubmed</span></code> maps a set of compressed XML files, all residing in
-a single directory, and each containing multiple works.</p></li>
-</ul>
-</li>
-<li><p>Add a small subset of the data in <code class="docutils literal notranslate"><span class="pre">tests/data/</span></code>.</p></li>
-<li><p>Create a file with unit and integration tests in <code class="docutils literal notranslate"><span class="pre">tests/data_sources/</span></code>.</p></li>
-<li><p>Create a file with the data source’s schema in <code class="docutils literal notranslate"><span class="pre">docs/schema/</span></code>.
-Use a color associated with the data source’s logo.</p></li>
-<li><p>Add a legend for the schema’s tables in <code class="docutils literal notranslate"><span class="pre">docs/schema/other.dot</span></code>.</p></li>
-<li><p>Add the schema’s SVG in <code class="docutils literal notranslate"><span class="pre">docs/schema.rst</span></code>.</p></li>
-<li><p>Add the schema in <code class="docutils literal notranslate"><span class="pre">bin/update-schema</span></code>, run it to regenerate the schema
-diagrams, and, after they are correct, add the generated SVG file, and
-commit the new and updated files.</p></li>
-<li><p>Update the plugin documentation and the schema diagrams as documented
-elsewhere in this guide.</p></li>
-</ul>
+<p>Adding a new data source to <em>alexandria3k</em> involves the addition of a
+new plugin, as described in <a class="reference internal" href="dev-plugin.html"><span class="doc">Plugin development</span></a>.</p>
 </div>
 </div>
 

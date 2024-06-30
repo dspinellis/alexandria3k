@@ -34,7 +34,7 @@
             
   <div class="section" id="plugin-development">
 <h1>Plugin development<a class="headerlink" href="#plugin-development" title="Permalink to this headline">¶</a></h1>
-<p>The <em>alexandria3k</em> is structured around plugins that provide access
+<p>The <em>alexandria3k</em> system is structured around plugins that provide access
 to data sources and data processing functionality.
 New plugins can be developed and contributed by adding a Python
 file in the <cite>data_sources</cite> or <cite>processes</cite> source code directory.
@@ -47,16 +47,25 @@ functionality.</p>
 <p>To create a new data source plugin you need to perform a number
 of steps.
 The employed modules and classes are documented in the
-<a class="reference internal" href="plugin-api.html"><span class="doc">Python plugin API</span></a>.
-The simplest case involves adding plugins for data available in CSV
-format (see e.g. the implementations for <cite>asjcs</cite>, <cite>journal_names</cite>,
-<cite>doaj</cite>, and <cite>funder_names</cite>).
+<a class="reference internal" href="plugin-api.html"><span class="doc">Python plugin API</span></a>.</p>
+<ul>
+<li><p>Create a file in <code class="docutils literal notranslate"><span class="pre">src/alexandria3k/data_sources/</span></code> that implements the
+data source access.
+There you need to define the data’s class, their schema,
+cursors for fetching the data items, and, optionally, a method for
+downloading the data.
+The data source’s name for the CLI is all lowercase (e.g. <code class="docutils literal notranslate"><span class="pre">datacite</span></code>),
+for the class name with an initial capital (e.g. <code class="docutils literal notranslate"><span class="pre">Datacite</span></code>), and in
+the documentation and schema’s as formally spelled (e.g. <code class="docutils literal notranslate"><span class="pre">DataCite</span></code>).</p>
+<p>The simplest case involves adding plugins for data available in CSV
+format (see e.g. the implementations for <code class="docutils literal notranslate"><span class="pre">asjcs</span></code>, <code class="docutils literal notranslate"><span class="pre">journal_names</span></code>,
+<code class="docutils literal notranslate"><span class="pre">doaj</span></code>, and <code class="docutils literal notranslate"><span class="pre">funder_names</span></code>).
 In this case only the following steps are needed.</p>
 <ul class="simple">
-<li><p>Create the plugin in the <cite>src/alexandria3k/data_sources</cite> directory.</p></li>
-<li><p>Define the data schema in a <cite>tables</cite> global variable
-through the <cite>TableMeta</cite> and <cite>ColumnMeta</cite> classes.
-Use the <cite>CsvCursor</cite> as the table’s cursor.
+<li><p>Create the plugin in the <code class="docutils literal notranslate"><span class="pre">src/alexandria3k/data_sources</span></code> directory.</p></li>
+<li><p>Define the data schema in a <code class="docutils literal notranslate"><span class="pre">tables</span></code> global variable
+through the <code class="docutils literal notranslate"><span class="pre">TableMeta</span></code> and <code class="docutils literal notranslate"><span class="pre">ColumnMeta</span></code> classes.
+Use the <code class="docutils literal notranslate"><span class="pre">CsvCursor</span></code> as the table’s cursor.
 Unless column values are obtained in order from a CSV
 file, each column must define a function that will provide its
 value.
@@ -79,9 +88,9 @@ Example:</p></li>
 </div>
 <ul class="simple">
 <li><p>Define a URL for fetching the data source, if none is provided, as
-the global constant <cite>DEFAULT_SOURCE</cite>.
-If no such exists, set the constant to <cite>None</cite>.</p></li>
-<li><p>Define the data source’s class by subclassing the <cite>DataSource</cite> class.
+the global constant <code class="docutils literal notranslate"><span class="pre">DEFAULT_SOURCE</span></code>.
+If no such exists, set the constant to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>Define the data source’s class by subclassing the <code class="docutils literal notranslate"><span class="pre">DataSource</span></code> class.
 Example (for a single table):</p></li>
 </ul>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FunderNames</span><span class="p">(</span><span class="n">DataSource</span><span class="p">):</span>
@@ -97,43 +106,69 @@ Example (for a single table):</p></li>
         <span class="p">)</span>
 </pre></div>
 </div>
+<p>Data sources with with multiple tables, need the defition of a more
+complex schema.
+In these cases you must also define:</p>
 <ul class="simple">
-<li><p>Add a small subset of the data in the <cite>tests/data</cite> directory.</p></li>
-<li><p>Add unit tests in the <cite>tests/data_sources</cite> directory.</p></li>
-<li><p>Add a motivating example in the <cite>examples</cite> directory.</p></li>
-</ul>
-<p>For data sources available in more complex forms you must also define.</p>
-<ul class="simple">
-<li><p>an SQLite virtual table data source <cite>VTSource</cite>,</p></li>
+<li><p>an SQLite virtual table data source <code class="docutils literal notranslate"><span class="pre">VTSource</span></code>,</p></li>
 <li><p>a cursor to iterate over the records of each table,</p></li>
 <li><p>and possibly a partitioning scheme to handle interrelated tables
 that are streamed concurrently (e.g. a work and its authors).</p></li>
 </ul>
 <p>The virtual table and cursor classes are documented in the
 <a class="reference external" href="https://rogerbinns.github.io/apsw/vtable.html">APSW Virtual Tables chapter</a>.
-As examples of their use in <em>alexandria3k</em> see the data source modules
-<cite>crossref</cite> (this uses compressed containers of JSON files,
-each containing multiple works),
-<cite>orcid</cite> (a compressed <em>tar</em> file containing an XML file for each author),
-and <cite>ror</cite> (a single compressed JSON file).
-All these data sources implement partitioning.
-In addition, the <cite>crossref</cite>, <cite>orcid</cite>, and <cite>datacite</cite> data sources
+It is easiest to base this on an existing data source:</p>
+<ul class="simple">
+<li><p>The data sources <code class="docutils literal notranslate"><span class="pre">asjcs</span></code>, <code class="docutils literal notranslate"><span class="pre">doaj</span></code>, <code class="docutils literal notranslate"><span class="pre">funder_names</span></code>, <code class="docutils literal notranslate"><span class="pre">journal_names</span></code>
+map a single CSV dataset into a single relational table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">crossref</span></code> maps a set of compressed JSON files, all residing in
+a single directory, and each containing multiple works.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">datacite</span></code> maps a compressed tar file, containing files residing
+in a non-flat structure.  Each file contains 1000 JSON records, separated
+by newlines.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">orcid</span></code> maps a compressed tar file that has in nested directories one
+XML file for each person.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pubmed</span></code> maps a set of compressed XML files, all residing in
+a single directory, and each containing multiple works.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ror</span></code> maps a single compressed JSON file into several tables.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">crossref</span></code>, <code class="docutils literal notranslate"><span class="pre">ror</span></code>, and <code class="docutils literal notranslate"><span class="pre">orcid</span></code> data sources implement partitioning.
+In addition, the <code class="docutils literal notranslate"><span class="pre">crossref</span></code>, <code class="docutils literal notranslate"><span class="pre">orcid`,</span> <span class="pre">and</span> <span class="pre">``datacite</span></code> data sources
 implement indexing over partitions,
-which allows efficient sampling by skipping unneeded containers.</p>
+which allows efficient sampling by skipping unneeded containers.
+All table rows have an <code class="docutils literal notranslate"><span class="pre">id</span></code> field, with a unique identifier for that
+table across all table rows.
+As detail table indices are reset for each record, the identifier
+typically incorporates also the identifiers of the parent tables.</p>
+</li>
+<li><p>Add a small subset of the data in the <code class="docutils literal notranslate"><span class="pre">tests/data/</span></code> directory.</p></li>
+<li><p>Create a file with unit and integration tests in <code class="docutils literal notranslate"><span class="pre">tests/data_sources/</span></code>.</p></li>
+<li><p>Create a <a class="reference external" href="https://graphviz.org/">Graphviz</a> file with the data source’s
+schema in <code class="docutils literal notranslate"><span class="pre">docs/schema/</span></code>.
+Use a color associated with the data source’s logo.</p></li>
+<li><p>Add a legend for the schema’s tables in <code class="docutils literal notranslate"><span class="pre">docs/schema/other.dot</span></code>.</p></li>
+<li><p>Add the schema’s SVG in <code class="docutils literal notranslate"><span class="pre">docs/schema.rst</span></code>.</p></li>
+<li><p>Add the schema in <code class="docutils literal notranslate"><span class="pre">bin/update-schema</span></code>, run it to regenerate the schema
+diagrams, and, after they are correct, add the generated SVG file, and
+commit the new and updated files.</p></li>
+<li><p>Update the plugin documentation and the schema diagrams as documented
+elsewhere in this guide.</p></li>
+<li><p>Add a motivating example in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p></li>
+</ul>
 </div>
 <div class="section" id="data-processing-plugins">
 <h2>Data processing plugins<a class="headerlink" href="#data-processing-plugins" title="Permalink to this headline">¶</a></h2>
 <p>To create a data processing plugin follow these steps.</p>
 <ul class="simple">
-<li><p>Create the plugin in the <cite>src/alexandria3k/plugins</cite> directory.</p></li>
-<li><p>Define the schema of the generated tables in a <cite>tables</cite> global variable
-through the <cite>TableMeta</cite> and <cite>ColumnMeta</cite> classes.
+<li><p>Create the plugin in the <code class="docutils literal notranslate"><span class="pre">src/alexandria3k/plugins</span></code> directory.</p></li>
+<li><p>Define the schema of the generated tables in a <code class="docutils literal notranslate"><span class="pre">tables</span></code> global variable
+through the <code class="docutils literal notranslate"><span class="pre">TableMeta</span></code> and <code class="docutils literal notranslate"><span class="pre">ColumnMeta</span></code> classes.
 There is not need to define cursors or accessor functions.</p></li>
-<li><p>Define a function named <cite>process</cite>, which takes as an argument a
+<li><p>Define a function named <code class="docutils literal notranslate"><span class="pre">process</span></code>, which takes as an argument a
 path to a populated SQLite database,
 and performs the processing associated with the plugin.</p></li>
-<li><p>Add unit tests in the <cite>tests/processes</cite> directory.</p></li>
-<li><p>Add a motivating example in the <cite>examples</cite> directory.</p></li>
+<li><p>Add unit tests in the <code class="docutils literal notranslate"><span class="pre">tests/processes</span></code> directory.</p></li>
+<li><p>Add a motivating example in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p></li>
 </ul>
 </div>
 </div>
