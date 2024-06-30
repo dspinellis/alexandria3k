@@ -72,6 +72,13 @@ class WorksCursor(RecordsCursor):
                 self.item_index
             ]
             self.json_data = json.loads(json_string)
+            # Record 10.17031/637b5e4a8d3ae of file10.17031/part_00001.jsonl
+            # and others have affiliation as a dict, rather than an array
+            # containing a dict.  Detect and fix.
+            for relation in ["creators", "contributors"]:
+                for creator in self.json_data[relation]:
+                    if isinstance(creator.get("affiliation"), dict):
+                        creator["affiliation"] = [creator["affiliation"]]
             self.cached_json_item_index = self.item_index
         return self.json_data
 

@@ -50,19 +50,19 @@ class TestDatacitePopulateVanilla(PopulateQueries):
         os.unlink(DATABASE_PATH)
 
     def test_counts(self):
-        self.assertEqual(self.record_count("dc_works"), 7)
-        self.assertEqual(self.record_count("dc_work_creators"), 26)
+        self.assertEqual(self.record_count("dc_works"), 9)
+        self.assertEqual(self.record_count("dc_work_creators"), 29)
         self.assertEqual(self.record_count("dc_creator_name_identifiers"), 8)
-        self.assertEqual(self.record_count("dc_creator_affiliations"), 14)
-        self.assertEqual(self.record_count("dc_work_titles"), 7)
-        self.assertEqual(self.record_count("dc_work_subjects"), 25)
-        self.assertEqual(self.record_count("dc_work_contributors"), 0)
+        self.assertEqual(self.record_count("dc_creator_affiliations"), 17)
+        self.assertEqual(self.record_count("dc_work_titles"), 9)
+        self.assertEqual(self.record_count("dc_work_subjects"), 27)
+        self.assertEqual(self.record_count("dc_work_contributors"), 1)
         self.assertEqual(self.record_count("dc_contributor_name_identifiers"), 0)
-        self.assertEqual(self.record_count("dc_contributor_affiliations"), 0)
+        self.assertEqual(self.record_count("dc_contributor_affiliations"), 1)
         self.assertEqual(self.record_count("dc_work_dates"), 7)
         self.assertEqual(self.record_count("dc_work_related_identifiers"), 20)
-        self.assertEqual(self.record_count("dc_work_descriptions"), 10)
-        self.assertEqual(self.record_count("dc_work_geo_locations"), 0)
+        self.assertEqual(self.record_count("dc_work_descriptions"), 12)
+        self.assertEqual(self.record_count("dc_work_geo_locations"), 2)
         self.assertEqual(self.record_count("dc_work_funding_references"), 2)
 
 
@@ -79,13 +79,13 @@ class TestDatacitePopulateVanilla(PopulateQueries):
                 """(SELECT DISTINCT work_id
           FROM dc_work_creators)"""
             ),
-            7,
+            9,
         )
 
         self.assertEqual(self.record_count(
                 """(SELECT DISTINCT container_id FROM dc_works)"""
             ),
-            3,
+            4,
         )
 
     def test_work_contents(self):
@@ -229,7 +229,7 @@ class TestDatacitePopulateMasterColumnNoCondition(PopulateQueries):
         os.unlink(DATABASE_PATH)
 
     def test_counts(self):
-        self.assertEqual(self.record_count("dc_works"), 7)
+        self.assertEqual(self.record_count("dc_works"), 9)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
@@ -262,7 +262,7 @@ class TestDatacitePopulateMasterColumnCondition(PopulateQueries):
         os.unlink(DATABASE_PATH)
 
     def test_counts(self):
-        self.assertEqual(self.record_count("dc_works"), 4)
+        self.assertEqual(self.record_count("dc_works"), 6)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
