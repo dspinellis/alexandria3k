@@ -821,7 +821,7 @@ class TarFilesCursor(ItemsCursor):
         )
         debug.log(
             "progress_bar",
-            f"\r[{progress_bar}] {percent:.2f}% | "
+            f"\r[{progress_bar}] {percent:.1f}% | "
             f"Processed {current_progress:.0f} GB out of ~{total_length:.0f} GB",
             end="",
         )
