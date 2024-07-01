@@ -538,12 +538,16 @@ def get_cli_parser():
     populated-counts: Counts of the populated database;
     populated-data: Data of the populated database;
     populated-reports: Query results from the populated database;
-    progress: Report population progress;
-    progress_bar: Display a progress bar;
     sorted-tables: Topologically ordered Crossref query tables;
     stacktrace: Produce a stack trace when an error occurs;
     stderr: Log to standard error;
 """,
+    )
+    parser.add_argument(
+        "-p",
+        "--progress",
+        action="store_true",
+        help="Show a progress bar (where available)",
     )
     parser.add_argument(
         "-v",
@@ -585,6 +589,9 @@ def error_raising_main():
     if args.version:
         print(f"a3k version {program_version()}")
         sys.exit(0)
+
+    if args.progress:
+        debug.set_flags(["progress_bar"])
 
     # Handle subcommands
     if args.command is not None:

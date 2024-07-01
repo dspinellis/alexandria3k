@@ -69,7 +69,7 @@ def set_flags(flags):
     * sql: Executed SQL statements;
     * perf: Performance timings;
     * progress: Report population progress;
-    * progress_bar: Display a progress bar;
+    * progress_bar: Display a progress bar; (enabled through --progress)
     * sorted-tables: Topologically ordered Crossref query tables;
     * stderr: Log to standard error;
 

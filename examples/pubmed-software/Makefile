@@ -11,7 +11,7 @@ include ../common/Makefile
 # Populate database with required details for the specified years
 populate: $(PUBMED_DIR)
 	# Populate database with pubmed articles and abstracts
-	$(TIME) $(A3K) --debug progress_bar \
+	$(TIME) $(A3K) --progress \
 	  populate "$(MAINDB).db" pubmed "$(PUBMED_DIR)" \
 	  --columns pubmed_articles.id \
 	    pubmed_articles.pubmed_id \

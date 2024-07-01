@@ -809,12 +809,12 @@ class TarFilesCursor(ItemsCursor):
     def debug_progress_bar(self):
         """Print a progress bar"""
         GB = 1024 * 1024 * 1024
-        total_length = self.data_source.get_file_size() / GB
+        total_size = self.data_source.get_file_size() / GB
         current_progress = self.data_source.get_bytes_read() / GB
 
-        percent = current_progress / total_length * 100
+        percent = current_progress / total_size * 100
         progress_marker = int(
-            PROGRESS_BAR_LENGTH * current_progress / total_length
+            PROGRESS_BAR_LENGTH * current_progress / total_size
         )
         progress_bar = "#" * progress_marker + "-" * (
             PROGRESS_BAR_LENGTH - progress_marker
@@ -822,7 +822,7 @@ class TarFilesCursor(ItemsCursor):
         debug.log(
             "progress_bar",
             f"\r[{progress_bar}] {percent:.1f}% | "
-            f"Processed {current_progress:.0f} GB out of ~{total_length:.0f} GB",
+            f"Processed {current_progress:.0f} GB out of ~{total_size:.0f} GB",
             end="",
         )
 
