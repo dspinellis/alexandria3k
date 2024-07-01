@@ -77,8 +77,12 @@ class WorksCursor(RecordsCursor):
             # containing a dict.  Detect and fix.
             for relation in ["creators", "contributors"]:
                 for creator in self.json_data[relation]:
-                    if isinstance(creator.get("affiliation"), dict):
-                        creator["affiliation"] = [creator["affiliation"]]
+                    affiliation = creator.get("affiliation")
+                    if isinstance(affiliation, dict):
+                        creator["affiliation"] = [affiliation]
+                    name_identifiers = creator.get("nameIdentifiers")
+                    if isinstance(name_identifiers, dict):
+                        creator["nameIdentifiers"] = [name_identifiers]
             self.cached_json_item_index = self.item_index
         return self.json_data
 

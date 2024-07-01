@@ -49,43 +49,71 @@ class TestDatacitePopulateVanilla(PopulateQueries):
         cls.con.close()
         os.unlink(DATABASE_PATH)
 
-    def test_counts(self):
-        self.assertEqual(self.record_count("dc_works"), 9)
-        self.assertEqual(self.record_count("dc_work_creators"), 29)
-        self.assertEqual(self.record_count("dc_creator_name_identifiers"), 8)
-        self.assertEqual(self.record_count("dc_creator_affiliations"), 17)
-        self.assertEqual(self.record_count("dc_work_titles"), 9)
-        self.assertEqual(self.record_count("dc_work_subjects"), 27)
-        self.assertEqual(self.record_count("dc_work_contributors"), 1)
+    def test_count_dc_works(self):
+        self.assertEqual(self.record_count("dc_works"), 10)
+
+    def test_count_dc_work_creators(self):
+        self.assertEqual(self.record_count("dc_work_creators"), 30)
+
+    def test_count_dc_creator_name_identifiers(self):
+        self.assertEqual(self.record_count("dc_creator_name_identifiers"), 9)
+
+    def test_count_dc_creator_affiliations(self):
+        self.assertEqual(self.record_count("dc_creator_affiliations"), 18)
+
+    def test_count_dc_work_titles(self):
+        self.assertEqual(self.record_count("dc_work_titles"), 10)
+
+    def test_count_dc_work_subjects(self):
+        self.assertEqual(self.record_count("dc_work_subjects"), 31)
+
+    def test_count_dc_work_contributors(self):
+        self.assertEqual(self.record_count("dc_work_contributors"), 2)
+
+    def test_count_dc_contributor_name_identifiers(self):
         self.assertEqual(self.record_count("dc_contributor_name_identifiers"), 0)
-        self.assertEqual(self.record_count("dc_contributor_affiliations"), 1)
-        self.assertEqual(self.record_count("dc_work_dates"), 7)
+
+    def test_count_dc_contributor_affiliations(self):
+        self.assertEqual(self.record_count("dc_contributor_affiliations"), 2)
+
+    def test_count_dc_work_dates(self):
+        self.assertEqual(self.record_count("dc_work_dates"), 8)
+
+    def test_count_dc_work_related_identifiers(self):
         self.assertEqual(self.record_count("dc_work_related_identifiers"), 20)
-        self.assertEqual(self.record_count("dc_work_descriptions"), 12)
+
+    def test_count_dc_work_descriptions(self):
+        self.assertEqual(self.record_count("dc_work_descriptions"), 13)
+
+    def test_count_dc_work_geo_locations(self):
         self.assertEqual(self.record_count("dc_work_geo_locations"), 2)
+
+    def test_count_dc_work_funding_references(self):
         self.assertEqual(self.record_count("dc_work_funding_references"), 2)
 
-
+    def test_count_distinct_name_identifiers(self):
         self.assertEqual(
             self.record_count(
                 """(SELECT DISTINCT name_identifier
           FROM dc_creator_name_identifiers)"""
             ),
-            8,
+            9,
         )
 
+    def test_count_distinct_work_creators(self):
         self.assertEqual(
             self.record_count(
                 """(SELECT DISTINCT work_id
           FROM dc_work_creators)"""
             ),
-            9,
+            10,
         )
 
+    def test_count_distinct_works(self):
         self.assertEqual(self.record_count(
                 """(SELECT DISTINCT container_id FROM dc_works)"""
             ),
-            4,
+            5,
         )
 
     def test_work_contents(self):
@@ -229,7 +257,7 @@ class TestDatacitePopulateMasterColumnNoCondition(PopulateQueries):
         os.unlink(DATABASE_PATH)
 
     def test_counts(self):
-        self.assertEqual(self.record_count("dc_works"), 9)
+        self.assertEqual(self.record_count("dc_works"), 10)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
@@ -262,7 +290,7 @@ class TestDatacitePopulateMasterColumnCondition(PopulateQueries):
         os.unlink(DATABASE_PATH)
 
     def test_counts(self):
-        self.assertEqual(self.record_count("dc_works"), 6)
+        self.assertEqual(self.record_count("dc_works"), 7)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
