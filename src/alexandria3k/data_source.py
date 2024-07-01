@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022-2023  Diomidis Spinellis
+# Copyright (C) 2022-2024  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -31,6 +31,7 @@ import apsw
 from alexandria3k import debug, perf
 from alexandria3k.common import (
     Alexandria3kError,
+    Alexandria3kInternalError,
     get_string_resource,
     log_sql,
     remove_sqlite_comments,
@@ -235,7 +236,12 @@ class ElementsCursor:
 
     def current_row_value(self):
         """Return the current row. Not part of the apsw API."""
-        return self.elements[self.element_index]
+        try:
+            return self.elements[self.element_index]
+        except KeyError as exc:
+            raise Alexandria3kInternalError(
+                f"Record indexing error for key {self.element_index} in value {self.elements}"
+            ) from exc
 
     @abc.abstractmethod
     def Next(self):
