@@ -34,33 +34,37 @@
   <div class="section" id="alexandria3k-documentation">
 <h1>Alexandria3k documentation<a class="headerlink" href="#alexandria3k-documentation" title="Permalink to this headline">¶</a></h1>
 <p>The <em>alexandria3k</em> package supplies a library and a command-line tool
-providing efficient relational query access to diverse publication open
-data sets.
-The largest one is the entire <a class="reference external" href="https://www.nature.com/articles/d41586-022-02926-y">Crossref data
-set</a> (157 GB
-compressed, 1 TB uncompressed). This contains publication metadata from
-about 134 million publications from all major international publishers
-with full citation data for 60 million of them.
-Alternatively, works can be selected from the
-<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/">PubMed</a>
-data set (43 GB compressed, 327 GB uncompressed),
-which comprises more than 36 million citations
-for biomedical literature from
+providing efficient relational query access to the following large
+scientific publication open data sets. Data are decompressed on the fly,
+thus allowing the package’s use even on storage-restricted laptops.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.nature.com/articles/d41586-022-02926-y">Crossref</a>
+(157 GB compressed, 1 TB uncompressed). This contains publication
+metadata from about 134 million publications from all major
+international publishers with full citation data for 60 million of
+them.</p></li>
+<li><p><a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/">PubMed</a> (43 GB compressed, 327
+GB uncompressed). This comprises more than 36 million citations for
+biomedical literature from
 <a class="reference external" href="https://www.nlm.nih.gov/medline/medline_overview.html">MEDLINE</a>,
-life science journals, and online books,
-with rich domain-specific metadata,
-such as <a class="reference external" href="https://www.nlm.nih.gov/mesh/meshhome.html">MeSH</a> indexing,
-funding, genetic, and chemical details.
-In addition,
-the Crossref and PubMed data sets can be linked with the <a class="reference external" href="https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-">ORCID summary
-data
+life science journals, and online books, with rich domain-specific
+metadata, such as
+<a class="reference external" href="https://www.nlm.nih.gov/mesh/meshhome.html">MeSH</a> indexing,
+funding, genetic, and chemical details.</p></li>
+<li><p><a class="reference external" href="https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-">ORCID summary data
 set</a>
-(25 GB compressed, 435 GB uuncompressed), containing about 78 million
-author records,
-the <a class="reference external" href="https://bulkdata.uspto.gov">US Patent and Trademark Office issued patents</a>
-(11 GB compressed, 115 GB uncompressed), containing about 5.4 million records from 2005 to present,
-as well as data sets of funder bodies, journal names,
-open access journals, and research organizations.</p>
+(25 GB compressed, 435 GB uncompressed). This contains about 78
+million author details records.</p></li>
+<li><p><a class="reference external" href="https://datacite.org/">DataCite</a> (22 GB compressed, 197 GB
+uncompressed). This comprises research outputs and resources, such as
+data, pre-prints, images, and samples, containing about 50 million
+work entries.</p></li>
+<li><p><a class="reference external" href="https://bulkdata.uspto.gov/">United States Patent Office issued
+patents</a> (11 GB compressed, 115 GB
+uncompressed). This containins about 5.4 million records.</p></li>
+</ul>
+<p>Further supported data sets include funder bodies, journal names, open
+access journals, and research organizations.</p>
 <p>The <em>alexandria3k</em>
 package installation contains all elements required to run it. It does
 not require the installation, configuration, and maintenance of a third
