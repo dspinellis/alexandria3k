@@ -47,8 +47,9 @@ of a third party relational or graph database.
 It can therefore be used out-of-the-box for performing reproducible
 publication research on the desktop.
 
-## Documentation
+## Installation and documentation
 
+The _alexandria3k_ is available on [PyPI](https://pypi.org/project/alexandria3k/).
 The complete reference and use documentation for _alexandria3k_  can be found [here](https://dspinellis.github.io/alexandria3k/).
 
 ## Major contributors
