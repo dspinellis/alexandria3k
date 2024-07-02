@@ -47,6 +47,25 @@ download the *summary file* of the ORCID Public Data File
 works on the compressed file; there is no need to expand it (it expands
 to about 0.5 TB).
 
+PubMed data
+~~~~~~~~~~~
+
+You can populate a database with the data from the PubMed/MEDLINE database
+from the National Library of Medicine (NLM).
+The data are available from
+`here <https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/>`__.
+You can also download the data from the FTP server which is documented in
+`this readme file <https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt>`__.
+Publication data are overlapping with the Crossref dataset,
+but the PubMed data contain additional information
+such as MeSH terms and grants.
+They also complement the Crossref data as for example some affiliations
+are only available in the PubMed data.
+
+The shell script ``examples/common/fetch-pubmed.sh`` or the
+``$(PUBMED_DIR)`` dependency of the ``examples/common/Makefile``,
+which uses it, can be used to download all PubMed data.
+
 USPTO data
 ~~~~~~~~~~
 
@@ -87,26 +106,6 @@ Organize the downloaded data by ensuring that each zip file is placed under a fo
 The shell script ``examples/common/fetch-uspto.sh`` or the
 ``$(USPTO_DIR)`` dependency of the ``examples/common/Makefile``,
 which uses it, can be used to download all USPTO data.
-
-PubMed data
-~~~~~~~~~~~
-
-You can populate a database with the data from the PubMed/MEDLINE database
-from the National Library of Medicine (NLM).
-The data are available from
-`here <https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/>`__.
-You can also download the data from the FTP server which is documented in
-`this readme file <https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt>`__.
-Publication data are overlapping with the Crossref dataset,
-but the PubMed data contain additional information
-such as MeSH terms and grants.
-They also complement the Crossref data as for example some affiliations
-are only available in the PubMed data.
-
-The shell script ``examples/common/fetch-pubmed.sh`` or the
-``$(PUBMED_DIR)`` dependency of the ``examples/common/Makefile``,
-which uses it, can be used to download all PubMed data.
-
 
 
 Other data sources
