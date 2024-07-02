@@ -26,6 +26,20 @@ For schemes only the first ten values with the highest occurrence are listed.
 |work\_titles|57,359,160|
 |works|52,863,283|
 
+# Top ten publishers
+
+| Publisher | Count |
+|:------|------:|
+|Geoscience Australia|5,948,695|
+|SESAR|4,968,745|
+|Zenodo|4,904,143|
+|UNITE Community|2,859,190|
+|arXiv|2,393,236|
+|The Global Biodiversity Information Facility|2,270,374|
+|figshare|1,774,442|
+|Unpublished|1,087,504|
+|Cambridge Crystallographic Data Centre|1,052,983|
+|DSMZ|851,965|
 
 ## dc\_contributor\_name\_identifiers.name\_identifier\_scheme
 
