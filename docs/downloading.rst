@@ -29,6 +29,12 @@ compressed files, each containing JSON data for 3000 publications
 also allows the sampling of a subset of the container files to quickly
 experiment with queries, before they are run on the complete set.
 
+DataCite data
+~~~~~~~~~~~~~
+You can download the DataCite Public Data File after a simple registration
+from the
+`DataCite Data Files Service <https://datafiles.datacite.org/>`__.
+
 ORCID data
 ~~~~~~~~~~
 
