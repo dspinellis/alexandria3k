@@ -45,6 +45,7 @@ The following examples are available.
 ### Data source examples and metric measurements
 * [Report metrics associated with the Crossref data set](crossref-standalone)
 * [Report metrics associated with ORCID data](orcid)
+* [Report metrics associated with DataCite data](datacite)
 * [Report research organization registry metrics](ror-metrics)
 
 ### Impact and productivitycalculations

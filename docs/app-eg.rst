@@ -69,6 +69,8 @@ Data source examples and metric measurements
    set <https://github.com/dspinellis/alexandria3k/tree/main/examples/crossref-standalone>`__
 -  `Report metrics associated with ORCID
    data <https://github.com/dspinellis/alexandria3k/tree/main/examples/orcid>`__
+-  `Report metrics associated with DataCite
+   data <https://github.com/dspinellis/alexandria3k/tree/main/examples/datacite>`__
 -  `Report research organization registry
    metrics <https://github.com/dspinellis/alexandria3k/tree/main/examples/ror-metrics>`__
 

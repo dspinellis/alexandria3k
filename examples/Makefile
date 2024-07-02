@@ -17,6 +17,7 @@ export ROR?=$(TOP_DIR)/tests/data/ror.zip
 export DOAJ?=$(TOP_DIR)/tests/data/doaj.csv
 export JOURNAL_NAMES?=$(TOP_DIR)/tests/data/titleFile.csv
 export PUBMED_DIR?=$(TOP_DIR)/tests/data/pubmed-sample
+export DATACITE?=$(TOP_DIR)/tests/data/datacite.tar.gz
 
 # Use source code tree implementation
 export A3K?=$(TOP_DIR)/bin/a3k
