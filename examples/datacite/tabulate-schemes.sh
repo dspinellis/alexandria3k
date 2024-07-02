@@ -20,6 +20,8 @@ EOF
   grep $scheme\| $SCHEMES |
     sort -t\| -k3rn |
     head -10 |
-    awk -F\| '$2 == "" {$2 = "(none)"} {print "|" $2 "|" $3 "|"}'
+    awk -F\| '$2 == "" {$2 = "(none)"} {print "|" $2 "|" $3 "|"}' |
+    sed 's/_/\\_/g' |
+    ../../bin/decimal.sed
 done
 
