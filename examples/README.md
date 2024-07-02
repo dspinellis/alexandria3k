@@ -25,27 +25,36 @@ It also hosts downloaded data sets to minimize useless replication.
 The `Makefile` residing in it can be used to tailor the running
 of all other studies.
 
+## Examples by directory
 The following examples are available.
 
+### Templates
 * ["Hello world" example: number of authors by decade](authors-by-decade)
+* [Fully-indexed Crossref database sample](sample)
+
+### Studies
 * [Tally number of research synthesis studies](research-synthesis)
 * [Generate and study the entities' graph structure](graph)
-* [Examine the evolution and impact of open access journal papers](open-access)
+* [Obtain data associated with COVID-19 research](covid)
+* [Calculate the average size of an article's pages each year](yearly-numpages)
+* [Calculate the works' CD-5 index using the Python API or a pre-populated database](cdindex)
+* [Investigate the CD-5 index of Dan Tawfik's works](tawfik)
+* [Top five US Patent Office applications by country and year](uspto)
+* [Replication study on software used in PubMed articles](pubmed-software)
+
+### Data source examples and metric measurements
 * [Report metrics associated with the Crossref data set](crossref-standalone)
 * [Report metrics associated with ORCID data](orcid)
 * [Report research organization registry metrics](ror-metrics)
-* [Obtain data associated with COVID-19 research](covid)
+
+### Impact and productivitycalculations
 * [Calculate the 2021 journal impact factor](impact-factor-2021)
 * [Calculate the h5-index of journals](journal-h5)
 * [Calculate the h5-index of software engineering research venues](soft-eng-h5)
 * [Calculate h5-index of persons and study their citation graph](person-h5)
+* [Examine the evolution and impact of open access journal papers](open-access)
 * [Calculate relative yearly author productivity](author-productivity)
-* [Calculate the average size of an article's pages each year](yearly-numpages)
-* [Calculate the works' CD-5 index using the Python API or a pre-populated database](cdindex)
-* [Investigate the CD-5 index of Dan Tawfik's works](tawfik)
-* [Fully-indexed Crossref database sample](sample)
-* [Top five US Patent Office applications by country and year](uspto)
-* [Replicate study on software used in PubMed articles](pubmed-software)
+
 
 ## Published results
 The following queries have been used to publish derived figures and tables.
