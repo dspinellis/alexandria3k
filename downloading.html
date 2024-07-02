@@ -58,6 +58,12 @@ compressed files, each containing JSON data for 3000 publications
 also allows the sampling of a subset of the container files to quickly
 experiment with queries, before they are run on the complete set.</p>
 </div>
+<div class="section" id="datacite-data">
+<h2>DataCite data<a class="headerlink" href="#datacite-data" title="Permalink to this headline">¶</a></h2>
+<p>You can download the DataCite Public Data File after a simple registration
+from the
+<a class="reference external" href="https://datafiles.datacite.org/">DataCite Data Files Service</a>.</p>
+</div>
 <div class="section" id="orcid-data">
 <h2>ORCID data<a class="headerlink" href="#orcid-data" title="Permalink to this headline">¶</a></h2>
 <p>You can populate a database with data regarding authors (URLs,
@@ -68,6 +74,23 @@ download the <em>summary file</em> of the ORCID Public Data File
 <a class="reference external" href="https://orcid.figshare.com/">Figshare</a>. Note that <em>alexandria3k</em>
 works on the compressed file; there is no need to expand it (it expands
 to about 0.5 TB).</p>
+</div>
+<div class="section" id="pubmed-data">
+<h2>PubMed data<a class="headerlink" href="#pubmed-data" title="Permalink to this headline">¶</a></h2>
+<p>You can populate a database with the data from the PubMed/MEDLINE database
+from the National Library of Medicine (NLM).
+The data are available from
+<a class="reference external" href="https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/">here</a>.
+You can also download the data from the FTP server which is documented in
+<a class="reference external" href="https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt">this readme file</a>.
+Publication data are overlapping with the Crossref dataset,
+but the PubMed data contain additional information
+such as MeSH terms and grants.
+They also complement the Crossref data as for example some affiliations
+are only available in the PubMed data.</p>
+<p>The shell script <code class="docutils literal notranslate"><span class="pre">examples/common/fetch-pubmed.sh</span></code> or the
+<code class="docutils literal notranslate"><span class="pre">$(PUBMED_DIR)</span></code> dependency of the <code class="docutils literal notranslate"><span class="pre">examples/common/Makefile</span></code>,
+which uses it, can be used to download all PubMed data.</p>
 </div>
 <div class="section" id="uspto-data">
 <h2>USPTO data<a class="headerlink" href="#uspto-data" title="Permalink to this headline">¶</a></h2>
@@ -101,23 +124,6 @@ Organize the downloaded data by ensuring that each zip file is placed under a fo
 <p>The shell script <code class="docutils literal notranslate"><span class="pre">examples/common/fetch-uspto.sh</span></code> or the
 <code class="docutils literal notranslate"><span class="pre">$(USPTO_DIR)</span></code> dependency of the <code class="docutils literal notranslate"><span class="pre">examples/common/Makefile</span></code>,
 which uses it, can be used to download all USPTO data.</p>
-</div>
-<div class="section" id="pubmed-data">
-<h2>PubMed data<a class="headerlink" href="#pubmed-data" title="Permalink to this headline">¶</a></h2>
-<p>You can populate a database with the data from the PubMed/MEDLINE database
-from the National Library of Medicine (NLM).
-The data are available from
-<a class="reference external" href="https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/">here</a>.
-You can also download the data from the FTP server which is documented in
-<a class="reference external" href="https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt">this readme file</a>.
-Publication data are overlapping with the Crossref dataset,
-but the PubMed data contain additional information
-such as MeSH terms and grants.
-They also complement the Crossref data as for example some affiliations
-are only available in the PubMed data.</p>
-<p>The shell script <code class="docutils literal notranslate"><span class="pre">examples/common/fetch-pubmed.sh</span></code> or the
-<code class="docutils literal notranslate"><span class="pre">$(PUBMED_DIR)</span></code> dependency of the <code class="docutils literal notranslate"><span class="pre">examples/common/Makefile</span></code>,
-which uses it, can be used to download all PubMed data.</p>
 </div>
 <div class="section" id="other-data-sources">
 <h2>Other data sources<a class="headerlink" href="#other-data-sources" title="Permalink to this headline">¶</a></h2>
@@ -173,9 +179,10 @@ Organization Registry — ROR</a> (595k records)</p></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data downloading</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#crossref-data">Crossref data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#datacite-data">DataCite data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#orcid-data">ORCID data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#uspto-data">USPTO data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pubmed-data">PubMed data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uspto-data">USPTO data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#other-data-sources">Other data sources</a></li>
 </ul>
 </li>
