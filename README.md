@@ -3,37 +3,38 @@
 ## Alexandria3k
 
 The _alexandria3k_ package supplies a library and a command-line tool
-providing efficient relational query access to diverse publication open
-data sets.
-The largest one is the entire
-[Crossref data set](https://www.nature.com/articles/d41586-022-02926-y)
-(157 GB compressed, 1 TB uncompressed).
-This contains publication metadata from about 134 million publications from
-all major international publishers with full citation data for 60 million
-of them.
-Alternatively, scientific publications can be selected from the
-[PubMed](https://pubmed.ncbi.nlm.nih.gov/)
-data set (43 GB compressed, 327 GB uncompressed),
-which comprises more than 36 million citations
-for biomedical literature from
-[MEDLINE](https://www.nlm.nih.gov/medline/medline_overview.html),
-life science journals, and online books,
-with rich domain-specific metadata,
-such as [MeSH](https://www.nlm.nih.gov/mesh/meshhome.html) indexing,
-funding, genetic, and chemical details.
-Other data sets that can be used or linked together are
-the [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
-  (25 GB compressed, 435 GB uncompressed),
-  containing about 78 million author records,
-the [DataCite](https://datacite.org/) set of research outputs and resources,
-such as data, pre-prints, images, and samples,
-(22 GB compressed, 197 GB uncompressed),
-containing about 50 million work entries,
-the [United States Patent Office issued patents](https://bulkdata.uspto.gov/)
-  (11 GB compressed, 115 GB uncompressed),
-  containing about 5.4 million records,
-as well as
-data sets of
+providing efficient relational query access to the following large scientific publication
+open data sets.
+Data are decompressed on the fly, thus allowing the package's use even on
+storage-restricted laptops.
+
+* [Crossref](https://www.nature.com/articles/d41586-022-02926-y)
+  (157 GB compressed, 1 TB uncompressed).
+  This contains publication metadata from about 134 million publications from
+  all major international publishers with full citation data for 60 million
+  of them.
+* [PubMed](https://pubmed.ncbi.nlm.nih.gov/)
+  (43 GB compressed, 327 GB uncompressed).
+  This comprises more than 36 million citations
+  for biomedical literature from
+  [MEDLINE](https://www.nlm.nih.gov/medline/medline_overview.html),
+  life science journals, and online books,
+  with rich domain-specific metadata,
+  such as [MeSH](https://www.nlm.nih.gov/mesh/meshhome.html) indexing,
+  funding, genetic, and chemical details.
+* [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
+  (25 GB compressed, 435 GB uncompressed).
+  This contains about 78 million author details records.
+* [DataCite](https://datacite.org/)
+  (22 GB compressed, 197 GB uncompressed).
+  This comprises research outputs and resources,
+  such as data, pre-prints, images, and samples,
+  containing about 50 million work entries.
+* [United States Patent Office issued patents](https://bulkdata.uspto.gov/)
+  (11 GB compressed, 115 GB uncompressed).
+  This  containins about 5.4 million records.
+
+Further supported data sets include
 funder bodies,
 journal names,
 open access journals,
