@@ -28,24 +28,55 @@ common to more than one study. It also hosts downloaded data sets to
 minimize useless replication. The ``Makefile`` residing in it can be
 used to tailor the running of all other studies.
 
+Examples by directory
+---------------------
+
 The following examples are available.
+
+Templates
+~~~~~~~~~
 
 -  `“Hello world” example: number of authors by
    decade <https://github.com/dspinellis/alexandria3k/tree/main/examples/authors-by-decade>`__
+-  `Fully-indexed Crossref database
+   sample <https://github.com/dspinellis/alexandria3k/tree/main/examples/sample>`__
+
+Studies
+~~~~~~~
+
 -  `Tally number of research synthesis
    studies <https://github.com/dspinellis/alexandria3k/tree/main/examples/research-synthesis>`__
 -  `Generate and study the entities’ graph
    structure <https://github.com/dspinellis/alexandria3k/tree/main/examples/graph>`__
--  `Examine the evolution and impact of open access journal
-   papers <https://github.com/dspinellis/alexandria3k/tree/main/examples/open-access>`__
+-  `Obtain data associated with COVID-19
+   research <https://github.com/dspinellis/alexandria3k/tree/main/examples/covid>`__
+-  `Calculate the average size of an article’s pages each
+   year <https://github.com/dspinellis/alexandria3k/tree/main/examples/yearly-numpages>`__
+-  `Calculate the works’ CD-5 index using the Python API or a
+   pre-populated
+   database <https://github.com/dspinellis/alexandria3k/tree/main/examples/cdindex>`__
+-  `Investigate the CD-5 index of Dan Tawfik’s
+   works <https://github.com/dspinellis/alexandria3k/tree/main/examples/tawfik>`__
+-  `Top five US Patent Office applications by country and
+   year <https://github.com/dspinellis/alexandria3k/tree/main/examples/uspto>`__
+-  `Replication study on software used in PubMed
+   articles <https://github.com/dspinellis/alexandria3k/tree/main/examples/pubmed-software>`__
+
+Data source examples and metric measurements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 -  `Report metrics associated with the Crossref data
    set <https://github.com/dspinellis/alexandria3k/tree/main/examples/crossref-standalone>`__
 -  `Report metrics associated with ORCID
    data <https://github.com/dspinellis/alexandria3k/tree/main/examples/orcid>`__
+-  `Report metrics associated with DataCite
+   data <https://github.com/dspinellis/alexandria3k/tree/main/examples/datacite>`__
 -  `Report research organization registry
    metrics <https://github.com/dspinellis/alexandria3k/tree/main/examples/ror-metrics>`__
--  `Obtain data associated with COVID-19
-   research <https://github.com/dspinellis/alexandria3k/tree/main/examples/covid>`__
+
+Impact and productivitycalculations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 -  `Calculate the 2021 journal impact
    factor <https://github.com/dspinellis/alexandria3k/tree/main/examples/impact-factor-2021>`__
 -  `Calculate the h5-index of
@@ -54,21 +85,10 @@ The following examples are available.
    venues <https://github.com/dspinellis/alexandria3k/tree/main/examples/soft-eng-h5>`__
 -  `Calculate h5-index of persons and study their citation
    graph <https://github.com/dspinellis/alexandria3k/tree/main/examples/person-h5>`__
+-  `Examine the evolution and impact of open access journal
+   papers <https://github.com/dspinellis/alexandria3k/tree/main/examples/open-access>`__
 -  `Calculate relative yearly author
    productivity <https://github.com/dspinellis/alexandria3k/tree/main/examples/author-productivity>`__
--  `Calculate the average size of an article’s pages each
-   year <https://github.com/dspinellis/alexandria3k/tree/main/examples/yearly-numpages>`__
--  `Calculate the works’ CD-5 index using the Python API or a
-   pre-populated
-   database <https://github.com/dspinellis/alexandria3k/tree/main/examples/cdindex>`__
--  `Investigate the CD-5 index of Dan Tawfik’s
-   works <https://github.com/dspinellis/alexandria3k/tree/main/examples/tawfik>`__
--  `Fully-indexed Crossref database
-   sample <https://github.com/dspinellis/alexandria3k/tree/main/examples/sample>`__
--  `Top five US Patent Office applications by country and
-   year <https://github.com/dspinellis/alexandria3k/tree/main/examples/uspto>`__
--  `Replicate study on software used in PubMed
-   articles <https://github.com/dspinellis/alexandria3k/tree/main/examples/pubmed-software>`__
 
 Published results
 -----------------
