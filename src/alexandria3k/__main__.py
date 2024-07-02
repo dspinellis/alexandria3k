@@ -530,6 +530,9 @@ def get_cli_parser():
         type=str,
         default=[],
         # NOTE: Keep in sync with list in debug.py
+        # Exceptions:
+        # stderr does not work as a Debug API flag (use Debug.set_output)
+        # progress_bar is an undocumented CLI --debug option (use --progress)
         help="""Output debuggging information according to the comma-separated arguments.
     files-read: Counts of Crossref data files read;
     link: Record linking operations;
@@ -591,6 +594,7 @@ def error_raising_main():
         sys.exit(0)
 
     if args.progress:
+        debug.set_output(sys.stderr)
         debug.set_flags(["progress_bar"])
 
     # Handle subcommands

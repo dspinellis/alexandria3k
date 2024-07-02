@@ -58,6 +58,9 @@ def get_output():
 
 
 # NOTE: Keep in sync with list in __main__.py
+# Exceptions:
+# stderr does not work as a Debug API flag (use Debug.set_output)
+# progress_bar is an undocumented CLI --debug option (use --progress)
 def set_flags(flags):
     """
     Enable the specified debug flags.
@@ -71,7 +74,6 @@ def set_flags(flags):
     * progress: Report population progress;
     * progress_bar: Display a progress bar; (enabled through --progress)
     * sorted-tables: Topologically ordered Crossref query tables;
-    * stderr: Log to standard error;
 
     :param flags: Flags to enable.
     :type flags: list
