@@ -16,7 +16,7 @@ and would take
 16 days to finish with the
 [original cdindex package](https://github.com/russellfunk/cdindex) or
 50 hours to finish with the
-[fast-cidindex package(https://github.com/dspinellis/fast-cdindex),
+[fast-cidindex package](https://github.com/dspinellis/fast-cdindex),
 which is also used by the C++ implementation.
 The [cdindex-otf.py](./cdindex-otf.py) performs the same calculation
-on the fly, as a demonstration of Using the _Alexandria3k_ Python API.
+on the fly, as a demonstration of using the _Alexandria3k_ Python API.
