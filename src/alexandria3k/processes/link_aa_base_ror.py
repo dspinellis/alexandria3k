@@ -191,7 +191,7 @@ def process(database_path):
     """
     Process the specified database creating a table that links Crossref work
     authors to their corresponding research organization as codified in the
-    Research Orgnization Registry (ROR).
+    Research Organization Registry (ROR).
     The link is made to the lowest identifiable organizational level,
     e.g. an author's clinic, school, or institute.
 
