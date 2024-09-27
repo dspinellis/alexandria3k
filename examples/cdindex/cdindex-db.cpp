@@ -110,7 +110,7 @@ static void
 add_vertices(database &db, Graph &graph)
 {
     int counter = 0;
-    for (auto && row : db << "SELECT doi, published_year,"
+    for (auto && row : db << "SELECT DISTINCT doi, published_year,"
 		"  Coalesce(published_month, 1),"
 		"  Coalesce(published_day, 1)"
 		"FROM works WHERE " RANGE
