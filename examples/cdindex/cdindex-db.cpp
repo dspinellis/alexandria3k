@@ -1,7 +1,7 @@
 /*
- *  Calculate the CD5 index of Crossref works published 1945-2021
+ *  Calculate the CD5 index of Crossref works published 1945-2023
  *  from a previously populated database.
- *  The CD5 values until of works published in the range 2017-2021 must
+ *  The CD5 values until of works published in the range 2017-2023 must
  *  be discarded as they lack the required citations from five year
  *  subsequent publications.
  *
@@ -20,8 +20,8 @@
 #include <sqlite_modern_cpp.h>
 #include <cdindex.h>
 
-#define END_YEAR 2021
-#define RANGE "published_year BETWEEN 1945 and 2021"
+#define END_YEAR 2023
+#define RANGE "published_year BETWEEN 1945 and 2023"
 // #define RANGE "published_year BETWEEN 1945 and 1946"
 
 using namespace  sqlite;
