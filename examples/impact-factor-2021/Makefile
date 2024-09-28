@@ -9,7 +9,7 @@ include ../common/Makefile
 
 # Populate database with rows and columns needed to calculate IF
 populate: $(CROSSREF_DIR)
-	$(TIME) $(A3K) --debug progress \
+	$(TIME) $(A3K) --progress \
 	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --columns works.doi \
 	   works.id \

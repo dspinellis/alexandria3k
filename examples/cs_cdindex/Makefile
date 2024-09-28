@@ -12,7 +12,7 @@ include ../common/Makefile
 
 # Populate database with required fields
 populate: $(CROSSREF_DIR) dblp.db
-	$(TIME) $(A3K) --debug progress \
+	$(TIME) $(A3K) --progress \
 	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --attach-databases 'dblp:dblp.db' \
 	  --row-selection 'EXISTS (SELECT 1 FROM dblp.dois WHERE works.doi = dois.doi)'

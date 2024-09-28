@@ -44,11 +44,11 @@ $(DATACITE):
 # "populate" to populate the database with required data
 
 asjcs: populate
-	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" asjcs
+	$(TIME) $(A3K) --progress populate "$(MAINDB).db" asjcs
 	touch $@
 
 doaj: populate
-	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" doaj $(DOAJ)
+	$(TIME) $(A3K) --progress populate "$(MAINDB).db" doaj $(DOAJ)
 	touch $@
 
 link-works-asjcs: asjcs populate
@@ -56,7 +56,7 @@ link-works-asjcs: asjcs populate
 	touch $@
 
 rors: populate $(ROR)
-	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" ror $(ROR)
+	$(TIME) $(A3K) --progress populate "$(MAINDB).db" ror $(ROR)
 	touch $@
 
 link-aa-base-ror: rors populate
@@ -69,7 +69,7 @@ link-aa-top-ror: rors populate
 
 # Add journal names
 journal-names:
-	$(TIME) $(A3K) --debug progress populate "$(MAINDB).db" journal-names $(JOURNAL_NAMES)
+	$(TIME) $(A3K) --progress populate "$(MAINDB).db" journal-names $(JOURNAL_NAMES)
 	touch $@
 
 simple-rolap/Makefile:

@@ -9,7 +9,7 @@ export DEPENDENCIES=populate ../cdindex/tables/cdindex
 include ../common/Makefile
 
 populate: $(CROSSREF_DIR) tawfik-works.db
-	$(TIME) $(A3K) --debug progress \
+	$(TIME) $(A3K) --progress \
 	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --attach-databases 'tw:tawfik-works.db' \
 	  --columns works.id \

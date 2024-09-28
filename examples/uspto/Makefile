@@ -9,6 +9,6 @@ include ../common/Makefile
 
 # Populate database with USPTO data
 populate: $(USPTO_DIR)
-	$(TIME) $(A3K) --debug progress \
+	$(TIME) $(A3K) --progress \
 	  populate "$(MAINDB).db" uspto "$(USPTO_DIR)"
 	touch $@

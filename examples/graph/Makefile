@@ -12,7 +12,7 @@ include ../common/Makefile
 
 # Populate database with DOIs of works and their references
 populate: $(CROSSREF_DIR)
-	$(TIME) $(A3K) --debug progress \
+	$(TIME) $(A3K) --progress \
 	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
 	  --columns works.id \
 	  works.doi \

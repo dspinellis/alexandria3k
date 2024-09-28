@@ -9,6 +9,6 @@ include ../common/Makefile
 
 # Populate database with ORCID data
 populate: $(ORCID_SUMMARIES)
-	$(TIME) $(A3K) --debug progress \
+	$(TIME) $(A3K) --progress \
 	  populate "$(MAINDB).db" orcid "$(ORCID_SUMMARIES)"
 	touch $@
