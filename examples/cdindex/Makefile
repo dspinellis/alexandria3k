@@ -9,6 +9,20 @@ export DEPENDENCIES=populate tables/cdindex
 # Intel thread building blocks library
 TBB?=-ltbb
 
+CFLAGS+=-std=c++17 -ggdb3 -O3
+LDFLAGS+=-lsqlite3 $(TBB) -ldl -lpthread
+
+# If a modern SQLite3 is not available, create one in e.g.
+# sqlite-amalgamation-3460000 with
+# gcc -c sqlite3.c -o sqlite3.o
+# ar rcs libsqlite3.a sqlite3.o
+# and pass the directory as an SQLITE_DIR to make
+ifdef SQLITE_DIR
+  CFLAGS+=-I $(SQLITE_DIR)
+  LDFLAGS+=-L $(SQLITE_DIR)
+endif
+
+
 include ../common/Makefile
 
 # Populate database with required fields
@@ -35,13 +49,13 @@ tables/cdindex: populate cdindex-db
 # Note: dev branch required for iterator access
 # https://github.com/SqliteModernCpp/sqlite_modern_cpp/pull/126
 sqlite_modern_cpp:
-	git clone --depth=1 -b dev https://github.com/SqliteModernCpp/sqlite_modern_cpp.git
+	git clone --depth=1 https://github.com/SqliteModernCpp/sqlite_modern_cpp.git
 
 fast-cdindex:
 	git clone --depth=1 https://github.com/dspinellis/fast-cdindex.git
 
 cdindex-db: cdindex-db.cpp sqlite_modern_cpp fast-cdindex
-	g++ -std=c++17 -I sqlite_modern_cpp/hdr -I fast-cdindex/src -o $@ cdindex-db.cpp fast-cdindex/src/cdindex.cpp -lsqlite3 $(TBB) -ggdb3 -O3
+	g++ $(CFLAGS) -I sqlite_modern_cpp/hdr -I fast-cdindex/src -o $@ cdindex-db.cpp fast-cdindex/src/cdindex.cpp $(LDFLAGS)
 
 # Fix a DOI containing a |
 reports/cd5index-all.txt.gz: reports/cd5index-all.txt
