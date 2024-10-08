@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Calculate the CD5 index of Crossref works published 1945-2021
+# Calculate the CD5 index based on Crossref works published 1945-2023
 # from a previously populated database
 #
 
@@ -28,7 +28,7 @@ random_population = False
 RANDOM_POPULATION_SIZE = 1000000
 random.seed("xyzzy")
 
-RANGE = "published_year BETWEEN 1945 and 2021"
+RANGE = "published_year BETWEEN 1945 and 2023"
 
 debug.set_flags(["perf"])
 debug.set_output(sys.stderr)
@@ -61,7 +61,7 @@ def add_vertices(db, graph):
     counter = 0
     for (doi, year, month, day) in db.execute(
         f"""
-            SELECT doi, published_year,
+            SELECT DISTINCT doi, published_year,
               Coalesce(published_month, 1),
               Coalesce(published_day, 1)
             FROM works WHERE {RANGE}"""
@@ -151,4 +151,19 @@ if __name__ == '__main__':
     perf.log("Calculate CD index")
 
     db.commit()
+
+    db.execute("""
+    -- Works and references
+    ATTACH 'cdindex.db' AS wr;
+
+    DELETE FROM cdindex
+    WHERE doi NOT IN (
+      SELECT cdindex.doi FROM cdindex
+          INNER JOIN wr.works USING(doi)
+          WHERE works.published_year <= 2018 OR
+          (SELECT 1 FROM work_references WHERE work_id == works.id)
+    );
+      """)
+    perf.log("Remove invalid records")
+
     db.close()
