@@ -152,18 +152,4 @@ if __name__ == '__main__':
 
     db.commit()
 
-    db.execute("""
-    -- Works and references
-    ATTACH 'cdindex.db' AS wr;
-
-    DELETE FROM cdindex
-    WHERE doi NOT IN (
-      SELECT cdindex.doi FROM cdindex
-          INNER JOIN wr.works USING(doi)
-          WHERE works.published_year <= 2018 OR
-          (SELECT 1 FROM work_references WHERE work_id == works.id)
-    );
-      """)
-    perf.log("Remove invalid records")
-
     db.close()
