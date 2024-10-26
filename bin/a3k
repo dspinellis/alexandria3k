@@ -29,7 +29,7 @@ import os
 current_file = os.path.realpath(__file__)
 bin_directory = os.path.dirname(current_file)
 
-sys.path.append(f"{bin_directory}/../src")
+sys.path.insert(0, f"{bin_directory}/../src")
 from alexandria3k.__main__ import main
 
 sys.exit(main())
