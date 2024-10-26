@@ -8,7 +8,7 @@
 works.published_year BETWEEN 2017 AND 2021 AND (
   works.issn_print IN (
     -- Index 1
-    "16191366", -- Software & Systems Modeling
+    '16191366', -- Software & Systems Modeling
 
     -- Index 2
     '07407459', -- IEEE Software

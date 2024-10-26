@@ -6,7 +6,7 @@ CREATE TABLE rolap.citable_works AS
     -- To avoid news articles, book reviews, etc. include works longer than
     -- two pages
     page is null
-      OR Instr(page, "-") = 0
-      OR Substr(page, Instr(page, "-") + 1)
-        - Substr(page, 0, Instr(page, "-")) > 1
+      OR Instr(page, '-') = 0
+      OR Substr(page, Instr(page, '-') + 1)
+        - Substr(page, 0, Instr(page, '-')) > 1
     ;

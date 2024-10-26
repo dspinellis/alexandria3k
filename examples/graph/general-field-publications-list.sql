@@ -32,7 +32,7 @@ top_and_others AS (
   SELECT
     CASE
       WHEN name IN (SELECT name FROM top_changing_names) THEN name
-      ELSE "Others"
+      ELSE 'Others'
     END name,
     number, published_year
   FROM rolap.general_field_publications

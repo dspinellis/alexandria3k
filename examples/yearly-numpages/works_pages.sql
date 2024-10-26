@@ -3,8 +3,8 @@
 CREATE TABLE rolap.works_pages AS
   WITH page_data AS (
     SELECT published_year, page,
-      Cast(Substr(page, Instr(page, "-") + 1) AS int) AS last_page,
-      Cast(Substr(page, 0, Instr(page, "-")) AS int) AS first_page
+      Cast(Substr(page, Instr(page, '-') + 1) AS int) AS last_page,
+      Cast(Substr(page, 0, Instr(page, '-')) AS int) AS first_page
     FROM works
     WHERE published_year BETWEEN 1945 and 2021
   )

@@ -23,10 +23,10 @@
  */
 
 -- Remove dash from ISSNs
-UPDATE open_access_journals SET issn_print = REPLACE(issn_print, "-", "");
-UPDATE open_access_journals SET issn_eprint = REPLACE(issn_eprint, "-", "");
-UPDATE open_access_journals SET continues = REPLACE(REPLACE(continues, "-", ""), " ", "");
-UPDATE open_access_journals SET continued_by = REPLACE(REPLACE(continued_by, "-", ""), " ", "");
+UPDATE open_access_journals SET issn_print = REPLACE(issn_print, '-', '');
+UPDATE open_access_journals SET issn_eprint = REPLACE(issn_eprint, '-', '');
+UPDATE open_access_journals SET continues = REPLACE(REPLACE(continues, '-', ''), ' ', '');
+UPDATE open_access_journals SET continued_by = REPLACE(REPLACE(continued_by, '-', ''), ' ', '');
 
 -- Make fields to be an integer
 UPDATE open_access_journals SET oaj_start = null WHERE oaj_start = '';

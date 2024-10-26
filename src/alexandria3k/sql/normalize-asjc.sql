@@ -22,7 +22,7 @@
 -- Create general fields table from ids ending in 00
 DROP TABLE IF EXISTS asjc_general_fields;
 CREATE TABLE asjc_general_fields AS
-  SELECT Cast(code AS INTEGER) AS id, Replace(field, "General ", "") AS name
+  SELECT Cast(code AS INTEGER) AS id, Replace(field, 'General ', '') AS name
   FROM asjc_import
   WHERE code % 100 == 0
 ;

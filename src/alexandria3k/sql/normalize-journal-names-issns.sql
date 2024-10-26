@@ -20,9 +20,9 @@
  */
 
 UPDATE journal_names
-  SET issn_print=REPLACE(issn_print, "-", ""),
-    issn_eprint=REPLACE(issn_eprint, "-", ""),
-    issns_additional=REPLACE(issns_additional, "-", "");
+  SET issn_print=REPLACE(issn_print, '-', ''),
+    issn_eprint=REPLACE(issn_eprint, '-', ''),
+    issns_additional=REPLACE(issns_additional, '-', '');
 
 DROP TABLE IF EXISTS journals_issns;
 
