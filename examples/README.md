@@ -48,7 +48,7 @@ The following examples are available.
 * [Report metrics associated with DataCite data](datacite)
 * [Report research organization registry metrics](ror-metrics)
 
-### Impact and productivitycalculations
+### Impact and productivity calculations
 * [Calculate the 2021 journal impact factor](impact-factor-2021)
 * [Calculate the h5-index of journals](journal-h5)
 * [Calculate the h5-index of software engineering research venues](soft-eng-h5)
