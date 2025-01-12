@@ -15,7 +15,7 @@ or
    pip install --use-pep517 alexandria3k
 
 The installation requires at least Python version 3.8 and is tested
-with Python versions 3.8 to 3.11.
+with Python versions 3.8 to 3.12.
 The best practice is to
 `perform the installation in a Python virtual environment <https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/>`__.
 
