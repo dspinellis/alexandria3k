@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@main
@@ -32,7 +32,7 @@ jobs:
       - name: Lint
         run: |
           cd src
-          if [ $PYTHON_VER == 3.11 ] ; then find . -name '*.py' | xargs pipenv run python -m pylint --rcfile ../.pylintrc ; fi
+          if [ $PYTHON_VER == 3.12 ] ; then find . -name '*.py' | xargs pipenv run python -m pylint --rcfile ../.pylintrc ; fi
         env:
           PYTHON_VER: ${{ matrix.python-version }}
       - name: Install SQLite
