@@ -37,7 +37,7 @@ jobs:
           PYTHON_VER: ${{ matrix.python-version }}
       - name: Install SQLite
         run: |
-          sudo apt-get install -y sqlite
+          sudo apt-get install -y sqlite3
       - name: Run SQL unit tests
         run: |
           for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
