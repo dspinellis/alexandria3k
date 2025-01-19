@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022-2023  Diomidis Spinellis
+# Copyright (C) 2022-2025  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -176,6 +176,11 @@ def populate(args):
 
     data_source_instance = get_data_source_instance(args)
 
+    if args.row_selection and args.row_selection_file:
+        raise argparse.ArgumentTypeError(
+            "Only one of the --row-selection or --row-selection-file options can be specified."
+        )
+
     if args.row_selection_file:
         with open(args.row_selection_file, encoding="utf-8") as file:
             args.row_selection = file.read()
@@ -289,6 +294,11 @@ def query(args):
     """Query the specified data source."""
     data_source_instance = get_data_source_instance(args)
 
+    if args.query and args.query_file:
+        raise argparse.ArgumentTypeError(
+            "Only one of the --query or --query-file options can be specified."
+        )
+
     if args.query_file:
         with open(args.query_file, encoding="utf-8") as file:
             args.query = file.read()
@@ -301,6 +311,7 @@ def query(args):
     else:
         sys.stdout.reconfigure(encoding=args.output_encoding)
         csv_file = sys.stdout
+
     csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
     for rec in data_source_instance.query(args.query, args.partition):
         if args.header:
