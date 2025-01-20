@@ -97,6 +97,33 @@ number of Crossref publications by year and publication type.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="fill-a-table-with-a-query-s-results">
+<h2>Fill a table with a query’s results<a class="headerlink" href="#fill-a-table-with-a-query-s-results" title="Permalink to this headline">¶</a></h2>
+<p>The following commands create a table of citations to publications
+containing the word “blockchain” in their title.</p>
+<p>rm blockchain_citations.db</p>
+<p>sqlite3 blockchain_citations.db ‘CREATE TABLE citations(citing_doi, cited_doi)’</p>
+<dl>
+<dt>a3k –progress query crossref /home/repos/Crossref-2024/ </dt><dd><p>–attach-databases bc:blockchain_citations.db –partition –query “</p>
+<blockquote>
+<div><dl>
+<dt>INSERT INTO bc.citations(citing_doi, cited_doi)</dt><dd><dl>
+<dt>SELECT works.doi, work_references.doi</dt><dd><p>FROM works
+INNER JOIN work_references ON work_references.work_id = works.id
+WHERE work_references.container_id = works.container_id</p>
+<blockquote>
+<div><p>AND work_references.doi IS NOT NULL
+AND work_references.article_title LIKE ‘%blockchain%’;</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+<p>“</p>
+</div>
 <div class="section" id="obtain-patent-office-granted-patents-by-type">
 <h2>Obtain Patent Office granted patents by type<a class="headerlink" href="#obtain-patent-office-granted-patents-by-type" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query uspto <span class="s1">&#39;uspto-data&#39;</span> <span class="se">\</span>
@@ -342,6 +369,7 @@ the following.</p>
 <li class="toctree-l2"><a class="reference internal" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">Save DOI and title of 2021 publications in a CSV file suitable for Excel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#show-crossref-publications-with-more-than-50-authors">Show Crossref publications with more than 50 authors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#count-crossref-publications-by-year-and-type">Count Crossref publications by year and type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fill-a-table-with-a-query-s-results">Fill a table with a query’s results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#obtain-patent-office-granted-patents-by-type">Obtain Patent Office granted patents by type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sampling">Sampling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#database-of-covid-research">Database of COVID research</a></li>

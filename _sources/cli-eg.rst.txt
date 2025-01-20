@@ -80,6 +80,31 @@ where ``count-year-type.sql`` contains:
    SELECT type AS name, Sum(number) FROM counts
      GROUP BY type
 
+Fill a table with a query's results
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following commands create a table of citations to publications
+containing the word "blockchain" in their title.
+
+.. code:: sh
+
+rm blockchain_citations.db
+
+sqlite3 blockchain_citations.db 'CREATE TABLE citations(citing_doi, cited_doi)'
+
+a3k --progress query crossref /home/repos/Crossref-2024/ \
+  --attach-databases bc:blockchain_citations.db \
+  --partition \
+  --query "
+    INSERT INTO bc.citations(citing_doi, cited_doi)
+      SELECT works.doi, work_references.doi
+        FROM works
+        INNER JOIN work_references ON work_references.work_id = works.id
+        WHERE work_references.container_id = works.container_id
+	  AND work_references.doi IS NOT NULL
+          AND work_references.article_title LIKE '%blockchain%';
+"
+
 Obtain Patent Office granted patents by type
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

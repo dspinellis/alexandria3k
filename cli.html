@@ -91,7 +91,7 @@ stderr: Log to standard error;</p>
 </div>
 <div class="section" id="populate">
 <h3>populate<a class="headerlink" href="#populate" title="Permalink to this headline">¶</a></h3>
-<p>Populate an SQLite database.</p>
+<p>Populate an SQLite database from the specified data source.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">populate</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
              <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">COLUMNS</span> <span class="p">[</span><span class="n">COLUMNS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">R</span> <span class="n">ROW_SELECTION_FILE</span><span class="p">]</span>
              <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ROW_SELECTION</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
@@ -160,7 +160,7 @@ stderr: Log to standard error;</p>
 </div>
 <div class="section" id="query">
 <h3>query<a class="headerlink" href="#query" title="Permalink to this headline">¶</a></h3>
-<p>Run a query directly on a data source.</p>
+<p>Run a query directly on a data source. The query’s results can be sent to the standard output (default), to a specified file, or to populate a table in an attached database.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">query</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
           <span class="p">[</span><span class="o">-</span><span class="n">E</span> <span class="n">OUTPUT_ENCODING</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">F</span> <span class="n">FIELD_SEPARATOR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">H</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">P</span><span class="p">]</span>
           <span class="p">(</span><span class="o">-</span><span class="n">Q</span> <span class="n">QUERY_FILE</span> <span class="o">|</span> <span class="o">-</span><span class="n">q</span> <span class="n">QUERY</span><span class="p">)</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
