@@ -609,7 +609,7 @@ class PatentsAssigneesCursor(PatentsElementsCursor):
 
         if col >= 3:
             # Check if an addressbook element exists.
-            if self.elements[self.record_id()].find("addressbook"):
+            if self.elements[self.record_id()].find("addressbook") is not None:
                 # Append addressbook string to meet XML pattern.
                 pattern = "addressbook/" + f"{self.column_contents[col]}"
 

@@ -706,7 +706,7 @@ class TarFiles:
 
     def get_element_tree(self):
         """Return the parsed XML data of the current element"""
-        if self.element_tree:
+        if self.element_tree is not None:
             return self.element_tree
         # Extract and parse XML data
         reader = self.tar.extractfile(self.tar_info)
