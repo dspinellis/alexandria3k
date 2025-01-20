@@ -566,7 +566,7 @@ class DataSource:
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = data_source
-        self.vdb.createmodule("filesource", self.data_source)
+        self.vdb.create_module("filesource", self.data_source)
 
         # Dictionaries of tables containing a set of columns required
         # for querying or populating the database
@@ -661,8 +661,8 @@ class DataSource:
                 return False
 
             # Add the columns required by the actual query
-            self.cursor.setexectrace(tracer)
-            self.vdb.setauthorizer(authorizer)
+            self.cursor.set_exec_trace(tracer)
+            self.vdb.set_authorizer(authorizer)
             self.cursor.execute(log_sql(query), can_cache=False)
             # NOTREACHED
 
@@ -670,8 +670,8 @@ class DataSource:
             trace_query_columns(query)
         except apsw.ExecTraceAbort:
             pass
-        self.vdb.setauthorizer(None)
-        self.cursor.setexectrace(None)
+        self.vdb.set_authorizer(None)
+        self.cursor.set_exec_trace(None)
 
     def query(self, query, partition=False):
         """
@@ -724,7 +724,7 @@ class DataSource:
             "file:partition?mode=memory&cache=shared",
             apsw.SQLITE_OPEN_URI | apsw.SQLITE_OPEN_READWRITE,
         )
-        partition.createmodule("filesource", self.data_source)
+        partition.create_module("filesource", self.data_source)
         partition.execute(
             log_sql(
                 "ATTACH DATABASE 'file:virtual?mode=memory&cache=shared' AS virtual"
