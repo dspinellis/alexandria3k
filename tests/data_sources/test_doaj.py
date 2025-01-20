@@ -52,6 +52,7 @@ class TestDoajPopulateVanilla(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.doaj.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("open_access_journals"), 9)
@@ -102,6 +103,7 @@ class TestDoajPopulateColumns(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.doaj.close()
 
     def test_contents(self):
         self.assertEqual(

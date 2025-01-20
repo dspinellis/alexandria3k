@@ -52,6 +52,7 @@ class TestAsjcsPopulateVanilla(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.asjcs.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("asjc_import"), 342)

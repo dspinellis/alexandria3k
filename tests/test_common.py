@@ -48,6 +48,7 @@ class TestCommon(unittest.TestCase):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.ror.close()
 
     def test_program_version(self):
         version = common.program_version()

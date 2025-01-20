@@ -65,6 +65,7 @@ class TestUsptoPopulateVanilla(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.uspto.close()
 
     def test_import(
         self,
@@ -140,6 +141,7 @@ class TestUsptoPopulateMasterCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.uspto.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 1)
@@ -165,6 +167,7 @@ class TestUsptoPopulateDetailCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.uspto.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 3)
@@ -196,6 +199,7 @@ class TestUsptoPopulateMasterColumnNoCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.uspto.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 14)
@@ -232,6 +236,7 @@ class TestUsptoPopulateMasterColumnCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.uspto.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 4)
@@ -268,6 +273,7 @@ class TestUsptoPopulateDetailConditionColumn(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.uspto.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 3)
@@ -301,6 +307,7 @@ class TestUsptoPopulateMultipleConditionColumn(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.uspto.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 6)
@@ -588,6 +595,7 @@ class TestUsptoPopulateAttachedDatabaseCondition(PopulateQueries):
         cls.con.close()
         os.unlink(DATABASE_PATH)
         os.unlink(ATTACHED_DATABASE_PATH)
+        cls.uspto.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("us_patents"), 4)
@@ -618,6 +626,7 @@ class TestUsptoSamplingContainer(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.uspto.close()
 
     def test_import(
         self,

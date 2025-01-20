@@ -64,6 +64,8 @@ class TestRorLink(unittest.TestCase):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.ror.close()
+        cls.crossref.close()
 
     def get_ror_id_by_name(self, name):
         """Return the ROR id associated with the given name"""

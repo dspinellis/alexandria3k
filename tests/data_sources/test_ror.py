@@ -52,6 +52,7 @@ class TestRorPopulate(unittest.TestCase):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.ror.close()
 
     def test_import(self):
         result = TestRorPopulate.cursor.execute(
@@ -239,6 +240,7 @@ class TestRorPopulateSample(unittest.TestCase):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.ror.close()
 
     def test_import(self):
         result = TestRorPopulateSample.cursor.execute(

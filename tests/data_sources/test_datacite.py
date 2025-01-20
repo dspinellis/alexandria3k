@@ -48,6 +48,7 @@ class TestDatacitePopulateVanilla(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.datacite.close()
 
     def test_count_dc_works(self):
         self.assertEqual(self.record_count("dc_works"), 10)
@@ -200,6 +201,7 @@ class TestDatacitePopulateMasterCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.datacite.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("dc_works"), 1)
@@ -230,6 +232,7 @@ class TestDatacitePopulateDetailCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.datacite.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("dc_works"), 1)
@@ -255,6 +258,7 @@ class TestDatacitePopulateMasterColumnNoCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.datacite.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("dc_works"), 10)
@@ -288,6 +292,7 @@ class TestDatacitePopulateMasterColumnCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.datacite.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("dc_works"), 7)
@@ -322,6 +327,7 @@ class TestDatacitePopulateDetailConditionColumns(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.datacite.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("dc_works"), 1)
@@ -359,6 +365,7 @@ class TestDatacitePopulateMultipleConditionColumns(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.datacite.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("dc_work_titles"), 1)

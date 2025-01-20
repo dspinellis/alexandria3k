@@ -62,6 +62,7 @@ class TestPubmedPopulateVanilla(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.pubmed.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("pubmed_articles"), 12)
@@ -163,6 +164,7 @@ class TestPubmedPopulateMasterCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.pubmed.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("pubmed_articles"), 1)
@@ -188,6 +190,7 @@ class TestPubmedPopulateMasterColumnNoCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.pubmed.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("pubmed_articles"), 12)
@@ -223,6 +226,7 @@ class TestPubmedPopulateMasterColumnCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.pubmed.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("pubmed_articles"), 5)
@@ -255,6 +259,7 @@ class TestPubmedPopulateDetailConditionColumn(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.pubmed.close()
 
     def test_pubmed_counts(self):
         self.assertEqual(self.record_count("pubmed_articles"), 1)
@@ -289,6 +294,7 @@ class TestPubmedPopulateMultipleConditionColumn(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.pubmed.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("pubmed_articles"), 1)
@@ -404,6 +410,7 @@ class TestPubmedPopulateAttachedDatabaseCondition(PopulateQueries):
         cls.con.close()
         os.unlink(DATABASE_PATH)
         os.unlink(ATTACHED_DATABASE_PATH)
+        cls.pubmed.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("pubmed_articles"), 1)

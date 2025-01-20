@@ -127,6 +127,7 @@ class TestCrossrefPopulateVanilla(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.crossref.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 12)
@@ -235,7 +236,7 @@ class TestCrossrefPopulateMasterCondition(PopulateQueries):
     def setUpClass(cls):
         ensure_unlinked(DATABASE_PATH)
         FileCache.file_reads = 0
-        # debug.set_flags(["sql", "dump-matched"])
+        # debug.set_flags(["sql", "dump-matched", "apsw-logging"])
 
         cls.crossref = crossref.Crossref(td("data/crossref-sample"))
         cls.crossref.populate(DATABASE_PATH, None, "issn_print = '16191366'")
@@ -246,6 +247,7 @@ class TestCrossrefPopulateMasterCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.crossref.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 1)
@@ -272,6 +274,7 @@ class TestCrossrefPopulateDetailCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.crossref.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 2)
@@ -298,6 +301,7 @@ class TestCrossrefPopulateMasterColumnNoCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.crossref.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 12)
@@ -333,6 +337,7 @@ class TestCrossrefPopulateMasterColumnCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.crossref.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 4)
@@ -369,6 +374,7 @@ class TestCrossrefPopulateDetailConditionColumns(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.crossref.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 1)
@@ -408,6 +414,7 @@ class TestCrossrefPopulateMultipleConditionColumns(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.crossref.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("work_updates"), 1)
@@ -574,6 +581,7 @@ class TestCrossrefPopulateAttachedDatabaseCondition(PopulateQueries):
         cls.con.close()
         os.unlink(DATABASE_PATH)
         os.unlink(ATTACHED_DATABASE_PATH)
+        cls.crossref.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 1)

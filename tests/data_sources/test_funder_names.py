@@ -63,6 +63,7 @@ class TestFunderNamesPopulateVanilla(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.funder_names.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("funder_names"), 11)
@@ -117,6 +118,7 @@ class TestFunderNamesPopulateSample(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.funder_names.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("funder_names"), 7)
@@ -137,6 +139,7 @@ class TestFunderNamesPopulateMasterCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.funder_names.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("funder_names"), 1)
@@ -159,6 +162,7 @@ class TestFunderNamesPopulateMasterColumnNoCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.funder_names.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("funder_names"), 11)
@@ -189,6 +193,7 @@ class TestFunderNamesPopulateMasterColumnCondition(PopulateQueries):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.funder_names.close()
 
     def test_counts(self):
         self.assertEqual(self.record_count("funder_names"), 1)

@@ -50,6 +50,7 @@ class TestOrcidAll(unittest.TestCase):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.orcid.close()
 
     def test_import(
         self,
@@ -148,6 +149,8 @@ class TestOrcidAuthorsOnly(unittest.TestCase):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.orcid.close()
+        cls.crossref.close()
 
     def test_import(self):
 
@@ -192,6 +195,8 @@ class TestOrcidWorksOnly(unittest.TestCase):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.orcid.close()
+        cls.crossref.close()
 
     def test_import(self):
 
@@ -215,6 +220,9 @@ class TestOrcidQuery(unittest.TestCase):
     def setUp(self):
         # debug.set_flags(["sql"])
         self.orcid = orcid.Orcid(td("data/ORCID_2022_10_summaries.tar.gz"))
+
+    def tearDown(self):
+        self.orcid.close()
 
     def test_persons(self):
         for partition in True, False:
@@ -278,6 +286,7 @@ class TestOrcidSample(unittest.TestCase):
     def tearDownClass(cls):
         cls.con.close()
         os.unlink(DATABASE_PATH)
+        cls.orcid.close()
 
     def test_import(
         self,

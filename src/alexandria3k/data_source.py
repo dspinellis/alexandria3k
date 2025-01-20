@@ -24,6 +24,7 @@ import re
 import csv
 import os
 import sqlite3
+from tempfile import NamedTemporaryFile
 
 # pylint: disable-next=import-error
 import apsw
@@ -558,11 +559,13 @@ class DataSource:
         self.tables = tables
         self.table_dict = {t.get_name(): t for t in tables}
 
-        # A named in-memory database; it can be attached by name to others
-        self.vdb = apsw.Connection(
-            "file:virtual?mode=memory&cache=shared",
-            apsw.SQLITE_OPEN_URI | apsw.SQLITE_OPEN_READWRITE,
-        )
+        # A named temporary database; it can be attached by name to others
+        # This is used later to attach the database so "with" cannot be used.
+        # pylint: disable-next=consider-using-with
+        tmp_file = NamedTemporaryFile(prefix="a3k", delete=False)
+        self.vdb_path = tmp_file.name
+        tmp_file.close()
+        self.vdb = apsw.Connection(self.vdb_path)
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = data_source
@@ -600,6 +603,19 @@ class DataSource:
                     f"CREATE VIRTUAL TABLE {table.get_name()} USING filesource()"
                 )
             )
+
+    def close(self):
+        """Terminate use of the data source, freeing associated resources."""
+        if self.vdb:
+            self.vdb.close()
+            self.vdb = None
+            try:
+                os.remove(self.vdb_path)
+            except FileNotFoundError:
+                pass  # File might already be deleted
+
+    def __del__(self):
+        self.close()
 
     def get_table_meta_by_name(self, name):
         """Return the metadata of the specified table"""
@@ -720,15 +736,10 @@ class DataSource:
         #   Run query on in-memory database
         #   drop tables
         self.set_query_columns(query)
-        partition = apsw.Connection(
-            "file:partition?mode=memory&cache=shared",
-            apsw.SQLITE_OPEN_URI | apsw.SQLITE_OPEN_READWRITE,
-        )
+        partition = apsw.Connection(":memory:", apsw.SQLITE_OPEN_READWRITE)
         partition.create_module("filesource", self.data_source)
         partition.execute(
-            log_sql(
-                "ATTACH DATABASE 'file:virtual?mode=memory&cache=shared' AS virtual"
-            )
+            log_sql(f"ATTACH DATABASE '{self.vdb_path}' AS virtual")
         )
 
         # Also attach databases to the partition
@@ -1107,7 +1118,6 @@ class DataSource:
         perf.log("Table population")
 
         self.vdb.execute(log_sql("DETACH populated"))
-        self.vdb.close()
         for table in self.population_columns:
             run_post_population_script(table)
 
