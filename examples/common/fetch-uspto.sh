@@ -27,6 +27,11 @@ for year in $(seq 2005 $(date +%Y)) ; do
 
   # Fetch each weekly zip file
   while read zip ; do
+    if [ -r $year/$zip ] ; then
+      echo "Skip existing file $year/$zip" 1>&2
+      continue
+    fi
+    echo "Download file $year/$zip" 1>&2
     curl --silent $BASE/$year/$zip >$year/$zip
   done
 
