@@ -101,7 +101,7 @@ def query_result(cursor, query):
     :param query: The query to execute.
     :type query: str
     """
-    result_set = cursor.execute(query)
+    result_set = cursor.execute(log_sql(query))
     (result,) = result_set.fetchone()
     return result
 
