@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Efficient relational database queries over the entire Crossref abnd ORCID data sets"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {file = "LICENSE"}
 
 dependencies = [
