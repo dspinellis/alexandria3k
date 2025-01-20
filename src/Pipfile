@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pybliometrics = "*"
-apsw = "*"
+apsw = "==3.47.*"
 importlib-metadata = "*"
 pyahocorasick = "*"
 
