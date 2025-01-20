@@ -196,7 +196,8 @@ def populate(args):
 def add_subcommand_populate(subparsers):
     """Add the arguments of the populate subcommand."""
     parser = subparsers.add_parser(
-        "populate", help="Populate an SQLite database."
+        "populate",
+        help="Populate an SQLite database from the specified data source.",
     )
     parser.set_defaults(func=populate)
     parser.add_argument(
@@ -326,7 +327,12 @@ def query(args):
 def add_subcommand_query(subparsers):
     """Add the arguments of the populate subcommand."""
     parser = subparsers.add_parser(
-        "query", help="Run a query directly on a data source."
+        "query",
+        help=(
+            "Run a query directly on a data source. The query's results can "
+            "be sent to the standard output (default), to a specified file, "
+            "or to populate a table in an attached database."
+        ),
     )
     parser.set_defaults(func=query)
     parser.add_argument(

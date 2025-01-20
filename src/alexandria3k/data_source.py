@@ -587,6 +587,10 @@ class DataSource:
                 raise Alexandria3kError(
                     f"Invalid database specification: '{db_spec}'; expected name:path"
                 ) from exc
+
+            # Create database if needed
+            sqlite3.connect(db_path).close()
+
             attach_command = f"ATTACH DATABASE '{db_path}' AS {db_name}"
             try_sql_execute(self.vdb, attach_command)
             self.attached_databases.append(db_name)
