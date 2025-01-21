@@ -602,8 +602,6 @@ def error_raising_main():
     # Setup debug logging and performance monitoring
     if args.debug:
         debug.set_flags(args.debug[0].split(","))
-    if debug.enabled("stderr"):
-        debug.set_output(sys.stderr)
     perf.log("Start")
 
     if args.version:

@@ -32,6 +32,8 @@ Use example:
 
 import sys
 
+import apsw.bestpractice
+
 enabled_flags = set()
 
 # Output: by default stdout, but can be set
@@ -66,6 +68,7 @@ def set_flags(flags):
     Enable the specified debug flags.
     The following flags are supported:
 
+    * apsw-logging: Enable logging in the APSW library;
     * exception: Raise an exception when an error occurs;
     * files-read: Counts of Crossref data files read;
     * link: Record linking operations;
@@ -80,6 +83,11 @@ def set_flags(flags):
     """
     for i in flags:
         enabled_flags.add(i)
+
+    if enabled("apsw-logging"):
+        apsw.bestpractice.library_logging()
+    if enabled("stderr"):
+        set_output(sys.stderr)
 
 
 def enabled(flag):
