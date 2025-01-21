@@ -37,23 +37,6 @@
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.processes</span> <span class="kn">import</span> <span class="n">link_uspto_doi</span>
 </pre></div>
 </div>
-<dl class="py function">
-<dt class="sig sig-object py" id="processes.link_uspto_doi.process">
-<span class="sig-prename descclassname"><span class="pre">processes.link_uspto_doi.</span></span><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#processes.link_uspto_doi.process" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process the specified database creating a table that links US patent
-non-patent citations with their DOIs extracted from the citation
-free text.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
-to process and populate.
-The database shall already contain the usp_citations table
-of the USPTO dataset with the patent_id, nplcit_num, and
-nplcit_othercit fields.</p>
-</dd>
-</dl>
-</dd></dl>
-
 <div class="section" id="generated-schema">
 <h2>Generated schema<a class="headerlink" href="#generated-schema" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">usp_nplcit_dois</span><span class="p">(</span>

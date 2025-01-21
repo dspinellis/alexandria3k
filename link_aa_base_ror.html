@@ -37,24 +37,6 @@
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.processes</span> <span class="kn">import</span> <span class="n">link_aa_base_ror</span>
 </pre></div>
 </div>
-<dl class="py function">
-<dt class="sig sig-object py" id="processes.link_aa_base_ror.process">
-<span class="sig-prename descclassname"><span class="pre">processes.link_aa_base_ror.</span></span><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#processes.link_aa_base_ror.process" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process the specified database creating a table that links Crossref work
-authors to their corresponding research organization as codified in the
-Research Orgnization Registry (ROR).
-The link is made to the lowest identifiable organizational level,
-e.g. an author’s clinic, school, or institute.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
-to process and populate.
-The database shall already contain the ROR dataset and the Crossref
-<cite>author_affiliations</cite> table.</p>
-</dd>
-</dl>
-</dd></dl>
-
 <div class="section" id="generated-schema">
 <h2>Generated schema<a class="headerlink" href="#generated-schema" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">work_authors_rors</span><span class="p">(</span>

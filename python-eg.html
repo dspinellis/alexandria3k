@@ -41,6 +41,8 @@ jobs and for documenting research methods as repeatable processes).</p>
 <p>Data source query and database population tasks are performed by
 creating an object instance associated with the corresponding data
 source class (e.g. <cite>Crossref</cite> or <cite>Orcid</cite>).
+When done using a data source, call the <cite>close</cite> method on its instance,
+or use the instance in a <cite>with</cite> block.
 Although many of the examples are based on the Crossref data source, the
 same principles apply to the other supported data sources.</p>
 <div class="section" id="create-a-crossref-object">
@@ -68,6 +70,7 @@ created by specifying the data directory.</p>
 <h2>Iterate through the DOI and title of all publications<a class="headerlink" href="#iterate-through-the-doi-and-title-of-all-publications" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="ow">in</span> <span class="n">crossref_instance</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;SELECT DOI, title FROM works&#39;</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+<span class="n">crossref_instance</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -98,6 +101,7 @@ Crossref data container.</p>
     <span class="n">partition</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">works_by_funder</span><span class="p">[</span><span class="n">funder_doi</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">work_doi</span><span class="p">)</span>
+<span class="n">crossref_instance</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -108,6 +112,7 @@ regarding publications that contain “COVID” in their title or abstract.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">crossref_instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span>
     <span class="s2">&quot;covid.db&quot;</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;title like &#39;%COVID%&#39; OR abstract like &#39;%COVID%&#39;&quot;</span>
 <span class="p">)</span>
+<span class="n">crossref_instance</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -126,6 +131,7 @@ navigable graph between publications and their references.</p>
     <span class="p">],</span>
     <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;work_references.doi is not null&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="n">crossref_instance</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -136,15 +142,15 @@ of works whose DOI appears in the attached database named
 <code class="docutils literal notranslate"><span class="pre">selected.db</span></code>.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.crossref</span> <span class="kn">import</span> <span class="n">Crossref</span>
 
-<span class="n">crossref_instance</span> <span class="o">=</span> <span class="n">Crossref</span><span class="p">(</span>
-     <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span><span class="p">,</span>
-    <span class="n">attach_databases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;attached:selected.db&quot;</span><span class="p">]</span>
-<span class="p">)</span>
+<span class="k">with</span> <span class="n">crossref_instance</span> <span class="o">=</span> <span class="n">Crossref</span><span class="p">(</span>
+         <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span><span class="p">,</span>
+        <span class="n">attach_databases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;attached:selected.db&quot;</span><span class="p">]</span>
+    <span class="p">):</span>
 
-<span class="n">crossref_instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span>
-    <span class="s2">&quot;selected-works.db&quot;</span><span class="p">,</span>
-    <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span>
-<span class="p">)</span>
+    <span class="n">crossref_instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span>
+        <span class="s2">&quot;selected-works.db&quot;</span><span class="p">,</span>
+        <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -155,18 +161,18 @@ records of authors identified in the Crossref publications through an
 ORCID will be added.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.orcid</span> <span class="kn">import</span> <span class="n">Orcid</span>
 
-<span class="n">orcid_instance</span> <span class="o">=</span> <span class="n">Orcid</span><span class="p">(</span><span class="s2">&quot;ORCID_2022_10_summaries.tar.gz&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">orcid_instance</span> <span class="o">=</span> <span class="n">Orcid</span><span class="p">(</span><span class="s2">&quot;ORCID_2022_10_summaries.tar.gz&quot;</span><span class="p">):</span>
 
-<span class="n">orcid_instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span>
-    <span class="s2">&quot;database.db&quot;</span><span class="p">,</span>
-    <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;person_countries.*&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;person_educations.orcid&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;person_educations.organization_name&quot;</span><span class="p">,</span>
-    <span class="p">],</span>
-    <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;EXISTS (SELECT 1 FROM populated.work_authors</span>
-<span class="s2">     WHERE work_authors.orcid = persons.orcid)&quot;&quot;&quot;</span>
-<span class="p">)</span>
+    <span class="n">orcid_instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span>
+        <span class="s2">&quot;database.db&quot;</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;person_countries.*&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;person_educations.orcid&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;person_educations.organization_name&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;EXISTS (SELECT 1 FROM populated.work_authors</span>
+<span class="s2">         WHERE work_authors.orcid = persons.orcid)&quot;&quot;&quot;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -174,10 +180,10 @@ ORCID will be added.</p>
 <span id="populate-the-database-with-journal-names-1"></span><h2>Populate the database with journal names<a class="headerlink" href="#populate-the-database-with-journal-names" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.journal_names</span> <span class="kn">import</span> <span class="n">JournalNames</span>
 
-<span class="n">instance</span> <span class="o">=</span> <span class="n">JournalNames</span><span class="p">(</span>
-    <span class="s2">&quot;http://ftp.crossref.org/titlelist/titleFile.csv&quot;</span>
-<span class="p">)</span>
-<span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">JournalNames</span><span class="p">(</span>
+        <span class="s2">&quot;http://ftp.crossref.org/titlelist/titleFile.csv&quot;</span>
+    <span class="p">):</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -185,10 +191,10 @@ ORCID will be added.</p>
 <span id="populate-the-database-with-funder-names-1"></span><h2>Populate the database with funder names<a class="headerlink" href="#populate-the-database-with-funder-names" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.funder_names</span> <span class="kn">import</span> <span class="n">FunderNames</span>
 
-<span class="n">instance</span> <span class="o">=</span> <span class="n">FunderNames</span><span class="p">(</span>
-    <span class="s2">&quot;https://doi.crossref.org/funderNames?mode=list&quot;</span>
-<span class="p">)</span>
-<span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">FunderNames</span><span class="p">(</span>
+        <span class="s2">&quot;https://doi.crossref.org/funderNames?mode=list&quot;</span>
+    <span class="p">):</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -196,8 +202,8 @@ ORCID will be added.</p>
 <span id="populate-the-database-with-data-regarding-open-access-journals-1"></span><h2>Populate the database with data regarding open access journals<a class="headerlink" href="#populate-the-database-with-data-regarding-open-access-journals" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.doaj</span> <span class="kn">import</span> <span class="n">Doaj</span>
 
-<span class="n">instance</span> <span class="o">=</span> <span class="n">Doaj</span><span class="p">(</span><span class="s2">&quot;https://doaj.org/csv&quot;</span><span class="p">)</span>
-<span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">Doaj</span><span class="p">(</span><span class="s2">&quot;https://doaj.org/csv&quot;</span><span class="p">):</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -207,8 +213,8 @@ ORCID will be added.</p>
 <span class="kn">from</span> <span class="nn">alexandria3k.processes</span> <span class="kn">import</span> <span class="n">link_works_asjcs</span>
 
 <span class="c1"># Populate database with ASJCs</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">Asjcs</span><span class="p">(</span><span class="s2">&quot;resource:data/asjc.csv&quot;</span><span class="p">)</span>
-<span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">Asjcs</span><span class="p">(</span><span class="s2">&quot;resource:data/asjc.csv&quot;</span><span class="p">):</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
 
 <span class="c1"># Link the (sometime previously populated works table) with ASJCs</span>
 <span class="n">link_works_asjcs</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
@@ -219,8 +225,8 @@ ORCID will be added.</p>
 <span id="populate-the-database-with-the-names-of-research-organizations-1"></span><h2>Populate the database with the names of research organizations<a class="headerlink" href="#populate-the-database-with-the-names-of-research-organizations" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.ror</span> <span class="kn">import</span> <span class="n">Ror</span>
 
-<span class="n">instance</span> <span class="o">=</span> <span class="n">Ror</span><span class="p">(</span><span class="s2">&quot;v1.17.1-2022-12-16-ror-data.zip&quot;</span><span class="p">)</span>
-<span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">Ror</span><span class="p">(</span><span class="s2">&quot;v1.17.1-2022-12-16-ror-data.zip&quot;</span><span class="p">):</span>
+    <span class="n">instance</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="s2">&quot;database.db&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

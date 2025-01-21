@@ -37,21 +37,6 @@
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.processes</span> <span class="kn">import</span> <span class="n">link_works_asjcs</span>
 </pre></div>
 </div>
-<dl class="py function">
-<dt class="sig sig-object py" id="processes.link_works_asjcs.process">
-<span class="sig-prename descclassname"><span class="pre">processes.link_works_asjcs.</span></span><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#processes.link_works_asjcs.process" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a many to many table linking Crossref works with Scopus
-All Science Journal Classification Codes — ASJCs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
-to process and populate.
-The database shall already contain the ASJC dataset and the Crossref
-<cite>work_subjects</cite> table.</p>
-</dd>
-</dl>
-</dd></dl>
-
 <div class="section" id="generated-schema">
 <h2>Generated schema<a class="headerlink" href="#generated-schema" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">works_asjcs</span><span class="p">(</span>
