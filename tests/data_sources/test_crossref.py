@@ -586,3 +586,20 @@ class TestCrossrefPopulateAttachedDatabaseCondition(PopulateQueries):
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 1)
         self.assertEqual(FileCache.file_reads, 8)
+
+class TestContextManager(PopulateQueries):
+    @classmethod
+    def setUpClass(cls):
+        ensure_unlinked(DATABASE_PATH)
+        cls.con = sqlite3.connect(DATABASE_PATH)
+        cls.cursor = cls.con.cursor()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.con.close()
+        os.unlink(DATABASE_PATH)
+
+    def test_counts(self):
+        with crossref.Crossref(td("data/crossref-sample")) as c:
+            c.populate(DATABASE_PATH)
+            self.assertEqual(self.record_count("works"), 12)

@@ -38,15 +38,18 @@ You can also add a parameter indicating how to sample the containers.
    seed("alexandria3k")
    crossref_instance = Crossref('April 2022 Public Data File from Crossref',
      lambda _name: random() < 0.01)
+   crossref_instance.close()
 
 Iterate through the DOI and title of all publications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: py
 
-   for (doi, title) in crossref_instance.query('SELECT DOI, title FROM works'):
-       print(doi, title)
-   crossref_instance.close()
+    from alexandria3k.data_sources.crossref import Crossref
+
+    with Crossref('/home/repos/Crossref-2024') < 0.0002) as ci:
+        for (doi, title) in ci.query('SELECT DOI, title FROM works'):
+            print(doi, title)
 
 Iterate through Crossref publications with more than 50 authors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,12 +144,12 @@ of works whose DOI appears in the attached database named
 
    from alexandria3k.data_sources.crossref import Crossref
 
-   with crossref_instance = Crossref(
+   with Crossref(
             'April 2022 Public Data File from Crossref',
            attach_databases=["attached:selected.db"]
-       ):
+       ) as ci:
 
-       crossref_instance.populate(
+       ci.populate(
            "selected-works.db",
            condition="EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)"
        )
@@ -162,7 +165,7 @@ ORCID will be added.
 
    from alexandria3k.data_sources.orcid import Orcid
 
-   with orcid_instance = Orcid("ORCID_2022_10_summaries.tar.gz"):
+   with Orcid("ORCID_2022_10_summaries.tar.gz") as orcid_instance:
 
        orcid_instance.populate(
            "database.db",
@@ -184,9 +187,9 @@ Populate the database with journal names
 
    from alexandria3k.data_sources.journal_names import JournalNames
 
-   with instance = JournalNames(
+   with JournalNames(
            "http://ftp.crossref.org/titlelist/titleFile.csv"
-       ):
+       ) as instance:
        instance.populate("database.db")
 
 .. _populate-the-database-with-funder-names-1:
@@ -198,9 +201,9 @@ Populate the database with funder names
 
    from alexandria3k.data_sources.funder_names import FunderNames
 
-   with instance = FunderNames(
+   with FunderNames(
            "https://doi.crossref.org/funderNames?mode=list"
-       ):
+       ) as instance:
        instance.populate("database.db")
 
 .. _populate-the-database-with-data-regarding-open-access-journals-1:
@@ -212,7 +215,7 @@ Populate the database with data regarding open access journals
 
    from alexandria3k.data_sources.doaj import Doaj
 
-   with instance = Doaj("https://doaj.org/csv"):
+   with Doaj("https://doaj.org/csv") as instance:
        instance.populate("database.db")
 
 .. _work-with-scopus-all-science-journal-classification-codes-asjc-1:
@@ -226,7 +229,7 @@ Work with Scopus All Science Journal Classification Codes (ASJC)
    from alexandria3k.processes import link_works_asjcs
 
    # Populate database with ASJCs
-   with instance = Asjcs("resource:data/asjc.csv"):
+   with Asjcs("resource:data/asjc.csv") as instance:
        instance.populate("database.db")
 
    # Link the (sometime previously populated works table) with ASJCs
@@ -241,7 +244,7 @@ Populate the database with the names of research organizations
 
    from alexandria3k.data_sources.ror import Ror
 
-   with instance = Ror("v1.17.1-2022-12-16-ror-data.zip"):
+   with Ror("v1.17.1-2022-12-16-ror-data.zip") as instance:
        instance.populate("database.db")
 
 .. _link-author-affiliations-with-research-organization-names-1:

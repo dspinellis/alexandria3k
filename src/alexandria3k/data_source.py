@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022-2024  Diomidis Spinellis
+# Copyright (C) 2022-2025  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -609,13 +609,20 @@ class DataSource:
         if self.vdb:
             self.vdb.close()
             self.vdb = None
-            try:
-                os.remove(self.vdb_path)
-            except FileNotFoundError:
-                pass  # File might already be deleted
+            os.remove(self.vdb_path)
 
     def __del__(self):
         self.close()
+
+    def __enter__(self):
+        """Part of the context manager protocol"""
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Part of the context manager protocol"""
+        # Propagate exception to called
+        self.close()
+        return False
 
     def get_table_meta_by_name(self, name):
         """Return the metadata of the specified table"""
