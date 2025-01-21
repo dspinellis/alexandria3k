@@ -24,7 +24,6 @@ import re
 import csv
 import os
 import sqlite3
-from tempfile import NamedTemporaryFile
 
 # pylint: disable-next=import-error
 import apsw
@@ -43,6 +42,8 @@ from alexandria3k.common import (
 from alexandria3k.tsort import tsort
 
 # pylint: disable=too-many-lines
+
+TMP_DB_URI = "file:/shared-tmp?vfs=memdb"
 
 SINGLE_PARTITION_INDEX = "SINGLE_PARTITION"
 """str: denote a table with a single partition by setting or comparing for
@@ -547,25 +548,28 @@ class DataSource:
 
     # pylint: disable=too-many-instance-attributes
 
+    uri_configured = False
+
     def __init__(
         self,
         data_source,
         tables,
         attach_databases=None,
     ):
+        # Configure files to use URIs before any other apsw
+        # interaction.
+        if not DataSource.uri_configured:
+            apsw.config(apsw.SQLITE_CONFIG_URI, 1)
+            DataSource.uri_configured = True
+
         # Name of root table
         self.root_name = tables[0].get_name()
 
         self.tables = tables
         self.table_dict = {t.get_name(): t for t in tables}
 
-        # A named temporary database; it can be attached by name to others
-        # This is used later to attach the database so "with" cannot be used.
-        # pylint: disable-next=consider-using-with
-        tmp_file = NamedTemporaryFile(prefix="a3k", delete=False)
-        self.vdb_path = tmp_file.name
-        tmp_file.close()
-        self.vdb = apsw.Connection(self.vdb_path)
+        # A named in-memory database; it can be attached by name to others
+        self.vdb = apsw.Connection(TMP_DB_URI)
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = data_source
@@ -591,7 +595,9 @@ class DataSource:
                     f"Invalid database specification: '{db_spec}'; expected name:path"
                 ) from exc
 
-            attach_command = f"ATTACH DATABASE '{db_path}' AS {db_name}"
+            attach_command = (
+                f"ATTACH DATABASE 'file:{db_path}?vfs=unix' AS {db_name}"
+            )
             try_sql_execute(self.vdb, attach_command)
             self.attached_databases.append(db_name)
             self.attach_commands.append(attach_command)
@@ -609,7 +615,6 @@ class DataSource:
         if self.vdb:
             self.vdb.close()
             self.vdb = None
-            os.remove(self.vdb_path)
 
     def __del__(self):
         self.close()
@@ -746,7 +751,7 @@ class DataSource:
         partition = apsw.Connection(":memory:", apsw.SQLITE_OPEN_READWRITE)
         partition.create_module("filesource", self.data_source)
         partition.execute(
-            log_sql(f"ATTACH DATABASE '{self.vdb_path}' AS virtual")
+            log_sql(f"ATTACH DATABASE '{TMP_DB_URI}' AS virtual")
         )
 
         # Also attach databases to the partition
@@ -993,7 +998,9 @@ class DataSource:
                 pdb.close()
 
             self.vdb.execute(
-                log_sql(f"ATTACH DATABASE '{database_path}' AS populated")
+                log_sql(
+                    f"ATTACH DATABASE 'file:{database_path}?vfs=unix' AS populated"
+                )
             )
             set_fast_writing(self.vdb, "populated")
 
