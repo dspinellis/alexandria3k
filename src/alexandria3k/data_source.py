@@ -560,6 +560,8 @@ class DataSource:
         if not DataSource.uri_configured:
             apsw.config(apsw.SQLITE_CONFIG_URI, 1)
             DataSource.uri_configured = True
+            # pylint: disable-next=unsubscriptable-object
+            DataSource.default_vfs = apsw.vfs_names()[0]
 
         # Name of root table
         self.root_name = tables[0].get_name()
@@ -598,7 +600,8 @@ class DataSource:
                 ) from exc
 
             attach_command = (
-                f"ATTACH DATABASE 'file:{db_path}?vfs=unix' AS {db_name}"
+                "ATTACH DATABASE "
+                + f"'file:{db_path}?vfs={DataSource.default_vfs}' AS {db_name}"
             )
             try_sql_execute(self.vdb, attach_command)
             self.attached_databases.append(db_name)
@@ -1001,7 +1004,8 @@ class DataSource:
 
             self.vdb.execute(
                 log_sql(
-                    f"ATTACH DATABASE 'file:{database_path}?vfs=unix' AS populated"
+                    "ATTACH DATABASE "
+                    + f"'file:{database_path}?vfs={DataSource.default_vfs}' AS populated"
                 )
             )
             set_fast_writing(self.vdb, "populated")
