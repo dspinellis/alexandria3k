@@ -43,8 +43,6 @@ from alexandria3k.tsort import tsort
 
 # pylint: disable=too-many-lines
 
-TMP_DB_URI = "file:/shared-tmp?vfs=memdb"
-
 SINGLE_PARTITION_INDEX = "SINGLE_PARTITION"
 """str: denote a table with a single partition by setting or comparing for
 equality an index value to this reference."""
@@ -549,6 +547,7 @@ class DataSource:
     # pylint: disable=too-many-instance-attributes
 
     uri_configured = False
+    instance_id = 0
 
     def __init__(
         self,
@@ -568,8 +567,11 @@ class DataSource:
         self.tables = tables
         self.table_dict = {t.get_name(): t for t in tables}
 
-        # A named in-memory database; it can be attached by name to others
-        self.vdb = apsw.Connection(TMP_DB_URI)
+        # A unique per-instance named in-memory database
+        # It can be attached by name to other databases.
+        self.vdb_uri = f"file:/shared-tmp-{DataSource.instance_id}?vfs=memdb"
+        self.vdb = apsw.Connection(self.vdb_uri)
+        DataSource.instance_id += 1
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
         self.data_source = data_source
@@ -751,7 +753,7 @@ class DataSource:
         partition = apsw.Connection(":memory:", apsw.SQLITE_OPEN_READWRITE)
         partition.create_module("filesource", self.data_source)
         partition.execute(
-            log_sql(f"ATTACH DATABASE '{TMP_DB_URI}' AS virtual")
+            log_sql(f"ATTACH DATABASE '{self.vdb_uri}' AS virtual")
         )
 
         # Also attach databases to the partition
