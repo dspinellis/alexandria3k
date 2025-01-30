@@ -546,8 +546,10 @@ class DataSource:
 
     # pylint: disable=too-many-instance-attributes
 
-    uri_configured = False
     instance_id = 0
+
+    # pylint: disable-next=unsubscriptable-object
+    default_vfs = apsw.vfs_names()[0]
 
     def __init__(
         self,
@@ -555,14 +557,6 @@ class DataSource:
         tables,
         attach_databases=None,
     ):
-        # Configure files to use URIs before any other apsw
-        # interaction.
-        if not DataSource.uri_configured:
-            apsw.config(apsw.SQLITE_CONFIG_URI, 1)
-            DataSource.uri_configured = True
-            # pylint: disable-next=unsubscriptable-object
-            DataSource.default_vfs = apsw.vfs_names()[0]
-
         # Name of root table
         self.root_name = tables[0].get_name()
 
@@ -572,7 +566,9 @@ class DataSource:
         # A unique per-instance named in-memory database
         # It can be attached by name to other databases.
         self.vdb_uri = f"file:/shared-tmp-{DataSource.instance_id}?vfs=memdb"
-        self.vdb = apsw.Connection(self.vdb_uri)
+        self.vdb = apsw.Connection(
+            self.vdb_uri, apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_URI
+        )
         DataSource.instance_id += 1
         self.cursor = self.vdb.cursor()
         # Register the module as filesource
@@ -753,7 +749,9 @@ class DataSource:
         #   Run query on in-memory database
         #   drop tables
         self.set_query_columns(query)
-        partition = apsw.Connection(":memory:", apsw.SQLITE_OPEN_READWRITE)
+        partition = apsw.Connection(
+            ":memory:", apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_URI
+        )
         partition.create_module("filesource", self.data_source)
         partition.execute(
             log_sql(f"ATTACH DATABASE '{self.vdb_uri}' AS virtual")
