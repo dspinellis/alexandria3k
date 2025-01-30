@@ -49,14 +49,14 @@ directory.</p>
 </div>
 <div class="section" id="show-doi-and-title-of-all-publications">
 <h2>Show DOI and title of all publications<a class="headerlink" href="#show-doi-and-title-of-all-publications" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --query <span class="s1">&#39;SELECT DOI, title FROM works&#39;</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">
 <h2>Save DOI and title of 2021 publications in a CSV file suitable for Excel<a class="headerlink" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
   --query <span class="s1">&#39;SELECT DOI, title FROM works WHERE published_year = 2021&#39;</span> <span class="se">\</span>
   --output <span class="m">2021</span>.csv <span class="se">\</span>
   --output-encoding utf-8-sig
@@ -76,7 +76,7 @@ Without this option, the query would take millenia to complete.</p>
 <h2>Count Crossref publications by year and type<a class="headerlink" href="#count-crossref-publications-by-year-and-type" title="Permalink to this headline">¶</a></h2>
 <p>This query performs a single pass through the data set to obtain the
 number of Crossref publications by year and publication type.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --query-file count-year-type.sql &gt;results.csv
 </pre></div>
 </div>
@@ -105,7 +105,7 @@ containing the word “blockchain” in their title.</p>
 
 sqlite3 blockchain_citations.db <span class="s1">&#39;CREATE TABLE citations(citing_doi, cited_doi)&#39;</span>
 
-a3k --progress query crossref /home/repos/Crossref-2024/ <span class="se">\</span>
+a3k --progress query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
   --attach-databases bc:blockchain_citations.db <span class="se">\</span>
   --partition <span class="se">\</span>
   --query <span class="s2">&quot;</span>
@@ -134,7 +134,7 @@ not have an abstract in a <em>deterministic</em> sample of approximately 1% of
 the data set’s containers. It uses a tab character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>) to separate
 the output fields. Through sampling the data containers it runs in a
 couple of minutes, rather than hours.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span>  <span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span>  <span class="se">\</span>
    --sample <span class="s1">&#39;random.random() &lt; 0.01&#39;</span> <span class="se">\</span>
    --field-separator <span class="s1">$&#39;\t&#39;</span> <span class="se">\</span>
    --query-file count-no-abstract.sql
@@ -182,7 +182,7 @@ with all Crossref data regarding publications that contain “COVID”
 in their title or abstract.
 The created database can be opened with <em>SQLite</em>.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate covid.db <span class="se">\</span>
-   crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+   crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --row-selection <span class="s2">&quot;title like &#39;%COVID%&#39; OR abstract like &#39;%COVID%&#39; &quot;</span>
 </pre></div>
 </div>
@@ -192,7 +192,7 @@ The created database can be opened with <em>SQLite</em>.</p>
 <p>The following command selects only a subset of columns of the complete
 Crossref data set to create a graph between navigable entities.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate graph.db <span class="se">\</span>
-   crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+   crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --columns works.id works.doi works.published_year <span class="se">\</span>
      work_references.work_id work_references.doi work_references.isbn <span class="se">\</span>
      work_funders.id work_funders.work_id work_funders.doi <span class="se">\</span>
@@ -233,7 +233,7 @@ following.</p>
 of works whose DOI appears in the attached database named
 <code class="docutils literal notranslate"><span class="pre">selected.db</span></code>.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate selected-works.db <span class="se">\</span>
-   crossref <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span> <span class="se">\</span>
+   crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
    --attach-databases <span class="s1">&#39;attached:selected.db&#39;</span> <span class="se">\</span>
    --row-selection <span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span>
 </pre></div>

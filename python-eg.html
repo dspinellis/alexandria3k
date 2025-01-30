@@ -51,7 +51,7 @@ same principles apply to the other supported data sources.</p>
 created by specifying the data directory.</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.crossref</span> <span class="kn">import</span> <span class="n">Crossref</span>
 
-<span class="n">crossref_instance</span> <span class="o">=</span> <span class="n">Crossref</span><span class="p">(</span><span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span><span class="p">)</span>
+<span class="n">crossref_instance</span> <span class="o">=</span> <span class="n">Crossref</span><span class="p">(</span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can also add a parameter indicating how to sample the containers.</p>
@@ -61,7 +61,7 @@ created by specifying the data directory.</p>
 
 <span class="c1"># Randomly (but deterministically) sample 1% of the containers</span>
 <span class="n">seed</span><span class="p">(</span><span class="s2">&quot;alexandria3k&quot;</span><span class="p">)</span>
-<span class="n">crossref_instance</span> <span class="o">=</span> <span class="n">Crossref</span><span class="p">(</span><span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span><span class="p">,</span>
+<span class="n">crossref_instance</span> <span class="o">=</span> <span class="n">Crossref</span><span class="p">(</span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="p">,</span>
   <span class="k">lambda</span> <span class="n">_name</span><span class="p">:</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">)</span>
 <span class="n">crossref_instance</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
@@ -71,7 +71,7 @@ created by specifying the data directory.</p>
 <h2>Iterate through the DOI and title of all publications<a class="headerlink" href="#iterate-through-the-doi-and-title-of-all-publications" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.crossref</span> <span class="kn">import</span> <span class="n">Crossref</span>
 
-<span class="k">with</span> <span class="n">Crossref</span><span class="p">(</span><span class="s1">&#39;/home/repos/Crossref-2024&#39;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0002</span><span class="p">)</span> <span class="k">as</span> <span class="n">ci</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">Crossref</span><span class="p">(</span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0002</span><span class="p">)</span> <span class="k">as</span> <span class="n">ci</span><span class="p">:</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ci</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;SELECT DOI, title FROM works&#39;</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
 </pre></div>
@@ -146,7 +146,7 @@ of works whose DOI appears in the attached database named
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.data_sources.crossref</span> <span class="kn">import</span> <span class="n">Crossref</span>
 
 <span class="k">with</span> <span class="n">Crossref</span><span class="p">(</span>
-         <span class="s1">&#39;April 2022 Public Data File from Crossref&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="p">,</span>
         <span class="n">attach_databases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;attached:selected.db&quot;</span><span class="p">]</span>
     <span class="p">)</span> <span class="k">as</span> <span class="n">ci</span><span class="p">:</span>
 
