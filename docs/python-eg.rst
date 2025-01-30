@@ -24,7 +24,7 @@ created by specifying the data directory.
 
    from alexandria3k.data_sources.crossref import Crossref
 
-   crossref_instance = Crossref('April 2022 Public Data File from Crossref')
+   crossref_instance = Crossref('April 2024 Public Data File from Crossref')
 
 You can also add a parameter indicating how to sample the containers.
 
@@ -36,7 +36,7 @@ You can also add a parameter indicating how to sample the containers.
 
    # Randomly (but deterministically) sample 1% of the containers
    seed("alexandria3k")
-   crossref_instance = Crossref('April 2022 Public Data File from Crossref',
+   crossref_instance = Crossref('April 2024 Public Data File from Crossref',
      lambda _name: random() < 0.01)
    crossref_instance.close()
 
@@ -47,7 +47,7 @@ Iterate through the DOI and title of all publications
 
     from alexandria3k.data_sources.crossref import Crossref
 
-    with Crossref('/home/repos/Crossref-2024') < 0.0002) as ci:
+    with Crossref('April 2024 Public Data File from Crossref') < 0.0002) as ci:
         for (doi, title) in ci.query('SELECT DOI, title FROM works'):
             print(doi, title)
 
@@ -145,7 +145,7 @@ of works whose DOI appears in the attached database named
    from alexandria3k.data_sources.crossref import Crossref
 
    with Crossref(
-            'April 2022 Public Data File from Crossref',
+            'April 2024 Public Data File from Crossref',
            attach_databases=["attached:selected.db"]
        ) as ci:
 

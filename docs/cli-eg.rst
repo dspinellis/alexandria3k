@@ -21,7 +21,7 @@ Show DOI and title of all publications
 
 .. code:: sh
 
-   a3k query crossref 'April 2022 Public Data File from Crossref' \
+   a3k query crossref 'April 2024 Public Data File from Crossref' \
       --query 'SELECT DOI, title FROM works'
 
 Save DOI and title of 2021 publications in a CSV file suitable for Excel
@@ -29,7 +29,7 @@ Save DOI and title of 2021 publications in a CSV file suitable for Excel
 
 .. code:: sh
 
-   a3k query crossref 'April 2022 Public Data File from Crossref' \
+   a3k query crossref 'April 2024 Public Data File from Crossref' \
      --query 'SELECT DOI, title FROM works WHERE published_year = 2021' \
      --output 2021.csv \
      --output-encoding utf-8-sig
@@ -59,7 +59,7 @@ number of Crossref publications by year and publication type.
 
 .. code:: sh
 
-   a3k query crossref 'April 2022 Public Data File from Crossref' \
+   a3k query crossref 'April 2024 Public Data File from Crossref' \
       --query-file count-year-type.sql >results.csv
 
 where ``count-year-type.sql`` contains:
@@ -92,7 +92,7 @@ containing the word "blockchain" in their title.
 
    sqlite3 blockchain_citations.db 'CREATE TABLE citations(citing_doi, cited_doi)'
 
-   a3k --progress query crossref /home/repos/Crossref-2024/ \
+   a3k --progress query crossref 'April 2024 Public Data File from Crossref' \
      --attach-databases bc:blockchain_citations.db \
      --partition \
      --query "
@@ -125,7 +125,7 @@ couple of minutes, rather than hours.
 
 .. code:: sh
 
-   a3k query crossref 'April 2022 Public Data File from Crossref'  \
+   a3k query crossref 'April 2024 Public Data File from Crossref'  \
       --sample 'random.random() < 0.01' \
       --field-separator $'\t' \
       --query-file count-no-abstract.sql
@@ -186,7 +186,7 @@ The created database can be opened with *SQLite*.
 .. code:: sh
 
    a3k populate covid.db \
-      crossref 'April 2022 Public Data File from Crossref' \
+      crossref 'April 2024 Public Data File from Crossref' \
       --row-selection "title like '%COVID%' OR abstract like '%COVID%' "
 
 Publications graph
@@ -198,7 +198,7 @@ Crossref data set to create a graph between navigable entities.
 .. code:: sh
 
    a3k populate graph.db \
-      crossref 'April 2022 Public Data File from Crossref' \
+      crossref 'April 2024 Public Data File from Crossref' \
       --columns works.id works.doi works.published_year \
         work_references.work_id work_references.doi work_references.isbn \
         work_funders.id work_funders.work_id work_funders.doi \
@@ -243,7 +243,7 @@ of works whose DOI appears in the attached database named
 .. code:: sh
 
    a3k populate selected-works.db \
-      crossref 'April 2022 Public Data File from Crossref' \
+      crossref 'April 2024 Public Data File from Crossref' \
       --attach-databases 'attached:selected.db' \
       --row-selection "EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)"
 
