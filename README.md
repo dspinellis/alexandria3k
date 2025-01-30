@@ -49,8 +49,8 @@ publication research on the desktop.
 
 ## Installation and documentation
 
-The _alexandria3k_ is available on [PyPI](https://pypi.org/project/alexandria3k/).
-The complete reference and use documentation for _alexandria3k_  can be found [here](https://dspinellis.github.io/alexandria3k/).
+* 📦 The _alexandria3k_ is available on [PyPI](https://pypi.org/project/alexandria3k/).
+* 📄 Full reference and use documentation for _alexandria3k_  is available [here](https://dspinellis.github.io/alexandria3k/).
 
 ## Major contributors
 
