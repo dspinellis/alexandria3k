@@ -3,8 +3,8 @@
 ## Alexandria3k
 
 The _alexandria3k_ package supplies a library and a command-line tool
-providing efficient relational query access to the following large scientific publication
-open data sets.
+providing efficient relational query access to the following
+large scientific publication open data sets.
 Data are decompressed on the fly, thus allowing the package's use even on
 storage-restricted laptops.
 
