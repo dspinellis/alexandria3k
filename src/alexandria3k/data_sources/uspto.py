@@ -27,6 +27,7 @@ from alexandria3k.data_source import (
     ROWID_INDEX,
     DataSource,
     ItemsCursor,
+    FilesCursor,
     StreamingCachedContainerTable,
 )
 from alexandria3k.db_schema import ColumnMeta, TableMeta
@@ -304,6 +305,14 @@ class PatentsFilesCursor(ItemsCursor):
             self.xml_contents[self.container_id], self.container_id
         )
         self.eof = False
+
+        # Update progress by reusing FilesCursor.debug_progress_bar
+        FilesCursor.debug_progress_bar(
+            self,
+            current_progress=self.container_id + 1,
+            total_length=len(self.xml_contents),
+        )
+
         # The single container has been read. Set EOF in next Next call.
         self.file_read = True
 
