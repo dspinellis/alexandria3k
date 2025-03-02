@@ -24,6 +24,7 @@ import re
 import csv
 import os
 import sqlite3
+import uuid
 
 # pylint: disable-next=import-error
 import apsw
@@ -565,7 +566,9 @@ class DataSource:
 
         # A unique per-instance named in-memory database
         # It can be attached by name to other databases.
-        self.vdb_uri = f"file:/shared-tmp-{DataSource.instance_id}?vfs=memdb"
+        self.vdb_uri = (
+            f"file:virtual-{DataSource.instance_id}?mode=memory&cache=shared"
+        )
         self.vdb = apsw.Connection(
             self.vdb_uri, apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_URI
         )
@@ -613,9 +616,29 @@ class DataSource:
 
     def close(self):
         """Terminate use of the data source, freeing associated resources."""
-        if self.vdb:
-            self.vdb.close()
-            self.vdb = None
+        try:
+            # Close any active cursor first
+            if hasattr(self, "cursor") and self.cursor:
+                self.cursor.close()
+                self.cursor = None
+
+            if self.vdb:
+                self._close_implementation()
+        except apsw.Error as e:
+            # General error handling for all database errors, including BusyError
+            raise Alexandria3kInternalError(
+                f"Database error during close: {str(e)}"
+            ) from e
+
+    def _close_implementation(self):
+        """Virtual method for implementing specific close behavior in subclasses.
+
+        The base implementation simply closes the database connection.
+        Subclasses can override this method to provide custom closing behavior
+        without duplicating the cursor handling and error management.
+        """
+        self.vdb.close()
+        self.vdb = None
 
     def __del__(self):
         self.close()
@@ -706,10 +729,8 @@ class DataSource:
         """
         Run the specified query on the virtual database using the data
         specified in the object constructor's call.
-
         :param query: An SQL `SELECT` query specifying the required data.
         :type query: str
-
         :param partition: When true the query will run separately in each
             container, defaults to `False`.
             Queries involving table joins will run substantially faster
@@ -724,61 +745,85 @@ class DataSource:
             Running queries with joins without partitioning will often result
             in quadratic (or worse) algorithmic complexity.
         :type partition: bool, optional
-
         :return: An iterable over the query's results.
         :rtype: iterable
         """
-
         self.cursor = self.vdb.cursor()
-
-        # Easy case
+        # Non-partitioned query - straightforward case
         if not partition:
             yield from try_sql_execute(self.cursor, query)
             return
 
         # Even when restricting multiple JOINs with container_id
         # SQLite seems to scan all containers for each JOIN making the
-        # performance intolerably slow. Address this by creating non-virtual
-        # tables with the required columns for each partition, as follows.
-        #
-        # Identify required tables and columns
-        # Create an in-memory database
-        # Attach database partition and other attached dbs to in-memory database
-        # For each partition:
-        #   Copy tables to in-memory database
-        #   Run query on in-memory database
-        #   drop tables
+        # performance intolerably slow. Address this by creating in-memory
+        # databases with the required data for each partition.
+
         self.set_query_columns(query)
-        partition = apsw.Connection(
-            ":memory:", apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_URI
-        )
-        partition.create_module("filesource", self.data_source)
-        partition.execute(
-            log_sql(f"ATTACH DATABASE '{self.vdb_uri}' AS virtual")
-        )
 
-        # Also attach databases to the partition
-        for attach_command in self.attach_commands:
-            partition.execute(log_sql(attach_command))
-
+        # Ensure temporary storage is in memory for best performance
+        self.vdb.execute("PRAGMA temp_store=MEMORY")
         for i in self.data_source.get_container_iterator():
             debug.log(
                 "progress",
                 f"Container {i} {self.data_source.get_container_name(i)}",
             )
+
+            # Create a unique name for this partition's in-memory database
+            partition_id = uuid.uuid4().hex[:8]
+            partition_db_name = f"partition_{partition_id}"
+
+            # Attach an in-memory database using URI format
+            self.vdb.execute(
+                log_sql(
+                    f"ATTACH DATABASE 'file:memdb?mode=memory' AS {partition_db_name}"
+                )
+            )
+
+            # Create tables in the in-memory database and populate them with filtered data
             for table_name, table_columns in self.query_columns.items():
                 columns = ", ".join(table_columns)
-                partition.execute(
+                self.vdb.execute(
                     log_sql(
-                        f"""CREATE TABLE {table_name}
-                  AS SELECT {columns} FROM virtual.{table_name}
-                    WHERE virtual.{table_name}.container_id={i}"""
+                        f"""CREATE TABLE {partition_db_name}.{table_name} AS
+                        SELECT {columns} FROM main.{table_name}
+                        WHERE {table_name}.container_id={i}"""
                     )
                 )
-            self.cursor = partition.cursor()
-            yield from try_sql_execute(self.cursor, query)
+
+                # Create a temporary view in the main database that points to the table
+                # in the attached database. This allows using table.* syntax in queries.
+                self.vdb.execute(
+                    log_sql(
+                        f"""CREATE TEMP VIEW {table_name}_view AS
+                        SELECT * FROM {partition_db_name}.{table_name}"""
+                    )
+                )
+
+            # Modify the original query to use the views instead of the tables
+            modified_query = query
+            sorted_tables = sorted(
+                self.query_columns.keys(), key=len, reverse=True
+            )
+
+            for table_name in sorted_tables:
+                modified_query = re.sub(
+                    r"\b" + re.escape(table_name) + r"\b",
+                    f"{table_name}_view",
+                    modified_query,
+                )
+
+            # Execute the modified query
+            yield from try_sql_execute(self.cursor, modified_query)
+
+            # Clean up temporary views
             for table_name in self.query_columns:
-                partition.execute(log_sql(f"DROP TABLE {table_name}"))
+                self.vdb.execute(
+                    log_sql(f"DROP VIEW IF EXISTS {table_name}_view")
+                )
+
+            # Detach the database
+            self.vdb.execute(log_sql(f"DETACH DATABASE {partition_db_name}"))
 
     def get_query_column_names(self):
         """Return the column names associated with an executing query"""
@@ -949,7 +994,6 @@ class DataSource:
 
             if condition:
                 path = self.tables_transitive_closure([table], self.root_name)
-
                 # One would think that an index on rowid is implied, but
                 # removing it increases the time required to process
                 # 3581.json.gz from the April 2022 dataset from 6.5"
