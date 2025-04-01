@@ -29,7 +29,7 @@ add_src_dir()
 from ..common import PopulateQueries, record_count
 from alexandria3k.common import ensure_unlinked
 from alexandria3k.data_sources import uspto
-from alexandria3k.file_xml_cache import FileCache
+from alexandria3k.data_sources.uspto_file_cache import FileCache
 from alexandria3k.uspto_zip_cache import UsptoZipCache
 from alexandria3k import debug
 

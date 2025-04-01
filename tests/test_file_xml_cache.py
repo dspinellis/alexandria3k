@@ -25,7 +25,7 @@ from .test_dir import add_src_dir
 
 add_src_dir()
 
-from alexandria3k.file_xml_cache import FileCache
+from alexandria3k.data_sources.uspto_file_cache import FileCache
 
 
 class TestFileCache(unittest.TestCase):

@@ -27,7 +27,7 @@ from alexandria3k.data_source import (
     StreamingCachedContainerTable,
 )
 from alexandria3k.db_schema import ColumnMeta, TableMeta
-from alexandria3k.file_pubmed_cache import get_file_cache
+from alexandria3k.data_sources.pubmed_file_cache import get_file_cache
 from alexandria3k.xml import (
     XMLCursor,
     agetter,

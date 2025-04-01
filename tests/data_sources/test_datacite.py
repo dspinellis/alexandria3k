@@ -28,7 +28,7 @@ add_src_dir()
 from ..common import PopulateQueries, record_count
 from alexandria3k.common import ensure_unlinked, query_result
 from alexandria3k.data_sources import datacite
-from alexandria3k.file_cache import FileCache
+from alexandria3k.data_sources.crossref_file_cache import FileCache
 
 
 DATABASE_PATH = td("tmp/datacite.db")
