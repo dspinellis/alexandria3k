@@ -1,6 +1,6 @@
 #
 # Alexandria2k Crossref bibliographic metadata processing
-# Copyright (C) 2022  Diomidis Spinellis
+# Copyright (C) 2022-2025  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -44,7 +44,21 @@ class FileCache:
         # print(f"READ FILE {path}")
         with gzip.open(path, "rb") as uncompressed_file:
             file_content = uncompressed_file.read()
-            self.cached_data = json.loads(file_content)["items"]
+            if file_content[:2] == b"{\n":
+                # Pre 2025 files contain an object with an items array, e.g.
+                # {
+                #   "items" : [ {
+                #      "URL" : […]
+                #   } , { […]
+                #   } ]
+                # }
+                self.cached_data = json.loads(file_content)["items"]
+            else:
+                # From 2025 onward, files contain lines where each
+                # is a JSON object, e.g.
+                # {"DOI": "10.1001/jama.2025.0548", […]}
+                lines = file_content.decode("utf-8").split("\n")[:-1]
+                self.cached_data = [json.loads(line) for line in lines]
         self.cached_path = path
         FileCache.file_reads += 1
         return self.cached_data

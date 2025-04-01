@@ -130,16 +130,16 @@ class TestCrossrefPopulateVanilla(PopulateQueries):
         cls.crossref.close()
 
     def test_counts(self):
-        self.assertEqual(self.record_count("works"), 12)
-        self.assertEqual(self.record_count("work_authors"), 69)
+        self.assertEqual(self.record_count("works"), 15)
+        self.assertEqual(self.record_count("work_authors"), 71)
         self.assertEqual(self.record_count("author_affiliations"), 14)
         self.assertEqual(self.record_count("work_references"), 281)
         self.assertEqual(self.record_count("work_updates"), 1)
         self.assertEqual(self.record_count("work_subjects"), 16)
         self.assertEqual(self.record_count("work_funders"), 5)
         self.assertEqual(self.record_count("funder_awards"), 5)
-        self.assertEqual(self.record_count("work_links"), 20)
-        self.assertEqual(self.record_count("work_licenses"), 16)
+        self.assertEqual(self.record_count("work_links"), 24)
+        self.assertEqual(self.record_count("work_licenses"), 20)
 
         self.assertEqual(
             self.record_count(
@@ -154,13 +154,13 @@ class TestCrossrefPopulateVanilla(PopulateQueries):
                 """(SELECT DISTINCT work_id
           FROM work_authors)"""
             ),
-            11,
+            13,
         )
 
         self.assertEqual(
             self.cond_count("work_references", "doi is not null"), 211
         )
-        self.assertEqual(FileCache.file_reads, 8)
+        self.assertEqual(FileCache.file_reads, 9)
 
     def test_work_contents(self):
         self.assertEqual(
@@ -253,7 +253,7 @@ class TestCrossrefPopulateMasterCondition(PopulateQueries):
         self.assertEqual(self.record_count("works"), 1)
         self.assertEqual(self.record_count("work_authors"), 1)
         self.assertEqual(self.record_count("work_references"), 42)
-        self.assertEqual(FileCache.file_reads, 8)
+        self.assertEqual(FileCache.file_reads, 9)
 
 
 class TestCrossrefPopulateDetailCondition(PopulateQueries):
@@ -280,7 +280,7 @@ class TestCrossrefPopulateDetailCondition(PopulateQueries):
         self.assertEqual(self.record_count("works"), 2)
         self.assertEqual(self.record_count("work_authors"), 5)
         self.assertEqual(self.record_count("author_affiliations"), 5)
-        self.assertEqual(FileCache.file_reads, 8)
+        self.assertEqual(FileCache.file_reads, 9)
 
 
 class TestCrossrefPopulateMasterColumnNoCondition(PopulateQueries):
@@ -304,8 +304,8 @@ class TestCrossrefPopulateMasterColumnNoCondition(PopulateQueries):
         cls.crossref.close()
 
     def test_counts(self):
-        self.assertEqual(self.record_count("works"), 12)
-        self.assertEqual(FileCache.file_reads, 8)
+        self.assertEqual(self.record_count("works"), 15)
+        self.assertEqual(FileCache.file_reads, 9)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
@@ -341,7 +341,7 @@ class TestCrossrefPopulateMasterColumnCondition(PopulateQueries):
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 4)
-        self.assertEqual(FileCache.file_reads, 8)
+        self.assertEqual(FileCache.file_reads, 9)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
@@ -382,7 +382,7 @@ class TestCrossrefPopulateDetailConditionColumns(PopulateQueries):
         self.assertEqual(
             self.cond_count("work_funders", "doi='10.13039/501100003593'"), 1
         )
-        self.assertEqual(FileCache.file_reads, 8)
+        self.assertEqual(FileCache.file_reads, 9)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
@@ -421,7 +421,7 @@ class TestCrossrefPopulateMultipleConditionColumns(PopulateQueries):
         self.assertEqual(
             self.cond_count("work_updates", "label='Correction'"), 1
         )
-        self.assertEqual(FileCache.file_reads, 8)
+        self.assertEqual(FileCache.file_reads, 9)
 
     def test_no_extra_fields(self):
         with self.assertRaises(sqlite3.OperationalError):
@@ -501,7 +501,7 @@ class TestCrossrefQuery(unittest.TestCase):
                 record_count(
                     self.crossref.query("SELECT * FROM works", partition)
                 ),
-                12,
+                15,
             )
 
     def test_works_attached(self):
@@ -525,7 +525,7 @@ class TestCrossrefQuery(unittest.TestCase):
                         "SELECT * FROM work_authors", partition
                     )
                 ),
-                69,
+                71,
             )
 
     def test_work_condition(self):
@@ -585,7 +585,7 @@ class TestCrossrefPopulateAttachedDatabaseCondition(PopulateQueries):
 
     def test_counts(self):
         self.assertEqual(self.record_count("works"), 1)
-        self.assertEqual(FileCache.file_reads, 8)
+        self.assertEqual(FileCache.file_reads, 9)
 
 class TestContextManager(PopulateQueries):
     @classmethod
@@ -602,4 +602,4 @@ class TestContextManager(PopulateQueries):
     def test_counts(self):
         with crossref.Crossref(td("data/crossref-sample")) as c:
             c.populate(DATABASE_PATH)
-            self.assertEqual(self.record_count("works"), 12)
+            self.assertEqual(self.record_count("works"), 15)
