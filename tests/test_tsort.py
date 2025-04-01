@@ -26,7 +26,7 @@ add_src_dir()
 
 from alexandria3k.tsort import tsort
 from alexandria3k.data_sources import crossref
-from alexandria3k.data_sources.crossref_file_cache import FileCache
+from alexandria3k.data_sources_lib.crossref_file_cache import FileCache
 
 
 

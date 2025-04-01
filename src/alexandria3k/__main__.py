@@ -31,7 +31,7 @@ import traceback
 
 from alexandria3k.common import Alexandria3kError, program_version
 from alexandria3k import debug
-from alexandria3k.data_sources.crossref_file_cache import FileCache
+from alexandria3k.data_sources_lib.crossref_file_cache import FileCache
 from alexandria3k import perf
 
 DESCRIPTION = "a3k: Relational interface to publication metadata"

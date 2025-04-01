@@ -27,7 +27,7 @@ from alexandria3k.data_source import (
     StreamingCachedContainerTable,
 )
 from alexandria3k.db_schema import ColumnMeta, TableMeta
-from alexandria3k.data_sources.crossref_file_cache import get_file_cache
+from alexandria3k.data_sources_lib.crossref_file_cache import get_file_cache
 
 DEFAULT_SOURCE = None
 

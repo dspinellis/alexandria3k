@@ -29,7 +29,7 @@ add_src_dir()
 from alexandria3k import debug
 from alexandria3k.common import ensure_unlinked
 from alexandria3k.data_sources import pubmed
-from alexandria3k.data_sources.pubmed_file_cache import FileCache
+from alexandria3k.data_sources_lib.pubmed_file_cache import FileCache
 
 from ..common import PopulateQueries, record_count
 
