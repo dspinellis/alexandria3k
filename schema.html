@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Schema diagrams &#8212; alexandria3k 3.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5349f462"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Command line interface" href="cli.html" />
@@ -19,8 +19,9 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -32,12 +33,13 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="schema-diagrams">
-<h1>Schema diagrams<a class="headerlink" href="#schema-diagrams" title="Permalink to this headline">¶</a></h1>
+  <section id="schema-diagrams">
+<h1>Schema diagrams<a class="headerlink" href="#schema-diagrams" title="Link to this heading">¶</a></h1>
 <p>The complete schema of a fully-populated database appears below.
 Opening the image in a separate window will allow you to zoom it.</p>
-<div class="figure align-default">
-<img alt="Complete data schema" src="_images/all.svg" /></div>
+<figure class="align-default">
+<img alt="Complete data schema" src="_images/all.svg" />
+</figure>
 <p>In addition,
 direct SQL queries can be performed on each data source’s tables.
 Queries involving multiple scans of the tables (e.g. relational joins)
@@ -45,59 +47,66 @@ should be performed by directing <em>alexandria3k</em> to perform them
 separately in each partition. This however means that aggregation
 operations will not work as expected, because they will be run multiple
 times (once for every partition).</p>
-<div class="section" id="crossref-data">
-<h2>Crossref data<a class="headerlink" href="#crossref-data" title="Permalink to this headline">¶</a></h2>
+<section id="crossref-data">
+<h2>Crossref data<a class="headerlink" href="#crossref-data" title="Link to this heading">¶</a></h2>
 <p>Crossref data concern published works, identified through their DOI.</p>
-<div class="figure align-default">
-<img alt="Crossref data schema" src="_images/crossref.svg" /></div>
-</div>
-<div class="section" id="datacite-data">
-<h2>DataCite data<a class="headerlink" href="#datacite-data" title="Permalink to this headline">¶</a></h2>
+<figure class="align-default">
+<img alt="Crossref data schema" src="_images/crossref.svg" />
+</figure>
+</section>
+<section id="datacite-data">
+<h2>DataCite data<a class="headerlink" href="#datacite-data" title="Link to this heading">¶</a></h2>
 <p>DataCite data concern published data, identified through their DOI.</p>
-<div class="figure align-default">
-<img alt="DataCite data schema" src="_images/datacite.svg" /></div>
-</div>
-<div class="section" id="orcid-data">
-<h2>ORCID data<a class="headerlink" href="#orcid-data" title="Permalink to this headline">¶</a></h2>
+<figure class="align-default">
+<img alt="DataCite data schema" src="_images/datacite.svg" />
+</figure>
+</section>
+<section id="orcid-data">
+<h2>ORCID data<a class="headerlink" href="#orcid-data" title="Link to this heading">¶</a></h2>
 <p>ORCID data concern work authors, identified through their ORCID.</p>
-<div class="figure align-default">
-<img alt="ORCID data schema" src="_images/orcid.svg" /></div>
-</div>
-<div class="section" id="pubmed-data">
-<h2>PubMed data<a class="headerlink" href="#pubmed-data" title="Permalink to this headline">¶</a></h2>
+<figure class="align-default">
+<img alt="ORCID data schema" src="_images/orcid.svg" />
+</figure>
+</section>
+<section id="pubmed-data">
+<h2>PubMed data<a class="headerlink" href="#pubmed-data" title="Link to this heading">¶</a></h2>
 <p>PubMed data concern citations from the biomedical literature also
 identified through their DOI,</p>
-<div class="figure align-default">
-<img alt="PubMed data schema" src="_images/pubmed.svg" /></div>
-</div>
-<div class="section" id="ror-data">
-<h2>ROR data<a class="headerlink" href="#ror-data" title="Permalink to this headline">¶</a></h2>
+<figure class="align-default">
+<img alt="PubMed data schema" src="_images/pubmed.svg" />
+</figure>
+</section>
+<section id="ror-data">
+<h2>ROR data<a class="headerlink" href="#ror-data" title="Link to this heading">¶</a></h2>
 <p>ROR data concern research organizations, identified through their DOI.</p>
-<div class="figure align-default">
-<img alt="ROR data schema" src="_images/ror.svg" /></div>
-</div>
-<div class="section" id="uspto-data">
-<h2>USPTO data<a class="headerlink" href="#uspto-data" title="Permalink to this headline">¶</a></h2>
+<figure class="align-default">
+<img alt="ROR data schema" src="_images/ror.svg" />
+</figure>
+</section>
+<section id="uspto-data">
+<h2>USPTO data<a class="headerlink" href="#uspto-data" title="Link to this heading">¶</a></h2>
 <p>USPTO data are the metadata of US Patent Office granted patents.</p>
-<div class="figure align-default">
-<img alt="USPTO data schema" src="_images/uspto.svg" /></div>
-</div>
-<div class="section" id="other-data">
-<h2>Other data<a class="headerlink" href="#other-data" title="Permalink to this headline">¶</a></h2>
+<figure class="align-default">
+<img alt="USPTO data schema" src="_images/uspto.svg" />
+</figure>
+</section>
+<section id="other-data">
+<h2>Other data<a class="headerlink" href="#other-data" title="Link to this heading">¶</a></h2>
 <p>Other data include journal names, subjects (ASJCS), funders, and
 open access journals, as well as join tables created through
 available processing steps.</p>
-<div class="figure align-default">
-<img alt="Other data schema" src="_images/other.svg" /></div>
-</div>
-</div>
+<figure class="align-default">
+<img alt="Other data schema" src="_images/other.svg" />
+</figure>
+</section>
+</section>
 
 
           </div>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">alexandria3k</a></h1>
 
@@ -117,7 +126,16 @@ available processing steps.</p>
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
@@ -160,16 +178,6 @@ available processing steps.</p>
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -183,11 +191,11 @@ available processing steps.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2022-2025, Diomidis Spinellis.
+      &#169;2022-2025, Diomidis Spinellis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/schema.rst.txt"

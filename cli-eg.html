@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Command line examples &#8212; alexandria3k 3.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5349f462"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Python API examples" href="python-eg.html" />
@@ -19,8 +19,9 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -32,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="command-line-examples">
-<h1>Command line examples<a class="headerlink" href="#command-line-examples" title="Permalink to this headline">¶</a></h1>
+  <section id="command-line-examples">
+<h1>Command line examples<a class="headerlink" href="#command-line-examples" title="Link to this heading">¶</a></h1>
 <p>After downloading the Crossref data, the functionality of <em>alexandria3k</em>
 can be used through its CLI named <em>a3k</em>.
 Below are isolated examples of command-line invocations
@@ -41,81 +42,81 @@ demonstrating particular aspects of <em>alexandria3k</em>.
 You can find examples of complete proof-of-concept studies in the
 <a class="reference external" href="https://github.com/dspinellis/alexandria3k/tree/main/examples">examples</a>
 directory.</p>
-<div class="section" id="obtain-list-of-available-commands">
-<h2>Obtain list of available commands<a class="headerlink" href="#obtain-list-of-available-commands" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k <span class="nb">help</span>
+<section id="obtain-list-of-available-commands">
+<h2>Obtain list of available commands<a class="headerlink" href="#obtain-list-of-available-commands" title="Link to this heading">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span><span class="nb">help</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="show-doi-and-title-of-all-publications">
-<h2>Show DOI and title of all publications<a class="headerlink" href="#show-doi-and-title-of-all-publications" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-   --query <span class="s1">&#39;SELECT DOI, title FROM works&#39;</span>
+</section>
+<section id="show-doi-and-title-of-all-publications">
+<h2>Show DOI and title of all publications<a class="headerlink" href="#show-doi-and-title-of-all-publications" title="Link to this heading">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query<span class="w"> </span><span class="s1">&#39;SELECT DOI, title FROM works&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">
-<h2>Save DOI and title of 2021 publications in a CSV file suitable for Excel<a class="headerlink" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-  --query <span class="s1">&#39;SELECT DOI, title FROM works WHERE published_year = 2021&#39;</span> <span class="se">\</span>
-  --output <span class="m">2021</span>.csv <span class="se">\</span>
-  --output-encoding utf-8-sig
+</section>
+<section id="save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">
+<h2>Save DOI and title of 2021 publications in a CSV file suitable for Excel<a class="headerlink" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel" title="Link to this heading">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s1">&#39;SELECT DOI, title FROM works WHERE published_year = 2021&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span><span class="m">2021</span>.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output-encoding<span class="w"> </span>utf-8-sig
 </pre></div>
 </div>
-</div>
-<div class="section" id="show-crossref-publications-with-more-than-50-authors">
-<h2>Show Crossref publications with more than 50 authors<a class="headerlink" href="#show-crossref-publications-with-more-than-50-authors" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="show-crossref-publications-with-more-than-50-authors">
+<h2>Show Crossref publications with more than 50 authors<a class="headerlink" href="#show-crossref-publications-with-more-than-50-authors" title="Link to this heading">¶</a></h2>
 <p>This query works by joining the <code class="docutils literal notranslate"><span class="pre">works</span></code> table with the
 <code class="docutils literal notranslate"><span class="pre">work_authors</span></code> table.
 The <code class="docutils literal notranslate"><span class="pre">--partition</span></code> option specifies that this join can be performed
 separately on each container file, allowing the query’s execution in
 a single pass.
 Without this option, the query would take millenia to complete.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref/&#39;</span> <span class="se">\</span>
---partition --query <span class="s1">&#39;SELECT doi, Count(*) AS author_number</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref/&#39;</span><span class="w"> </span><span class="se">\</span>
+--partition<span class="w"> </span>--query<span class="w"> </span><span class="s1">&#39;SELECT doi, Count(*) AS author_number</span>
 <span class="s1">  FROM works LEFT JOIN work_authors</span>
 <span class="s1">    ON work_authors.work_id = works.id</span>
 <span class="s1">  GROUP BY doi HAVING Count(*) &gt; 50&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="count-crossref-publications-by-year-and-type">
-<h2>Count Crossref publications by year and type<a class="headerlink" href="#count-crossref-publications-by-year-and-type" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="count-crossref-publications-by-year-and-type">
+<h2>Count Crossref publications by year and type<a class="headerlink" href="#count-crossref-publications-by-year-and-type" title="Link to this heading">¶</a></h2>
 <p>This query performs a single pass through the data set to obtain the
 number of Crossref publications by year and publication type.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-   --query-file count-year-type.sql &gt;results.csv
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query-file<span class="w"> </span>count-year-type.sql<span class="w"> </span>&gt;results.csv
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">count-year-type.sql</span></code> contains:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span> <span class="n">counts</span> <span class="k">AS</span> <span class="p">(</span>
-  <span class="k">SELECT</span>
-    <span class="n">published_year</span> <span class="k">AS</span> <span class="k">year</span><span class="p">,</span>
-    <span class="k">type</span><span class="p">,</span>
-    <span class="k">Count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">AS</span> <span class="nb">number</span>
-<span class="k">FROM</span>   <span class="n">works</span>
-    <span class="k">GROUP</span> <span class="k">by</span> <span class="n">published_year</span><span class="p">,</span> <span class="k">type</span><span class="p">)</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span><span class="w"> </span><span class="n">counts</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span>
+<span class="w">    </span><span class="n">published_year</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">year</span><span class="p">,</span>
+<span class="w">    </span><span class="k">type</span><span class="p">,</span>
+<span class="w">    </span><span class="k">Count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nb">number</span>
+<span class="k">FROM</span><span class="w">   </span><span class="n">works</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">published_year</span><span class="p">,</span><span class="w"> </span><span class="k">type</span><span class="p">)</span>
 
-<span class="k">SELECT</span> <span class="k">year</span> <span class="k">AS</span> <span class="n">name</span><span class="p">,</span> <span class="k">Sum</span><span class="p">(</span><span class="nb">number</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">counts</span>
-  <span class="k">GROUP</span> <span class="k">BY</span> <span class="k">year</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">year</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">Sum</span><span class="p">(</span><span class="nb">number</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">counts</span>
+<span class="w">  </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">year</span>
 <span class="k">UNION</span>
-<span class="k">SELECT</span> <span class="k">type</span> <span class="k">AS</span> <span class="n">name</span><span class="p">,</span> <span class="k">Sum</span><span class="p">(</span><span class="nb">number</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">counts</span>
-  <span class="k">GROUP</span> <span class="k">BY</span> <span class="k">type</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">Sum</span><span class="p">(</span><span class="nb">number</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">counts</span>
+<span class="w">  </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">type</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="fill-a-table-with-a-query-s-results">
-<h2>Fill a table with a query’s results<a class="headerlink" href="#fill-a-table-with-a-query-s-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="fill-a-table-with-a-query-s-results">
+<h2>Fill a table with a query’s results<a class="headerlink" href="#fill-a-table-with-a-query-s-results" title="Link to this heading">¶</a></h2>
 <p>The following commands create a table of citations to publications
 containing the word “blockchain” in their title.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>rm blockchain_citations.db
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>rm<span class="w"> </span>blockchain_citations.db
 
-sqlite3 blockchain_citations.db <span class="s1">&#39;CREATE TABLE citations(citing_doi, cited_doi)&#39;</span>
+sqlite3<span class="w"> </span>blockchain_citations.db<span class="w"> </span><span class="s1">&#39;CREATE TABLE citations(citing_doi, cited_doi)&#39;</span>
 
-a3k --progress query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-  --attach-databases bc:blockchain_citations.db <span class="se">\</span>
-  --partition <span class="se">\</span>
-  --query <span class="s2">&quot;</span>
+a3k<span class="w"> </span>--progress<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attach-databases<span class="w"> </span>bc:blockchain_citations.db<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--partition<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;</span>
 <span class="s2">    INSERT INTO bc.citations(citing_doi, cited_doi)</span>
 <span class="s2">      SELECT works.doi, work_references.doi</span>
 <span class="s2">        FROM works</span>
@@ -126,30 +127,30 @@ a3k --progress query crossref <span class="s1">&#39;April 2024 Public Data File 
 <span class="s2">&quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="obtain-patent-office-granted-patents-by-type">
-<h2>Obtain Patent Office granted patents by type<a class="headerlink" href="#obtain-patent-office-granted-patents-by-type" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query uspto <span class="s1">&#39;uspto-data&#39;</span> <span class="se">\</span>
-   --query <span class="s1">&#39;SELECT type, Count(*) FROM us_patents GROUP BY type&#39;</span>
+</section>
+<section id="obtain-patent-office-granted-patents-by-type">
+<h2>Obtain Patent Office granted patents by type<a class="headerlink" href="#obtain-patent-office-granted-patents-by-type" title="Link to this heading">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">&#39;uspto-data&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query<span class="w"> </span><span class="s1">&#39;SELECT type, Count(*) FROM us_patents GROUP BY type&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sampling">
-<h2>Sampling<a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="sampling">
+<h2>Sampling<a class="headerlink" href="#sampling" title="Link to this heading">¶</a></h2>
 <p>The following command counts the number of publication that have or do
 not have an abstract in a <em>deterministic</em> sample of approximately 1% of
 the data set’s containers. It uses a tab character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>) to separate
 the output fields. Through sampling the data containers it runs in a
 couple of minutes, rather than hours.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span>  <span class="se">\</span>
-   --sample <span class="s1">&#39;random.random() &lt; 0.01&#39;</span> <span class="se">\</span>
-   --field-separator <span class="s1">$&#39;\t&#39;</span> <span class="se">\</span>
-   --query-file count-no-abstract.sql
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="w">   </span>--sample<span class="w"> </span><span class="s1">&#39;random.random() &lt; 0.01&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--field-separator<span class="w"> </span><span class="s1">$&#39;\t&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query-file<span class="w"> </span>count-no-abstract.sql
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">count-no-abstract.sql</span></code> contains:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">works</span><span class="p">.</span><span class="n">abstract</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">AS</span> <span class="n">have_abstract</span><span class="p">,</span> <span class="k">Count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
-  <span class="k">FROM</span> <span class="n">works</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">have_abstract</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">works</span><span class="p">.</span><span class="n">abstract</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">have_abstract</span><span class="p">,</span><span class="w"> </span><span class="k">Count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">works</span><span class="w"> </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">have_abstract</span>
 </pre></div>
 </div>
 <p>For quick experiments, e.g. for verifying the queries of a full run,
@@ -170,178 +171,178 @@ through the weekly issued patents (path) or on the patents’ full text
 (container) located within the issued file.
 The tuple’s second value is a USPTO Zip file path or the patent’s text, respectively.</p>
 <p>For sampling the compressed files</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query uspto <span class="s1">&#39;uspto-data&#39;</span>  <span class="se">\</span>
-   --sample <span class="s1">&#39;random.random() &lt; 0.5 if data[0] == &quot;&quot;path&quot;&quot; else True&#39;</span> <span class="se">\</span>
-   --query <span class="s2">&quot;SELECT Count(*), relation FROM usp_related_documents GROUP BY relation&quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">&#39;uspto-data&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="w">   </span>--sample<span class="w"> </span><span class="s1">&#39;random.random() &lt; 0.5 if data[0] == &quot;&quot;path&quot;&quot; else True&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query<span class="w"> </span><span class="s2">&quot;SELECT Count(*), relation FROM usp_related_documents GROUP BY relation&quot;</span>
 </pre></div>
 </div>
 <p>Or for sampling unique patents</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query uspto <span class="s1">&#39;uspto-data&#39;</span>  <span class="se">\</span>
-   --sample <span class="s1">&#39;random.random() &lt; 0.5 if data[0] == &quot;&quot;container&quot;&quot; else True&#39;</span> <span class="se">\</span>
-   --query <span class="s2">&quot;SELECT Count(*), relation FROM usp_related_documents GROUP BY relation&quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">&#39;uspto-data&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="w">   </span>--sample<span class="w"> </span><span class="s1">&#39;random.random() &lt; 0.5 if data[0] == &quot;&quot;container&quot;&quot; else True&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query<span class="w"> </span><span class="s2">&quot;SELECT Count(*), relation FROM usp_related_documents GROUP BY relation&quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="database-of-covid-research">
-<h2>Database of COVID research<a class="headerlink" href="#database-of-covid-research" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="database-of-covid-research">
+<h2>Database of COVID research<a class="headerlink" href="#database-of-covid-research" title="Link to this heading">¶</a></h2>
 <p>The following command creates an <em>SQLite</em> database named <code class="docutils literal notranslate"><span class="pre">covid.db</span></code>
 with all Crossref data regarding publications that contain “COVID”
 in their title or abstract.
 The created database can be opened with <em>SQLite</em>.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate covid.db <span class="se">\</span>
-   crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-   --row-selection <span class="s2">&quot;title like &#39;%COVID%&#39; OR abstract like &#39;%COVID%&#39; &quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>covid.db<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">&quot;title like &#39;%COVID%&#39; OR abstract like &#39;%COVID%&#39; &quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="publications-graph">
-<h2>Publications graph<a class="headerlink" href="#publications-graph" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="publications-graph">
+<h2>Publications graph<a class="headerlink" href="#publications-graph" title="Link to this heading">¶</a></h2>
 <p>The following command selects only a subset of columns of the complete
 Crossref data set to create a graph between navigable entities.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate graph.db <span class="se">\</span>
-   crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-   --columns works.id works.doi works.published_year <span class="se">\</span>
-     work_references.work_id work_references.doi work_references.isbn <span class="se">\</span>
-     work_funders.id work_funders.work_id work_funders.doi <span class="se">\</span>
-     funder_awards.funder_id funder_awards.name <span class="se">\</span>
-     author_affiliations.author_id author_affiliations.name <span class="se">\</span>
-     work_links.work_id work_subjects.work_id work_subjects.name <span class="se">\</span>
-     work_authors.id work_authors.work_id work_authors.orcid
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>graph.db<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--columns<span class="w"> </span>works.id<span class="w"> </span>works.doi<span class="w"> </span>works.published_year<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>work_references.work_id<span class="w"> </span>work_references.doi<span class="w"> </span>work_references.isbn<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>work_funders.id<span class="w"> </span>work_funders.work_id<span class="w"> </span>work_funders.doi<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>funder_awards.funder_id<span class="w"> </span>funder_awards.name<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>author_affiliations.author_id<span class="w"> </span>author_affiliations.name<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>work_links.work_id<span class="w"> </span>work_subjects.work_id<span class="w"> </span>work_subjects.name<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>work_authors.id<span class="w"> </span>work_authors.work_id<span class="w"> </span>work_authors.orcid
 </pre></div>
 </div>
 <p>Through this data set you can run on the database queries such as the
 following.</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">works</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">work_id</span> <span class="k">FROM</span> <span class="n">works_subjects</span><span class="p">);</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">work_id</span> <span class="k">FROM</span> <span class="n">work_references</span><span class="p">);</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">affiliations_works</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">work_id</span> <span class="k">FROM</span> <span class="n">work_funders</span><span class="p">);</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">works</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">work_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">works_subjects</span><span class="p">);</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">work_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">work_references</span><span class="p">);</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">affiliations_works</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">work_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">work_funders</span><span class="p">);</span>
 
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">work_authors</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">work_authors</span> <span class="k">WHERE</span> <span class="n">orcid</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">orcid</span> <span class="k">FROM</span> <span class="n">work_authors</span><span class="p">);</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">work_authors</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">work_authors</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">orcid</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">orcid</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">work_authors</span><span class="p">);</span>
 
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">authors_affiliations</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">affiliation_names</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">authors_affiliations</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">affiliation_names</span><span class="p">;</span>
 
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">works_subjects</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">subject_names</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">works_subjects</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">subject_names</span><span class="p">;</span>
 
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">work_funders</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">funder_awards</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">work_funders</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">funder_awards</span><span class="p">;</span>
 
-<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">work_references</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">work_references</span><span class="p">;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="record-selection-from-external-database">
-<h2>Record selection from external database<a class="headerlink" href="#record-selection-from-external-database" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="record-selection-from-external-database">
+<h2>Record selection from external database<a class="headerlink" href="#record-selection-from-external-database" title="Link to this heading">¶</a></h2>
 <p>The following command creates an <em>SQLite</em> database with all Crossref data
 of works whose DOI appears in the attached database named
 <code class="docutils literal notranslate"><span class="pre">selected.db</span></code>.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate selected-works.db <span class="se">\</span>
-   crossref <span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span> <span class="se">\</span>
-   --attach-databases <span class="s1">&#39;attached:selected.db&#39;</span> <span class="se">\</span>
-   --row-selection <span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>selected-works.db<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--attach-databases<span class="w"> </span><span class="s1">&#39;attached:selected.db&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="populate-the-database-with-author-records-from-orcid">
-<h2>Populate the database with author records from ORCID<a class="headerlink" href="#populate-the-database-with-author-records-from-orcid" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="populate-the-database-with-author-records-from-orcid">
+<h2>Populate the database with author records from ORCID<a class="headerlink" href="#populate-the-database-with-author-records-from-orcid" title="Link to this heading">¶</a></h2>
 <p>Only records of authors identified in the Crossref publications through
 an ORCID will be added.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate database.db <span class="se">\</span>
-   ORCID ORCID_2022_10_summaries.tar.gz <span class="se">\</span>
-   --row-selection <span class="s2">&quot;EXISTS (SELECT 1 FROM populated.work_authors</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>database.db<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>ORCID<span class="w"> </span>ORCID_2022_10_summaries.tar.gz<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">&quot;EXISTS (SELECT 1 FROM populated.work_authors</span>
 <span class="s2">     WHERE work_authors.orcid = persons.orcid)&quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="populate-the-database-with-journal-names">
-<h2>Populate the database with journal names<a class="headerlink" href="#populate-the-database-with-journal-names" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate database.db <span class="se">\</span>
-  journal-names http://ftp.crossref.org/titlelist/titleFile.csv
+</section>
+<section id="populate-the-database-with-journal-names">
+<h2>Populate the database with journal names<a class="headerlink" href="#populate-the-database-with-journal-names" title="Link to this heading">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>database.db<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>journal-names<span class="w"> </span>http://ftp.crossref.org/titlelist/titleFile.csv
 </pre></div>
 </div>
-</div>
-<div class="section" id="populate-the-database-with-funder-names">
-<h2>Populate the database with funder names<a class="headerlink" href="#populate-the-database-with-funder-names" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate database.db <span class="se">\</span>
-  funder-names https://doi.crossref.org/funderNames?mode<span class="o">=</span>list
+</section>
+<section id="populate-the-database-with-funder-names">
+<h2>Populate the database with funder names<a class="headerlink" href="#populate-the-database-with-funder-names" title="Link to this heading">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>database.db<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>funder-names<span class="w"> </span>https://doi.crossref.org/funderNames?mode<span class="o">=</span>list
 </pre></div>
 </div>
-</div>
-<div class="section" id="work-with-scopus-all-science-journal-classification-codes-asjc">
-<h2>Work with Scopus All Science Journal Classification Codes (ASJC)<a class="headerlink" href="#work-with-scopus-all-science-journal-classification-codes-asjc" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="work-with-scopus-all-science-journal-classification-codes-asjc">
+<h2>Work with Scopus All Science Journal Classification Codes (ASJC)<a class="headerlink" href="#work-with-scopus-all-science-journal-classification-codes-asjc" title="Link to this heading">¶</a></h2>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Populate database with ASJCs</span>
-a3k populate database.db --data-source asjc
+a3k<span class="w"> </span>populate<span class="w"> </span>database.db<span class="w"> </span>--data-source<span class="w"> </span>asjc
 
 <span class="c1"># Link the (sometime previously populated works table) with ASJCs</span>
-a3k process database.db link-works-asjcs
+a3k<span class="w"> </span>process<span class="w"> </span>database.db<span class="w"> </span>link-works-asjcs
 </pre></div>
 </div>
-</div>
-<div class="section" id="populate-the-database-with-data-regarding-open-access-journals">
-<h2>Populate the database with data regarding open access journals<a class="headerlink" href="#populate-the-database-with-data-regarding-open-access-journals" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k populate database.db doaj https://doaj.org/csv
+</section>
+<section id="populate-the-database-with-data-regarding-open-access-journals">
+<h2>Populate the database with data regarding open access journals<a class="headerlink" href="#populate-the-database-with-data-regarding-open-access-journals" title="Link to this heading">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>database.db<span class="w"> </span>doaj<span class="w"> </span>https://doaj.org/csv
 </pre></div>
 </div>
-</div>
-<div class="section" id="populate-the-database-with-the-names-of-research-organizations">
-<h2>Populate the database with the names of research organizations<a class="headerlink" href="#populate-the-database-with-the-names-of-research-organizations" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="populate-the-database-with-the-names-of-research-organizations">
+<h2>Populate the database with the names of research organizations<a class="headerlink" href="#populate-the-database-with-the-names-of-research-organizations" title="Link to this heading">¶</a></h2>
 <p>Populate the research organization registry (ROR) tables.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fetch the ROR data file (~21 MB)</span>
-wget -O ror-v1.17.1.zip <span class="se">\</span>
-  <span class="s2">&quot;https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1&quot;</span>
+wget<span class="w"> </span>-O<span class="w"> </span>ror-v1.17.1.zip<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1&quot;</span>
 
 <span class="c1"># Populate the database</span>
-a3k populate database.db ror ror-v1.17.1.zip
+a3k<span class="w"> </span>populate<span class="w"> </span>database.db<span class="w"> </span>ror<span class="w"> </span>ror-v1.17.1.zip
 </pre></div>
 </div>
-</div>
-<div class="section" id="link-author-affiliations-with-research-organization-names">
-<h2>Link author affiliations with research organization names<a class="headerlink" href="#link-author-affiliations-with-research-organization-names" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="link-author-affiliations-with-research-organization-names">
+<h2>Link author affiliations with research organization names<a class="headerlink" href="#link-author-affiliations-with-research-organization-names" title="Link to this heading">¶</a></h2>
 <p>Given a database already populated with work author affiliations and the
 research organization registry fill-in the table <code class="docutils literal notranslate"><span class="pre">work_authors_rors</span></code>
 linking the two.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Link affiliations with best match</span>
-a3k process database.db link-aa-base-ror
+a3k<span class="w"> </span>process<span class="w"> </span>database.db<span class="w"> </span>link-aa-base-ror
 
 <span class="c1"># Link affiliations with top parent of best match</span>
-a3k process database.db link-aa-top-ror
+a3k<span class="w"> </span>process<span class="w"> </span>database.db<span class="w"> </span>link-aa-top-ror
 </pre></div>
 </div>
 <p>After linking, the results’ quality can be verified with queries such as
 the following.</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Display affiliation matches</span>
-<span class="k">SELECT</span> <span class="n">author_affiliations</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">research_organizations</span><span class="p">.</span><span class="n">name</span> <span class="k">FROM</span>
-  <span class="n">work_authors</span>
-  <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">author_affiliations</span>
-    <span class="k">ON</span> <span class="n">work_authors</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">author_affiliations</span><span class="p">.</span><span class="n">author_id</span>
-  <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">work_authors_rors</span>
-    <span class="k">ON</span> <span class="n">work_authors_rors</span><span class="p">.</span><span class="n">work_author_id</span> <span class="o">=</span> <span class="n">work_authors</span><span class="p">.</span><span class="n">id</span>
-  <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">research_organizations</span>
-    <span class="k">ON</span> <span class="n">research_organizations</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">work_authors_rors</span><span class="p">.</span><span class="n">ror_id</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">author_affiliations</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">research_organizations</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">FROM</span>
+<span class="w">  </span><span class="n">work_authors</span>
+<span class="w">  </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">author_affiliations</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">work_authors</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">author_affiliations</span><span class="p">.</span><span class="n">author_id</span>
+<span class="w">  </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">work_authors_rors</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">work_authors_rors</span><span class="p">.</span><span class="n">work_author_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work_authors</span><span class="p">.</span><span class="n">id</span>
+<span class="w">  </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">research_organizations</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">research_organizations</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work_authors_rors</span><span class="p">.</span><span class="n">ror_id</span><span class="p">;</span>
 
 <span class="c1">-- Display unmatched affiliations</span>
-<span class="k">SELECT</span> <span class="n">author_affiliations</span><span class="p">.</span><span class="n">name</span> <span class="k">FROM</span>
-  <span class="n">work_authors</span>
-  <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">author_affiliations</span>
-    <span class="k">ON</span> <span class="n">work_authors</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">author_affiliations</span><span class="p">.</span><span class="n">author_id</span>
-  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">work_authors_rors</span>
-    <span class="k">ON</span> <span class="n">work_authors_rors</span><span class="p">.</span><span class="n">work_author_id</span> <span class="o">=</span> <span class="n">work_authors</span><span class="p">.</span><span class="n">id</span>
-  <span class="k">WHERE</span> <span class="n">work_authors_rors</span><span class="p">.</span><span class="n">ror_id</span> <span class="k">is</span> <span class="k">null</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">author_affiliations</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">FROM</span>
+<span class="w">  </span><span class="n">work_authors</span>
+<span class="w">  </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">author_affiliations</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">work_authors</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">author_affiliations</span><span class="p">.</span><span class="n">author_id</span>
+<span class="w">  </span><span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">work_authors_rors</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">work_authors_rors</span><span class="p">.</span><span class="n">work_author_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work_authors</span><span class="p">.</span><span class="n">id</span>
+<span class="w">  </span><span class="k">WHERE</span><span class="w"> </span><span class="n">work_authors_rors</span><span class="p">.</span><span class="n">ror_id</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">null</span><span class="p">;</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">alexandria3k</a></h1>
 
@@ -361,7 +362,16 @@ the following.</p>
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
@@ -415,16 +425,6 @@ the following.</p>
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -438,11 +438,11 @@ the following.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2022-2025, Diomidis Spinellis.
+      &#169;2022-2025, Diomidis Spinellis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/cli-eg.rst.txt"

@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Plugin development &#8212; alexandria3k 3.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5349f462"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="FAQ: Frequently asked questions" href="faq.html" />
@@ -19,8 +19,9 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -32,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="plugin-development">
-<h1>Plugin development<a class="headerlink" href="#plugin-development" title="Permalink to this headline">¶</a></h1>
+  <section id="plugin-development">
+<h1>Plugin development<a class="headerlink" href="#plugin-development" title="Link to this heading">¶</a></h1>
 <p>The <em>alexandria3k</em> system is structured around plugins that provide access
 to data sources and data processing functionality.
 New plugins can be developed and contributed by adding a Python
@@ -42,8 +43,8 @@ Plugins are made automagically available to the <em>a3k</em> <a class="reference
 and can also be used through the <em>alexandria3k</em> <a class="reference internal" href="user-api.html"><span class="doc">Python user API</span></a>.</p>
 <p>All plugins shall start with a docstring describing the plugin’s
 functionality.</p>
-<div class="section" id="data-source-plugins">
-<h2>Data source plugins<a class="headerlink" href="#data-source-plugins" title="Permalink to this headline">¶</a></h2>
+<section id="data-source-plugins">
+<h2>Data source plugins<a class="headerlink" href="#data-source-plugins" title="Link to this heading">¶</a></h2>
 <p>To create a new data source plugin you need to perform a number
 of steps.
 The employed modules and classes are documented in the
@@ -93,8 +94,8 @@ If no such exists, set the constant to <code class="docutils literal notranslate
 <li><p>Define the data source’s class by subclassing the <code class="docutils literal notranslate"><span class="pre">DataSource</span></code> class.
 Example (for a single table):</p></li>
 </ul>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FunderNames</span><span class="p">(</span><span class="n">DataSource</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">FunderNames</span><span class="p">(</span><span class="n">DataSource</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_source</span><span class="p">,</span>
         <span class="n">sample</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -155,9 +156,9 @@ commit the new and updated files.</p></li>
 elsewhere in this guide.</p></li>
 <li><p>Add a motivating example in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p></li>
 </ul>
-</div>
-<div class="section" id="data-processing-plugins">
-<h2>Data processing plugins<a class="headerlink" href="#data-processing-plugins" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="data-processing-plugins">
+<h2>Data processing plugins<a class="headerlink" href="#data-processing-plugins" title="Link to this heading">¶</a></h2>
 <p>To create a data processing plugin follow these steps.</p>
 <ul class="simple">
 <li><p>Create the plugin in the <code class="docutils literal notranslate"><span class="pre">src/alexandria3k/plugins</span></code> directory.</p></li>
@@ -170,15 +171,15 @@ and performs the processing associated with the plugin.</p></li>
 <li><p>Add unit tests in the <code class="docutils literal notranslate"><span class="pre">tests/processes</span></code> directory.</p></li>
 <li><p>Add a motivating example in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">alexandria3k</a></h1>
 
@@ -198,7 +199,16 @@ and performs the processing associated with the plugin.</p></li>
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
@@ -236,16 +246,6 @@ and performs the processing associated with the plugin.</p></li>
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -259,11 +259,11 @@ and performs the processing associated with the plugin.</p></li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2022-2025, Diomidis Spinellis.
+      &#169;2022-2025, Diomidis Spinellis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/dev-plugin.rst.txt"

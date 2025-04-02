@@ -1,25 +1,26 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Alexandria3k documentation &#8212; alexandria3k 3.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5349f462"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -31,8 +32,8 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="alexandria3k-documentation">
-<h1>Alexandria3k documentation<a class="headerlink" href="#alexandria3k-documentation" title="Permalink to this headline">¶</a></h1>
+  <section id="alexandria3k-documentation">
+<h1>Alexandria3k documentation<a class="headerlink" href="#alexandria3k-documentation" title="Link to this heading">¶</a></h1>
 <p>The <em>alexandria3k</em> package supplies a library and a command-line tool
 providing efficient relational query access to the following large
 scientific publication open data sets. Data are decompressed on the fly,
@@ -71,22 +72,22 @@ not require the installation, configuration, and maintenance of a third
 party relational or graph database. It can therefore be used
 out-of-the-box for performing reproducible publication research on the
 desktop.</p>
-<div class="section" id="publication">
-<h2>Publication<a class="headerlink" href="#publication" title="Permalink to this headline">¶</a></h2>
+<section id="publication">
+<h2>Publication<a class="headerlink" href="#publication" title="Link to this heading">¶</a></h2>
 <p>Details about the rationale, design, implementation, and use of this
 software can be found in the following paper.</p>
 <p>Diomidis Spinellis. Open reproducible scientometric research with Alexandria3k. <em>PLoS ONE</em> 18(11): e0294946. November 2023. <a class="reference external" href="https://doi.org/10.1371/journal.pone.0294946">doi: 10.1371/journal.pone.0294946</a></p>
-</div>
-<div class="section" id="package-name-derivation">
-<h2>Package name derivation<a class="headerlink" href="#package-name-derivation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="package-name-derivation">
+<h2>Package name derivation<a class="headerlink" href="#package-name-derivation" title="Link to this heading">¶</a></h2>
 <p>The <em>alexandria3k</em> package is named after the <a class="reference external" href="https://en.wikipedia.org/wiki/Library_of_Alexandria">Library of
 Alexandria</a>,
 indicating how publication data can be processed in the third millenium
 AD.</p>
-</div>
-</div>
-<div class="section" id="contents">
-<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
+</section>
+</section>
+<section id="contents">
+<h1>Contents<a class="headerlink" href="#contents" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
@@ -156,7 +157,12 @@ AD.</p>
 <li class="toctree-l2"><a class="reference internal" href="schema.html#other-data">Other data</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#alexandria3k.__main__-get_cli_parser-positional-arguments">Positional Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#alexandria3k.__main__-get_cli_parser-named-arguments">Named Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#Sub-commands">Sub-commands</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user-api.html#data-sources">Data sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-api.html#data-processing-operations">Data processing operations</a></li>
@@ -164,8 +170,8 @@ AD.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="plugin-api.html#module-db_schema">db_schema</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugin-api.html#data-source">data_source</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugin-api.html#module-xml">csv_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugin-api.html#module-data_source">data_source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugin-api.html#module-csv_source">csv_source</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a><ul>
@@ -203,21 +209,21 @@ AD.</p>
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
           </div>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="#">alexandria3k</a></h1>
 
@@ -237,7 +243,16 @@ AD.</p>
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
@@ -270,16 +285,6 @@ AD.</p>
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -293,11 +298,11 @@ AD.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2022-2025, Diomidis Spinellis.
+      &#169;2022-2025, Diomidis Spinellis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/index.rst.txt"

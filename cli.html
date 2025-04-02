@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Command line interface &#8212; alexandria3k 3.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5349f462"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Python user API" href="user-api.html" />
@@ -19,8 +19,9 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -32,17 +33,305 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="command-line-interface">
-<h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
+  <section id="command-line-interface">
+<h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">¶</a></h1>
 <p>The <em>a3k</em> command can be invoked from the shell as follows.</p>
+<p><p>a3k: Relational interface to publication metadata</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">a3k</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DEBUG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
+           <span class="p">{</span><span class="n">help</span><span class="p">,</span><span class="n">populate</span><span class="p">,</span><span class="n">process</span><span class="p">,</span><span class="n">query</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">processes</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">complete</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">source</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">sources</span><span class="p">,</span><span class="n">version</span><span class="p">,</span><span class="n">download</span><span class="p">}</span>
+           <span class="o">...</span>
+</pre></div>
 </div>
+<section id="alexandria3k.__main__-get_cli_parser-positional-arguments">
+<h2>Positional Arguments<a class="headerlink" href="#alexandria3k.__main__-get_cli_parser-positional-arguments" title="Link to this heading">¶</a></h2>
+<dl class="option-list">
+<dt><kbd>command</kbd></dt>
+<dd><p>Possible choices: help, populate, process, query, list-processes, list-complete-schema, list-source-schema, list-process-schema, list-sources, version, download</p>
+<p>Name of the a3k operation to perform.</p>
+</dd>
+</dl>
+</section>
+<section id="alexandria3k.__main__-get_cli_parser-named-arguments">
+<h2>Named Arguments<a class="headerlink" href="#alexandria3k.__main__-get_cli_parser-named-arguments" title="Link to this heading">¶</a></h2>
+<dl class="option-list">
+<dt><kbd>-d, --debug</kbd></dt>
+<dd><dl class="simple">
+<dt>Output debuggging information according to the comma-separated arguments.</dt><dd><p>files-read: Counts of Crossref data files read;
+link: Record linking operations;
+sql: Executed SQL statements;
+perf: Performance timings;
+populated-counts: Counts of the populated database;
+populated-data: Data of the populated database;
+populated-reports: Query results from the populated database;
+sorted-tables: Topologically ordered Crossref query tables;
+stacktrace: Produce a stack trace when an error occurs;
+stderr: Log to standard error;</p>
+</dd>
+</dl>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</dd>
+<dt><kbd>-p, --progress</kbd></dt>
+<dd><p>Show a progress bar (where available)</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>-v, --version</kbd></dt>
+<dd><p>Report program version and exit</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands">
+<h2>Sub-commands<a class="headerlink" href="#Sub-commands" title="Link to this heading">¶</a></h2>
+<section id="help">
+<h3>help<a class="headerlink" href="#help" title="Link to this heading">¶</a></h3>
+<p>Show top-level help message.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">help</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="populate">
+<h3>populate<a class="headerlink" href="#populate" title="Link to this heading">¶</a></h3>
+<p>Populate an SQLite database from the specified data source.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">populate</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
+             <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">COLUMNS</span> <span class="p">[</span><span class="n">COLUMNS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">R</span> <span class="n">ROW_SELECTION_FILE</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ROW_SELECTION</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
+             <span class="n">database</span>
+             <span class="p">{</span><span class="n">doaj</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">orcid</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">datacite</span><span class="p">}</span>
+             <span class="p">[</span><span class="n">data_location</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>database</kbd></dt>
+<dd><p>File path of the database to populate</p>
+</dd>
+<dt><kbd>data_name</kbd></dt>
+<dd><p>Possible choices: doaj, funder-names, pubmed, issn-subject-codes, ror, asjcs, orcid, crossref, uspto, journal-names, datacite</p>
+<p>Name of the data source to use</p>
+</dd>
+<dt><kbd>data_location</kbd></dt>
+<dd><p>Path or URL of the source’s data</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>-a, --attach-databases</kbd></dt>
+<dd><p>Databases to attach for the row selection expression</p>
+</dd>
+<dt><kbd>-c, --columns</kbd></dt>
+<dd><p>Columns to populate using table.column or table.*</p>
+</dd>
+<dt><kbd>-R, --row-selection-file</kbd></dt>
+<dd><p>File containing SQL expression that selects the populated rows</p>
+</dd>
+<dt><kbd>-r, --row-selection</kbd></dt>
+<dd><p>SQL expression that selects the populated rows</p>
+</dd>
+<dt><kbd>-s, --sample</kbd></dt>
+<dd><p>Python expression to sample the data (e.g. random.random() &lt; 0.0002). The expression can also use a variable named data whose value is documented in the constructor API of each data source.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'True'</span></code></p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="process">
+<h3>process<a class="headerlink" href="#process" title="Link to this heading">¶</a></h3>
+<p>Run a processing step on the specified database.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">process</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+            <span class="n">database</span>
+            <span class="p">{</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">}</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat1">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat1" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>database</kbd></dt>
+<dd><p>file path of the database to run the process on</p>
+</dd>
+<dt><kbd>process</kbd></dt>
+<dd><p>Possible choices: link-aa-top-ror, link-works-asjcs, link-aa-base-ror, link-uspto-doi</p>
+<p>Name of the process to perform;see the data processing operations in the Alexandria3k Python user API documentation for more details</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="query">
+<h3>query<a class="headerlink" href="#query" title="Link to this heading">¶</a></h3>
+<p>Run a query directly on a data source. The query’s results can be sent to the standard output (default), to a specified file, or to populate a table in an attached database.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">query</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
+          <span class="p">[</span><span class="o">-</span><span class="n">E</span> <span class="n">OUTPUT_ENCODING</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">F</span> <span class="n">FIELD_SEPARATOR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">H</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">P</span><span class="p">]</span>
+          <span class="p">(</span><span class="o">-</span><span class="n">Q</span> <span class="n">QUERY_FILE</span> <span class="o">|</span> <span class="o">-</span><span class="n">q</span> <span class="n">QUERY</span><span class="p">)</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
+          <span class="p">{</span><span class="n">doaj</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">orcid</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">datacite</span><span class="p">}</span>
+          <span class="p">[</span><span class="n">data_location</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat2">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat2" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>data_name</kbd></dt>
+<dd><p>Possible choices: doaj, funder-names, pubmed, issn-subject-codes, ror, asjcs, orcid, crossref, uspto, journal-names, datacite</p>
+<p>Name of the data source to use</p>
+</dd>
+<dt><kbd>data_location</kbd></dt>
+<dd><p>Path or URL of the source’s data</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments_repeat1">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat1" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>-a, --attach-databases</kbd></dt>
+<dd><p>Databases to attach making them available to the query</p>
+</dd>
+<dt><kbd>-E, --output-encoding</kbd></dt>
+<dd><p>Query output character encoding (use utf-8-sig for Excel)</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'utf-8'</span></code></p>
+</dd>
+<dt><kbd>-F, --field-separator</kbd></dt>
+<dd><p>Character to use for separating query output fields</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">','</span></code></p>
+</dd>
+<dt><kbd>-H, --header</kbd></dt>
+<dd><p>Include a header in the query output</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>-o, --output</kbd></dt>
+<dd><p>Output file for query results</p>
+</dd>
+<dt><kbd>-P, --partition</kbd></dt>
+<dd><p>Run the query over partitioned data slices. (Warning: arguments are run per partition.)</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>-Q, --query-file</kbd></dt>
+<dd><p>File containing query to run on the virtual tables</p>
+</dd>
+<dt><kbd>-q, --query</kbd></dt>
+<dd><p>Query to run on the virtual tables</p>
+</dd>
+<dt><kbd>-s, --sample</kbd></dt>
+<dd><p>Python expression to sample the data (e.g. random.random() &lt; 0.0002). The expression can also use a variable named data whose value is documented in the constructor API of each data source.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'True'</span></code></p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="list-processes">
+<h3>list-processes<a class="headerlink" href="#list-processes" title="Link to this heading">¶</a></h3>
+<p>List available data processes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">processes</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="list-complete-schema">
+<h3>list-complete-schema<a class="headerlink" href="#list-complete-schema" title="Link to this heading">¶</a></h3>
+<p>List all data source and process schemas.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">complete</span><span class="o">-</span><span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="list-source-schema">
+<h3>list-source-schema<a class="headerlink" href="#list-source-schema" title="Link to this heading">¶</a></h3>
+<p>List all data source schemas (default) or the specified one.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">source</span><span class="o">-</span><span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+                       <span class="p">[{</span><span class="n">doaj</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">orcid</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">datacite</span><span class="p">}]</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat3">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat3" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>facility</kbd></dt>
+<dd><p>Possible choices: doaj, funder-names, pubmed, issn-subject-codes, ror, asjcs, orcid, crossref, uspto, journal-names, datacite</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="list-process-schema">
+<h3>list-process-schema<a class="headerlink" href="#list-process-schema" title="Link to this heading">¶</a></h3>
+<p>List the schema of all processes (default) or of the specified one.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+                        <span class="p">[{</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">}]</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat4">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat4" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>facility</kbd></dt>
+<dd><p>Possible choices: link-aa-top-ror, link-works-asjcs, link-aa-base-ror, link-uspto-doi</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="list-sources">
+<h3>list-sources<a class="headerlink" href="#list-sources" title="Link to this heading">¶</a></h3>
+<p>List available data sources</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">sources</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="version">
+<h3>version<a class="headerlink" href="#version" title="Link to this heading">¶</a></h3>
+<p>Report program version</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">version</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="download">
+<h3>download<a class="headerlink" href="#download" title="Link to this heading">¶</a></h3>
+<p>Download data using the specified data source.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="p">[</span><span class="n">DATABASE</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">sql</span><span class="o">-</span><span class="n">query</span> <span class="n">SQL_QUERY</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">extra_args</span> <span class="p">[</span><span class="n">EXTRA_ARGS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
+             <span class="p">{</span><span class="n">doaj</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">orcid</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">datacite</span><span class="p">}</span>
+             <span class="n">data_location</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>data_name</kbd></dt>
+<dd><p>Possible choices: doaj, funder-names, pubmed, issn-subject-codes, ror, asjcs, orcid, crossref, uspto, journal-names, datacite</p>
+<p>Name of the data source to use</p>
+</dd>
+<dt><kbd>data_location</kbd></dt>
+<dd><p>File or directory path to save the downloaded data</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments_repeat2">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat2" title="Link to this heading">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>-d, --database</kbd></dt>
+<dd><p>File path of the database to use</p>
+</dd>
+<dt><kbd>--sql-query</kbd></dt>
+<dd><p>SQL query to retrieve the data for downloading</p>
+</dd>
+<dt><kbd>--extra_args</kbd></dt>
+<dd><p>Additional arguments for the data source (e.g. URL, key, file path)</p>
+</dd>
+<dt><kbd>-s, --sample</kbd></dt>
+<dd><p>Python expression to sample the data (e.g. random.random() &lt; 0.0002). The expression can also use a variable named data whose value is documented in the constructor API of each data source.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'True'</span></code></p>
+</dd>
+<dt><kbd>-a, --attach-databases</kbd></dt>
+<dd><p>Databases to attach for the row selection expression</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+</section>
 
 
           </div>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">alexandria3k</a></h1>
 
@@ -62,7 +351,16 @@
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
@@ -71,7 +369,12 @@
 <li class="toctree-l1"><a class="reference internal" href="python-eg.html">Python API examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app-eg.html">Application examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#alexandria3k.__main__-get_cli_parser-positional-arguments">Positional Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#alexandria3k.__main__-get_cli_parser-named-arguments">Named Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Sub-commands">Sub-commands</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="user-api.html">Python user API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugin-api.html">Python plugin API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utility-api.html">Python utility API</a></li>
@@ -96,16 +399,6 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -119,11 +412,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2022-2025, Diomidis Spinellis.
+      &#169;2022-2025, Diomidis Spinellis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/cli.rst.txt"

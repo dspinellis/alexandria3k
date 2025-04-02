@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Link author affiliation with top-level research organization &#8212; alexandria3k 3.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5349f462"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Link USPTO non-patent literature citations with their DOI" href="link_uspto_doi.html" />
@@ -19,8 +19,9 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -32,28 +33,45 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="link-author-affiliation-with-top-level-research-organization">
-<h1>Link author affiliation with top-level research organization<a class="headerlink" href="#link-author-affiliation-with-top-level-research-organization" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alexandria3k.processes</span> <span class="kn">import</span> <span class="n">link_aa_top_ror</span>
+  <section id="link-author-affiliation-with-top-level-research-organization">
+<h1>Link author affiliation with top-level research organization<a class="headerlink" href="#link-author-affiliation-with-top-level-research-organization" title="Link to this heading">¶</a></h1>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alexandria3k.processes</span><span class="w"> </span><span class="kn">import</span> <span class="n">link_aa_top_ror</span>
 </pre></div>
 </div>
-<div class="section" id="generated-schema">
-<h2>Generated schema<a class="headerlink" href="#generated-schema" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">work_authors_rors</span><span class="p">(</span>
-  <span class="n">ror_id</span><span class="p">,</span>
-  <span class="n">work_author_id</span>
+<dl class="py function">
+<dt class="sig sig-object py" id="processes.link_aa_top_ror.process">
+<span class="sig-prename descclassname"><span class="pre">processes.link_aa_top_ror.</span></span><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#processes.link_aa_top_ror.process" title="Link to this definition">¶</a></dt>
+<dd><p>Process the specified database creating a table that links Crossref work
+authors to their corresponding research organization as codified in the
+Research Orgnization Registry (ROR).
+The link is made to the top organizational level corresponding to the
+identified organization, e.g. the hospital, university, or research
+center associated with an author’s clinic, school, or institute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>database_path</strong> (<em>str</em>) – The path specifying the SQLite database
+to process and populate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="generated-schema">
+<h2>Generated schema<a class="headerlink" href="#generated-schema" title="Link to this heading">¶</a></h2>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">work_authors_rors</span><span class="p">(</span>
+<span class="w">  </span><span class="n">ror_id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">work_author_id</span>
 <span class="p">);</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">alexandria3k</a></h1>
 
@@ -73,7 +91,16 @@
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="downloading.html">Data downloading</a></li>
@@ -113,16 +140,6 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -136,11 +153,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2022-2025, Diomidis Spinellis.
+      &#169;2022-2025, Diomidis Spinellis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/link_aa_top_ror.rst.txt"

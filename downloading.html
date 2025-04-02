@@ -1,17 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Data downloading &#8212; alexandria3k 3.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5349f462"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Use overview" href="use.html" />
@@ -19,8 +19,9 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -32,12 +33,12 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="data-downloading">
-<h1>Data downloading<a class="headerlink" href="#data-downloading" title="Permalink to this headline">¶</a></h1>
+  <section id="data-downloading">
+<h1>Data downloading<a class="headerlink" href="#data-downloading" title="Link to this heading">¶</a></h1>
 <p>To use <em>alexandria3k</em> you need to download the open data you require
 for your study.</p>
-<div class="section" id="crossref-data">
-<h2>Crossref data<a class="headerlink" href="#crossref-data" title="Permalink to this headline">¶</a></h2>
+<section id="crossref-data">
+<h2>Crossref data<a class="headerlink" href="#crossref-data" title="Link to this heading">¶</a></h2>
 <p>The main data set on which <em>alexandria3k</em> operates is that of
 <a class="reference external" href="https://www.crossref.org">Crossref</a>, comprising about 130 million
 publication metadata records with more than 1.7 billion reference
@@ -49,7 +50,7 @@ that download the April 2022 Crossref snapshot (the one on which
 <em>alexandria3k</em> has been tested) using the
 <a class="reference external" href="https://aria2.github.io/">aria2c</a> download utility.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download Crossref data (168 GB) through the torrent link</span>
-aria2c https://doi.org/10.13003/83b2gq
+aria2c<span class="w"> </span>https://doi.org/10.13003/83b2gq
 </pre></div>
 </div>
 <p>Currently, the Crossref data set is split into about 26 thousand
@@ -57,15 +58,15 @@ compressed files, each containing JSON data for 3000 publications
 (works). <em>Alexandria3k</em> provides a relational view of these data, and
 also allows the sampling of a subset of the container files to quickly
 experiment with queries, before they are run on the complete set.</p>
-</div>
-<div class="section" id="datacite-data">
-<h2>DataCite data<a class="headerlink" href="#datacite-data" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="datacite-data">
+<h2>DataCite data<a class="headerlink" href="#datacite-data" title="Link to this heading">¶</a></h2>
 <p>You can download the DataCite Public Data File after a simple registration
 from the
 <a class="reference external" href="https://datafiles.datacite.org/">DataCite Data Files Service</a>.</p>
-</div>
-<div class="section" id="orcid-data">
-<h2>ORCID data<a class="headerlink" href="#orcid-data" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="orcid-data">
+<h2>ORCID data<a class="headerlink" href="#orcid-data" title="Link to this heading">¶</a></h2>
 <p>You can populate a database with data regarding authors (URLs,
 countries, external identifiers, education, employment, works, etc.)
 from the <a class="reference external" href="https://orcid.org/">ORCID</a> initiative. For this you need to
@@ -74,9 +75,9 @@ download the <em>summary file</em> of the ORCID Public Data File
 <a class="reference external" href="https://orcid.figshare.com/">Figshare</a>. Note that <em>alexandria3k</em>
 works on the compressed file; there is no need to expand it (it expands
 to about 0.5 TB).</p>
-</div>
-<div class="section" id="pubmed-data">
-<h2>PubMed data<a class="headerlink" href="#pubmed-data" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="pubmed-data">
+<h2>PubMed data<a class="headerlink" href="#pubmed-data" title="Link to this heading">¶</a></h2>
 <p>You can populate a database with the data from the PubMed/MEDLINE database
 from the National Library of Medicine (NLM).
 The data are available from
@@ -91,9 +92,9 @@ are only available in the PubMed data.</p>
 <p>The shell script <code class="docutils literal notranslate"><span class="pre">examples/common/fetch-pubmed.sh</span></code> or the
 <code class="docutils literal notranslate"><span class="pre">$(PUBMED_DIR)</span></code> dependency of the <code class="docutils literal notranslate"><span class="pre">examples/common/Makefile</span></code>,
 which uses it, can be used to download all PubMed data.</p>
-</div>
-<div class="section" id="uspto-data">
-<h2>USPTO data<a class="headerlink" href="#uspto-data" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="uspto-data">
+<h2>USPTO data<a class="headerlink" href="#uspto-data" title="Link to this heading">¶</a></h2>
 <p>You can populate a database with the bibliographic text (front page) of each
 patent application published weekly from 2003 to present. These data are published
 from the US Patent and Trademark Office (USPTO) and hence the data source acronym used in <em>alexandria3k</em>.
@@ -124,9 +125,9 @@ Organize the downloaded data by ensuring that each zip file is placed under a fo
 <p>The shell script <code class="docutils literal notranslate"><span class="pre">examples/common/fetch-uspto.sh</span></code> or the
 <code class="docutils literal notranslate"><span class="pre">$(USPTO_DIR)</span></code> dependency of the <code class="docutils literal notranslate"><span class="pre">examples/common/Makefile</span></code>,
 which uses it, can be used to download all USPTO data.</p>
-</div>
-<div class="section" id="other-data-sources">
-<h2>Other data sources<a class="headerlink" href="#other-data-sources" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="other-data-sources">
+<h2>Other data sources<a class="headerlink" href="#other-data-sources" title="Link to this heading">¶</a></h2>
 <p>The <em>alexandria3k</em> system can also add to a database the following
 tables. You can download the data and point <em>alexandria3k</em> to the
 corresponding file, or, because the data sets are relatively small, you
@@ -146,15 +147,15 @@ records)</p></li>
 data</a> from the <a class="reference external" href="https://ror.org/">Research
 Organization Registry — ROR</a> (595k records)</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">alexandria3k</a></h1>
 
@@ -174,7 +175,16 @@ Organization Registry — ROR</a> (595k records)</p></li>
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data downloading</a><ul>
@@ -216,16 +226,6 @@ Organization Registry — ROR</a> (595k records)</p></li>
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -239,11 +239,11 @@ Organization Registry — ROR</a> (595k records)</p></li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2022-2025, Diomidis Spinellis.
+      &#169;2022-2025, Diomidis Spinellis.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/downloading.rst.txt"
