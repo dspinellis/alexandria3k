@@ -15,11 +15,10 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install pipenv
-        pipenv install --dev
+        cd src && pipenv install --dev
 
     - name: Build HTML with Sphinx
-      run: cd docs && pipenv run make html
+      run: cd src && pipenv run make -C ../docs html
 
     - name: Upload artifacts
       uses: actions/upload-artifact@main
