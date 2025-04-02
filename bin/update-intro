@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Update the documentation introduction from the README file.
+# Requires Pandoc
+#
+
+# Fail on command errors and unset variables
+set -eu
+
+{
+  echo '.. Auto-generated file; run bin/update-intro to update it.'
+  echo
+  sed -n '/INTRO-BEGIN/,/INTRO-END/{/INTRO-/d;p;}' README.md |
+    pandoc -f markdown -t rst
+} >docs/intro.rst

@@ -137,6 +137,21 @@ documentation must be updated as follows.
 
 This requires an installed version of `Pandoc <https://pandoc.org/>`__.
 
+Documentation introduction
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The documentation's introduction is create from the source code
+repository's ``README.md`` file.
+When that file is changed, the documentaiton introduction
+must be updated as follows.
+
+.. code:: sh
+
+   # While in the top-level directory
+   bin/update-intro
+
+This requires an installed version of `Pandoc <https://pandoc.org/>`__.
+
 Database schema diagrams
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

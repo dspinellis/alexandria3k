@@ -3,31 +3,26 @@ Data downloading
 
 To use *alexandria3k* you need to download the open data you require
 for your study.
+The data are described in this documentation's
+`Introduction <introduction_>`_.
 
 Crossref data
 ~~~~~~~~~~~~~
 
 The main data set on which *alexandria3k* operates is that of
-`Crossref <https://www.crossref.org>`__, comprising about 130 million
-publication metadata records with more than 1.7 billion reference
-records and 359 million author records. You can obtain the data from
+`Crossref <https://www.crossref.org>`__.
+You can obtain the data from
 `Acedemic
 Torrents <https://academictorrents.com/browse.php?search=crossref>`__
 using a torrent client of your choice. Below is an example of commands
 that download the April 2022 Crossref snapshot (the one on which
-*alexandria3k* has been tested) using the
+*alexandria3k* was originally applied) using the
 `aria2c <https://aria2.github.io/>`__ download utility.
 
 .. code:: sh
 
    # Download Crossref data (168 GB) through the torrent link
    aria2c https://doi.org/10.13003/83b2gq
-
-Currently, the Crossref data set is split into about 26 thousand
-compressed files, each containing JSON data for 3000 publications
-(works). *Alexandria3k* provides a relational view of these data, and
-also allows the sampling of a subset of the container files to quickly
-experiment with queries, before they are run on the complete set.
 
 DataCite data
 ~~~~~~~~~~~~~
@@ -42,10 +37,9 @@ You can populate a database with data regarding authors (URLs,
 countries, external identifiers, education, employment, works, etc.)
 from the `ORCID <https://orcid.org/>`__ initiative. For this you need to
 download the *summary file* of the ORCID Public Data File
-(e.g. ``ORCID_2022_10_summaries.tar.gz`` — 25GB) through
+(e.g. ``ORCID_2024_10_summaries.tar.gz``) through
 `Figshare <https://orcid.figshare.com/>`__. Note that *alexandria3k*
-works on the compressed file; there is no need to expand it (it expands
-to about 0.5 TB).
+works on the compressed file; there is no need to expand it.
 
 PubMed data
 ~~~~~~~~~~~

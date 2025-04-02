@@ -2,17 +2,26 @@
 
 ## Alexandria3k
 
+<!-- INTRO-BEGIN -->
+
 The _alexandria3k_ package supplies a library and a command-line tool
-providing efficient relational query access to the following
+providing fast and space-efficient relational query access to the following
 large scientific publication open data sets.
 Data are decompressed on the fly, thus allowing the package's use even on
 storage-restricted laptops.
+The _alexandria3k_ package supports the following large data sets.
 
 * [Crossref](https://www.nature.com/articles/d41586-022-02926-y)
-  (157 GB compressed, 1 TB uncompressed).
-  This contains publication metadata from about 134 million publications from
-  all major international publishers with full citation data for 60 million
-  of them.
+  (184 GiB compressed,
+<!--. gzip -l * | awk '{s += $2}END{print s, s / 1024 / 1024 / 1024 / 1024}'
+ 2081831841198 1.89342 -->
+  1.9 TiB uncompressed — as of March 2025).
+  This contains publication metadata from all major international publishers.
+  The Crossref data set is split into about 33 thousand files.
+  Each file contains JSON data for 5000 publications (works).
+  In total, Crossref contains data for 167 million works,
+  35 million abstracts, 465 million associated work authors,
+  and 2.5 billion references.
 * [PubMed](https://pubmed.ncbi.nlm.nih.gov/)
   (43 GB compressed, 327 GB uncompressed).
   This comprises more than 36 million citations
@@ -23,16 +32,19 @@ storage-restricted laptops.
   such as [MeSH](https://www.nlm.nih.gov/mesh/meshhome.html) indexing,
   funding, genetic, and chemical details.
 * [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
-  (25 GB compressed, 435 GB uncompressed).
-  This contains about 78 million author details records.
+  (37 GiB compressed, 651 GiB uncompressed — as of October 2024).
+<!-- tar tzvf ORCID_2024_10_summaries.tar.gz | wc -l -->
+  This contains about 22 million author details records.
 * [DataCite](https://datacite.org/)
   (22 GB compressed, 197 GB uncompressed).
   This comprises research outputs and resources,
   such as data, pre-prints, images, and samples,
   containing about 50 million work entries.
 * [United States Patent Office issued patents](https://bulkdata.uspto.gov/)
-  (11 GB compressed, 115 GB uncompressed).
-  This  containins about 5.4 million records.
+  (12 GiB compressed,
+<!-- find . -name \*.zip | xargs -n 1 unzip -v | awk '/files$/{ s+= $1}END{print s, s / 1024 / 1024 / 1024}' -->
+  128 GiB uncompressed — as of January 2025).
+  This  contains about 5.4 million records.
 
 Further supported data sets include
 funder bodies,
@@ -46,6 +58,7 @@ It does not require the installation, configuration, and maintenance
 of a third party relational or graph database.
 It can therefore be used out-of-the-box for performing reproducible
 publication research on the desktop.
+<!-- INTRO-END -->
 
 ## Installation and documentation
 
