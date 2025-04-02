@@ -13,8 +13,6 @@ The _alexandria3k_ package supports the following large data sets.
 
 * [Crossref](https://www.nature.com/articles/d41586-022-02926-y)
   (184 GiB compressed,
-<!--. gzip -l * | awk '{s += $2}END{print s, s / 1024 / 1024 / 1024 / 1024}'
- 2081831841198 1.89342 -->
   1.9 TiB uncompressed — as of March 2025).
   This contains publication metadata from all major international publishers.
   The Crossref data set is split into about 33 thousand files.
@@ -22,6 +20,8 @@ The _alexandria3k_ package supports the following large data sets.
   In total, Crossref contains data for 167 million works,
   35 million abstracts, 465 million associated work authors,
   and 2.5 billion references.
+<!--. gzip -l * | awk '{s += $2}END{print s, s / 1024 / 1024 / 1024 / 1024}'
+ 2081831841198 1.89342 -->
 * [PubMed](https://pubmed.ncbi.nlm.nih.gov/)
   (43 GB compressed, 327 GB uncompressed).
   This comprises more than 36 million citations
@@ -33,8 +33,8 @@ The _alexandria3k_ package supports the following large data sets.
   funding, genetic, and chemical details.
 * [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (37 GiB compressed, 651 GiB uncompressed — as of October 2024).
-<!-- tar tzvf ORCID_2024_10_summaries.tar.gz | wc -l -->
   This contains about 22 million author details records.
+<!-- tar tzvf ORCID_2024_10_summaries.tar.gz | wc -l -->
 * [DataCite](https://datacite.org/)
   (22 GB compressed, 197 GB uncompressed).
   This comprises research outputs and resources,
@@ -42,9 +42,9 @@ The _alexandria3k_ package supports the following large data sets.
   containing about 50 million work entries.
 * [United States Patent Office issued patents](https://bulkdata.uspto.gov/)
   (12 GiB compressed,
-<!-- find . -name \*.zip | xargs -n 1 unzip -v | awk '/files$/{ s+= $1}END{print s, s / 1024 / 1024 / 1024}' -->
   128 GiB uncompressed — as of January 2025).
   This  contains about 5.4 million records.
+<!-- find . -name \*.zip | xargs -n 1 unzip -v | awk '/files$/{ s+= $1}END{print s, s / 1024 / 1024 / 1024}' -->
 
 Further supported data sets include
 funder bodies,
