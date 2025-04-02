@@ -45,6 +45,7 @@ a single pass.
 Without this option, the query would take millenia to complete.
 
 .. code:: sh
+
    a3k query crossref 'April 2024 Public Data File from Crossref/' \
    --partition --query 'SELECT doi, Count(*) AS author_number
      FROM works LEFT JOIN work_authors
