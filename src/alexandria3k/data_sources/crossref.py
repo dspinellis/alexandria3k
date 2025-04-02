@@ -562,6 +562,8 @@ tables = [
             ColumnMeta("work_id"),
             ColumnMeta("container_id"),
             ColumnMeta("label", lambda row: dict_value(row, "label")),
+            ColumnMeta("type", lambda row: dict_value(row, "type")),
+            ColumnMeta("source", lambda row: dict_value(row, "source")),
             ColumnMeta(
                 "doi", lambda row: lower_or_none(dict_value(row, "DOI"))
             ),
