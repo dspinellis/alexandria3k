@@ -7,7 +7,7 @@ Crossref publication data
 
    from alexandria3k.data_sources import crossref
 
-.. autoclass:: data_sources.crossref.Crossref
+.. autoclass:: alexandria3k.data_sources.crossref.Crossref
    :members: query, populate
 
 Generated schema

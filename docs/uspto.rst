@@ -7,7 +7,7 @@ Patent grant bibliographic (front page) text data (JAN 1976 - present)
 
    from alexandria3k.data_sources import uspto
 
-.. autoclass:: data_sources.uspto.Uspto
+.. autoclass:: alexandria3k.data_sources.uspto.Uspto
    :members: query, populate
 
 Generated schema
