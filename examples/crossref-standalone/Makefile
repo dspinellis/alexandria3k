@@ -13,6 +13,14 @@ reports/work-metrics.txt: work-metrics.sql $(CROSSREF_DIR)
 	$(TIME) $(A3K) query crossref $(CROSSREF_DIR) \
 	  --query-file work-metrics.sql >$@
 
+reports/work-references.txt: $(CROSSREF_DIR)
+	$(TIME) $(A3K) query crossref $(CROSSREF_DIR) \
+	  --query 'SELECT Count(*) FROM work_references;' >$@
+
+reports/work-authors.txt: $(CROSSREF_DIR)
+	$(TIME) $(A3K) query crossref $(CROSSREF_DIR) \
+	  --query 'SELECT Count(*) FROM work_authors;' >$@
+
 reports/yearly-journals.txt: yearly-journals.sql $(CROSSREF_DIR)
 	mkdir -p reports
 	$(TIME) $(A3K) query crossref $(CROSSREF_DIR) \
