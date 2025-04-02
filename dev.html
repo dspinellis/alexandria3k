@@ -146,6 +146,18 @@ bin/update-app-eg
 </div>
 <p>This requires an installed version of <a class="reference external" href="https://pandoc.org/">Pandoc</a>.</p>
 </section>
+<section id="documentation-introduction">
+<h2>Documentation introduction<a class="headerlink" href="#documentation-introduction" title="Link to this heading">¶</a></h2>
+<p>The documentation’s introduction is create from the source code
+repository’s <code class="docutils literal notranslate"><span class="pre">README.md</span></code> file.
+When that file is changed, the documentaiton introduction
+must be updated as follows.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in the top-level directory</span>
+bin/update-intro
+</pre></div>
+</div>
+<p>This requires an installed version of <a class="reference external" href="https://pandoc.org/">Pandoc</a>.</p>
+</section>
 <section id="database-schema-diagrams">
 <h2>Database schema diagrams<a class="headerlink" href="#database-schema-diagrams" title="Link to this heading">¶</a></h2>
 <p>After the database schema has changed, its relational diagrams in the
@@ -235,6 +247,7 @@ new plugin, as described in <a class="reference internal" href="dev-plugin.html"
 <li class="toctree-l2"><a class="reference internal" href="#linting">Linting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plugin-documentation">Plugin documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#application-examples-documentation">Application examples documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation-introduction">Documentation introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#database-schema-diagrams">Database schema diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building">Building</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#documentation-building">Documentation building</a></li>

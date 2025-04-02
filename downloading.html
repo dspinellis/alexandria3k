@@ -36,28 +36,24 @@
   <section id="data-downloading">
 <h1>Data downloading<a class="headerlink" href="#data-downloading" title="Link to this heading">¶</a></h1>
 <p>To use <em>alexandria3k</em> you need to download the open data you require
-for your study.</p>
+for your study.
+The data are described in this documentation’s
+<a href="#id1"><span class="problematic" id="id3">`Introduction &lt;introduction_&gt;`_</span></a><a href="#id1"><span class="problematic" id="id2"> &lt;introduction_&gt;</span></a>.</p>
 <section id="crossref-data">
 <h2>Crossref data<a class="headerlink" href="#crossref-data" title="Link to this heading">¶</a></h2>
 <p>The main data set on which <em>alexandria3k</em> operates is that of
-<a class="reference external" href="https://www.crossref.org">Crossref</a>, comprising about 130 million
-publication metadata records with more than 1.7 billion reference
-records and 359 million author records. You can obtain the data from
+<a class="reference external" href="https://www.crossref.org">Crossref</a>.
+You can obtain the data from
 <a class="reference external" href="https://academictorrents.com/browse.php?search=crossref">Acedemic
 Torrents</a>
 using a torrent client of your choice. Below is an example of commands
 that download the April 2022 Crossref snapshot (the one on which
-<em>alexandria3k</em> has been tested) using the
+<em>alexandria3k</em> was originally applied) using the
 <a class="reference external" href="https://aria2.github.io/">aria2c</a> download utility.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download Crossref data (168 GB) through the torrent link</span>
 aria2c<span class="w"> </span>https://doi.org/10.13003/83b2gq
 </pre></div>
 </div>
-<p>Currently, the Crossref data set is split into about 26 thousand
-compressed files, each containing JSON data for 3000 publications
-(works). <em>Alexandria3k</em> provides a relational view of these data, and
-also allows the sampling of a subset of the container files to quickly
-experiment with queries, before they are run on the complete set.</p>
 </section>
 <section id="datacite-data">
 <h2>DataCite data<a class="headerlink" href="#datacite-data" title="Link to this heading">¶</a></h2>
@@ -71,10 +67,9 @@ from the
 countries, external identifiers, education, employment, works, etc.)
 from the <a class="reference external" href="https://orcid.org/">ORCID</a> initiative. For this you need to
 download the <em>summary file</em> of the ORCID Public Data File
-(e.g. <code class="docutils literal notranslate"><span class="pre">ORCID_2022_10_summaries.tar.gz</span></code> — 25GB) through
+(e.g. <code class="docutils literal notranslate"><span class="pre">ORCID_2024_10_summaries.tar.gz</span></code>) through
 <a class="reference external" href="https://orcid.figshare.com/">Figshare</a>. Note that <em>alexandria3k</em>
-works on the compressed file; there is no need to expand it (it expands
-to about 0.5 TB).</p>
+works on the compressed file; there is no need to expand it.</p>
 </section>
 <section id="pubmed-data">
 <h2>PubMed data<a class="headerlink" href="#pubmed-data" title="Link to this heading">¶</a></h2>
