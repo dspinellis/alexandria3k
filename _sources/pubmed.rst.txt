@@ -7,7 +7,7 @@ PubMed publication data
 
    from alexandria3k.data_sources import pubmed
 
-.. autoclass:: data_sources.pubmed.Pubmed
+.. autoclass:: alexandria3k.data_sources.pubmed.Pubmed
    :members: query, populate
 
 Generated schema

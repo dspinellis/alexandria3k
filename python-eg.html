@@ -85,6 +85,16 @@ The <code class="docutils literal notranslate"><span class="pre">partition=True<
 separately on each container file, allowing the query’s execution in
 a single pass.
 Without this option, the query would take millenia to complete.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">author_number</span><span class="p">)</span> <span class="ow">in</span> <span class="n">crossref_instance</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">  SELECT doi, Count(*) AS author_number</span>
+<span class="s2">    FROM works LEFT JOIN work_authors</span>
+<span class="s2">      ON work_authors.work_id = works.id</span>
+<span class="s2">    GROUP BY doi HAVING Count(*) &gt; 50</span>
+<span class="s2">  &quot;&quot;&quot;</span><span class="p">,</span> <span class="n">partition</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">author_number</span><span class="p">)</span>
+<span class="n">crossref_instance</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="create-a-dictionary-of-which-2021-publications-were-funded-by-each-body">
 <h2>Create a dictionary of which 2021 publications were funded by each body<a class="headerlink" href="#create-a-dictionary-of-which-2021-publications-were-funded-by-each-body" title="Permalink to this headline">¶</a></h2>

@@ -103,6 +103,7 @@ The employed modules and classes are documented in the
   * ``pubmed`` maps a set of compressed XML files, all residing in
     a single directory, and each containing multiple works.
   * ``ror`` maps a single compressed JSON file into several tables.
+
   The ``crossref``, ``ror``, and ``orcid`` data sources implement partitioning.
   In addition, the ``crossref``, ``orcid`, and ``datacite`` data sources
   implement indexing over partitions,

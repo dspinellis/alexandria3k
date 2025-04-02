@@ -62,6 +62,7 @@ a single pass.
 Without this option, the query would take millenia to complete.
 
 .. code:: py
+
    for (doi, author_number) in crossref_instance.query("""
      SELECT doi, Count(*) AS author_number
        FROM works LEFT JOIN work_authors

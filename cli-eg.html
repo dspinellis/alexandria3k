@@ -71,6 +71,13 @@ The <code class="docutils literal notranslate"><span class="pre">--partition</sp
 separately on each container file, allowing the query’s execution in
 a single pass.
 Without this option, the query would take millenia to complete.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k query crossref <span class="s1">&#39;April 2024 Public Data File from Crossref/&#39;</span> <span class="se">\</span>
+--partition --query <span class="s1">&#39;SELECT doi, Count(*) AS author_number</span>
+<span class="s1">  FROM works LEFT JOIN work_authors</span>
+<span class="s1">    ON work_authors.work_id = works.id</span>
+<span class="s1">  GROUP BY doi HAVING Count(*) &gt; 50&#39;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="count-crossref-publications-by-year-and-type">
 <h2>Count Crossref publications by year and type<a class="headerlink" href="#count-crossref-publications-by-year-and-type" title="Permalink to this headline">¶</a></h2>
