@@ -7,13 +7,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@main
-    - name: Build HTML
-      uses: ammaraskar/sphinx-action@master
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        pip install pipenv
+        pipenv install --dev
+
+    - name: Build HTML with Sphinx
+      run: cd docs && pipenv run make html
+
     - name: Upload artifacts
       uses: actions/upload-artifact@main
       with:
         name: html-docs
         path: docs/_build/html/
+
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       if: github.ref == 'refs/heads/main'
