@@ -22,6 +22,7 @@ The _alexandria3k_ package supports the following large data sets.
   and 2.5 billion references.
 <!--. gzip -l * | awk '{s += $2}END{print s, s / 1024 / 1024 / 1024 / 1024}'
  2081831841198 1.89342 -->
+
 * [PubMed](https://pubmed.ncbi.nlm.nih.gov/)
   (43 GB compressed, 327 GB uncompressed).
   This comprises more than 36 million citations
@@ -31,15 +32,18 @@ The _alexandria3k_ package supports the following large data sets.
   with rich domain-specific metadata,
   such as [MeSH](https://www.nlm.nih.gov/mesh/meshhome.html) indexing,
   funding, genetic, and chemical details.
+
 * [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (37 GiB compressed, 651 GiB uncompressed — as of October 2024).
   This contains about 22 million author details records.
 <!-- tar tzvf ORCID_2024_10_summaries.tar.gz | wc -l -->
+
 * [DataCite](https://datacite.org/)
   (22 GB compressed, 197 GB uncompressed).
   This comprises research outputs and resources,
   such as data, pre-prints, images, and samples,
   containing about 50 million work entries.
+
 * [United States Patent Office issued patents](https://bulkdata.uspto.gov/)
   (12 GiB compressed,
   128 GiB uncompressed — as of January 2025).
