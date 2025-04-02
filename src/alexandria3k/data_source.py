@@ -320,8 +320,8 @@ class RecordsCursor(NestedElementsCursor):
     :type table: StreamingTable
 
     :param file_cursor: A cursor that iterates over the elements in a file.
-    The behavior of this cursor may depend on whether the file is compressed and
-    the type of file being processed.
+        The behavior of this cursor may depend on whether the file is
+        compressed and the type of file being processed.
     :type file_cursor: object
     """
 
@@ -788,11 +788,12 @@ class DataSource:
         """
         Download the data source to the specified data location.
 
-        :param data_location : The file or directory path to store for the downloaded data.
+        :param data_location: The file or directory path to store
+            for the downloaded data.
         :type data_location: object
 
         :param database: An optional path, specifying an SQLite database
-        to use for retrieving the records to populate.
+            to use for retrieving the records to populate.
         :type database: str, optional
 
         :param sql_query: An SQL `SELECT` query specifying the required data,
