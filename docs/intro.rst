@@ -30,10 +30,10 @@ following large data sets.
    (37 GiB compressed, 651 GiB uncompressed — as of October 2024). This
    contains about 22 million author details records.
 
--  `DataCite <https://datacite.org/>`__ (22 GB compressed, 197 GB
-   uncompressed). This comprises research outputs and resources, such as
-   data, pre-prints, images, and samples, containing about 50 million
-   work entries.
+-  `DataCite <https://datacite.org/>`__ (24 GiB compressed, 347 GiB
+   uncompressed — as of 2024). This comprises research outputs and
+   resources, such as data, pre-prints, images, and samples, containing
+   about 50 million work entries.
 
 -  `United States Patent Office issued
    patents <https://bulkdata.uspto.gov/>`__ (12 GiB compressed, 128 GiB

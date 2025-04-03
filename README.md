@@ -39,7 +39,7 @@ The _alexandria3k_ package supports the following large data sets.
 <!-- tar tzvf ORCID_2024_10_summaries.tar.gz | wc -l -->
 
 * [DataCite](https://datacite.org/)
-  (22 GB compressed, 197 GB uncompressed).
+  (24 GiB compressed, 347 GiB uncompressed — as of 2024).
   This comprises research outputs and resources,
   such as data, pre-prints, images, and samples,
   containing about 50 million work entries.
