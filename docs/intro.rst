@@ -16,9 +16,9 @@ following large data sets.
    abstracts, 465 million associated work authors, and 2.5 billion
    references.
 
--  `PubMed <https://pubmed.ncbi.nlm.nih.gov/>`__ (43 GB compressed, 327
-   GB uncompressed). This comprises more than 36 million citations for
-   biomedical literature from
+-  `PubMed <https://pubmed.ncbi.nlm.nih.gov/>`__ (47 GiB compressed, 707
+   GiB uncompressed — as of April 2025). This comprises more than 36
+   million citations for biomedical literature from
    `MEDLINE <https://www.nlm.nih.gov/medline/medline_overview.html>`__,
    life science journals, and online books, with rich domain-specific
    metadata, such as

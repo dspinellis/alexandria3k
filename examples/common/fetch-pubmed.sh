@@ -13,10 +13,10 @@ cd pubmed
 
 # Obtain last baseline file from README.txt
 last=$(curl --silent https://ftp.ncbi.nlm.nih.gov/pubmed/baseline/README.txt |
-  sed -n '/pubmed24n0001/s/.*pubmed24n\([^.]*\)\.xml.*/\1/p')
+  sed -n '/pubmed25n0001/s/.*pubmed25n\([^.]*\)\.xml.*/\1/p')
 
 for n in $(seq 1 $last) ; do
-  file_name=$(printf 'pubmed24n%04d.xml.gz' $n)
+  file_name=$(printf 'pubmed25n%04d.xml.gz' $n)
 
   test -r $file_name && continue
 

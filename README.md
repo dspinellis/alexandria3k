@@ -24,7 +24,7 @@ The _alexandria3k_ package supports the following large data sets.
  2081831841198 1.89342 -->
 
 * [PubMed](https://pubmed.ncbi.nlm.nih.gov/)
-  (43 GB compressed, 327 GB uncompressed).
+  (47 GiB compressed, 707 GiB uncompressed — as of April 2025).
   This comprises more than 36 million citations
   for biomedical literature from
   [MEDLINE](https://www.nlm.nih.gov/medline/medline_overview.html),
@@ -32,6 +32,7 @@ The _alexandria3k_ package supports the following large data sets.
   with rich domain-specific metadata,
   such as [MeSH](https://www.nlm.nih.gov/mesh/meshhome.html) indexing,
   funding, genetic, and chemical details.
+<!--. gzip -l * | awk '{s += $2}END{print s, s / 1024 / 1024 / 1024 }' -->
 
 * [ORCID summary data set](https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file-)
   (37 GiB compressed, 651 GiB uncompressed — as of October 2024).
