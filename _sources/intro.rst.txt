@@ -16,9 +16,9 @@ following large data sets.
    abstracts, 465 million associated work authors, and 2.5 billion
    references.
 
--  `PubMed <https://pubmed.ncbi.nlm.nih.gov/>`__ (43 GB compressed, 327
-   GB uncompressed). This comprises more than 36 million citations for
-   biomedical literature from
+-  `PubMed <https://pubmed.ncbi.nlm.nih.gov/>`__ (47 GiB compressed, 707
+   GiB uncompressed — as of April 2025). This comprises more than 36
+   million citations for biomedical literature from
    `MEDLINE <https://www.nlm.nih.gov/medline/medline_overview.html>`__,
    life science journals, and online books, with rich domain-specific
    metadata, such as
@@ -30,10 +30,10 @@ following large data sets.
    (37 GiB compressed, 651 GiB uncompressed — as of October 2024). This
    contains about 22 million author details records.
 
--  `DataCite <https://datacite.org/>`__ (22 GB compressed, 197 GB
-   uncompressed). This comprises research outputs and resources, such as
-   data, pre-prints, images, and samples, containing about 50 million
-   work entries.
+-  `DataCite <https://datacite.org/>`__ (24 GiB compressed, 347 GiB
+   uncompressed — as of 2024). This comprises research outputs and
+   resources, such as data, pre-prints, images, and samples, containing
+   about 50 million work entries.
 
 -  `United States Patent Office issued
    patents <https://bulkdata.uspto.gov/>`__ (12 GiB compressed, 128 GiB
