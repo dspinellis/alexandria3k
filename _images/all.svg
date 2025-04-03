@@ -106,21 +106,23 @@
 <!-- work_updates -->
 <g id="node5" class="node">
 <title>work_updates</title>
-<polygon fill="#ffc62c" stroke="transparent" points="2353,-1306 2255,-1306 2255,-1206 2353,-1206 2353,-1306"/>
-<text text-anchor="start" x="2258" y="-1292.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#000000">work_updates</text>
-<text text-anchor="start" x="2267" y="-1272.8" font-family="Arial" font-size="14.00" fill="#000000">work_id</text>
-<text text-anchor="start" x="2267" y="-1257.8" font-family="Arial" font-size="14.00" fill="#000000">container_id</text>
-<text text-anchor="start" x="2267" y="-1242.8" font-family="Arial" font-size="14.00" fill="#000000">label</text>
-<text text-anchor="start" x="2267" y="-1227.8" font-family="Arial" font-size="14.00" fill="#000000">doi</text>
-<text text-anchor="start" x="2267" y="-1212.8" font-family="Arial" font-size="14.00" fill="#000000">timestamp</text>
-<polygon fill="black" stroke="black" points="2255,-1286 2255,-1286 2353,-1286 2353,-1286 2255,-1286"/>
-<polygon fill="none" stroke="black" points="2255,-1206 2255,-1306 2353,-1306 2353,-1206 2255,-1206"/>
+<polygon fill="#ffc62c" stroke="transparent" points="2353,-1321 2255,-1321 2255,-1191 2353,-1191 2353,-1321"/>
+<text text-anchor="start" x="2258" y="-1307.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#000000">work_updates</text>
+<text text-anchor="start" x="2267" y="-1287.8" font-family="Arial" font-size="14.00" fill="#000000">work_id</text>
+<text text-anchor="start" x="2267" y="-1272.8" font-family="Arial" font-size="14.00" fill="#000000">container_id</text>
+<text text-anchor="start" x="2267" y="-1257.8" font-family="Arial" font-size="14.00" fill="#000000">label</text>
+<text text-anchor="start" x="2267" y="-1242.8" font-family="Arial" font-size="14.00" fill="#000000">type</text>
+<text text-anchor="start" x="2267" y="-1227.8" font-family="Arial" font-size="14.00" fill="#000000">source</text>
+<text text-anchor="start" x="2267" y="-1212.8" font-family="Arial" font-size="14.00" fill="#000000">doi</text>
+<text text-anchor="start" x="2267" y="-1197.8" font-family="Arial" font-size="14.00" fill="#000000">timestamp</text>
+<polygon fill="black" stroke="black" points="2255,-1301 2255,-1301 2353,-1301 2353,-1301 2255,-1301"/>
+<polygon fill="none" stroke="black" points="2255,-1191 2255,-1321 2353,-1321 2353,-1191 2255,-1191"/>
 </g>
 <!-- works&#45;&gt;work_updates -->
 <g id="edge4" class="edge">
 <title>works&#45;&gt;work_updates</title>
-<path fill="none" stroke="black" d="M2232.74,-1752.96C2237.45,-1728.82 2242.01,-1704.33 2246,-1681 2269.08,-1545.88 2289.02,-1385.29 2298.36,-1306.13"/>
-<text text-anchor="middle" x="2282.36" y="-1309.93" font-family="Arial" font-size="14.00">0…N</text>
+<path fill="none" stroke="black" d="M2232.74,-1752.96C2237.45,-1728.82 2242.01,-1704.33 2246,-1681 2267.7,-1553.94 2286.63,-1404.35 2296.57,-1321.13"/>
+<text text-anchor="middle" x="2280.57" y="-1324.93" font-family="Arial" font-size="14.00">0…N</text>
 <text text-anchor="middle" x="2228.74" y="-1741.76" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- work_subjects -->
