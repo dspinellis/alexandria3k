@@ -12,4 +12,5 @@ set -eu
   echo
   sed -n '/INTRO-BEGIN/,/INTRO-END/{/INTRO-/d;p;}' README.md |
     pandoc -f markdown -t rst
-} >docs/intro.rst
+} |
+  tr -d \\r >docs/intro.rst
