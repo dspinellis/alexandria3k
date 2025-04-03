@@ -15,6 +15,7 @@ following large data sets.
    total, Crossref contains data for 167 million works, 35 million
    abstracts, 465 million associated work authors, and 2.5 billion
    references.
+
 -  `PubMed <https://pubmed.ncbi.nlm.nih.gov/>`__ (43 GB compressed, 327
    GB uncompressed). This comprises more than 36 million citations for
    biomedical literature from
@@ -23,14 +24,17 @@ following large data sets.
    metadata, such as
    `MeSH <https://www.nlm.nih.gov/mesh/meshhome.html>`__ indexing,
    funding, genetic, and chemical details.
+
 -  `ORCID summary data
    set <https://support.orcid.org/hc/en-us/articles/360006897394-How-do-I-get-the-public-data-file->`__
    (37 GiB compressed, 651 GiB uncompressed — as of October 2024). This
    contains about 22 million author details records.
+
 -  `DataCite <https://datacite.org/>`__ (22 GB compressed, 197 GB
    uncompressed). This comprises research outputs and resources, such as
    data, pre-prints, images, and samples, containing about 50 million
    work entries.
+
 -  `United States Patent Office issued
    patents <https://bulkdata.uspto.gov/>`__ (12 GiB compressed, 128 GiB
    uncompressed — as of January 2025). This contains about 5.4 million
@@ -44,3 +48,16 @@ to run it. It does not require the installation, configuration, and
 maintenance of a third party relational or graph database. It can
 therefore be used out-of-the-box for performing reproducible publication
 research on the desktop.
+
+Databases populated with *alexandria3k* can be used by generative AI
+applications through the `Model Context
+Protocol <https://modelcontextprotocol.io/>`__ and its
+`SQLite <https://github.com/modelcontextprotocol/servers/blob/main/src/sqlite>`__
+reference server. Application examples include topic modeling,
+snowballing, trend analysis, author disambiguation, citation graph
+generation, research trend analysis, patent similarity detection, grant
+and funding prediction, co-authorship network mapping, institutional
+collaboration analysis, knowledge graph augmentation, research impact
+prediction, academic fraud detection, technology transfer mapping,
+interdisciplinary research discovery, and research paper
+recommendations.
