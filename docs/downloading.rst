@@ -4,7 +4,7 @@ Data downloading
 To use *alexandria3k* you need to download the open data you require
 for your study.
 The data are described in this documentation's
-`Introduction <introduction_>`_.
+`Introduction <index.html#introduction>`_.
 
 Crossref data
 ~~~~~~~~~~~~~

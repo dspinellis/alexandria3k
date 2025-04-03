@@ -30,7 +30,8 @@ copyright = f"2022-{datetime.now().year}, {author}"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc", "sphinxarg.ext"]
+extensions = ["sphinx.ext.autodoc", "sphinxarg.ext", 'sphinx.ext.intersphinx']
+
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
