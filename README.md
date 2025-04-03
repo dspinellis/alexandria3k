@@ -62,6 +62,30 @@ It does not require the installation, configuration, and maintenance
 of a third party relational or graph database.
 It can therefore be used out-of-the-box for performing reproducible
 publication research on the desktop.
+
+Databases populated with _alexandria3k_ can be used by generative AI
+applications through the
+[Model Context Protocol](https://modelcontextprotocol.io/) and its
+[SQLite](https://github.com/modelcontextprotocol/servers/blob/main/src/sqlite)
+reference server.
+Application examples include
+topic modeling,
+snowballing,
+trend analysis,
+author disambiguation,
+citation graph generation,
+research trend analysis,
+patent similarity detection,
+grant and funding prediction,
+co-authorship network mapping,
+institutional collaboration analysis,
+knowledge graph augmentation,
+research impact prediction,
+academic fraud detection,
+technology transfer mapping,
+interdisciplinary research discovery, and
+research paper recommendations.
+
 <!-- INTRO-END -->
 
 ## Installation and documentation
