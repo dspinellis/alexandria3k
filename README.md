@@ -46,8 +46,7 @@ The _alexandria3k_ package supports the following large data sets.
   containing about 50 million work entries.
 
 * [United States Patent Office issued patents](https://bulkdata.uspto.gov/)
-  (12 GiB compressed,
-  128 GiB uncompressed — as of January 2025).
+  (12 GiB compressed, 128 GiB uncompressed — as of January 2025).
   This  contains about 5.4 million records.
 <!-- find . -name \*.zip | xargs -n 1 unzip -v | awk '/files$/{ s+= $1}END{print s, s / 1024 / 1024 / 1024}' -->
 
