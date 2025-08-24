@@ -64,27 +64,18 @@ USPTO data
 ~~~~~~~~~~
 
 You can populate a database with the bibliographic text (front page) of each
-patent application published weekly from 2003 to present. These data are published
+patent application published weekly from 2005 to present. These data are published
 from the US Patent and Trademark Office (USPTO) and hence the data source acronym used in *alexandria3k*.
-Some of the key components of bibliographic data in a USPTO patent are
-title,
-inventors,
-assignee,
-publication date,
-references,
-citations,
-related documents, etc.
 
 Follow these steps to explore the USPTO patent bibliographic data with the magic of *alexandria3k*.
 
 **Downloading Data**:
-To access the required data, download it from the USPTO's bulk data page `here <https://bulkdata.uspto.gov/>`__.
-
-**Select the Correct Dataset**:
-There are various datasets available; ensure you select the "Patent Grant Bibliographic (Front Page) Text Data (JAN 1976 - PRESENT)" dataset. From there on you can choose weekly issued patent files from year 2005 to now.
+The data set required is the Patent Grant Bibliographic (Front Page)
+Text Data - XML (PTBLXML), available
+`here <https://data.uspto.gov/bulkdata/datasets/ptblxml>`__.
 
 **Organizing Downloaded Data**:
-Organize the downloaded data by ensuring that each zip file is placed under a folder representing the year it was published. This step is crucial for operating properly.
+Organize the downloaded data by ensuring that each zip file is placed under a folder representing the year it was published.
 
 
 .. code-block:: text
@@ -100,6 +91,10 @@ Organize the downloaded data by ensuring that each zip file is placed under a fo
 The shell script ``examples/common/fetch-uspto.sh`` or the
 ``$(USPTO_DIR)`` dependency of the ``examples/common/Makefile``,
 which uses it, can be used to download all USPTO data.
+To run the script, first obtain access to the Open Data Portal
+(ODP) API, following the process described
+`here <https://data.uspto.gov/apis/getting-started>`__.
+Then set the environment variable ``MYODP_KEY`` to the value of your ODP key.
 
 
 Other data sources

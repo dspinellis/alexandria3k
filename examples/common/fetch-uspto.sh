@@ -6,33 +6,41 @@
 # Fail on command errors and unset variables
 set -eu
 
-BASE=https://bulkdata.uspto.gov/data/patent/grant/redbook/bibliographic
+DEST_DIR=uspto-data
 
-mkdir uspto-data
-cd uspto-data
+if [ -z "${MYODP_KEY-}" ] ; then
+  echo "$0: The MYODP_KEY environment variable is not set." 1>&2
+  exit 1
+fi
 
-for year in $(seq 2005 $(date +%Y)) ; do
-  mkdir -p $year
+# Obtain list of available files in JSON format.
+curl --silent -X GET \
+  'https://api.uspto.gov/api/v1/datasets/products/ptblxml?fileDataFromDate=2001-12-31&includeFiles=true' \
+  -H 'Accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -H "x-api-key: $MYODP_KEY" |
 
-  # Obtain list of weekly files
-  curl --silent $BASE/$year/ |
+# Obtain list of URLs.
+jq -r '.bulkDataProductBag[0].productFileBag.fileDataBag[] | .fileDownloadURI' |
 
-  # Extract file names
-  sed -n 's/.*href="\(ipgb[^"]*\)".*/\1/p' |
+# Handle revisions.
+# A date's revision appears after the original file, so overwrite it.
+awk -F_ '/\/ipgb/ {url[$1] = $0} END {for (main in url) print url[main]}' |
 
-  # A date's revision appears after the original file, so overwrite it
-  awk -F_ '{name[$1] = $0} END {for (date in name) print name[date]}' |
+sort |
 
-  sort |
+# Input:
+# https://api.uspto.gov/api/v1/datasets/products/files/PTBLXML/2005/ipgb20050118_wk03.zip
+# Output a list of: URL year file.
+awk -F/ '{print $0, $10, $11}' |
 
-  # Fetch each weekly zip file
-  while read zip ; do
-    if [ -r $year/$zip ] ; then
-      echo "Skip existing file $year/$zip" 1>&2
-      continue
-    fi
-    echo "Download file $year/$zip" 1>&2
-    curl --silent $BASE/$year/$zip >$year/$zip
-  done
-
+# Fetch each weekly zip file
+while read url year file ; do
+  if [ -r $DEST_DIR/$year/$file ] ; then
+    echo "Skip existing file $year/$file" 1>&2
+    continue
+  fi
+  mkdir -p $DEST_DIR/$year
+  echo "Download file $year/$file" 1>&2
+  curl --silent "$url" -H "x-api-key: $MYODP_KEY" >$DEST_DIR/$year/$file
 done
