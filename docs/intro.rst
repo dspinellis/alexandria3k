@@ -1,7 +1,7 @@
 .. Auto-generated file; run bin/update-intro to update it.
 
-The *alexandria3k* package supplies a library and a command-line tool
-providing fast and space-efficient relational query access to the
+The *alexandria3k* Python package supplies a command-line tool and an
+API providing fast and space-efficient relational query access to the
 following large scientific publication open data sets. Data are
 decompressed on the fly, thus allowing the package’s use even on
 storage-restricted laptops. The *alexandria3k* package supports the
