@@ -10,7 +10,7 @@ A3K?=a3k
 CROSSREF_DIR?=../common/Crossref-March-2025
 USPTO_DIR?=../common/uspto-data
 ORCID_SUMMARIES?=../common/ORCID_2022_10_summaries.tar.gz
-ROR?=../common/ror-v1.17.1-2022-12-16.zip
+ROR?=../common/v1.73-2025-10-28-ror-data.zip
 PUBMED_DIR?=../common/pubmed
 DATACITE?=../common/datacite.tar.gz
 
