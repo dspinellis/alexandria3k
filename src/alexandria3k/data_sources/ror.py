@@ -1,6 +1,6 @@
 #
 # Alexandria3k Crossref bibliographic metadata processing
-# Copyright (C) 2022-2023  Diomidis Spinellis
+# Copyright (C) 2022-2025  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 #
 """Research Organization Registry (ROR) data"""
 
+import fnmatch
 import json
 import zipfile
 
@@ -286,7 +287,13 @@ class VTSource:
 
     def __init__(self, data_source, sample):
         with zipfile.ZipFile(data_source, "r") as zip_ref:
-            (self.file_name,) = zip_ref.namelist()
+            # Select the .json file conforming to the original
+            # schema (rather than .csv or *-ror-data_schema_v2.json)
+            self.file_name = next(
+                name
+                for name in zip_ref.namelist()
+                if fnmatch.fnmatch(name, "*-ror-data.json")
+            )
             with zip_ref.open(self.file_name, "r") as ror_file:
                 self.data_source = json.load(ror_file)
                 perf.log("Parse ROR")
