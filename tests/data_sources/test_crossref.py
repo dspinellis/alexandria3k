@@ -110,6 +110,12 @@ class TestDoiNormalize(unittest.TestCase):
             "10.1002/(sici)1521-4141(199906)29:06<1785::aid-immu1785>3.0.co;2-u",
         )
 
+class TestAuthorOrcid(unittest.TestCase):
+    def test_http(self):
+        self.assertEqual(crossref.author_orcid({"ORCID": "http://orcid.org/0000-0001-9270-4280"}), "0000-0001-9270-4280")
+
+    def test_https(self):
+        self.assertEqual(crossref.author_orcid({"ORCID": "https://orcid.org/0000-0001-9270-4280"}), "0000-0001-9270-4280")
 
 class TestCrossrefPopulateVanilla(PopulateQueries):
     @classmethod

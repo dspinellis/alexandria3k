@@ -55,6 +55,10 @@ def author_orcid(row):
     """Return the ISNI part of an ORCID URL or None if missing"""
     orcid = row.get("ORCID")
     if orcid:
+        if orcid[4] == "s":
+            # https://orcid.org/...
+            return orcid[18:]
+        # http://orcid.org/...
         return orcid[17:]
     return None
 
