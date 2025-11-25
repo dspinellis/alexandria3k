@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Analysis of Greek-titled publications in Crossref</title>
+
+    <style>
+      body { font-family: sans-serif; line-height: 1.4; margin: 2rem; }
+      table { border-collapse: collapse; margin-top: 1rem; }
+      th, td { padding: 0.35rem 0.6rem; border-bottom: 1px solid #ccc; }
+      th { text-align: left; font-weight: 600; }
+      td.num, th.num { text-align: right; }
+    </style>
+
+  </head>
+  <body>
+    <h1>Analysis of Greek-titled publications in Crossref</h1>
+      <p>
+        This is a report of Greek-titled publications
+        included in <a href="https://www.nature.com/articles/d41586-022-02926-y">Crossref</a>.
+        It provides an analysis all publications with at least
+        three lowercase modern Greek letters in their title.
+        The selection method is a rough-and-ready approximation
+        of all Crossref-indexed scientific publications written in Greek.
+        However, it is not perfect, as it includes some papers from
+        disciplines that use Greek terms,
+        such as <a href="https://doi.org/10.1016/s0370-1573(02)00274-0">this one</a>,
+        and it may also exclude titles consisting mostly of Ancient Greek
+        polytonic letters.
+      </p><p>
+        The report has been created with
+        <a href="https://dspinellis.github.io/alexandria3k/">Alexandria3k</a>.
+        It can be reproduced with the queries and scripts found in the
+        corresponding <a href="https://github.com/dspinellis/alexandria3k/tree/main/examples/greek-pubs">examples directory</a>.
+      </p>
+<h2>Key dataset metrics</h2>
+<table>
+<tr>
+    <th>Metric</th><th>Value</th>
+</tr>
+<tr><td>Works</td><td class="num">91644</td></tr>
+<tr><td>Works with a text mining link</td><td class="num">21565</td></tr>
+<tr><td>Works with references</td><td class="num">2489</td></tr>
+<tr><td>Works with affiliation</td><td class="num">1222</td></tr>
+<tr><td>Works with an abstract</td><td class="num">35580</td></tr>
+<tr><td>Works with publication year</td><td class="num">26037</td></tr>
+<tr><td>Works with authors</td><td class="num">58540</td></tr>
+<tr><td>Works with funders</td><td class="num">135</td></tr>
+<tr><td>Author records</td><td class="num">84226</td></tr>
+<tr><td>Author records with ORCID</td><td class="num">1929</td></tr>
+<tr><td>Distinct authors with ORCID</td><td class="num">1453</td></tr>
+<tr><td>Author affiliation records</td><td class="num">2048</td></tr>
+<tr><td>Author records with research organization records matches</td><td class="num">680</td></tr>
+<tr><td>Distinct affiliation names</td><td class="num">1212</td></tr>
+<tr><td>Author records matched with research organization records</td><td class="num">680</td></tr>
+<tr><td>Distinct matched research organization records</td><td class="num">245</td></tr>
+<tr><td>Works with a research organization record match</td><td class="num">421</td></tr>
+<tr><td>Work funders</td><td class="num">334</td></tr>
+<tr><td>Funder records with DOI</td><td class="num">224</td></tr>
+<tr><td>Distinct funder DOIs</td><td class="num">131</td></tr>
+<tr><td>Funder awards</td><td class="num">245</td></tr>
+<tr><td>References</td><td class="num">85739</td></tr>
+<tr><td>References with DOIs</td><td class="num">32841</td></tr>
+<tr><td>Distinct reference DOIs</td><td class="num">26871</td></tr>
+</table>
+<h2>Types of publications</h2>
+<table>
+<tr>
+    <th>Type</th><th>Number of works</th>
+</tr>
+<tr><td>dissertation</td><td class="num">37353</td></tr>
+<tr><td>dataset</td><td class="num">27801</td></tr>
+<tr><td>journal-article</td><td class="num">19041</td></tr>
+<tr><td>book-chapter</td><td class="num">6846</td></tr>
+<tr><td>other</td><td class="num">245</td></tr>
+<tr><td>monograph</td><td class="num">107</td></tr>
+<tr><td>proceedings-article</td><td class="num">90</td></tr>
+<tr><td>posted-content</td><td class="num">61</td></tr>
+<tr><td>edited-book</td><td class="num">30</td></tr>
+<tr><td>book</td><td class="num">24</td></tr>
+<tr><td>report</td><td class="num">19</td></tr>
+<tr><td>component</td><td class="num">12</td></tr>
+<tr><td>reference-entry</td><td class="num">10</td></tr>
+<tr><td>journal</td><td class="num">4</td></tr>
+<tr><td>reference-book</td><td class="num">1</td></tr>
+</table>
+<h2>Top ten publishers</h2>
+<table>
+<tr>
+    <th>Publisher</th><th>Publications</th>
+</tr>
+<tr><td>NATIONAL DOCUMENTATION CENTRE (EKT)</td><td class="num">48382</td></tr>
+<tr><td>BRILL</td><td class="num">28673</td></tr>
+<tr><td>DE GRUYTER</td><td class="num">4054</td></tr>
+<tr><td>WALTER DE GRUYTER GMBH</td><td class="num">1121</td></tr>
+<tr><td>CAMBRIDGE UNIVERSITY PRESS (CUP)</td><td class="num">1047</td></tr>
+<tr><td>PERSEE PROGRAM</td><td class="num">535</td></tr>
+<tr><td>ELSEVIER BV</td><td class="num">386</td></tr>
+<tr><td>OPENEDITION</td><td class="num">335</td></tr>
+<tr><td>VANDENHOECK & RUPRECHT</td><td class="num">329</td></tr>
+<tr><td>OXFORD UNIVERSITY PRESS</td><td class="num">327</td></tr>
+</table>
+<h2>Top ten publication venues</h2>
+<table>
+<tr>
+    <th>Venue</th><th>Publications</th>
+</tr>
+<tr><td class="num"></td><td class="num">37605</td></tr>
+<tr><td>Lexicon Gregorianum Online</td><td class="num">26065</td></tr>
+<tr><td>Δελτίον Χριστιανικής Αρχαιολογικής Εταιρείας</td><td class="num">1108</td></tr>
+<tr><td>Μακεδονικά</td><td class="num">1096</td></tr>
+<tr><td>Supplementum Epigraphicum Graecum</td><td class="num">944</td></tr>
+<tr><td>Επιθεώρηση Κοινωνικών Ερευνών</td><td class="num">791</td></tr>
+<tr><td>P[i] - O[mega]</td><td class="num">752</td></tr>
+<tr><td>Πανελλήνιο Συνέδριο Επιστημών Εκπαίδευσης</td><td class="num">630</td></tr>
+<tr><td>The Gleaner</td><td class="num">614</td></tr>
+<tr><td>Introduction / Einführung. A[lpha] - D[elta]</td><td class="num">614</td></tr>
+</table>
+<h2>Top ten author affiliations</h2>
+<table>
+<tr>
+    <th>Affiliation</th><th>Publications</th>
+</tr>
+<tr><td>Università Ca' Foscari Venezia</td><td class="num">89</td></tr>
+<tr><td>Università Ca’ Foscari Venezia, Italia</td><td class="num">64</td></tr>
+<tr><td>Ca’ Foscari University of Venice</td><td class="num">27</td></tr>
+<tr><td>Università Ca’ Foscari di Venezia, Venezia</td><td class="num">23</td></tr>
+<tr><td>University of Sussex</td><td class="num">12</td></tr>
+<tr><td>Department of Bioorganic Chemistry Wrocław University of Science and Technology  Wybrzeże Wyspiańskiego 27 50-370 Wrocław Poland</td><td class="num">12</td></tr>
+<tr><td>Università di Pisa, Italia</td><td class="num">10</td></tr>
+<tr><td>Department of Hematology, All India Institute of Medical Sciences, New Delhi, India</td><td class="num">9</td></tr>
+<tr><td>1University of California, San Diego, La Jolla, CA</td><td class="num">9</td></tr>
+<tr><td>TRIUMF, Vancouver, BC V6T 2A3, Canada</td><td class="num">8</td></tr>
+</table>
+<h2>Top ten author research organizations</h2>
+<table>
+<tr>
+    <th>Organization name</th><th>Authorships</th>
+</tr>
+<tr><td>Ca' Foscari University of Venice</td><td class="num">90</td></tr>
+<tr><td>Aristotle University of Thessaloniki</td><td class="num">14</td></tr>
+<tr><td>University of Oxford</td><td class="num">13</td></tr>
+<tr><td>University of California System</td><td class="num">12</td></tr>
+<tr><td>University of Toronto</td><td class="num">12</td></tr>
+<tr><td>University of Sussex</td><td class="num">12</td></tr>
+<tr><td>Wrocław University of Science and Technology</td><td class="num">12</td></tr>
+<tr><td>Centre National de la Recherche Scientifique</td><td class="num">10</td></tr>
+<tr><td>Freie Universität Berlin</td><td class="num">10</td></tr>
+<tr><td>TRIUMF</td><td class="num">9</td></tr>
+</table>
+<h2>Top ten ORCID-identified authors</h2>
+<table>
+<tr>
+    <th>Author</th><th>ORCID</th><th>Publications</th>
+</tr>
+<tr><td>Tribulato, Olga</td><td>0000-0002-7550-0232</td><td class="num">34</td></tr>
+<tr><td>Καλογιαννάκης, Μιχαήλ</td><td>0000-0002-9124-2245</td><td class="num">20</td></tr>
+<tr><td>Eve, Martin Paul</td><td>0000-0002-5589-8511</td><td class="num">12</td></tr>
+<tr><td>Papadimitriou, Sofia Theodor</td><td>0000-0002-7708-106X</td><td class="num">9</td></tr>
+<tr><td>Carrara, Laura</td><td>0000-0003-4788-4643</td><td class="num">7</td></tr>
+<tr><td>Ιωακειμίδου, Βασιλική</td><td>0000-0003-2262-9806</td><td class="num">7</td></tr>
+<tr><td>Μαστροθανάσης, Κωνσταντίνος</td><td>0000-0002-8703-9607</td><td class="num">7</td></tr>
+<tr><td>Niari, Maria</td><td>0000-0001-6084-5206</td><td class="num">7</td></tr>
+<tr><td>Φωκίδης, Εμμανουήλ</td><td>0000-0003-3962-0314</td><td class="num">6</td></tr>
+<tr><td>Εμμανουήλ, Δημήτρης</td><td>0000-0003-1354-1474</td><td class="num">6</td></tr>
+</table>
+<h2>Top ten name-identified authors</h2>
+<table>
+<tr>
+    <th>Author</th><th>Publications</th>
+</tr>
+<tr><td>ΧΡΙΣΤΙΑΝΙΚΗ ΑΡΧΑΙΟΛΟΓΙΚΗ ΕΤΑΙΡΕΙΑ, (ΧΑΕ)</td><td class="num">102</td></tr>
+<tr><td>Eranistes, Eranistes</td><td class="num">71</td></tr>
+<tr><td>Κυριακίδης, Στίλπων Π.</td><td class="num">65</td></tr>
+<tr><td>Challoumis, Constantinos</td><td class="num">56</td></tr>
+<tr><td>Sack, Arnold</td><td class="num">54</td></tr>
+<tr><td>Λιοναράκης, Αντώνης</td><td class="num">46</td></tr>
+<tr><td>Θεοδώρου, Ζαχαρούλα</td><td class="num">42</td></tr>
+<tr><td>Καραθανάσης, Αθ. Ε.</td><td class="num">41</td></tr>
+<tr><td>Καλογιαννάκης, Μιχαήλ</td><td class="num">41</td></tr>
+<tr><td>Mnimon, Mnimon</td><td class="num">38</td></tr>
+</table>
+<h2>Top ten most-referenced articles</h2>
+<table>
+<tr>
+    <th>References</th><th>DOI</th><th>Title</th>
+</tr>
+<tr><td class="num">904</td><td><a href="https://doi.org/10.1093/oso/9780192845818.003.0008">10.1093/oso/9780192845818.003.0008</a></td><td>Greek ἔγνωκα and the perfect of PIE *<i>ǵneh3</i>- ‘know’</td></tr>
+<tr><td class="num">849</td><td><a href="https://doi.org/10.1093/acprof:oso/9780199245475.003.0008">10.1093/acprof:oso/9780199245475.003.0008</a></td><td>8<i>Μάγειρος ποιητής</i>: Language and Character in Antiphanes</td></tr>
+<tr><td class="num">816</td><td><a href="https://doi.org/10.1007/978-3-663-07831-9_2">10.1007/978-3-663-07831-9_2</a></td><td>Kάϑαρσις παϑημάτων — katharsis pathematon</td></tr>
+<tr><td class="num">587</td><td><a href="https://doi.org/10.1017/cbo9780511482250.015">10.1017/cbo9780511482250.015</a></td><td>λυκάβαντος: when the wolf comes?</td></tr>
+<tr><td class="num">570</td><td><a href="https://doi.org/10.1017/9781108147897.003">10.1017/9781108147897.003</a></td><td>Tales for the Telling: τὸ μυθῶδες</td></tr>
+<tr><td class="num">460</td><td><a href="https://doi.org/10.1016/s0370-1573(02)00274-0">10.1016/s0370-1573(02)00274-0</a></td><td>CP violation in the B system and relations to K→πνν̄ decays</td></tr>
+<tr><td class="num">389</td><td><a href="https://doi.org/10.1017/cbo9780511482267.004">10.1017/cbo9780511482267.004</a></td><td><i>Senilis</i>μακρολογία and περισσολογία</td></tr>
+<tr><td class="num">364</td><td><a href="https://doi.org/10.2139/ssrn.3568403">10.2139/ssrn.3568403</a></td><td>Το ειδικό καθεστώς οικονομικών δραστηριοτήτων του Ελληνικού Κράτους και Ελλήνων υπηκόων σε χώρες των Βαλκανίων: θεωρητικές προσεγγίσεις και εμπειρικοί προσανατολισμοί (The Special Status of Economic Activities of the Hellenic State and of Greek Citizens in Balkan Countries: Theoretical Approaches and Empirical Perspectives)</td></tr>
+<tr><td class="num">351</td><td><a href="https://doi.org/10.1017/9781108649162.010">10.1017/9781108649162.010</a></td><td>Homeric Metaphor and the Lexicon – The Case of<i>ὄσσομαι</i></td></tr>
+<tr><td class="num">325</td><td><a href="https://doi.org/10.1075/ivitra.23.c3">10.1075/ivitra.23.c3</a></td><td>Κλέα ἀνδρῶν</td></tr>
+</table>
+<h2>Top ten funders</h2>
+<table>
+<tr>
+    <th>Organization name</th><th>Funded works</th>
+</tr>
+<tr><td>Bowling Green State University</td><td class="num">12</td></tr>
+<tr><td>National Natural Science Foundation of China</td><td class="num">11</td></tr>
+<tr><td>National Institutes of Health</td><td class="num">7</td></tr>
+<tr><td>Ministry of Education, Science and Technological Development of the Republic of Serbia</td><td class="num">6</td></tr>
+<tr><td>National Science Foundation</td><td class="num">4</td></tr>
+<tr><td>National Research Foundation of Korea</td><td class="num">4</td></tr>
+<tr><td>Deutsche Forschungsgemeinschaft</td><td class="num">4</td></tr>
+<tr><td>U.S. Department of Energy</td><td class="num">3</td></tr>
+<tr><td>Science and Engineering Research Board</td><td class="num">3</td></tr>
+<tr><td>Russian Foundation for Basic Research</td><td class="num">3</td></tr>
+</table>
+<h2>Publications by published decade</h2>
+<table>
+<tr>
+    <th>Decade</th><th>Number of works</th>
+</tr>
+<tr><td class="num">1610</td><td class="num">3</td></tr>
+<tr><td class="num">1640</td><td class="num">1</td></tr>
+<tr><td class="num">1720</td><td class="num">1</td></tr>
+<tr><td class="num">1730</td><td class="num">1</td></tr>
+<tr><td class="num">1770</td><td class="num">1</td></tr>
+<tr><td class="num">1800</td><td class="num">1</td></tr>
+<tr><td class="num">1810</td><td class="num">2</td></tr>
+<tr><td class="num">1820</td><td class="num">15</td></tr>
+<tr><td class="num">1830</td><td class="num">3</td></tr>
+<tr><td class="num">1840</td><td class="num">10</td></tr>
+<tr><td class="num">1850</td><td class="num">33</td></tr>
+<tr><td class="num">1860</td><td class="num">42</td></tr>
+<tr><td class="num">1870</td><td class="num">60</td></tr>
+<tr><td class="num">1880</td><td class="num">76</td></tr>
+<tr><td class="num">1890</td><td class="num">216</td></tr>
+<tr><td class="num">1900</td><td class="num">311</td></tr>
+<tr><td class="num">1910</td><td class="num">188</td></tr>
+<tr><td class="num">1920</td><td class="num">303</td></tr>
+<tr><td class="num">1930</td><td class="num">304</td></tr>
+<tr><td class="num">1940</td><td class="num">144</td></tr>
+<tr><td class="num">1950</td><td class="num">327</td></tr>
+<tr><td class="num">1960</td><td class="num">802</td></tr>
+<tr><td class="num">1970</td><td class="num">1200</td></tr>
+<tr><td class="num">1980</td><td class="num">1362</td></tr>
+<tr><td class="num">1990</td><td class="num">1771</td></tr>
+<tr><td class="num">2000</td><td class="num">1855</td></tr>
+<tr><td class="num">2010</td><td class="num">10563</td></tr>
+<tr><td class="num">2020</td><td class="num">6442</td></tr>
+</table>
+<h2>Stratified random sample of five publications by publisher</h2>
+<table>
+<tr>
+    <th>Publisher</th><th>DOI</th><th>Title</th>
+</tr>
+<tr><td>BRILL</td><td><a href="https://doi.org/10.1163/2214-8655_lgo_lgo_02_0029_ger">10.1163/2214-8655_lgo_lgo_02_0029_ger</a></td><td>βαρβαρικός, ή, όν</td></tr>
+<tr><td>BRILL</td><td><a href="https://doi.org/10.1163/2214-8655_lgo_lgo_06_0400_ger">10.1163/2214-8655_lgo_lgo_06_0400_ger</a></td><td>μερικός, ή, όν</td></tr>
+<tr><td>BRILL</td><td><a href="https://doi.org/10.1163/2214-8655_lgo_lgo_06_1006">10.1163/2214-8655_lgo_lgo_06_1006</a></td><td>Lexicon Gregorianumοἰκοδομή, ῆς, ἡ</td></tr>
+<tr><td>BRILL</td><td><a href="https://doi.org/10.1163/2214-8655_lgo_lgo_01_2152_ger">10.1163/2214-8655_lgo_lgo_01_2152_ger</a></td><td>ἀτμίς, ἰδος, ἡ</td></tr>
+<tr><td>BRILL</td><td><a href="https://doi.org/10.1163/2214-8655_lgo_lgo_05_0425">10.1163/2214-8655_lgo_lgo_05_0425</a></td><td>Lexicon Gregorianumκατασβολόω</td></tr>
+<tr><td>CAMBRIDGE UNIVERSITY PRESS (CUP)</td><td><a href="https://doi.org/10.1017/s0009840x0020557x">10.1017/s0009840x0020557x</a></td><td>Pantazides' <i>Anabasis</i> and Gemoll's <i>Lexicon</i> to <i>Xenophon</i> - Ξενοφῶντος συγγράμματα Edited by I. Pantazides. Vol. I. —<i>Anabasis</i>. Athens, Sakellarios, 1900. Pp. 646. Price 10 francs. - Schulwörterbuch zu Xenophons Anabasis Hellenica und Memorabilien. By W. Gemoll. Leipzig, Freytag, 1901. Pp. 340. Price 4 M.</td></tr>
+<tr><td>CAMBRIDGE UNIVERSITY PRESS (CUP)</td><td><a href="https://doi.org/10.1017/byz.2015.20">10.1017/byz.2015.20</a></td><td>Georgia Pateridou, Για νάρθω σ’ άλλη ξενιτειά: αφηγήσεις του τόπου στην πεζογραφία της γενιάς του 1880. Patras: Opportuna2012. Pp. 207.</td></tr>
+<tr><td>CAMBRIDGE UNIVERSITY PRESS (CUP)</td><td><a href="https://doi.org/10.1017/s0009840x00171471">10.1017/s0009840x00171471</a></td><td>ΘΕΟΣ and ΔΑΙΜΩΝ - Gilbert François: Le Polythéisme et l'emploi au singulier des mots θε⋯ς, δα⋯μων dans la littérature grecque d'Homère à Platon. Pp. 374. Paris: Les Belles Lettres, 1957. Paper.</td></tr>
+<tr><td>CAMBRIDGE UNIVERSITY PRESS (CUP)</td><td><a href="https://doi.org/10.1017/s0009840x00320613">10.1017/s0009840x00320613</a></td><td>Lysias P. Koumantarakis: Θονκνδίδον Πελοποννησιακὸ πόλεμος: Μετάφρασις καὶ Σχόλια. 8 vols. Pp. 357, 327, 315, 389, 325, 319, 395, 361. Privately printed (obtainable from the author, 5 Diakou St., Athens 403), 1963. Cloth or paper.</td></tr>
+<tr><td>CAMBRIDGE UNIVERSITY PRESS (CUP)</td><td><a href="https://doi.org/10.1017/s0068673500003321">10.1017/s0068673500003321</a></td><td>κυαμοτρὼξ Ἀττικός in Paulus Silentiarius, Descriptio 125: No Allusion to Simplicius</td></tr>
+<tr><td>DE GRUYTER</td><td><a href="https://doi.org/10.1515/9783110804898-285">10.1515/9783110804898-285</a></td><td>λίβανος</td></tr>
+<tr><td>DE GRUYTER</td><td><a href="https://doi.org/10.1515/9783110804898-111">10.1515/9783110804898-111</a></td><td>κατηγορέω</td></tr>
+<tr><td>DE GRUYTER</td><td><a href="https://doi.org/10.1515/9783110806939-520">10.1515/9783110806939-520</a></td><td>Ἰούδας</td></tr>
+<tr><td>DE GRUYTER</td><td><a href="https://doi.org/10.1515/9783110805864-111">10.1515/9783110805864-111</a></td><td>ἁλιεύς</td></tr>
+<tr><td>DE GRUYTER</td><td><a href="https://doi.org/10.1515/9783110802184-413">10.1515/9783110802184-413</a></td><td>σκιά</td></tr>
+<tr><td>ELSEVIER BV</td><td><a href="https://doi.org/10.1016/j.canlet.2008.02.054">10.1016/j.canlet.2008.02.054</a></td><td>Signaling and regulatory mechanisms of integrin ανβ6 on the apoptosis of colon cancer cells</td></tr>
+<tr><td>ELSEVIER BV</td><td><a href="https://doi.org/10.1016/j.jchromb.2004.03.056">10.1016/j.jchromb.2004.03.056</a></td><td>High-throughput sample preparation procedures for the quantitation of a new bone integrin ανβ3 antagonist in human plasma and urine using liquid chromatography–tandem mass spectrometry</td></tr>
+<tr><td>ELSEVIER BV</td><td><a href="https://doi.org/10.2139/ssrn.3390481">10.2139/ssrn.3390481</a></td><td>Διαφυλάσσοντας την τιμή τής δικαιοσύνης: η μισθολογική μεταχείριση των δικαστικών λειτουργών (The Constitutional Principle Regarding the Emoluments of the Judiciary under the Greek Constitution: An Exercise in Institutional Interaction between the Legislature and the Judiciary)</td></tr>
+<tr><td>ELSEVIER BV</td><td><a href="https://doi.org/10.2139/ssrn.2923816">10.2139/ssrn.2923816</a></td><td>"Νόμος, Ηθική, Πολιτική, Β' Μέρος" (Law, Ethics, Politics, 2nd Part) )</td></tr>
+<tr><td>ELSEVIER BV</td><td><a href="https://doi.org/10.1016/j.bcmd.2012.05.010">10.1016/j.bcmd.2012.05.010</a></td><td>A novel 506kb deletion causing εγδβ thalassemia</td></tr>
+<tr><td>NATIONAL DOCUMENTATION CENTRE (EKT)</td><td><a href="https://doi.org/10.12681/eadd/20124">10.12681/eadd/20124</a></td><td>Τηλεοπτικά κεντρικά δελτία ειδήσεων και κυβέρνηση</td></tr>
+<tr><td>NATIONAL DOCUMENTATION CENTRE (EKT)</td><td><a href="https://doi.org/10.12681/eadd/42324">10.12681/eadd/42324</a></td><td>Σύγκριση της αποτελεσματικότητας της εισπνεόμενης κολιστίνης σε συνδυασμό με ενδοφλέβια κολιστίνη έναντι της ενδοφλέβιας κολιστίνης μόνο, σε ασθενείς με πνευμονία σχετιζόμενη με αναπνευστήρα</td></tr>
+<tr><td>NATIONAL DOCUMENTATION CENTRE (EKT)</td><td><a href="https://doi.org/10.12681/eadd/33772">10.12681/eadd/33772</a></td><td>Ο ρόλος της ηλεκτρονικής διακυβέρνησης στην αποτελεσματικότητα της δημόσιας διοίκησης</td></tr>
+<tr><td>NATIONAL DOCUMENTATION CENTRE (EKT)</td><td><a href="https://doi.org/10.12681/eadd/17808">10.12681/eadd/17808</a></td><td>Ο ρόλος των ενεργοποιητικών περιοχών του προνευρικού συμπλόκου Daughterless/Scute στη μεταγραφική ρύθμιση της νευρογένεσης</td></tr>
+<tr><td>NATIONAL DOCUMENTATION CENTRE (EKT)</td><td><a href="https://doi.org/10.12681/makedonika.912">10.12681/makedonika.912</a></td><td>Η λιγόχρονη Μητρόπολη Δεσκάτης (1882-1896)</td></tr>
+<tr><td>OPENEDITION</td><td><a href="https://doi.org/10.4000/ceb.5491">10.4000/ceb.5491</a></td><td>Kostas Karyotakis, le poète-« phénomène » de la génération dite « des années 1920 » en Grèce	Kostas Karyotakis, The Poet–“Phenomenon” of the Generation known as “1920’s Generation” in Greece: Matters of Conscience and Poetry	Ο Κώστας Καρυωτάκης, ο ποιητής φαινόμενο της λεγόμενης γενίας του 1920 στην Ελλάδα: θέματα συνείδησης και ποίησης</td></tr>
+<tr><td>OPENEDITION</td><td><a href="https://doi.org/10.4000/ceb.18702">10.4000/ceb.18702</a></td><td>Vêtements sacerdotaux russes, brodés d’or au monastère d’Iviron du Mont Athos : source de savoir et de mémoire	Ecclesiastical gold‑embroidered vestments on Mount Athos monastery of Iviron: source of knowledge and memory	Εκκλησιαστικά χρυσοκέντητα άμφια στην αθωνική μονή των Ιβήρων: πηγή γνώσης και μνήμης</td></tr>
+<tr><td>OPENEDITION</td><td><a href="https://doi.org/10.4000/ceb.10333">10.4000/ceb.10333</a></td><td>Trajectoires d’innovation, logiques spatiales et processus d’industrialisation : un modèle « industriel » méditerranéen ?	Innovation trajectories, spatial dynamics, and industrial process: addressing an “industrial” Mediterranean pattern?	Τροχιές καινοτομίας, χωρικές λογικές και διαδικασίες εκβιομηχάνισης ως «βιομηχανικό» μεσογειακό μοντέλο</td></tr>
+<tr><td>OPENEDITION</td><td><a href="https://doi.org/10.4000/ceb.4008">10.4000/ceb.4008</a></td><td>Esther Franco, (2012) Jeu de rôle et deuxième génération du Génocide, (To παιχνίδι των ρόλων και η δεύ</td></tr>
+<tr><td>OPENEDITION</td><td><a href="https://doi.org/10.4000/rhetorique.1125">10.4000/rhetorique.1125</a></td><td>Un parallélisme presque parfait : la σύγκρισις des Vies de Démosthène et de Cicéron de Plutarque</td></tr>
+<tr><td>OXFORD UNIVERSITY PRESS</td><td><a href="https://doi.org/10.1093/oseo/instance.00175098">10.1093/oseo/instance.00175098</a></td><td>Σφῆκες</td></tr>
+<tr><td>OXFORD UNIVERSITY PRESS</td><td><a href="https://doi.org/10.1093/oseo/instance.00048257">10.1093/oseo/instance.00048257</a></td><td>Εἰς τὸ τῆς ΈΛΙΣΣΗΣ περὶ τῶν Όνείρων Αἴνιγμα</td></tr>
+<tr><td>OXFORD UNIVERSITY PRESS</td><td><a href="https://doi.org/10.1093/oseo/instance.00295496">10.1093/oseo/instance.00295496</a></td><td>Fr. 1. Γενεαλογίαι</td></tr>
+<tr><td>OXFORD UNIVERSITY PRESS</td><td><a href="https://doi.org/10.1093/acprof:oso/9780198736523.003.0008">10.1093/acprof:oso/9780198736523.003.0008</a></td><td>Adamántios Koraïs (Αδαμάντιος‎ Κοραής‎)</td></tr>
+<tr><td>OXFORD UNIVERSITY PRESS</td><td><a href="https://doi.org/10.1093/oseo/instance.00295940">10.1093/oseo/instance.00295940</a></td><td>Frr. 1-2. Λυκιακά</td></tr>
+<tr><td>PERSEE PROGRAM</td><td><a href="https://doi.org/10.3406/antiq.1974.1746">10.3406/antiq.1974.1746</a></td><td>Irony and Logic : The Ἀντιλεγειν Paradox and Antisthenes' Purpose</td></tr>
+<tr><td>PERSEE PROGRAM</td><td><a href="https://doi.org/10.3406/ktema.2015.1455">10.3406/ktema.2015.1455</a></td><td>Le vocabulaire de la royauté : ἄναξ et βασιλεὺς dans l'Iliade et l'Odyssée</td></tr>
+<tr><td>PERSEE PROGRAM</td><td><a href="https://doi.org/10.3406/antiq.1987.2214">10.3406/antiq.1987.2214</a></td><td>Κρανταγενης : un mot à insérer dans les dictionnaires?</td></tr>
+<tr><td>PERSEE PROGRAM</td><td><a href="https://doi.org/10.3406/bude.1979.3464">10.3406/bude.1979.3464</a></td><td>Approche du problème de l'Ἔκφρασις dans les romans grecs</td></tr>
+<tr><td>PERSEE PROGRAM</td><td><a href="https://doi.org/10.3406/crai.1885.69104">10.3406/crai.1885.69104</a></td><td>Le sens et l'étymologie des mots asignae, mortuus, queo, suppeditare et le verbe άρχω</td></tr>
+<tr><td>VANDENHOECK & RUPRECHT</td><td><a href="https://doi.org/10.13109/9783949189418.91">10.13109/9783949189418.91</a></td><td>Καπηλίδες (Kapēlides) (“Women Shopkeepers”)</td></tr>
+<tr><td>VANDENHOECK & RUPRECHT</td><td><a href="https://doi.org/10.13109/9783946317760.11">10.13109/9783946317760.11</a></td><td>Κραπάταλοι (Krapataloi) (“Crapatali”)</td></tr>
+<tr><td>VANDENHOECK & RUPRECHT</td><td><a href="https://doi.org/10.13109/9783666522130.161">10.13109/9783666522130.161</a></td><td>3 Kgdms 12:24a–z as Textual βάσανος for the Edition of 3–4 Kingdoms</td></tr>
+<tr><td>VANDENHOECK & RUPRECHT</td><td><a href="https://doi.org/10.13109/9783666252051.113">10.13109/9783666252051.113</a></td><td>Zweiter Hauptteil: λιλαίεσθαι — κεχρημένος/χρηΐζειν χατεϊν/χατίζειν — (έ)έλδεσθαι</td></tr>
+<tr><td>VANDENHOECK & RUPRECHT</td><td><a href="https://doi.org/10.13109/9783666539312.239">10.13109/9783666539312.239</a></td><td>11. Θυσιαστήριον – eine Berichtigung</td></tr>
+<tr><td>WALTER DE GRUYTER GMBH</td><td><a href="https://doi.org/10.1515/byzs.1900.9.2.357">10.1515/byzs.1900.9.2.357</a></td><td>Die ἑτέρα ἀρχαιολογία der Excerpta Salmasiana.</td></tr>
+<tr><td>WALTER DE GRUYTER GMBH</td><td><a href="https://doi.org/10.1524/slaw.1975.20.1.788">10.1524/slaw.1975.20.1.788</a></td><td>Chhtakchqecka Kohjieneauhh Η ΤηπμΠΟ. ΪΗΠΡΒ^ΗΪ^ΤΗΒΠΜΧ CTPYKTYp</td></tr>
+<tr><td>WALTER DE GRUYTER GMBH</td><td><a href="https://doi.org/10.1515/apf.2010.43">10.1515/apf.2010.43</a></td><td>Rätselhaftes μονόστυλος</td></tr>
+<tr><td>WALTER DE GRUYTER GMBH</td><td><a href="https://doi.org/10.1515/9783110222814.1.135">10.1515/9783110222814.1.135</a></td><td>Two unexplained terms in Iliad: πεϱχνόν and μόϱφνον</td></tr>
+<tr><td>WALTER DE GRUYTER GMBH</td><td><a href="https://doi.org/10.1515/htm-1976-310306">10.1515/htm-1976-310306</a></td><td>Das φψξ- Verfahren der Röntgen- Spannungsmessung</td></tr>
+</table>
+  </body>
+</html>
