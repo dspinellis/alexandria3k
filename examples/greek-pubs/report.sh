@@ -67,6 +67,9 @@ EOF
 done
 
 cat <<\EOF
+  <p>
+    <a href="https://www.spinellis.gr/pubs/tr/2025-Greek-titled-pubs/html/">Analysis of Greek-titled publications in Crossref</a> © 2025 by <a href="https://www.spinellis.gr/">Diomidis Spinellis</a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
+  </p>
   </body>
 </html>
 EOF
