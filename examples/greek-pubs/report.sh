@@ -61,7 +61,14 @@ $(sed -n '1s,-- \(.*\),<h2>\1</h2>,p' $sql)
 <tr>
     $(sed -n '2{s,^-- ,<th>,;s,|,</th><th>,g;s,$,</th>,;p;}' $sql)
 </tr>
-$(sed '/^--/d;s,^,<tr><td>,;s,|,</td><td>,g;s,$,</td></tr>,;s,<td>\([0-9]*\)</td>,<td class="num">\1</td>,g;s,>\(10\.[^<]*/[^<]*\),><a href="https://doi.org/\1">\1</a>,g' $report)
+$(sed -E '/^--/d
+  s,^,<tr><td>,
+  s,\|,</td><td>,g
+  s,$,</td></tr>,
+  s,<td>([0-9]+)</td>,<td class="num">\1</td>,g
+  s,>(10\.[^<]*/[^<]*),><a href="https://doi.org/\1">\1</a>,g
+  s,(([0-9]{4}-){3}[0-9X]{4}),<a href="https://orcid.org/\1">\1</a>,g
+  ' $report)
 </table>
 EOF
 done
