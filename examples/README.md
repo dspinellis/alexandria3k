@@ -41,6 +41,7 @@ The following examples are available.
 * [Investigate the CD-5 index of Dan Tawfik's works](tawfik)
 * [Top five US Patent Office applications by country and year](uspto)
 * [Replication study on software used in PubMed articles](pubmed-software)
+* [Analysis of Greek-titled publications in Crossref](greek-pubs)
 
 ### Data source examples and metric measurements
 * [Report metrics associated with the Crossref data set](crossref-standalone)
