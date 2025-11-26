@@ -19,7 +19,15 @@ cat <<EOF
 
   </head>
   <body>
-    <h1>Analysis of Greek-titled publications in Crossref</h1>
+    <div style="text-align:center">
+      <h1>Analysis of Greek-titled publications in Crossref</h1>
+      <p>
+        Diomidis Spinellis<br/>
+        Department of Management Science and Technology<br/>
+        Athens University of Economics and Business<br/>
+        $(date +"%d %B %Y")
+      </p>
+    </div>
       <p>
         This is a report of Greek-titled publications
         included in <a href="https://www.nature.com/articles/d41586-022-02926-y">Crossref</a>
@@ -31,12 +39,16 @@ cat <<EOF
         However, it is not perfect, as it includes some papers from
         disciplines that use terms written in Greek,
         such as <a href="https://doi.org/10.1016/s0370-1573(02)00274-0">this one</a>,
+        papers with titles written with non-latin characters incorrectly
+        transcribed into Greek characters,
+        such as <a href="https://doi.org/10.1524/slaw.1975.20.1.788">this one written in Cyrillic</a>,
         and it may also exclude titles consisting mostly of Greek capital
         or Ancient Greek polytonic letters.
       </p><p>
         The report has been created with
         <a href="https://dspinellis.github.io/alexandria3k/">Alexandria3k</a>.
-        It can be reproduced with the queries and scripts found in the
+        Its methods and means of reproduction are documented through
+        the queries and scripts found in the
         corresponding <a href="https://github.com/dspinellis/alexandria3k/tree/main/examples/greek-pubs">examples directory</a>.
       </p>
 EOF
