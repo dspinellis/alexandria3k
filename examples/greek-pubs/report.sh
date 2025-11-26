@@ -29,10 +29,11 @@ cat <<EOF
       </p>
     </div>
       <p>
-        This is a report of Greek-titled publications
+        This is a short report regarding Greek-titled publications
         included in <a href="https://www.nature.com/articles/d41586-022-02926-y">Crossref</a>
         ($(basename "$CROSSREF_DIR") edition).
-        It provides an analysis of all publications with at least
+        It provides a quantitative publication metadata analysis
+        of all publications with at least
         three lowercase modern Greek letters in their title.
         The selection method is a rough-and-ready approximation
         of all Crossref-indexed scientific publications written in Greek.
