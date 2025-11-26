@@ -16,5 +16,6 @@ populate: $(CROSSREF_DIR)
 	  --row-selection  "title GLOB '*[α-ω][α-ω][α-ω]*'"
 	touch $@
 
+export CROSSREF_DIR
 report.html: populate report.sh
 	./report.sh >$@

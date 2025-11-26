@@ -2,7 +2,7 @@
 
 set -eu
 
-cat <<\EOF
+cat <<EOF
 <!DOCTYPE html>
 <html>
   <head>
@@ -22,16 +22,17 @@ cat <<\EOF
     <h1>Analysis of Greek-titled publications in Crossref</h1>
       <p>
         This is a report of Greek-titled publications
-        included in <a href="https://www.nature.com/articles/d41586-022-02926-y">Crossref</a>.
-        It provides an analysis all publications with at least
+        included in <a href="https://www.nature.com/articles/d41586-022-02926-y">Crossref</a>
+        ($(basename "$CROSSREF_DIR") edition).
+        It provides an analysis of all publications with at least
         three lowercase modern Greek letters in their title.
         The selection method is a rough-and-ready approximation
         of all Crossref-indexed scientific publications written in Greek.
         However, it is not perfect, as it includes some papers from
-        disciplines that use Greek terms,
+        disciplines that use terms written in Greek,
         such as <a href="https://doi.org/10.1016/s0370-1573(02)00274-0">this one</a>,
-        and it may also exclude titles consisting mostly of Ancient Greek
-        polytonic letters.
+        and it may also exclude titles consisting mostly of Greek capital
+        or Ancient Greek polytonic letters.
       </p><p>
         The report has been created with
         <a href="https://dspinellis.github.io/alexandria3k/">Alexandria3k</a>.
