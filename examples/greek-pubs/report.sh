@@ -66,6 +66,7 @@ for sql in \
   top-named-authors.sql \
   top-cited.sql \
   top-funders.sql \
+  represented-periodicals.sql \
   decades.sql \
   stratified-by-publisher.sql \
   ; do

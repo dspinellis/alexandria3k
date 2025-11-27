@@ -3,6 +3,7 @@
 #
 
 export MAINDB?=greek
+export ROLAPDB?=rolap
 export DEPENDENCIES=populate rors link-aa-top-ror
 
 ALL=report.html
@@ -17,10 +18,10 @@ populate: $(CROSSREF_DIR)
 	touch $@
 
 export CROSSREF_DIR
-report.html: populate populate-greek-issns report.sh
+report.html: populate populate-greek-periodicals report.sh
 	./report.sh >$@
 
-populate-greek-issns: greek-periodicals.csv greek-periodicals.sql
+populate-greek-periodicals: greek-periodicals.csv greek-periodicals.sql
 	sqlite3 $(MAINDB).db <greek-periodicals.sql
 	touch $@
 
