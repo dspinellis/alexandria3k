@@ -57,6 +57,7 @@ EOF
 for sql in \
   metrics.sql \
   types.sql \
+  issn-use.sql \
   top-publishers.sql \
   top-venues.sql \
   top-affiliations.sql \

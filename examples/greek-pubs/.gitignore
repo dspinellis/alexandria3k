@@ -1,9 +1,14 @@
 asjcs
 .depend
 .depend.all
+greek-periodicals.csv
+greek-periodicals.json
+greek-periodicals-raw.json
 link-aa-top-ror
 link-works-asjcs
 populate
+populate-greek-issns
+report.html
 reports
 rolap
 rors
