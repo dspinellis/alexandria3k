@@ -24,7 +24,7 @@ counted_periodicals AS (
     GROUP BY issn
 )
 
-SELECT n, group_concat(issn, ', '), title
+SELECT n, group_concat(substr(issn, 1, 4) || '-' || substr(issn, 5, 4), ', '), title
   FROM counted_periodicals
   GROUP BY id
   ORDER BY n DESC;

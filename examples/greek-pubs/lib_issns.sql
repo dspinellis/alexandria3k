@@ -19,4 +19,5 @@ WITH RECURSIVE split_lib(id, issn, rest) AS (
     FROM split_lib
     WHERE rest <> ''
 )
-  SELECT DISTINCT id, Upper(issn) AS issn FROM split_lib;
+  SELECT DISTINCT id, Substr(issn, 1, 4) || Upper(Substr(issn, 6, 4)) AS issn
+    FROM split_lib;

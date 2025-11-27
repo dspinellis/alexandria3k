@@ -9,5 +9,5 @@ WITH all_crossref_issns AS (
 )
 
 -- Use dash separator and remove duplicates
-SELECT DISTINCT doi, substr(issn, 1, 4) || '-' || substr(issn, 5, 4) AS issn
+SELECT DISTINCT doi, issn
   FROM all_crossref_issns;
