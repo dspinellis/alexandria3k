@@ -2,6 +2,6 @@
 -- References|DOI|Title
 
 SELECT References_count, DOI, Title
-  FROM works
+  FROM rolap.cleaned_works AS works
   ORDER BY references_count DESC
   LIMIT 10;

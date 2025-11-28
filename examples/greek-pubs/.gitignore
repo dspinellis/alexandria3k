@@ -2,8 +2,8 @@ asjcs
 .depend
 .depend.all
 greek-periodicals.csv
-greek-periodicals.json
-greek-periodicals-raw.json
+greek-country-periodicals.csv
+greek-language-periodicals.csv
 link-aa-top-ror
 link-works-asjcs
 populate

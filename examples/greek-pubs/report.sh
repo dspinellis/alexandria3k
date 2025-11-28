@@ -33,9 +33,9 @@ cat <<EOF
         included in <a href="https://www.nature.com/articles/d41586-022-02926-y">Crossref</a>
         ($(basename "$CROSSREF_DIR") edition).
         It provides a quantitative publication metadata analysis
-        of all publications with at least
+        of Greek publications with at least
         three lowercase modern Greek letters in their title.
-        The selection method is a rough-and-ready approximation
+        The title selection method is a rough-and-ready approximation
         of all Crossref-indexed scientific publications written in Greek.
         However, it is not perfect, as it includes some papers from
         disciplines that use terms written in Greek,
@@ -45,6 +45,9 @@ cat <<EOF
         such as <a href="https://doi.org/10.1524/slaw.1975.20.1.788">this one written in Cyrillic</a>,
         and it may also exclude titles consisting mostly of Greek capital
         or Ancient Greek polytonic letters.
+        Many false positives are removed by further filtering the results
+        based on Greek language or Greek country ISSNs maintained by the
+        <a href="https://eskep.ekt.gr/eskep/">Consolidated Greek Scientific Journal Catalogue</a>.
       </p><p>
         The report has been created with
         <a href="https://dspinellis.github.io/alexandria3k/">Alexandria3k</a>.

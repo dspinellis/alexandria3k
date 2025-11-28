@@ -2,7 +2,7 @@
 -- Publisher|DOI|Title
 WITH top10 AS (
     SELECT UPPER(publisher) AS pub
-    FROM works
+    FROM rolap.cleaned_works AS works
     GROUP BY UPPER(publisher)
     ORDER BY COUNT(*) DESC
     LIMIT 10
@@ -16,7 +16,7 @@ strat AS (
             PARTITION BY UPPER(publisher)
             ORDER BY RANDOM()
         ) AS rn
-    FROM works
+    FROM rolap.cleaned_works AS works
     WHERE UPPER(publisher) IN (SELECT pub FROM top10)
 )
 SELECT pub, doi, title
