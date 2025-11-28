@@ -8,6 +8,8 @@ pybliometrics = "*"
 apsw = "*"
 importlib-metadata = "*"
 pyahocorasick = "*"
+openai = "*"
+levenshtein = "*"
 
 [dev-packages]
 black = "*"
