@@ -24,7 +24,13 @@ counted_periodicals AS (
     GROUP BY issn
 )
 
-SELECT n, group_concat(substr(issn, 1, 4) || '-' || substr(issn, 5, 4), ', '), title
+SELECT n,
+    group_concat(
+      '<a href="https://portal.issn.org/resource/ISSN/' || issn || '">'
+        || substr(issn, 1, 4) || '-' || substr(issn, 5, 4)
+        || '</a>',
+      ', '),
+    title
   FROM counted_periodicals
   GROUP BY id
   ORDER BY n DESC;
