@@ -33,6 +33,13 @@ from alexandria3k.common import Alexandria3kError, program_version
 from alexandria3k import debug
 from alexandria3k.data_sources_lib.crossref_file_cache import FileCache
 from alexandria3k import perf
+from alexandria3k.completion import (
+    add_completion_support,
+)  # Completion integration
+from alexandria3k.facilities import (
+    facility_names,
+    facility_modules,
+)  # Moved out to avoid cycles
 
 DESCRIPTION = "a3k: Relational interface to publication metadata"
 
@@ -60,19 +67,7 @@ def class_name(facility):
     return "".join(x.title() for x in components)
 
 
-def facility_modules(facility):
-    """Return a list with the module names of the available facilities"""
-    main_dir = os.path.dirname(os.path.realpath(__file__))
-    python_files = os.listdir(f"{main_dir}/{facility}")
-    # Remove trailing .py
-    return [os.path.splitext(f)[0] for f in python_files if f.endswith(".py")]
-
-
-def facility_names(facility):
-    """Return a list with the names of the available facilities.
-    (data_source or process)"""
-    # Replace _ with -
-    return [s.replace("_", "-") for s in facility_modules(facility)]
+# facility_modules/facility_names now live in alexandria3k.facilities
 
 
 def get_data_source_instance(args):
@@ -591,6 +586,10 @@ def get_cli_parser():
     add_subcommand_list_sources(subparsers)
     add_subcommand_version(subparsers)
     add_subcommand_download(subparsers)
+
+    # Add (optional) shell completion support (no-op if shtab missing)
+    add_completion_support(parser)
+
     return parser
 
 
