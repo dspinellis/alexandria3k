@@ -26,6 +26,8 @@ populate-greek-periodicals: greek-periodicals.csv greek-periodicals.sql
 	sqlite3 $(MAINDB).db <greek-periodicals.sql
 	touch $@
 
+tables/represented-periodicals tables/lib_issns: populate-greek-periodicals
+
 # Obtain periodicals from the Greek National Scientific Journal Catalogue
 # https://eskep.ekt.gr/.
 # Inspecting HTTP requests for a query for for Greek language periodicals
