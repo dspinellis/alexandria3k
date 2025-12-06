@@ -15,10 +15,14 @@ SELECT
     impact_factor2.impact_factor AS impact_factor2,
     impact_factor5.citations_number AS citations_number5,
     impact_factor5.publications_number AS publications_number5,
-    impact_factor5.impact_factor AS impact_factor5
-  FROM rolap.impact_factor2
-    LEFT JOIN rolap.impact_factor5
-      ON rolap.impact_factor2.journal_id = rolap.impact_factor5.journal_id
-    LEFT JOIN journal_names
-      ON rolap.impact_factor2.journal_id = journal_names.id
+    impact_factor5.impact_factor AS impact_factor5,
+    journal_h5.h5_index,
+    journal_h5.h5_median
+  FROM journal_names
+  LEFT JOIN rolap.impact_factor2
+    ON rolap.impact_factor2.journal_id =  journal_names.id
+  LEFT JOIN rolap.impact_factor5
+    ON rolap.impact_factor5.journal_id = journal_names.id
+  LEFT JOIN rolap.journal_h5
+    ON rolap.journal_h5.journal_id = journal_names.id
   ORDER BY title;
