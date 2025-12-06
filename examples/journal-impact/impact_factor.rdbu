@@ -1,0 +1,24 @@
+BEGIN SETUP
+
+# Prefix ISBN with s to have it treated as string
+
+rolap.citations:
+issn		citations_number
+s1234-5678	10
+s1234-5670	1
+
+rolap.publications:
+issn		publications_number
+s1234-5678	2
+s1234-5679	12
+
+END
+
+INCLUDE CREATE impact_factor.sql
+
+BEGIN RESULT
+impact_factor:
+issn		citations_number	publications_number	impact_factor
+s12345678	10			2			5.0
+s12345679	0			12			0.0
+END
