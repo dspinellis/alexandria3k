@@ -1,0 +1,37 @@
+BEGIN SETUP
+
+rolap.impact_factor2:
+journal_id	publications_number	citations_number	impact_factor
+10		102			1002			1
+20		202			2002			2
+30		302			3002			3
+40		402			4002			4
+51		502			5002			5
+
+rolap.impact_factor5:
+journal_id	publications_number	citations_number	impact_factor
+10		105			1005			1.5
+20		205			2005			2.5
+30		305			3005			3.5
+40		405			4005			4.5
+51		505			5005			5.5
+
+journal_names:
+id 	   title publisher issn_print issn_eprint issns_additional doi
+10	   T1	 P1	   IP1	      IE1	  IA1		   D1
+20	   T2	 P2	   IP2	      IE2	  IA2		   D2
+30	   T3	 P3	   IP3	      IE3	  IA3		   D3
+40	   T4	 P4	   IP4	      IE4	  IA4		   D5
+51	   T5	 P5	   IP5	      IE5	  IA5		   D5
+END
+
+INCLUDE SELECT journal-impact-report-test.sql
+
+BEGIN RESULT
+title publisher issn_print issn_eprint issns_additional doi citations_number2 publications_number2 impact_factor2 citations_number5 publications_number5 impact_factor5
+T1 P1 IP1 IE1 IA1 D1 1002 102 1 1005 105 1.5
+T2 P2 IP2 IE2 IA2 D2 2002 202 2 2005 205 2.5
+T3 P3 IP3 IE3 IA3 D3 3002 302 3 3005 305 3.5
+T4 P4 IP4 IE4 IA4 D5 4002 402 4 4005 405 4.5
+T5 P5 IP5 IE5 IA5 D5 5002 502 5 5005 505 5.5
+END

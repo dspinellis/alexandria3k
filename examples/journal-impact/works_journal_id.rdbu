@@ -1,0 +1,25 @@
+BEGIN SETUP
+works:
+id	doi	page	issn_print	issn_electronic	published_year
+1	d1	12-15	ip1		ie1		2020
+2	d2	12-15	null		ie2		2019
+3	d3	12-15	ip3		null		2019
+4	d4	12-15	null		null		2019
+
+rolap.journals_issns:
+journal_id	issn	
+1		ip1
+1		ie1
+2		ie2
+3		ip3
+END
+
+INCLUDE CREATE works_journal_id.sql
+
+BEGIN RESULT
+works_journal_id:
+id	doi	page	journal_id	published_year
+1	d1	12-15	1		2020
+2	d2	12-15	2		2019
+3	d3	12-15	3		2019
+END

@@ -24,3 +24,9 @@ populate: $(CROSSREF_DIR)
 	   work_references.doi \
 	  --row-selection "works.published_year between $$(expr $(YEAR) - 5)  and $(YEAR)"
 	touch $@
+
+# Create a test file without the headers and CSV format directives.
+test: journal-impact-report-test.sql
+
+journal-impact-report-test.sql: journal-impact-report.sql
+	grep -v '^\.' $? >$@

@@ -1,7 +1,7 @@
 -- Create table of citable works: those longer than two pages
 
 CREATE TABLE rolap.citable_works AS
-  SELECT * FROM rolap.works_issn
+  SELECT * FROM rolap.works_journal_id
   WHERE
     -- To avoid news articles, book reviews, etc. include works longer than
     -- two pages
