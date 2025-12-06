@@ -10,8 +10,8 @@
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
     <script src="_static/documentation_options.js?v=5349f462"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Python utility API" href="utility-api.html" />
@@ -43,7 +43,7 @@ These can be contributed to <em>alexandria3k</em> or used in parallel with it.</
 <p>A module supporting virtual database table schema definition.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="db_schema.ColumnMeta">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">db_schema.</span></span><span class="sig-name descname"><span class="pre">ColumnMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_extractor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#db_schema.ColumnMeta" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">db_schema.</span></span><span class="sig-name descname"><span class="pre">ColumnMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_extractor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#db_schema.ColumnMeta" title="Link to this definition">¶</a></dt>
 <dd><p>A container for column meta-data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="db_schema.ColumnMeta.get_definition">
@@ -73,7 +73,7 @@ These can be contributed to <em>alexandria3k</em> or used in parallel with it.</
 
 <dl class="py class">
 <dt class="sig sig-object py" id="db_schema.TableMeta">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">db_schema.</span></span><span class="sig-name descname"><span class="pre">TableMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#db_schema.TableMeta" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">db_schema.</span></span><span class="sig-name descname"><span class="pre">TableMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#db_schema.TableMeta" title="Link to this definition">¶</a></dt>
 <dd><p>A container for table meta-data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="db_schema.TableMeta.get_column_definition_by_name">
@@ -171,7 +171,7 @@ A columns array can be used to specify which columns to include.</p>
 (possibly partitioned) virtual database tables.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="data_source.CONTAINER_ID_COLUMN">
-<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">CONTAINER_ID_COLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#data_source.CONTAINER_ID_COLUMN" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">CONTAINER_ID_COLUMN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#data_source.CONTAINER_ID_COLUMN" title="Link to this definition">¶</a></dt>
 <dd><p>int: by convention column 1 of each table hold the container (file) id.
 This can e.g. be the index of the file in an array of container files
 or an increasing counter over a streamed collection.</p>
@@ -179,13 +179,13 @@ or an increasing counter over a streamed collection.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="data_source.CONTAINER_INDEX">
-<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">CONTAINER_INDEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#data_source.CONTAINER_INDEX" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">CONTAINER_INDEX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#data_source.CONTAINER_INDEX" title="Link to this definition">¶</a></dt>
 <dd><p>int: database table index using the container id.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.DataFiles">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">DataFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_container</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataFiles" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">DataFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_container</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataFiles" title="Link to this definition">¶</a></dt>
 <dd><p>The source of compressed data files</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="data_source.DataFiles.get_container_iterator">
@@ -209,7 +209,7 @@ or an increasing counter over a streamed collection.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.DataSource">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">DataSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataSource" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">DataSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attach_databases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataSource" title="Link to this definition">¶</a></dt>
 <dd><p>Create a meta-data object that supports queries over its
 (virtual) tables and the population of an SQLite database with its
 data.
@@ -234,7 +234,7 @@ name.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="data_source.DataSource.add_column">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataSource.add_column" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">add_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.DataSource.add_column" title="Link to this definition">¶</a></dt>
 <dd><p>Add a column required for executing a query to the
 specified dictionary</p>
 </dd></dl>
@@ -361,7 +361,7 @@ with all the ones required to reach the specified top</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.ElementsCursor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ElementsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_cursor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ElementsCursor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ElementsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_cursor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ElementsCursor" title="Link to this definition">¶</a></dt>
 <dd><p>An (abstract) cursor over a collection of data embedded within
 another cursor.</p>
 <dl class="py method">
@@ -391,13 +391,13 @@ of the table</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="data_source.ElementsCursor.Next">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ElementsCursor.Next" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ElementsCursor.Next" title="Link to this definition">¶</a></dt>
 <dd><p>Advance reading to the next available element.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="data_source.ElementsCursor.Rowid">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Rowid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ElementsCursor.Rowid" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Rowid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ElementsCursor.Rowid" title="Link to this definition">¶</a></dt>
 <dd><p>Return a unique id of the row along all records</p>
 </dd></dl>
 
@@ -424,7 +424,7 @@ Not part of the apsw API.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.FilesCursor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">FilesCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_file_cache</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.FilesCursor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">FilesCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_file_cache</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.FilesCursor" title="Link to this definition">¶</a></dt>
 <dd><p>A cursor that iterates over the files in a directory
 Not used directly by an SQLite table</p>
 <dl class="py method">
@@ -451,7 +451,7 @@ non-empty.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.ItemsCursor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ItemsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ItemsCursor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ItemsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.ItemsCursor" title="Link to this definition">¶</a></dt>
 <dd><p>A cursor over the items of data files. Internal use only.
 Not used directly by an SQLite table.</p>
 <dl class="py method">
@@ -482,7 +482,7 @@ Not used directly by an SQLite table.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.NestedElementsCursor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">NestedElementsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_cursor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.NestedElementsCursor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">NestedElementsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_cursor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.NestedElementsCursor" title="Link to this definition">¶</a></dt>
 <dd><p>An abstract cursor designed to facilitate iterating over elements nested within a
 parent element. It depends on the implementation of the abstract method element_name.</p>
 <dl class="py method">
@@ -495,7 +495,7 @@ parent cursor.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="data_source.NestedElementsCursor.element_name">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">element_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.NestedElementsCursor.element_name" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">element_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.NestedElementsCursor.element_name" title="Link to this definition">¶</a></dt>
 <dd><p>The record key from which to retrieve the nested elements from the current row
 of the parent cursor. Not part of the apsw API.</p>
 </dd></dl>
@@ -504,26 +504,26 @@ of the parent cursor. Not part of the apsw API.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="data_source.PROGRESS_BAR_LENGTH">
-<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">PROGRESS_BAR_LENGTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="headerlink" href="#data_source.PROGRESS_BAR_LENGTH" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">PROGRESS_BAR_LENGTH</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></span><a class="headerlink" href="#data_source.PROGRESS_BAR_LENGTH" title="Link to this definition">¶</a></dt>
 <dd><p>int: length of the progress bar printed during database population.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="data_source.ROWID_COLUMN">
-<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ROWID_COLUMN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#data_source.ROWID_COLUMN" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ROWID_COLUMN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></span><a class="headerlink" href="#data_source.ROWID_COLUMN" title="Link to this definition">¶</a></dt>
 <dd><p>int: column that denotes the internally used SQLite rowid integer row
 identifier.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="data_source.ROWID_INDEX">
-<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ROWID_INDEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#data_source.ROWID_INDEX" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">ROWID_INDEX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></span><a class="headerlink" href="#data_source.ROWID_INDEX" title="Link to this definition">¶</a></dt>
 <dd><p>int: database table index using the row id.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.RecordsCursor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">RecordsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files_cursor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.RecordsCursor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">RecordsCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files_cursor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.RecordsCursor" title="Link to this definition">¶</a></dt>
 <dd><p>A cursor for iterating over records within nested elements.</p>
 <p>A record could correspond to e.g. the metadata of a publication.
 Multiple records can appear in a file.</p>
@@ -583,7 +583,7 @@ Not part of the apsw API.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="data_source.RecordsCursor.current_row_value">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_row_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.RecordsCursor.current_row_value" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">current_row_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_source.RecordsCursor.current_row_value" title="Link to this definition">¶</a></dt>
 <dd><p>Return the current row. Not part of the apsw API.</p>
 </dd></dl>
 
@@ -598,14 +598,14 @@ apsw API.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="data_source.SINGLE_PARTITION_INDEX">
-<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">SINGLE_PARTITION_INDEX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SINGLE_PARTITION'</span></em><a class="headerlink" href="#data_source.SINGLE_PARTITION_INDEX" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">SINGLE_PARTITION_INDEX</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SINGLE_PARTITION'</span></span><a class="headerlink" href="#data_source.SINGLE_PARTITION_INDEX" title="Link to this definition">¶</a></dt>
 <dd><p>str: denote a table with a single partition by setting or comparing for
 equality an index value to this reference.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.StreamingCachedContainerTable">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">StreamingCachedContainerTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=&lt;function</span> <span class="pre">StreamingTable.&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.StreamingCachedContainerTable" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">StreamingCachedContainerTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">StreamingTable.&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.StreamingCachedContainerTable" title="Link to this definition">¶</a></dt>
 <dd><p>An apsw table streaming over data of the supplied table metadata.
 This works over a cached data container (e.g. a parsed JSON or XML
 file) that allows indexing entries within it.</p>
@@ -620,7 +620,7 @@ for the operation at hand</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="data_source.StreamingTable">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">StreamingTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=&lt;function</span> <span class="pre">StreamingTable.&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.StreamingTable" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">data_source.</span></span><span class="sig-name descname"><span class="pre">StreamingTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">StreamingTable.&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_source.StreamingTable" title="Link to this definition">¶</a></dt>
 <dd><p>An apsw table streaming over data of the supplied table metadata</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -714,7 +714,7 @@ in the sample given in the table’s constructor.</p>
 <p>Functions providing virtual table access to CSV data sources.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="csv_source.CsvCursor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csv_source.</span></span><span class="sig-name descname"><span class="pre">CsvCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_source.CsvCursor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">csv_source.</span></span><span class="sig-name descname"><span class="pre">CsvCursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_source.CsvCursor" title="Link to this definition">¶</a></dt>
 <dd><p>A virtual table cursor over CSV data.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="csv_source.CsvCursor.Close">
@@ -757,7 +757,7 @@ of the table according to the index</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="csv_source.VTSource">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csv_source.</span></span><span class="sig-name descname"><span class="pre">VTSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_source.VTSource" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">csv_source.</span></span><span class="sig-name descname"><span class="pre">VTSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csv_source.VTSource" title="Link to this definition">¶</a></dt>
 <dd><p>Virtual table data source for a single file.
 This gets registered with the apsw Connection through createmodule
 in order to instantiate the virtual table.</p>
@@ -895,7 +895,7 @@ supports the SAX 2 API.</p>
       &#169;2022-2025, Diomidis Spinellis.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
