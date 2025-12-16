@@ -1,6 +1,6 @@
 BEGIN SETUP
 rolap.works_journal_id:
-id      published_year
+journal_id      published_year
 1       2020
 1       2020
 2       2019

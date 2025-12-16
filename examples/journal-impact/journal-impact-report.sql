@@ -24,7 +24,8 @@ SELECT
     impact_factor5.publications_number AS publications_number5,
     impact_factor5.impact_factor AS impact_factor5,
     journal_h5.h5_index,
-    journal_h5.h5_median
+    journal_h5.h5_median,
+    eigenfactor.eigenfactor_score
   FROM journal_names
   INNER JOIN rolap.active_journals
     ON active_journals.id =  journal_names.id
@@ -34,4 +35,6 @@ SELECT
     ON impact_factor5.journal_id = journal_names.id
   LEFT JOIN rolap.journal_h5
     ON journal_h5.journal_id = journal_names.id
+  LEFT JOIN rolap.eigenfactor
+    ON eigenfactor.journal_id = journal_names.id
   ORDER BY title;

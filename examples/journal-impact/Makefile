@@ -30,3 +30,7 @@ test: journal-impact-report-test.sql
 
 journal-impact-report-test.sql: journal-impact-report.sql
 	grep -v '^\.' $? >$@
+
+# Calculate Eigenfactor scores
+eigenfactor: populate
+	MAINDB="$(MAINDB)" uv run eigenfactor.py
