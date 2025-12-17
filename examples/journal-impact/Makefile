@@ -32,5 +32,5 @@ journal-impact-report-test.sql: journal-impact-report.sql
 	grep -v '^\.' $? >$@
 
 # Calculate Eigenfactor scores
-tables/eigenfactor: tables/citation_network tables/publications5
+tables/eigenfactor: tables/citation_network tables/publications5 eigenfactor.py
 	./eigenfactor.py
