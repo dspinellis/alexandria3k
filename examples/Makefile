@@ -32,7 +32,8 @@ export TIME?=
 export EXPENSIVE_DEPENDENCIES?=true
 
 SUBDIRS?=$(shell find . -mindepth 1 -maxdepth 1 -type d -not -name cdindex \
-  -not -name tawfik -not -name cs_cdindex -not -name greek-pubs)
+  -not -name tawfik -not -name cs_cdindex -not -name greek-pubs \
+  -not -name journal-impact)
 
 .PHONY: all $(SUBDIRS) verify-links clean
 
