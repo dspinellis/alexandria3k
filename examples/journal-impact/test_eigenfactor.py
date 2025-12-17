@@ -27,7 +27,7 @@ import numpy as np
 from eigenfactor import calculate_eigenfactor
 
 
-def test_check_ring(result):
+def check_ring(result):
     """
     Verify that in a symmetric 3-node ring (1->2->3->1), all journals get equal scores.
     """
@@ -37,7 +37,7 @@ def test_check_ring(result):
     assert np.isclose(scores[3], 33.333, atol=0.1)
 
 
-def test_check_self_citation(result):
+def check_self_citation(result):
     """
     Verify that self-citations are excluded.
     Topology: 1->1 (100 citations), 1->2 (10 citations).
@@ -51,7 +51,7 @@ def test_check_self_citation(result):
     assert scores[2] > scores[1]
 
 
-def test_check_disconnected(result):
+def check_disconnected(result):
     """
     Verify behavior with two disconnected components (1<->2 and 3<->4).
     With equal article counts, the total score should be distributed evenly (25% each).
@@ -75,7 +75,7 @@ def test_check_disconnected(result):
             {1: 10, 2: 10, 3: 10},
             3,
             100.0,
-            test_check_ring,
+            check_ring,
         ),
         # Case 2: Dangling Node (1 -> 2)
         # Journal 2 is a dangling node (cites nothing).
@@ -101,7 +101,7 @@ def test_check_disconnected(result):
             {1: 10, 2: 10},
             2,
             100.0,
-            test_check_self_citation,
+            check_self_citation,
         ),
         # Case 4: Disconnected Components (1 <-> 2, 3 <-> 4)
         # Two separate components. Teleportation ensures all nodes are reached.
@@ -115,7 +115,7 @@ def test_check_disconnected(result):
             {1: 10, 2: 10, 3: 10, 4: 10},
             4,
             100.0,
-            test_check_disconnected,
+            check_disconnected,
         ),
         # Case 5: Empty Input
         # Should handle gracefully and return empty result.
