@@ -1,0 +1,22 @@
+BEGIN SETUP
+rolap.works_journal_id:
+journal_id      published_year
+1       2020
+1       2020
+2       2019
+3       2020
+
+rolap.reference:
+year
+2020
+
+END
+
+INCLUDE CREATE active_journals.sql
+
+BEGIN RESULT
+active_journals:
+id
+1
+3
+END

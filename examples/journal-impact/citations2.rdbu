@@ -1,0 +1,32 @@
+BEGIN SETUP
+
+# Citations given in reference year to publications in the previous two
+rolap.works_journal_id:
+id	doi	page	journal_id	published_year
+1	d1	12-15	100		2020
+2	d2	12-15	200		2019
+3	d3	12-15	300		2021
+4	d4	12-15	300		2021
+5	d5	12-15	300		2021
+6	d6	12-15	300		2019
+
+rolap.work_references:
+work_id	doi
+3	d1
+4	d1
+6	d1
+4	d2
+
+rolap.reference:
+year
+2021
+END
+
+INCLUDE CREATE citations2.sql
+
+BEGIN RESULT
+rolap.citations2:
+journal_id	citations_number
+100		2
+200		1
+END

@@ -1,0 +1,62 @@
+BEGIN SETUP
+
+journal_names:
+id 	   title publisher issn_print issn_eprint issns_additional doi
+10	   T1	 P1	   IP1	      IE1	  IA1		   D1
+20	   T2	 P2	   IP2	      IE2	  IA2		   D2
+30	   T3	 P3	   IP3	      IE3	  IA3		   D3
+40	   T4	 P4	   IP4	      IE4	  IA4		   D5
+51	   T5	 P5	   IP5	      IE5	  IA5		   D5
+
+rolap.impact_factor2:
+journal_id	publications_number	citations_number	impact_factor
+10		102			1002			1
+20		202			2002			2
+30		302			3002			3
+40		402			4002			4
+51		502			5002			5
+
+rolap.impact_factor5:
+journal_id	publications_number	citations_number	impact_factor
+10		105			1005			1.5
+20		205			2005			2.5
+30		305			3005			3.5
+40		405			4005			4.5
+51		505			5005			5.5
+
+rolap.journal_h5:
+journal_id	h5_index	h5_median
+10		1		1.1
+20		2		2.2
+30		3		3.3
+40		4		4.4
+51		5		5.5
+
+rolap.active_journals:
+id
+10
+20
+30
+40
+51
+
+rolap.eigenfactor:
+journal_id	eigenfactor_score
+10		10.1
+20		20.2
+30		30.3
+40		40.4
+51		50.5
+
+END
+
+INCLUDE SELECT journal-impact-report-test.sql
+
+BEGIN RESULT
+title publisher issn_print issn_eprint issns_additional doi citations_number2 publications_number2 impact_factor2 citations_number5 publications_number5 impact_factor5 h5_index h5_median eigenfactor_score
+T1 P1 IP1 IE1 IA1 D1 1002 102 1 1005 105 1.5 1 1.1 10.1
+T2 P2 IP2 IE2 IA2 D2 2002 202 2 2005 205 2.5 2 2.2 20.2
+T3 P3 IP3 IE3 IA3 D3 3002 302 3 3005 305 3.5 3 3.3 30.3
+T4 P4 IP4 IE4 IA4 D5 4002 402 4 4005 405 4.5 4 4.4 40.4
+T5 P5 IP5 IE5 IA5 D5 5002 502 5 5005 505 5.5 5 5.5 50.5
+END

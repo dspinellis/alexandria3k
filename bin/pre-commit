@@ -27,7 +27,7 @@
 set -eu
 
 echo Python unit and integration tests
-python3 -m unittest discover -s .
+pytest
 
 echo SQL unit tests
 for t in tests/*.rdbu; do rdbunit --database=sqlite $t | sqlite3 ; done
