@@ -20,5 +20,13 @@ rdbunit = "*"
 twine = "*"
 toml = "*"
 
+[examples-packages]
+cliffs_delta = "*"
+matplotlib = "*"
+networkx = "*"
+numpy = "*"
+pandas = "*"
+scipy = "*"
+
 [requires]
 python_version = "3"

@@ -19,6 +19,11 @@ When modifying existing studies or creating one ones,
 run `make help` in a study directory
 to see some potentially useful _make_ targets.
 
+Some examples require the installation of additional Python packages.
+You can install all of them by running a command such as
+`pipenv install --categories examples-packages` under the
+top-level `src` directory.
+
 The [common](common) directory contains Makefile rules for satisfying
 data dependencies common to more than one study.
 It also hosts downloaded data sets to minimize useless replication.

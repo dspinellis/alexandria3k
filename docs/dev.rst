@@ -30,6 +30,9 @@ with the required development dependencies.
    # Install development dependencies
    pipenv install --dev
 
+   # Optionally also install packages required for running the examples
+   pipenv install --categories examples-packages
+
    # Launch a shell in the virtual environment
    pipenv shell
 
