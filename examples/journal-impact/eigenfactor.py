@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Alexandria3k Crossref bibliographic metadata processing
 # Copyright (C) 2025  Panagiotis Spanakis
