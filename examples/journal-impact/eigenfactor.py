@@ -308,16 +308,18 @@ def save_results(conn, df):
     # Clear existing data
     conn.execute("DELETE FROM rolap.eigenfactor")
 
-    # Insert new data
-    # Use chunksize to avoid "too many SQL variables" or memory issues
-    df.to_sql(
-        "eigenfactor",
-        conn,
-        schema="rolap",
-        if_exists="append",
-        index=False,
-        chunksize=1000,
+    # Insert new data, converting it to Python values.
+    # Note that df.to_sql() can't handle attached databases.
+    rows = [
+        (int(journal_id), float(score))
+        for journal_id, score in df[["journal_id", "eigenfactor_score"]].itertuples(index=False)
+    ]
+
+    conn.executemany(
+        "INSERT INTO rolap.eigenfactor (journal_id, eigenfactor_score) VALUES (?, ?)",
+        rows,
     )
+    # Use chunksize to avoid "too many SQL variables" or memory issues
     conn.commit()
     logging.info(f"Saved {len(df)} records.")
 
