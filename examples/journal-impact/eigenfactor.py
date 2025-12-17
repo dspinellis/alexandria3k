@@ -312,7 +312,9 @@ def save_results(conn, df):
     # Note that df.to_sql() can't handle attached databases.
     rows = [
         (int(journal_id), float(score))
-        for journal_id, score in df[["journal_id", "eigenfactor_score"]].itertuples(index=False)
+        for journal_id, score in df[["journal_id", "eigenfactor_score"]].itertuples(
+            index=False
+        )
     ]
 
     conn.executemany(
