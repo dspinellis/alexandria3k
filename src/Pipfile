@@ -11,14 +11,15 @@ pyahocorasick = "*"
 
 [dev-packages]
 black = "*"
+build = "*"
 hatch = "*"
 pylint = "*"
+pytest = "*"
+rdbunit = "*"
 sphinx = "*"
 sphinx-argparse = "*"
-build = "*"
-rdbunit = "*"
-twine = "*"
 toml = "*"
+twine = "*"
 
 [examples-packages]
 cliffs_delta = "*"
