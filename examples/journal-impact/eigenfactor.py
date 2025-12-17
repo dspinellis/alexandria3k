@@ -80,7 +80,7 @@ def get_db_connection():
         if main_db_path == "impact" and os.path.exists("/tmp/impact.db"):
             db_file = "/tmp/impact.db"
         elif not os.path.exists(db_file):
-            logging.warning(f"Main database file '{db_file}' not found.")
+            logging.critical(f"Main database file '{db_file}' not found.")
 
     logging.info(f"Connecting to {db_file}...")
     conn = sqlite3.connect(db_file)
@@ -136,11 +136,7 @@ def load_data(conn):
         citations_df = pd.read_sql_query(citation_query, conn)
         logging.info(f"Found {len(citations_df)} citation links.")
     except Exception as e:
-        logging.error(f"Error reading rolap.citation_network: {e}")
-        logging.error(
-            "Please run 'eigenfactor.sql' to create the citation network table."
-        )
-        sys.exit(1)
+        logging.critical(f"Error reading rolap.citation_network: {e}")
 
     return citations_df, journal_article_counts
 
@@ -201,7 +197,7 @@ def calculate_eigenfactor(
     if n == 0:
         return pd.DataFrame(columns=["journal_id", "eigenfactor_score"])
 
-    print(f"Constructing sparse matrix for {n} journals...")
+    logging.info(f"Constructing sparse matrix for {n} journals...")
 
     # Map journal IDs to matrix indices
     citing_indices = citations_df["citing_journal"].map(journal_to_idx).values
@@ -232,7 +228,7 @@ def calculate_eigenfactor(
     if total_articles > 0:
         article_vector = article_counts_arr / total_articles
     else:
-        print("Warning: Total article count is 0. Using uniform distribution.")
+        logging.warning("Total article count is 0. Using uniform distribution.")
         article_vector = np.ones(n, dtype=np.float32) / n
 
     # Normalize H columns (make it column-stochastic)
@@ -247,7 +243,7 @@ def calculate_eigenfactor(
         H = H @ D_inv
 
     # Power Iteration
-    print("Starting power iteration...")
+    logging.info("Starting power iteration...")
     pi = np.ones(n, dtype=np.float32) / n
 
     for iteration in range(max_iter):
@@ -266,13 +262,13 @@ def calculate_eigenfactor(
         # Check convergence (L1 norm)
         diff = np.linalg.norm(pi_new - pi, ord=1)
         if diff < epsilon:
-            print(f"Converged after {iteration+1} iterations.")
+            logging.info(f"Converged after {iteration+1} iterations.")
             pi = pi_new
             break
 
         pi = pi_new
     else:
-        print(f"Warning: Did not converge after {max_iter} iterations.")
+        logging.warning(f"Did not converge after {max_iter} iterations.")
 
     # Calculate final Eigenfactor Scores
     # Eigenfactor = 100 * (H * pi) / sum(H * pi)
@@ -297,7 +293,7 @@ def save_results(conn, df):
     """
     Save the calculated scores to the database.
     """
-    print("Saving results to rolap.eigenfactor...")
+    logging.info("Saving results to rolap.eigenfactor...")
 
     # Create table
     conn.execute(
@@ -323,7 +319,7 @@ def save_results(conn, df):
         chunksize=1000,
     )
     conn.commit()
-    print(f"Saved {len(df)} records.")
+    logging.info(f"Saved {len(df)} records.")
 
 
 def main():
@@ -333,18 +329,11 @@ def main():
         citations_df, journal_article_counts = load_data(conn)
 
         if citations_df.empty:
-            print("No citation data found. Exiting.")
+            logging.critical("No citation data found.")
             return
 
         results_df = calculate_eigenfactor(citations_df, journal_article_counts)
         save_results(conn, results_df)
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        import traceback
-
-        traceback.print_exc()
-        sys.exit(1)
     finally:
         if conn:
             conn.close()
