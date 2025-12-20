@@ -44,7 +44,7 @@ Environment Variables:
 """
 
 import os
-import sys
+import itertools
 import sqlite3
 import logging
 import pandas as pd
@@ -291,39 +291,56 @@ def calculate_eigenfactor(
 
 def save_results(conn, df):
     """
-    Save the calculated scores to the database.
+    Save the calculated scores to the database safely using Drop-and-Recreate.
     """
     logging.info("Saving results to rolap.eigenfactor...")
 
-    # Create table
-    conn.execute(
-        """
-        CREATE TABLE IF NOT EXISTS rolap.eigenfactor (
-            journal_id INTEGER PRIMARY KEY,
-            eigenfactor_score REAL
-        )
-    """
-    )
+    try:
+        # The transaction ensures that if anything fails, the table
+        # reverts to its previous state (or doesn't exist yet).
+        with conn:
+            # 1. DROP the table explicitly.
+            # This prevents inheriting a bad schema (like missing PKs) from previous runs.
+            conn.execute("DROP TABLE IF EXISTS rolap.eigenfactor")
 
-    # Clear existing data
-    conn.execute("DELETE FROM rolap.eigenfactor")
+            # 2. CREATE the table fresh.
+            # We enforce the PRIMARY KEY here to mathematically guarantee no duplicates.
+            conn.execute(
+                """
+                CREATE TABLE rolap.eigenfactor (
+                    journal_id INTEGER PRIMARY KEY,
+                    eigenfactor_score REAL
+                )
+            """
+            )
 
-    # Insert new data, converting it to Python values.
-    # Note that df.to_sql() can't handle attached databases.
-    rows = [
-        (int(journal_id), float(score))
-        for journal_id, score in df[["journal_id", "eigenfactor_score"]].itertuples(
-            index=False
-        )
-    ]
+            # 3. Batch insert
+            insert_query = """
+                INSERT INTO rolap.eigenfactor (journal_id, eigenfactor_score) 
+                VALUES (?, ?)
+            """
 
-    conn.executemany(
-        "INSERT INTO rolap.eigenfactor (journal_id, eigenfactor_score) VALUES (?, ?)",
-        rows,
-    )
-    # Use chunksize to avoid "too many SQL variables" or memory issues
-    conn.commit()
-    logging.info(f"Saved {len(df)} records.")
+            # Generator to keep memory usage low
+            data_gen = (
+                (int(r.journal_id), float(r.eigenfactor_score))
+                for r in df.itertuples(index=False)
+            )
+
+            # Insert in chunks
+            count = 0
+            while True:
+                chunk = list(itertools.islice(data_gen, 10000))
+                if not chunk:
+                    break
+                conn.executemany(insert_query, chunk)
+                count += len(chunk)
+
+        logging.info(f"Saved {count} records successfully.")
+
+    except sqlite3.Error as e:
+        logging.critical(f"Database error during save: {e}")
+        # Re-raise so the makefile knows the job failed
+        raise
 
 
 def main():
