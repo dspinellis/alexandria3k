@@ -1,0 +1,30 @@
+BEGIN SETUP
+
+rolap.works_journal_id:
+id	doi	journal_id	published_year
+1	D1	10		2024
+2	D2	10		2024
+3	D3	20		2024
+
+rolap.work_reference_count:
+work_id	reference_count
+1	10
+2	6
+3	8
+
+rolap.reference:
+year
+2024
+
+END
+
+INCLUDE CREATE journal_reference_density.sql
+
+BEGIN RESULT
+# Journal 10: (10+6)/2 = 8.0 avg references
+# Journal 20: 8/1 = 8.0 avg references
+rolap.journal_reference_density:
+journal_id	avg_references	work_count
+10		8.0		2
+20		8.0		1
+END

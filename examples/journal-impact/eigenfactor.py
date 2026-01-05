@@ -18,31 +18,36 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Calculate Eigenfactor scores for journals in the Alexandria3k database.
+Calculate journal prestige metrics (Eigenfactor, SJR, or AIS) for journals
+in the Alexandria3k database.
 
-This script calculates the Eigenfactor score for each journal based on the
-citation network in a specific year (reference year) to articles published
-in the preceding 5 years.
+This script calculates one of:
+- Eigenfactor score: based on a 5-year citation window, excluding self-citations
+- SJR (SCImago Journal Rank): based on a 3-year citation window, limiting
+  self-citations to 33%, normalized per article
+- AIS (Article Influence Score): based on a 5-year citation window, excluding
+  self-citations, normalized per article (mean = 1.0)
 
-It connects to the SQLite databases `rolap.db` and the main database (defined
-by MAINDB environment variable), reads the citation network and article counts,
-computes the Eigenfactor scores using the power iteration method on the
-sparse adjacency matrix, and saves the results to `rolap.eigenfactor`.
+All metrics use the power iteration method on the sparse adjacency matrix
+to compute eigenvector centrality.
 
-The calculation follows the standard Eigenfactor algorithm:
-1. Construct the citation matrix H (citations from citing journal to cited journal).
-2. Normalize columns of H (column-stochastic).
-3. Handle dangling nodes (journals that don't cite others) by distributing their
-   influence according to the article vector.
-4. Apply the teleportation parameter (alpha = 0.85).
-5. Compute the principal eigenvector using power iteration.
-6. Calculate Eigenfactor score = H * pi (influence received).
+Usage:
+    ./eigenfactor.py                    # Calculate Eigenfactor (default)
+    ./eigenfactor.py --metric eigenfactor  # Calculate Eigenfactor
+    ./eigenfactor.py --metric sjr       # Calculate SJR
+    ./eigenfactor.py --metric ais       # Calculate AIS
+
+Key differences between metrics:
+- Eigenfactor: 5-year window, removes self-citations, sums to 100%
+- SJR: 3-year window, limits self-citations to 33%, per-article normalization
+- AIS: 5-year window, removes self-citations, per-article normalization (mean=1.0)
 
 Environment Variables:
     MAINDB: Path to the main database (without .db extension). Default: 'impact'
     ROLAPDB: Path to the ROLAP database (without .db extension). Default: 'rolap'
 """
 
+import argparse
 import os
 import itertools
 import sqlite3
@@ -62,6 +67,7 @@ logging.basicConfig(
 ALPHA = 0.85
 EPSILON = 1e-6
 MAX_ITER = 1000
+MAX_SELF_CITATION_RATIO = 0.33  # SJR limits self-citations to 33%
 
 
 def get_db_connection():
@@ -71,12 +77,8 @@ def get_db_connection():
     main_db_path = os.environ.get("MAINDB", "impact")
     rolap_db_path = os.environ.get("ROLAPDB", "rolap")
 
-    # Ensure paths are absolute or correctly relative
-    # If they are just filenames, they are relative to CWD.
-
     db_file = f"{main_db_path}.db"
     if not os.path.exists(db_file):
-        # Try looking in /tmp/impact.db if default
         if main_db_path == "impact" and os.path.exists("/tmp/impact.db"):
             db_file = "/tmp/impact.db"
         elif not os.path.exists(db_file):
@@ -92,28 +94,33 @@ def get_db_connection():
     return conn
 
 
-def load_data(conn):
+def load_data(conn, metric="eigenfactor"):
     """
     Load citation network and article counts from the database.
 
-    This function retrieves the pre-calculated data needed for the Eigenfactor algorithm:
-    1. Article Counts (Article Vector): The number of citable works for each journal
-       in the 5-year window. This is used to distribute the influence of dangling nodes.
-       It reads from the `rolap.article_counts` table.
-
-    2. Citation Network (Adjacency Matrix): The aggregated citation counts between journals.
-       It reads from the `rolap.citation_network` table.
+    Args:
+        conn: Database connection
+        metric: "eigenfactor" or "ais" (5-year window) or "sjr" (3-year window)
 
     Returns:
         tuple: (citations_df, journal_article_counts)
     """
-    # 1. Get Article Counts (Article Vector)
-    # Use the pre-calculated publications5 table if available, otherwise calculate.
-    logging.info("Fetching article counts...")
+    if metric == "sjr":
+        publications_table = "publications3"
+        citation_table = "citation_network3"
+        window_years = 3
+    else:
+        # Both Eigenfactor and AIS use 5-year window
+        publications_table = "publications5"
+        citation_table = "citation_network"
+        window_years = 5
 
-    article_query = """
+    # 1. Get Article Counts (Article Vector)
+    logging.info(f"Fetching article counts ({window_years}-year window)...")
+
+    article_query = f"""
         SELECT journal_id, publications_number AS article_count
-        FROM rolap.publications5
+        FROM rolap.{publications_table}
     """
     articles_df = pd.read_sql_query(article_query, conn)
 
@@ -123,66 +130,76 @@ def load_data(conn):
     logging.info(f"Found {len(journal_article_counts)} journals with citable works.")
 
     # 2. Get Citation Network
-    # Use the pre-calculated citation_network table.
-    logging.info("Fetching citation network...")
-    citation_query = """
+    logging.info(f"Fetching citation network ({window_years}-year window)...")
+    citation_query = f"""
         SELECT
           citing_journal,
           cited_journal,
           citation_count
-        FROM rolap.citation_network
+        FROM rolap.{citation_table}
     """
     try:
         citations_df = pd.read_sql_query(citation_query, conn)
         logging.info(f"Found {len(citations_df)} citation links.")
     except Exception as e:
-        logging.critical(f"Error reading rolap.citation_network: {e}")
+        logging.critical(f"Error reading rolap.{citation_table}: {e}")
 
     return citations_df, journal_article_counts
 
 
-def calculate_eigenfactor(
+def calculate_metric(
     citations_df,
     journal_article_counts,
+    metric="eigenfactor",
     alpha=ALPHA,
     epsilon=EPSILON,
     max_iter=MAX_ITER,
+    max_self_citation_ratio=MAX_SELF_CITATION_RATIO,
 ):
     """
-    Calculate Eigenfactor scores using sparse matrices.
+    Calculate journal prestige metric using sparse matrices.
 
     The algorithm proceeds in several steps:
     1.  **Matrix Construction**: Builds a sparse adjacency matrix (Z) from the citation dataframe.
         Z[i, j] represents citations from journal i to journal j.
-        Self-citations (diagonal elements) are removed.
 
-    2.  **Column Normalization**: Transposes Z to get H (citations from j to i) and normalizes
+    2.  **Self-Citation Handling**:
+        - Eigenfactor/AIS: Removes self-citations entirely (diagonal = 0)
+        - SJR: Limits self-citations to 33% of incoming citations
+
+    3.  **Column Normalization**: Transposes Z to get H (citations from j to i) and normalizes
         the columns to make the matrix column-stochastic (sum of each column = 1).
 
-    3.  **Article Vector**: Creates a normalized vector of article counts. This vector is used
-        to redistribute the probability mass from "dangling nodes" (journals that are cited
-        but do not cite any other journals in the network).
+    4.  **Article Vector**: Creates a normalized vector of article counts. This vector is used
+        to redistribute the probability mass from "dangling nodes".
 
-    4.  **Power Iteration**: Iteratively computes the principal eigenvector (pi) of the
-        modified Google Matrix. The update rule includes:
-        - The flow through the citation network (alpha * H * pi)
-        - The teleportation term (random jumps)
-        - The redistribution of dangling node mass
+    5.  **Power Iteration**: Iteratively computes the principal eigenvector (pi) of the
+        modified Google Matrix.
 
-    5.  **Score Calculation**: The final Eigenfactor score is defined as 100 * (H * pi).
-        This represents the percentage of time a random walker spends in a journal,
-        following the citation links.
+    6.  **Score Calculation**:
+        - Eigenfactor: 100 * (H * pi), normalized to sum to 100%
+        - SJR: Per-article prestige, normalized so mean = 1.0
+        - AIS: Per-article prestige (like SJR), normalized so mean = 1.0
 
     Args:
         citations_df (pd.DataFrame): DataFrame containing 'citing_journal', 'cited_journal', 'citation_count'.
         journal_article_counts (dict): Dictionary mapping journal_id to article count.
+        metric (str): "eigenfactor", "sjr", or "ais".
         alpha (float): Damping factor (default 0.85).
         epsilon (float): Convergence threshold.
         max_iter (int): Maximum number of iterations.
+        max_self_citation_ratio (float): Maximum ratio of self-citations for SJR (default 0.33).
 
     Returns:
-        pd.DataFrame: DataFrame with 'journal_id' and 'eigenfactor_score'.
+        pd.DataFrame: DataFrame with 'journal_id' and score column.
     """
+    score_columns = {
+        "eigenfactor": "eigenfactor_score",
+        "sjr": "sjr_score",
+        "ais": "ais_score",
+    }
+    score_column = score_columns.get(metric, "eigenfactor_score")
+
     # Identify all journals involved (citing or cited)
     journals = sorted(
         list(
@@ -195,28 +212,42 @@ def calculate_eigenfactor(
     n = len(journals)
 
     if n == 0:
-        return pd.DataFrame(columns=["journal_id", "eigenfactor_score"])
+        return pd.DataFrame(columns=["journal_id", score_column])
 
     logging.info(f"Constructing sparse matrix for {n} journals...")
 
     # Map journal IDs to matrix indices
     citing_indices = citations_df["citing_journal"].map(journal_to_idx).values
     cited_indices = citations_df["cited_journal"].map(journal_to_idx).values
-    counts = citations_df["citation_count"].values
+    counts = citations_df["citation_count"].values.astype(np.float32)
 
     # Create sparse matrix Z (citations FROM citing TO cited)
     # Z[i, j] = citations from journal i to journal j
-    Z_coo = csr_matrix(
+    Z = csr_matrix(
         (counts, (citing_indices, cited_indices)), shape=(n, n), dtype=np.float32
     )
 
-    # Remove self-citations (diagonal)
-    Z_coo.setdiag(0)
-    Z_coo.eliminate_zeros()
-
     # Transpose to get H (citations FROM j TO i) for column-stochastic formulation
     # H[i, j] is proportional to probability of moving from j to i
-    H = Z_coo.T.tocsr()
+    H = Z.T.tocsr()
+
+    # Handle self-citations based on metric type
+    if metric in ("eigenfactor", "ais"):
+        # Eigenfactor/AIS: Remove self-citations entirely
+        H.setdiag(0)
+        H.eliminate_zeros()
+    else:
+        # SJR: Limit self-citations to max 33% of incoming citations per journal
+        logging.info("Limiting self-citations to 33% of incoming citations...")
+        H_lil = H.tolil()
+        for j in range(n):
+            col_sum = H[:, j].sum()
+            if col_sum > 0:
+                self_citation = H_lil[j, j]
+                max_allowed = col_sum * max_self_citation_ratio
+                if self_citation > max_allowed:
+                    H_lil[j, j] = max_allowed
+        H = H_lil.tocsr()
 
     # Create Article Vector (a)
     # Normalized vector of article counts
@@ -248,14 +279,12 @@ def calculate_eigenfactor(
 
     for iteration in range(max_iter):
         # Calculate influence from dangling nodes
-        # Dangling nodes distribute their weight according to the article vector
         dangling_sum = pi[dangling_mask].sum() if np.any(dangling_mask) else 0.0
 
         # H @ pi: flow through links
         pi_new = alpha * (H @ pi)
 
         # Teleportation + Dangling nodes
-        # (alpha * dangling_sum + (1 - alpha)) * article_vector
         teleport_factor = alpha * dangling_sum + (1 - alpha)
         pi_new += teleport_factor * article_vector
 
@@ -270,63 +299,128 @@ def calculate_eigenfactor(
     else:
         logging.warning(f"Did not converge after {max_iter} iterations.")
 
-    # Calculate final Eigenfactor Scores
-    # Eigenfactor = 100 * (H * pi) / sum(H * pi)
-    # Note: The standard definition is often just 100 * (H * pi) if pi is the steady state of the modified chain.
-    # But strictly, Eigenfactor is the percentage of time spent in a journal in the citation network,
-    # excluding the teleportation steps?
-    # Actually, Eigenfactor.org says: "The Eigenfactor score ... is 100 * (H * pi)".
-    # Where pi is the leading eigenvector of the matrix P = alpha * H + (1-alpha) * a * e^T + alpha * a * d^T
+    # Calculate final scores
+    prestige_scores = H @ pi
 
-    # Let's compute H @ pi
-    ef_scores = H @ pi
+    if metric == "eigenfactor":
+        # Eigenfactor: Normalize to sum to 100
+        total_score = prestige_scores.sum()
+        if total_score > 0:
+            scores = 100 * prestige_scores / total_score
+        else:
+            scores = prestige_scores
+    else:
+        # SJR and AIS: Normalize by article count, then scale so mean = 1.0
+        scores = np.zeros(n, dtype=np.float32)
+        for i, journal in enumerate(journals):
+            article_count = journal_article_counts.get(journal, 0)
+            if article_count > 0:
+                scores[i] = prestige_scores[i] / article_count
+            else:
+                scores[i] = 0.0
 
-    # Normalize to sum to 100
-    total_score = ef_scores.sum()
-    if total_score > 0:
-        ef_scores = 100 * ef_scores / total_score
+        # Scale so that average score is 1.0
+        mean_score = scores[scores > 0].mean() if np.any(scores > 0) else 1.0
+        if mean_score > 0:
+            scores = scores / mean_score
 
-    return pd.DataFrame({"journal_id": journals, "eigenfactor_score": ef_scores})
+    return pd.DataFrame({"journal_id": journals, score_column: scores})
 
 
-def save_results(conn, df):
+# Backward-compatible wrapper for tests
+def calculate_eigenfactor(
+    citations_df,
+    journal_article_counts,
+    alpha=ALPHA,
+    epsilon=EPSILON,
+    max_iter=MAX_ITER,
+):
+    """Calculate Eigenfactor scores (backward-compatible wrapper)."""
+    return calculate_metric(
+        citations_df,
+        journal_article_counts,
+        metric="eigenfactor",
+        alpha=alpha,
+        epsilon=epsilon,
+        max_iter=max_iter,
+    )
+
+
+def calculate_sjr(
+    citations_df,
+    journal_article_counts,
+    alpha=ALPHA,
+    epsilon=EPSILON,
+    max_iter=MAX_ITER,
+    max_self_citation_ratio=MAX_SELF_CITATION_RATIO,
+):
+    """Calculate SJR scores (wrapper for testing)."""
+    return calculate_metric(
+        citations_df,
+        journal_article_counts,
+        metric="sjr",
+        alpha=alpha,
+        epsilon=epsilon,
+        max_iter=max_iter,
+        max_self_citation_ratio=max_self_citation_ratio,
+    )
+
+
+def calculate_ais(
+    citations_df,
+    journal_article_counts,
+    alpha=ALPHA,
+    epsilon=EPSILON,
+    max_iter=MAX_ITER,
+):
+    """Calculate Article Influence Score (wrapper for testing)."""
+    return calculate_metric(
+        citations_df,
+        journal_article_counts,
+        metric="ais",
+        alpha=alpha,
+        epsilon=epsilon,
+        max_iter=max_iter,
+    )
+
+
+def save_results(conn, df, metric="eigenfactor"):
     """
     Save the calculated scores to the database safely using Drop-and-Recreate.
     """
-    logging.info("Saving results to rolap.eigenfactor...")
+    table_names = {"eigenfactor": "eigenfactor", "sjr": "sjr", "ais": "ais"}
+    score_columns = {
+        "eigenfactor": "eigenfactor_score",
+        "sjr": "sjr_score",
+        "ais": "ais_score",
+    }
+    table_name = table_names.get(metric, "eigenfactor")
+    score_column = score_columns.get(metric, "eigenfactor_score")
+
+    logging.info(f"Saving results to rolap.{table_name}...")
 
     try:
-        # The transaction ensures that if anything fails, the table
-        # reverts to its previous state (or doesn't exist yet).
         with conn:
-            # 1. DROP the table explicitly.
-            # This prevents inheriting a bad schema (like missing PKs) from previous runs.
-            conn.execute("DROP TABLE IF EXISTS rolap.eigenfactor")
+            conn.execute(f"DROP TABLE IF EXISTS rolap.{table_name}")
 
-            # 2. CREATE the table fresh.
-            # We enforce the PRIMARY KEY here to mathematically guarantee no duplicates.
             conn.execute(
-                """
-                CREATE TABLE rolap.eigenfactor (
+                f"""
+                CREATE TABLE rolap.{table_name} (
                     journal_id INTEGER PRIMARY KEY,
-                    eigenfactor_score REAL
+                    {score_column} REAL
                 )
             """
             )
 
-            # 3. Batch insert
-            insert_query = """
-                INSERT INTO rolap.eigenfactor (journal_id, eigenfactor_score) 
+            insert_query = f"""
+                INSERT INTO rolap.{table_name} (journal_id, {score_column}) 
                 VALUES (?, ?)
             """
 
-            # Generator to keep memory usage low
             data_gen = (
-                (int(r.journal_id), float(r.eigenfactor_score))
-                for r in df.itertuples(index=False)
+                (int(row[0]), float(row[1])) for row in df.itertuples(index=False)
             )
 
-            # Insert in chunks
             count = 0
             while True:
                 chunk = list(itertools.islice(data_gen, 10000))
@@ -339,22 +433,44 @@ def save_results(conn, df):
 
     except sqlite3.Error as e:
         logging.critical(f"Database error during save: {e}")
-        # Re-raise so the makefile knows the job failed
         raise
 
 
+def parse_args():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Calculate journal prestige metrics (Eigenfactor, SJR, or AIS)"
+    )
+    parser.add_argument(
+        "--metric",
+        choices=["eigenfactor", "sjr", "ais"],
+        default="eigenfactor",
+        help="Metric to calculate: 'eigenfactor' (5-year, no self-citations), "
+        "'sjr' (3-year, limited self-citations), or "
+        "'ais' (5-year, no self-citations, per-article). Default: eigenfactor",
+    )
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    metric = args.metric
+
+    logging.info(f"Calculating {metric.upper()} metric...")
+
     conn = None
     try:
         conn = get_db_connection()
-        citations_df, journal_article_counts = load_data(conn)
+        citations_df, journal_article_counts = load_data(conn, metric)
 
         if citations_df.empty:
             logging.critical("No citation data found.")
             return
 
-        results_df = calculate_eigenfactor(citations_df, journal_article_counts)
-        save_results(conn, results_df)
+        results_df = calculate_metric(
+            citations_df, journal_article_counts, metric=metric
+        )
+        save_results(conn, results_df, metric)
     finally:
         if conn:
             conn.close()

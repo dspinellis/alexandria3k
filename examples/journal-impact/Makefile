@@ -33,5 +33,21 @@ journal-impact-report-test.sql: journal-impact-report.sql
 
 # Calculate Eigenfactor scores
 tables/eigenfactor: tables/citation_network tables/publications5 eigenfactor.py
-	./eigenfactor.py
+	./eigenfactor.py --metric eigenfactor
+	touch $@
+
+# Calculate SJR (SCImago Journal Rank) scores
+tables/sjr: tables/citation_network3 tables/publications3 eigenfactor.py
+	./eigenfactor.py --metric sjr
+	touch $@
+
+# Calculate AIS (Article Influence Score)
+tables/ais: tables/citation_network tables/publications5 eigenfactor.py
+	./eigenfactor.py --metric ais
+	touch $@
+
+# Calculate SNIP (Source Normalized Impact per Paper) using Leiden clustering
+# Requires: leidenalg, python-igraph
+tables/snip: tables/bibliographic_coupling tables/publications3 tables/citation_network3 tables/journal_reference_density snip.py
+	./snip.py
 	touch $@

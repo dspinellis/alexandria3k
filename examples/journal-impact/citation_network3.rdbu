@@ -1,0 +1,45 @@
+BEGIN SETUP
+
+# Citation network calculation for SJR (3-year window)
+# Reference year: 2024
+# Window: 2021-2023 (3 years)
+# Note: Self-citations ARE included (unlike Eigenfactor's citation_network)
+
+rolap.reference:
+year
+2024
+
+rolap.works_journal_id:
+id	doi	journal_id	published_year
+1	d1	100	2024
+2	d2	200	2023
+3	d3	200	2021
+4	d4	200	2020
+5	d5	100	2023
+6	d6	200	2024
+7	d7	300	2024
+8	d8	400	2022
+9	d9	100	2022
+
+rolap.work_references:
+work_id	doi
+1	d2
+1	d3
+1	d5
+6	d2
+6	d9
+7	d8
+
+END
+
+INCLUDE CREATE citation_network3.sql
+
+BEGIN RESULT
+rolap.citation_network3:
+citing_journal	cited_journal	citation_count
+100	100	1
+100	200	2
+200	100	1
+200	200	1
+300	400	1
+END
