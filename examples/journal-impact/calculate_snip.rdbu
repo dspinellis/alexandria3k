@@ -1,0 +1,35 @@
+BEGIN SETUP
+
+# Publications (3-year window) - Defined in MAIN
+publications3:
+journal_id	publications_number
+100	5
+200	5
+
+# Citations Received - Defined in MAIN
+citation_network3:
+citing_journal	cited_journal	citation_count
+100	200	10
+200	100	10
+
+# Bibliographic Coupling - Defined in MAIN
+bibliographic_coupling:
+journal_a	journal_b	coupling_strength
+100	200	50
+
+# Journal Reference Density - Defined in MAIN
+journal_reference_density:
+journal_id	avg_references
+100	20.0
+200	20.0
+
+END
+
+INCLUDE CREATE calculate_snip.sql
+
+BEGIN RESULT
+snip:
+journal_id	snip_score	raw_impact	citation_potential
+100	0.1	2.0	20.0
+200	0.1	2.0	20.0
+END

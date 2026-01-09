@@ -25,6 +25,6 @@ BEGIN RESULT
 # Journal 20: 8/1 = 8.0 avg references
 rolap.journal_reference_density:
 journal_id	avg_references	work_count
-10		8.0		2
+10	    8.0		2
 20		8.0		1
 END

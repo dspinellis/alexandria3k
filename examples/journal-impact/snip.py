@@ -18,11 +18,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Calculate SNIP (Source Normalized Impact per Paper) using Leiden clustering.
+Calculate Context Normalized Impact (resembles SNIP) using Leiden clustering.
 
-SNIP normalizes a journal's citation impact by the citation potential of its
-field. Fields are discovered through Leiden community detection on the
-bibliographic coupling network.
+Context Normalized Impact measures citation impact by normalizing a journal's
+raw citation count against the citation potential of its specific field.
+Fields are discovered through Leiden community detection on the
+bibliographic coupling network. 
 
 Algorithm:
 1. Build bibliographic coupling graph (journals sharing references)
@@ -30,7 +31,7 @@ Algorithm:
 3. Assign each journal to multiple communities (within 30-40% of max similarity)
 4. Calculate citation potential per community
 5. Compute each journal's weighted citation potential
-6. SNIP = Raw Impact per Paper / Citation Potential
+6. Score = Raw Impact per Paper / Citation Potential
 
 Key differences from seeded clustering:
 - No pre-defined seeds that bias toward high-citation fields
@@ -39,7 +40,7 @@ Key differences from seeded clustering:
 - Uses Leiden algorithm (better than Louvain) for modularity optimization
 
 Usage:
-    ./snip.py                    # Calculate SNIP scores
+    ./snip.py                    # Calculate Context Normalized Impact scores
     ./snip.py --resolution 1.0   # Adjust clustering resolution
 
 Environment Variables:
@@ -70,28 +71,21 @@ SIMILARITY_THRESHOLD_MAX = 0.40  # Maximum 40% of max similarity
 MIN_COMMUNITY_SIZE = 3  # Minimum journals per community
 
 
-def get_db_connection():
-    """
-    Establish connection to the main database and attach the ROLAP database.
-    """
-    main_db_path = os.environ.get("MAINDB", "impact")
-    rolap_db_path = os.environ.get("ROLAPDB", "rolap")
+def get_db_connection(db_path, rolap_db_path):
+    """Establish connection to the main database and attach ROLAP."""
+    if not os.path.exists(db_path):
+        logging.critical(f"Main database file '{db_path}' not found.")
+        raise FileNotFoundError(f"Database file '{db_path}' not found.")
 
-    db_file = f"{main_db_path}.db"
-    if not os.path.exists(db_file):
-        if main_db_path == "impact" and os.path.exists("/tmp/impact.db"):
-            db_file = "/tmp/impact.db"
-        elif not os.path.exists(db_file):
-            logging.critical(f"Main database file '{db_file}' not found.")
-            raise FileNotFoundError(f"Database file '{db_file}' not found.")
+    logging.info(f"Connecting to {db_path}...")
+    conn = sqlite3.connect(db_path)
 
-    logging.info(f"Connecting to {db_file}...")
-    conn = sqlite3.connect(db_file)
+    if not os.path.exists(rolap_db_path):
+        logging.critical(f"ROLAP database file '{rolap_db_path}' not found.")
+        raise FileNotFoundError(f"Database file '{rolap_db_path}' not found.")
 
-    rolap_file = f"{rolap_db_path}.db"
-    logging.info(f"Attaching {rolap_file} as rolap...")
-    conn.execute(f"ATTACH DATABASE '{rolap_file}' AS rolap")
-
+    logging.info(f"Attaching {rolap_db_path} as rolap...")
+    conn.execute(f"ATTACH DATABASE '{rolap_db_path}' AS rolap")
     return conn
 
 
@@ -114,7 +108,7 @@ def load_bibliographic_coupling(conn):
 
 def load_journal_data(conn):
     """
-    Load journal publication and citation data for SNIP calculation.
+    Load journal publication and citation data for Context Normalized Impact calculation.
 
     Returns:
         tuple: (publications_df, citations_df)
@@ -386,9 +380,9 @@ def calculate_journal_citation_potential(assignments_df, community_potential_df)
 
 def calculate_snip(publications_df, citations_df, journal_potential_df):
     """
-    Calculate SNIP for each journal.
+    Calculate Context Normalized Impact (resembles SNIP) for each journal.
 
-    SNIP = Raw Impact per Paper / Citation Potential
+    Score = Raw Impact per Paper / Citation Potential
 
     where Raw Impact per Paper = Citations / Publications (3-year window)
 
@@ -400,7 +394,7 @@ def calculate_snip(publications_df, citations_df, journal_potential_df):
     Returns:
         pd.DataFrame: journal_id, snip_score, raw_impact, citation_potential
     """
-    logging.info("Calculating SNIP scores...")
+    logging.info("Calculating Context Normalized Impact (resembles SNIP) scores...")
 
     # Merge all data
     result = publications_df.merge(citations_df, on="journal_id", how="left")
@@ -413,7 +407,7 @@ def calculate_snip(publications_df, citations_df, journal_potential_df):
     result["raw_impact"] = result["citations"] / result["publications_number"]
     result["raw_impact"] = result["raw_impact"].replace([np.inf, -np.inf], 0)
 
-    # Calculate SNIP
+    # Calculate Score
     result["snip_score"] = result["raw_impact"] / result["citation_potential"]
     result["snip_score"] = result["snip_score"].replace([np.inf, -np.inf], 0)
     result["snip_score"] = result["snip_score"].fillna(0)
@@ -423,9 +417,9 @@ def calculate_snip(publications_df, citations_df, journal_potential_df):
     result["raw_impact"] = result["raw_impact"].round(3)
     result["citation_potential"] = result["citation_potential"].round(3)
 
-    logging.info(f"Calculated SNIP for {len(result)} journals.")
+    logging.info(f"Calculated scores for {len(result)} journals.")
     logging.info(
-        f"SNIP statistics: min={result['snip_score'].min():.3f}, "
+        f"Score statistics: min={result['snip_score'].min():.3f}, "
         f"max={result['snip_score'].max():.3f}, "
         f"median={result['snip_score'].median():.3f}"
     )
@@ -435,7 +429,7 @@ def calculate_snip(publications_df, citations_df, journal_potential_df):
 
 def calculate_snip_fallback(publications_df, citations_df, reference_df):
     """
-    Fallback SNIP calculation when Leiden clustering is not available.
+    Fallback Context Normalized Impact calculation when Leiden clustering is not available.
 
     Uses a simpler field-independent normalization based on the global
     average citation potential.
@@ -448,7 +442,7 @@ def calculate_snip_fallback(publications_df, citations_df, reference_df):
     Returns:
         pd.DataFrame: journal_id, snip_score, raw_impact, citation_potential
     """
-    logging.warning("Using fallback SNIP calculation (no community detection).")
+    logging.warning("Using fallback calculation (no community detection).")
 
     # Merge all data
     result = publications_df.merge(citations_df, on="journal_id", how="left")
@@ -466,7 +460,7 @@ def calculate_snip_fallback(publications_df, citations_df, reference_df):
     result["raw_impact"] = result["citations"] / result["publications_number"]
     result["raw_impact"] = result["raw_impact"].replace([np.inf, -np.inf], 0)
 
-    # Calculate SNIP
+    # Calculate Score
     result["snip_score"] = result["raw_impact"] / result["citation_potential"]
     result["snip_score"] = result["snip_score"].replace([np.inf, -np.inf], 0)
     result["snip_score"] = result["snip_score"].fillna(0)
@@ -476,27 +470,27 @@ def calculate_snip_fallback(publications_df, citations_df, reference_df):
     result["raw_impact"] = result["raw_impact"].round(3)
     result["citation_potential"] = result["citation_potential"].round(3)
 
-    logging.info(f"Calculated SNIP (fallback) for {len(result)} journals.")
+    logging.info(f"Calculated fallback scores for {len(result)} journals.")
 
     return result[["journal_id", "snip_score", "raw_impact", "citation_potential"]]
 
 
 def save_results(conn, snip_df, assignments_df=None, community_potential_df=None):
     """
-    Save SNIP results and intermediate data to the database.
+    Save Context Normalized Impact results and intermediate data to the database.
 
     Args:
         conn: Database connection
-        snip_df: SNIP scores
+        snip_df: Metric scores
         assignments_df: Journal-community assignments (optional)
         community_potential_df: Community citation potentials (optional)
     """
     logging.info("Saving results to database...")
 
-    # Save SNIP scores
+    # Save scores
     conn.execute("DROP TABLE IF EXISTS rolap.snip")
     snip_df.to_sql("snip", conn, schema="rolap", index=False, if_exists="replace")
-    logging.info(f"Saved {len(snip_df)} SNIP scores to rolap.snip")
+    logging.info(f"Saved {len(snip_df)} scores to rolap.snip")
 
     # Save community assignments if available
     if assignments_df is not None:
@@ -531,24 +525,28 @@ def save_results(conn, snip_df, assignments_df=None, community_potential_df=None
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Calculate SNIP using Leiden community detection."
+        description="Calculate Context Normalized Impact (resembles SNIP) using Leiden community detection."
     )
     parser.add_argument(
         "--resolution",
         type=float,
         default=DEFAULT_RESOLUTION,
-        help=f"Leiden resolution parameter (default: {DEFAULT_RESOLUTION})",
+        help="Leiden resolution parameter",
     )
     parser.add_argument(
         "--threshold",
         type=float,
         default=SIMILARITY_THRESHOLD_MIN,
-        help=f"Multi-assignment threshold (default: {SIMILARITY_THRESHOLD_MIN})",
+        help="Multi-assignment threshold",
+    )
+    parser.add_argument("--db", required=True, help="Path to the main SQLite database")
+    parser.add_argument(
+        "--rolap-db", required=True, help="Path to the ROLAP SQLite database"
     )
     args = parser.parse_args()
 
     try:
-        conn = get_db_connection()
+        conn = get_db_connection(args.db, args.rolap_db)
 
         # Load data
         publications_df, citations_df, reference_df = load_journal_data(conn)
@@ -564,7 +562,7 @@ def main():
             save_results(conn, snip_df)
         else:
             # Build graph and run clustering
-            g, journals, journal_to_idx = build_graph(coupling_df)
+            g, journals, _ = build_graph(coupling_df)
             partition = run_leiden_clustering(g, resolution=args.resolution)
 
             # Assign journals to communities
@@ -580,7 +578,7 @@ def main():
                 assignments_df, community_potential_df
             )
 
-            # Calculate SNIP
+            # Calculate Score
             snip_df = calculate_snip(
                 publications_df, citations_df, journal_potential_df
             )
@@ -589,10 +587,10 @@ def main():
             save_results(conn, snip_df, assignments_df, community_potential_df)
 
         conn.close()
-        logging.info("SNIP calculation complete.")
+        logging.info("Context Normalized Impact calculation complete.")
 
     except Exception as e:
-        logging.error(f"Error calculating SNIP: {e}")
+        logging.error(f"Error calculating scores: {e}")
         raise
 
 

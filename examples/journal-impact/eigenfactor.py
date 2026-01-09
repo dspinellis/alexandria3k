@@ -18,29 +18,30 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Calculate journal prestige metrics (Eigenfactor, SJR, or AIS) for journals
-in the Alexandria3k database.
+Calculate network centrality metrics (Journal Network Centrality, Prestige Weighted Rank,
+or Mean Article Network Score) for journals in the Alexandria3k database.
 
-This script calculates one of:
-- Eigenfactor score: based on a 5-year citation window, excluding self-citations
-- SJR (SCImago Journal Rank): based on a 3-year citation window, limiting
-  self-citations to 33%, normalized per article
-- AIS (Article Influence Score): based on a 5-year citation window, excluding
-  self-citations, normalized per article (mean = 1.0)
+This script calculates three variations of eigenvector centrality:
+- **Journal Network Centrality**: Measures total influence based on a 5-year citation
+  window, excluding self-citations. (Resembles Eigenfactor score). 
+- **Prestige Weighted Rank**: Measures prestige per article based on a 3-year citation
+  window, limiting self-citations to 33%. (Resembles SCImago Journal Rank / SJR).
+- **Mean Article Network Score**: Measures average influence per article based on a
+  5-year citation window, excluding self-citations. (Resembles Article Influence Score / AIS).
 
 All metrics use the power iteration method on the sparse adjacency matrix
 to compute eigenvector centrality.
 
 Usage:
-    ./eigenfactor.py                    # Calculate Eigenfactor (default)
-    ./eigenfactor.py --metric eigenfactor  # Calculate Eigenfactor
-    ./eigenfactor.py --metric sjr       # Calculate SJR
-    ./eigenfactor.py --metric ais       # Calculate AIS
+    ./eigenfactor.py                    # Calculate Journal Network Centrality (default)
+    ./eigenfactor.py --metric eigenfactor  # Calculate Journal Network Centrality
+    ./eigenfactor.py --metric sjr       # Calculate Prestige Weighted Rank
+    ./eigenfactor.py --metric ais       # Calculate Mean Article Network Score
 
 Key differences between metrics:
-- Eigenfactor: 5-year window, removes self-citations, sums to 100%
-- SJR: 3-year window, limits self-citations to 33%, per-article normalization
-- AIS: 5-year window, removes self-citations, per-article normalization (mean=1.0)
+- Journal Network Centrality: 5-year window, removes self-citations, sums to 100%
+- Prestige Weighted Rank: 3-year window, limits self-citations to 33%, per-article normalization
+- Mean Article Network Score: 5-year window, removes self-citations, per-article normalization (mean=1.0)
 
 Environment Variables:
     MAINDB: Path to the main database (without .db extension). Default: 'impact'
@@ -70,26 +71,23 @@ MAX_ITER = 1000
 MAX_SELF_CITATION_RATIO = 0.33  # SJR limits self-citations to 33%
 
 
-def get_db_connection():
+def get_db_connection(db_path, rolap_db_path):
     """
     Establish connection to the main database and attach the ROLAP database.
     """
-    main_db_path = os.environ.get("MAINDB", "impact")
-    rolap_db_path = os.environ.get("ROLAPDB", "rolap")
+    if not os.path.exists(db_path):
+        logging.critical(f"Main database file '{db_path}' not found.")
+        raise FileNotFoundError(f"Database file '{db_path}' not found.")
 
-    db_file = f"{main_db_path}.db"
-    if not os.path.exists(db_file):
-        if main_db_path == "impact" and os.path.exists("/tmp/impact.db"):
-            db_file = "/tmp/impact.db"
-        elif not os.path.exists(db_file):
-            logging.critical(f"Main database file '{db_file}' not found.")
+    logging.info(f"Connecting to {db_path}...")
+    conn = sqlite3.connect(db_path)
 
-    logging.info(f"Connecting to {db_file}...")
-    conn = sqlite3.connect(db_file)
+    if not os.path.exists(rolap_db_path):
+        logging.critical(f"ROLAP database file '{rolap_db_path}' not found.")
+        raise FileNotFoundError(f"Database file '{rolap_db_path}' not found.")
 
-    rolap_file = f"{rolap_db_path}.db"
-    logging.info(f"Attaching {rolap_file} as rolap...")
-    conn.execute(f"ATTACH DATABASE '{rolap_file}' AS rolap")
+    logging.info(f"Attaching {rolap_db_path} as rolap...")
+    conn.execute(f"ATTACH DATABASE '{rolap_db_path}' AS rolap")
 
     return conn
 
@@ -157,15 +155,15 @@ def calculate_metric(
     max_self_citation_ratio=MAX_SELF_CITATION_RATIO,
 ):
     """
-    Calculate journal prestige metric using sparse matrices.
+    Calculate journal network centrality metric using sparse matrices.
 
     The algorithm proceeds in several steps:
     1.  **Matrix Construction**: Builds a sparse adjacency matrix (Z) from the citation dataframe.
         Z[i, j] represents citations from journal i to journal j.
 
     2.  **Self-Citation Handling**:
-        - Eigenfactor/AIS: Removes self-citations entirely (diagonal = 0)
-        - SJR: Limits self-citations to 33% of incoming citations
+        - Journal Network Centrality/Mean Article Network Score: Removes self-citations entirely (diagonal = 0)
+        - Prestige Weighted Rank: Limits self-citations to 33% of incoming citations
 
     3.  **Column Normalization**: Transposes Z to get H (citations from j to i) and normalizes
         the columns to make the matrix column-stochastic (sum of each column = 1).
@@ -177,9 +175,9 @@ def calculate_metric(
         modified Google Matrix.
 
     6.  **Score Calculation**:
-        - Eigenfactor: 100 * (H * pi), normalized to sum to 100%
-        - SJR: Per-article prestige, normalized so mean = 1.0
-        - AIS: Per-article prestige (like SJR), normalized so mean = 1.0
+        - Journal Network Centrality (resembles Eigenfactor): 100 * (H * pi), normalized to sum to 100%
+        - Prestige Weighted Rank (resembles SJR): Per-article prestige, normalized so mean = 1.0
+        - Mean Article Network Score (resembles AIS): Per-article prestige, normalized so mean = 1.0
 
     Args:
         citations_df (pd.DataFrame): DataFrame containing 'citing_journal', 'cited_journal', 'citation_count'.
@@ -335,7 +333,7 @@ def calculate_eigenfactor(
     epsilon=EPSILON,
     max_iter=MAX_ITER,
 ):
-    """Calculate Eigenfactor scores (backward-compatible wrapper)."""
+    """Calculate Journal Network Centrality (resembles Eigenfactor)."""
     return calculate_metric(
         citations_df,
         journal_article_counts,
@@ -354,7 +352,7 @@ def calculate_sjr(
     max_iter=MAX_ITER,
     max_self_citation_ratio=MAX_SELF_CITATION_RATIO,
 ):
-    """Calculate SJR scores (wrapper for testing)."""
+    """Calculate Prestige Weighted Rank (resembles SJR)."""
     return calculate_metric(
         citations_df,
         journal_article_counts,
@@ -373,7 +371,7 @@ def calculate_ais(
     epsilon=EPSILON,
     max_iter=MAX_ITER,
 ):
-    """Calculate Article Influence Score (wrapper for testing)."""
+    """Calculate Mean Article Network Score (resembles Article Influence Score)."""
     return calculate_metric(
         citations_df,
         journal_article_counts,
@@ -439,15 +437,19 @@ def save_results(conn, df, metric="eigenfactor"):
 def parse_args():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Calculate journal prestige metrics (Eigenfactor, SJR, or AIS)"
+        description="Calculate journal network centrality (prestige) metrics"
     )
     parser.add_argument(
         "--metric",
         choices=["eigenfactor", "sjr", "ais"],
         default="eigenfactor",
-        help="Metric to calculate: 'eigenfactor' (5-year, no self-citations), "
-        "'sjr' (3-year, limited self-citations), or "
-        "'ais' (5-year, no self-citations, per-article). Default: eigenfactor",
+        help="Metric to calculate",
+    )
+    parser.add_argument("--db", required=True, help="Path to the main SQLite database")
+    parser.add_argument(
+        "--rolap-db",
+        required=True,
+        help="Path to the ROLAP SQLite database (can be same as main)",
     )
     return parser.parse_args()
 
@@ -460,7 +462,7 @@ def main():
 
     conn = None
     try:
-        conn = get_db_connection()
+        conn = get_db_connection(args.db, args.rolap_db)
         citations_df, journal_article_counts = load_data(conn, metric)
 
         if citations_df.empty:

@@ -1,46 +1,33 @@
 BEGIN SETUP
-reference:
+rolap.reference:
 year
-2020
+2024
 
-works_journal_id:
+rolap.works_journal_id:
 id	doi	journal_id	published_year
-1	d1	100	2019
-2	d2	100	2019
-3	d3	100	2018
-4	d4	200	2019
-5	d5	200	2018
-6	d6	300	2019
-7	d7	300	2018
-8	d8	400	2017
-9	d9	400	2018
+1	w1	100	2023
+2	w2	200	2023
+3	w3	300	2023
 
 work_references:
 work_id	doi
-1	ref_shared_1
-1	ref_shared_2
-2	ref_100_only
-3	ref_shared_1
-4	ref_shared_1
-4	ref_shared_2
-5	ref_shared_1
-6	ref_shared_2
-6	ref_300_only
-7	ref_shared_1
-7	ref_shared_2
-8	ref_shared_1
-9	ref_400_only
+1	ref1
+1	ref2
+1	ref3
+1	ref4
+1	ref5
+2	ref1
+2	ref2
+2	ref3
+2	ref4
+2	ref5
+3	ref1
 END
 
 INCLUDE CREATE bibliographic_coupling.sql
 
 BEGIN RESULT
-bibliographic_coupling:
+rolap.bibliographic_coupling:
 journal_a	journal_b	coupling_strength
 100	200	5
-100	300	5
-100	400	5
-200	300	5
-200	400	5
-300	400	5
 END
