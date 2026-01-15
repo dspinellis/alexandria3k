@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 420 120"
+  width="420"
+  height="120"
+>
+  <defs>
+    <style>
+      .wordmark {
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        font-weight: 500;
+        fill: #9ca3af;
+      }
+    </style>
+  </defs>
+
+  <!-- Icon -->
+  <g transform="translate(20,20)">
+    <!-- Base stack -->
+    <rect x="0"  y="40" width="60" height="10" rx="2" fill="#60a5fa"/>
+    <rect x="0"  y="26" width="60" height="10" rx="2" fill="#93c5fd"/>
+    <rect x="0"  y="12" width="60" height="10" rx="2" fill="#bfdbfe"/>
+
+    <!-- Streaming cut -->
+    <path
+      d="M38 0
+         C28 14, 28 34, 38 60"
+      fill="none"
+      stroke="#111827"
+      stroke-width="6"
+      stroke-linecap="round"
+    />
+
+    <!-- Column cap -->
+    <rect x="0" y="0" width="60" height="8" rx="2" fill="#93c5fd"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="110" y="58" font-size="34" class="wordmark" fill="#e5e7eb">
+    alexandria<tspan fill="#93c5fd">3k</tspan>
+  </text>
+
+  <!-- Optional descriptor -->
+  <text x="112" y="82" font-size="14" class="wordmark sub">
+    large-scale scholarly data access
+  </text>
+</svg>

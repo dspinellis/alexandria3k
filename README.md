@@ -1,4 +1,16 @@
-[![Alexandria3k CI](https://github.com/dspinellis/alexandria3k/actions/workflows/ci.yml/badge.svg)](https://github.com/dspinellis/alexandria3k/actions/workflows/ci.yml)
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.svg">
+    <img src="docs/logo.svg" alt="alexandria3k logo" width="420">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://github.com/dspinellis/alexandria3k/actions/workflows/ci.yml">
+    <img src="https://github.com/dspinellis/alexandria3k/actions/workflows/ci.yml/badge.svg"
+         alt="Alexandria3k CI">
+  </a>
+</p>
 
 ## Alexandria3k
 

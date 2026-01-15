@@ -1,8 +1,12 @@
 Alexandria3k documentation
 ==========================
 
-.. _introduction:
+.. image:: ./logo.svg
+   :alt: alexandria3k logo
+   :align: center
+   :width: 420px
 
+.. _introduction:
 .. include:: intro.rst
 
 Publication
