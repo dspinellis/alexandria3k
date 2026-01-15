@@ -143,7 +143,7 @@ This requires an installed version of `Pandoc <https://pandoc.org/>`__.
 Documentation introduction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The documentation's introduction is create from the source code
+The documentation's introduction is created from the source code
 repository's ``README.md`` file.
 When that file is changed, the documentaiton introduction
 must be updated as follows.
