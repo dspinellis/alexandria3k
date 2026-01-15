@@ -1,7 +1,7 @@
 Alexandria3k documentation
 ==========================
 
-.. image:: docs/logo.svg
+.. image:: ./logo.svg
    :alt: alexandria3k logo
    :align: center
    :width: 420px
