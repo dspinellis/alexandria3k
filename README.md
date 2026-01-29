@@ -17,7 +17,7 @@
 <!-- INTRO-BEGIN -->
 
 The _alexandria3k_ Python package supplies a command-line tool and an API
-providing fast and space-efficient relational query access to the following
+providing fast and space-efficient relational query access to several
 large scientific publication open data sets.
 Data are decompressed on the fly, thus allowing the package's use even on
 storage-restricted laptops.
