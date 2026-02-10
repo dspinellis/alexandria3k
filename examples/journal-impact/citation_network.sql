@@ -1,4 +1,4 @@
--- Create table for citation network to speed up Eigenfactor calculation
+-- Create table for citation network to speed up network centrality calculation
 --
 -- This script creates the `rolap.citation_network` table, which aggregates citations
 -- between journals. It counts how many times a "citing journal" cited a "cited journal"

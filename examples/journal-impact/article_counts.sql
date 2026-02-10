@@ -1,9 +1,11 @@
--- Calculate article counts for the Eigenfactor calculation (5-year window)
+-- Calculate article counts for the Journal Network Centrality calculation (5-year window)
 --
 -- This script creates the `rolap.article_counts` table, which stores the number of
 -- citable works for each journal within the 5-year window preceding the reference year.
--- This count serves as the "Article Vector" in the Eigenfactor algorithm, used to
+-- This count serves as the "Article Vector" in the network centrality algorithm, used to
 -- distribute the influence of dangling nodes (journals that don't cite others).
+--
+-- Note: This metric resembles the Eigenfactor score.
 --
 -- Dependencies:
 --   - rolap.reference: Contains the reference year.

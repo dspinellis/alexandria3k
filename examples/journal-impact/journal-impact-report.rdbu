@@ -8,16 +8,16 @@ id	title	publisher	issn_print	issn_eprint	issns_additional	doi
 40	T4	P4	IP4	IE4	IA4	D5
 51	T5	P5	IP5	IE5	IA5	D5
 
-rolap.impact_factor2:
-journal_id	publications_number	citations_number	impact_factor
+rolap.citation_mean_2y:
+journal_id	publications_number	citations_number	citation_mean
 10	102	1002	1
 20	202	2002	2
 30	302	3002	3
 40	402	4002	4
 51	502	5002	5
 
-rolap.impact_factor5:
-journal_id	publications_number	citations_number	impact_factor
+rolap.citation_mean_5y:
+journal_id	publications_number	citations_number	citation_mean
 10	105	1005	1.5
 20	205	2005	2.5
 30	305	3005	3.5
@@ -40,32 +40,32 @@ id
 40
 51
 
-rolap.eigenfactor:
-journal_id	eigenfactor_score
+rolap.network_centrality:
+journal_id	centrality_score
 10	10.1
 20	20.2
 30	30.3
 40	40.4
 51	50.5
 
-rolap.sjr:
-journal_id	sjr_score
+rolap.prestige_rank:
+journal_id	prestige_score
 10	0.101
 20	0.202
 30	0.303
 40	0.404
 51	0.505
 
-rolap.ais:
-journal_id	ais_score
+rolap.mean_article_score:
+journal_id	mean_score
 10	0.11
 20	0.22
 30	0.33
 40	0.44
 51	0.55
 
-rolap.snip:
-journal_id	raw_impact	citation_potential	snip_score
+rolap.context_impact:
+journal_id	raw_impact	citation_potential	impact_score
 10	1.0	2.0	0.5
 20	2.0	2.0	1.0
 30	3.0	2.0	1.5
@@ -86,9 +86,10 @@ END
 INCLUDE SELECT journal-impact-report-test.sql
 
 BEGIN RESULT
-T1	P1	IP1	IE1	IA1	D1	1002	102	1.0	1005	105	1.5	1	1.1	10.1	0.101	0.11	0.5	1
-T2	P2	IP2	IE2	IA2	D2	2002	202	2.0	2005	205	2.5	2	2.2	20.2	0.202	0.22	1.0	1-2
-T3	P3	IP3	IE3	IA3	D3	3002	302	3.0	3005	305	3.5	3	3.3	30.3	0.303	0.33	1.5	2
-T4	P4	IP4	IE4	IA4	D5	4002	402	4.0	4005	405	4.5	4	4.4	40.4	0.404	0.44	2.0	3
-T5	P5	IP5	IE5	IA5	D5	5002	502	5.0	5005	505	5.5	5	5.5	50.5	0.505	0.55	2.5	3
+title	publisher	issn_print	issn_eprint	issns_additional	doi	citations_number2	publications_number2	citation_mean_2y	citations_number5	publications_number5	citation_mean_5y	h5_index	h5_median	network_centrality	prestige_rank	mean_article_score	context_impact	clusters
+T2	P2	IP2	IE2	IA2	D2	2002	202	2.0	2005	205	2.5	2	2.2	20.2	0.202	0.22	1.0	"1-2"
+T1	P1	IP1	IE1	IA1	D1	1002	102	1.0	1005	105	1.5	1	1.1	10.1	0.101	0.11	0.5	"1"
+T3	P3	IP3	IE3	IA3	D3	3002	302	3.0	3005	305	3.5	3	3.3	30.3	0.303	0.33	1.5	"2"
+T4	P4	IP4	IE4	IA4	D5	4002	402	4.0	4005	405	4.5	4	4.4	40.4	0.404	0.44	2.0	"3"
+T5	P5	IP5	IE5	IA5	D5	5002	502	5.0	5005	505	5.5	5	5.5	50.5	0.505	0.55	2.5	"3"
 END

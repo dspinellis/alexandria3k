@@ -4,7 +4,7 @@
 -- The coupling strength is the number of shared references.
 -- This creates a weighted undirected graph for community detection.
 --
--- We use a 3-year window (t-1, t-2, t-3) for SNIP calculation.
+-- We use a 3-year window (t-1, t-2, t-3) for the context-normalized impact calculation.
 -- Only consider references that are cited by at least 2 journals to reduce noise.
 
 -- Ensure indexes exist for efficient querying

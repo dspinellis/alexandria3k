@@ -1,4 +1,4 @@
--- Calculate number of publications in a 3-year SJR period
+-- Calculate number of publications in a 3-year prestige rank period
 
 CREATE INDEX IF NOT EXISTS rolap.citable_works_published_year_idx
   ON citable_works(published_year);

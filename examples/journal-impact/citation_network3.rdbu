@@ -1,9 +1,9 @@
 BEGIN SETUP
 
-# Citation network calculation for SJR (3-year window)
+# Citation network calculation for prestige rank (3-year window)
 # Reference year: 2024
 # Window: 2021-2023 (3 years)
-# Note: Self-citations ARE included (unlike Eigenfactor's citation_network)
+# Note: Self-citations ARE included (unlike the network centrality citation_network)
 
 rolap.reference:
 year

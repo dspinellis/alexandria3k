@@ -10,7 +10,7 @@ export DEPENDENCIES=populate journal-names
 
 include ../common/Makefile
 
-# Populate database with rows and columns needed to calculate IF
+# Populate database
 populate: $(CROSSREF_DIR)
 	$(TIME) $(A3K) --progress \
 	  populate "$(MAINDB).db" crossref "$(CROSSREF_DIR)" \
@@ -25,29 +25,29 @@ populate: $(CROSSREF_DIR)
 	  --row-selection "works.published_year between $$(expr $(YEAR) - 5)  and $(YEAR)"
 	touch $@
 
-# Create a test file without the headers and CSV format directives.
+# Create a test file
 test: journal-impact-report-test.sql
 
 journal-impact-report-test.sql: journal-impact-report.sql
-	grep -v '^\.' $? >$@
+	printf ".mode tabs\n.headers on\n" >$@
+	grep -v '^\.' $? >>$@
 
-# Calculate Eigenfactor scores
-tables/eigenfactor: tables/citation_network tables/publications5 eigenfactor.py
-	./eigenfactor.py --metric eigenfactor --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+# Calculate Journal Network Centrality
+tables/network_centrality: tables/citation_network tables/publications5 journal_network_metrics.py
+	./journal_network_metrics.py --metric network_centrality --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
 	touch $@
 
-# Calculate SJR (SCImago Journal Rank) scores
-tables/sjr: tables/citation_network3 tables/publications3 eigenfactor.py
-	./eigenfactor.py --metric sjr --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+# Calculate Prestige Weighted Rank
+tables/prestige_rank: tables/citation_network3 tables/publications3 journal_network_metrics.py
+	./journal_network_metrics.py --metric prestige_rank --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
 	touch $@
 
-# Calculate AIS (Article Influence Score)
-tables/ais: tables/citation_network tables/publications5 eigenfactor.py
-	./eigenfactor.py --metric ais --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+# Calculate Mean Article Network Score
+tables/mean_article_score: tables/citation_network tables/publications5 journal_network_metrics.py
+	./journal_network_metrics.py --metric mean_article_score --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
 	touch $@
 
-# Calculate SNIP (Source Normalized Impact per Paper) using Leiden clustering
-# Requires: leidenalg, python-igraph
-tables/snip: tables/bibliographic_coupling tables/publications3 tables/citation_network3 tables/journal_reference_density snip.py
-	./snip.py --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+# Calculate Context Normalized Impact
+tables/context_impact: tables/bibliographic_coupling tables/publications3 tables/citation_network3 tables/journal_reference_density context_normalized_impact.py
+	./context_normalized_impact.py --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
 	touch $@

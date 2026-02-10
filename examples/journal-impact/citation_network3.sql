@@ -1,13 +1,13 @@
--- Create table for citation network for SJR calculation (3-year window)
+-- Create table for citation network for prestige rank calculation (3-year window)
 --
 -- This script creates the `rolap.citation_network3` table, which aggregates citations
--- between journals using a 3-year citation window as required by the SJR algorithm.
+-- between journals using a 3-year citation window.
 -- It counts how many times a "citing journal" cited a "cited journal"
 -- within the specific time window (citations from the reference year to works published
 -- in the preceding 3 years).
 --
--- Unlike the Eigenfactor citation_network, this table INCLUDES self-citations,
--- as SJR limits (rather than excludes) self-citations to 33% of incoming citations.
+-- Unlike the network centrality citation_network, this table INCLUDES self-citations,
+-- as prestige rank limits (rather than excludes) self-citations to 33% of incoming citations.
 --
 -- Dependencies:
 --   - rolap.reference: Contains the reference year.
