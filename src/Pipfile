@@ -23,10 +23,12 @@ twine = "*"
 
 [examples-packages]
 cliffs_delta = "*"
+leidenalg = "*"
 matplotlib = "*"
 networkx = "*"
 numpy = "*"
 pandas = "*"
+python-igraph = "*"
 scipy = "*"
 
 [requires]
