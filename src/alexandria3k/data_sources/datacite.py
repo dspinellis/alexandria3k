@@ -746,7 +746,7 @@ class TarFiles:
             if not self.tar_info.isreg():
                 continue
             # Obtain DOI prefix from file name to avoid extraction and parsing
-            (_dot, doi_prefix, file_name) = self.tar_info.name.split("/")
+            _dot, doi_prefix, file_name = self.tar_info.name.split("/")
             if not self.sample(file_name):
                 continue
             self.doi_prefix = doi_prefix

@@ -589,7 +589,7 @@ class DataSource:
             attach_databases = []
         for db_spec in attach_databases:
             try:
-                (db_name, db_path) = db_spec.split(":", 1)
+                db_name, db_path = db_spec.split(":", 1)
             except ValueError as exc:
                 raise Alexandria3kError(
                     f"Invalid database specification: '{db_spec}'; expected name:path"
@@ -768,13 +768,9 @@ class DataSource:
             )
             for table_name, table_columns in self.query_columns.items():
                 columns = ", ".join(table_columns)
-                partition.execute(
-                    log_sql(
-                        f"""CREATE TABLE {table_name}
+                partition.execute(log_sql(f"""CREATE TABLE {table_name}
                   AS SELECT {columns} FROM virtual.{table_name}
-                    WHERE virtual.{table_name}.container_id={i}"""
-                    )
-                )
+                    WHERE virtual.{table_name}.container_id={i}"""))
             self.cursor = partition.cursor()
             yield from try_sql_execute(self.cursor, query)
             for table_name in self.query_columns:
@@ -929,16 +925,12 @@ class DataSource:
                 selection_condition = "true"
 
             # No need for temp table matching at the root
-            self.vdb.execute(
-                log_sql(
-                    f"""
+            self.vdb.execute(log_sql(f"""
                 INSERT INTO populated.{table}
                 SELECT {columns} FROM {table}
                 WHERE {partition_condition(partition_index)}
                   AND {selection_condition}
-            """
-                )
-            )
+            """))
             perf.log(f"Populate {table}")
 
         def populate_table(table, partition_index, condition):
@@ -988,7 +980,7 @@ class DataSource:
             # A dictionary of columns to be populated for each table
             for col in columns:
                 try:
-                    (table, column) = col.split(".")
+                    table, column = col.split(".")
                 except ValueError as exc:
                     raise Alexandria3kError(
                         f"Invalid column specification: '{col}'; expected table.column or table.*."

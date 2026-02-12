@@ -27,7 +27,6 @@ from alexandria3k.common import (
 from alexandria3k import perf
 from alexandria3k.db_schema import ColumnMeta, TableMeta
 
-
 tables = [
     TableMeta(
         "works_asjcs",

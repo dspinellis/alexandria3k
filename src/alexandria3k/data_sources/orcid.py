@@ -698,7 +698,7 @@ class TarFiles:
                 continue
 
             # Obtain ORCID from file name to avoid extraction and parsing
-            (_root, _checksum, file_name) = self.tar_info.name.split("/")
+            _root, _checksum, file_name = self.tar_info.name.split("/")
             self.file_id += 1
             self.orcid = file_name[:-4]
             self.element_tree = None

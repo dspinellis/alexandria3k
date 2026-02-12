@@ -72,8 +72,7 @@ def unique_entries(table, id_field, name_field, condition=""):
     """Return an SQL statement that will provide the specified
     name and id of entries whose name exists only once in the
     table"""
-    return log_sql(
-        f"""
+    return log_sql(f"""
         WITH same_count AS (
           SELECT {id_field} AS id, {name_field} AS name,
             Count() OVER (PARTITION BY {name_field}) AS number
@@ -81,8 +80,7 @@ def unique_entries(table, id_field, name_field, condition=""):
           {condition}
         )
         SELECT id, name from same_count WHERE number == 1;
-    """
-    )
+    """)
 
 
 def link_author_affiliations(database_path, link_to_top):

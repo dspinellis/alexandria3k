@@ -34,7 +34,6 @@ import apsw
 
 from alexandria3k import debug
 
-
 RE_URL = re.compile(r"\w+://")
 
 
@@ -236,7 +235,7 @@ def data_from_uri_provider(source):
     :type source: str
     """
     if source.startswith("resource:"):
-        (_, file_path) = source.split(":")
+        _, file_path = source.split(":")
         return BytesIO(pkgutil.get_data(__name__, file_path))
     try:
         if is_url(source):

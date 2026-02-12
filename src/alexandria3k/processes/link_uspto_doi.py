@@ -69,13 +69,11 @@ def link_uspto_doi(database_path):
     doi_matcher = re.compile(r"((doi: *)|(doi\.org/))([^,; )>]+)", re.I)
     valid_doi = re.compile(r"^10\.\d{4,9}/..")
     perf.log("link_uspto_doi SELECT")
-    for patent_id, nplcit_num, text in select_cursor.execute(
-        """
+    for patent_id, nplcit_num, text in select_cursor.execute("""
         SELECT patent_id, nplcit_num, nplcit_othercit FROM
           usp_citations WHERE
           nplcit_othercit LIKE '%DOI:%' OR nplcit_othercit LIKE '%doi.org/%'
-      """
-    ):
+      """):
         match = doi_matcher.search(text)
         if not match:
             continue

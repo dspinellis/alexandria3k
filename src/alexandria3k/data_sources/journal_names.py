@@ -18,7 +18,6 @@
 #
 """Crossref journal names"""
 
-
 from alexandria3k.csv_source import CsvCursor, VTSource
 from alexandria3k.data_source import DataSource
 from alexandria3k.db_schema import ColumnMeta, TableMeta
