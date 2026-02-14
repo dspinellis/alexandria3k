@@ -17,6 +17,7 @@ dependencies = [
   "apsw",
   "importlib-metadata",
   "pyahocorasick",
+  "shtab>=1.6; sys_platform != 'win32'",
 ]
 
 # See https://pypi.org/classifiers/
@@ -30,6 +31,12 @@ classifiers = [
     "Topic :: Database",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.optional-dependencies]
+# This defines the extras group:
+completion = [
+    "shtab>=1.6",
 ]
 
 [project.urls]
