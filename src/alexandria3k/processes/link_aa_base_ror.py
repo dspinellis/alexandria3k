@@ -57,11 +57,11 @@ def keep_unique_entries(automaton):
     For example, if the input is ["Ministry of Foreign Affairs", "ai"],
     remove the "ai" entry.
     """
-    to_remove = []
+    to_remove = set()
     for name in automaton:
         for _, (_, _, match) in automaton.iter(name):
             if match != name:
-                to_remove.append(match)
+                to_remove.add(match)
 
     # Remove entries in a separate step to avoid damaging the iterator
     for non_unique in to_remove:
