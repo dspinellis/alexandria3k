@@ -23,6 +23,8 @@ twine = "*"
 
 [examples-packages]
 cliffs_delta = "*"
+igraph = "*"
+leidenalg = "*"
 matplotlib = "*"
 networkx = "*"
 numpy = "*"
