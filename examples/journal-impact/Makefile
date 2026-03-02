@@ -22,15 +22,15 @@ populate: $(CROSSREF_DIR)
 	   works.published_year \
 	   work_references.work_id \
 	   work_references.doi \
-	  --row-selection "works.published_year between $$(expr $(YEAR) - 5)  and $(YEAR)"
+	  --row-selection "works.published_year between $$(expr $(YEAR) - 5)  and $(YEAR)" \
+	  --sample 'random.random() < 0.0001'
 	touch $@
 
 # Create a test file
 test: journal-impact-report-test.sql
 
 journal-impact-report-test.sql: journal-impact-report.sql
-	printf ".mode tabs\n.headers on\n" >$@
-	grep -v '^\.' $? >>$@
+	grep -v '^\.' $? >$@
 
 # Calculate Journal Network Centrality
 tables/network_centrality: tables/citation_network tables/publications5 journal_network_metrics.py
@@ -47,7 +47,14 @@ tables/mean_article_score: tables/citation_network tables/publications5 journal_
 	./journal_network_metrics.py --metric mean_article_score --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
 	touch $@
 
-# Calculate Context Normalized Impact
+# Calculate Context Normalized Impact (also produces journal_communities as a side effect)
 tables/context_impact: tables/bibliographic_coupling tables/publications3 tables/citation_network3 tables/journal_reference_density context_normalized_impact.py
 	./context_normalized_impact.py --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+	touch $@
+
+tables/journal_communities: tables/context_impact
+	touch $@
+
+# journal_names is populated into the main DB by the journal-names prerequisite
+tables/journal_names: journal-names
 	touch $@
