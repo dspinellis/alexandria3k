@@ -1,12 +1,13 @@
--- Create table for citation network to speed up network centrality calculation
+-- Create table for citation network for prestige rank calculation (3-year window)
 --
--- This script creates the `rolap.citation_network` table, which aggregates citations
--- between journals. It counts how many times a "citing journal" cited a "cited journal"
+-- This script creates the `rolap.citation_network3` table, which aggregates citations
+-- between journals using a 3-year citation window.
+-- It counts how many times a "citing journal" cited a "cited journal"
 -- within the specific time window (citations from the reference year to works published
--- in the preceding 5 years).
+-- in the preceding 3 years).
 --
--- This pre-aggregated table significantly speeds up the Python script by avoiding
--- complex joins on the large `work_references` table during the analysis phase.
+-- Unlike the network centrality citation_network, this table INCLUDES self-citations,
+-- as prestige rank limits (rather than excludes) self-citations to 33% of incoming citations.
 --
 -- Dependencies:
 --   - rolap.reference: Contains the reference year.
@@ -22,7 +23,7 @@ CREATE INDEX IF NOT EXISTS rolap.works_journal_id_published_year_idx ON works_jo
 CREATE INDEX IF NOT EXISTS work_references_work_id_idx ON work_references(work_id);
 CREATE INDEX IF NOT EXISTS work_references_doi_idx ON work_references(doi);
 
-CREATE TABLE rolap.citation_network AS
+CREATE TABLE rolap.citation_network3 AS
   SELECT
     citing_work.journal_id AS citing_journal,
     cited_work.journal_id AS cited_journal,
@@ -36,6 +37,6 @@ CREATE TABLE rolap.citation_network AS
     AND citing_work.journal_id IS NOT null
     AND citing_work.published_year = (SELECT year FROM rolap.reference)
     AND cited_work.published_year BETWEEN
-      ((SELECT year FROM rolap.reference) - 5)
+      ((SELECT year FROM rolap.reference) - 3)
       AND ((SELECT year FROM rolap.reference) - 1)
   GROUP BY citing_work.journal_id, cited_work.journal_id;
