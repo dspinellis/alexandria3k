@@ -87,7 +87,9 @@ def issn_value(dictionary, issn_type):
         type_values = dictionary["issn-type"]
     except KeyError:
         return None
-    value = next((tv["value"] for tv in type_values if tv["type"] == issn_type),None)
+    value = next(
+        (tv["value"] for tv in type_values if tv["type"] == issn_type), None
+    )
     # Normalize by removing the dash
     return value.replace("-", "") if value else None
 
