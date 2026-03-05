@@ -83,13 +83,14 @@ def issn_value(dictionary, issn_type):
     if not dictionary:
         return None
     try:
-        # Array of entries like { "type": "electronic" , "value": "1756-2848" }
         type_values = dictionary["issn-type"]
     except KeyError:
         return None
-    value = [tv["value"] for tv in type_values if tv["type"] == issn_type]
-    # Normalize by removing the dash
-    return value[0].replace("-", "") if value else None
+    for tv in type_values:
+        if tv["type"] == issn_type:
+            value = tv["value"]
+            return value.replace("-", "") if value else None
+    return None
 
 
 def len_value(dictionary, key):
