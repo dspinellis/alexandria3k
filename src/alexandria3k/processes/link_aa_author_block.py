@@ -18,14 +18,17 @@
 #
 """Author blocking for disambiguation based on first name initial and family name."""
 
-
-import unicodedata
 import re
-from alexandria3k import perf
-from alexandria3k.common import ensure_table_exists
+import unicodedata
+from typing import Optional
+
 import apsw
 
-def make_blocking_key(given: str | None, family: str | None):
+from alexandria3k import perf
+from alexandria3k.common import ensure_table_exists
+
+
+def make_blocking_key(given: Optional[str], family: Optional[str]):
     """
     Return a blocking key for an author based on their first name
     initial and normalized family name.
@@ -38,8 +41,7 @@ def make_blocking_key(given: str | None, family: str | None):
     # Normalize family name: lowercase, strip diacritics, strip punctuation
     family_normalized = unicodedata.normalize("NFD", family.lower())
     family_normalized = "".join(
-        c for c in family_normalized
-        if unicodedata.category(c) != "Mn"
+        c for c in family_normalized if unicodedata.category(c) != "Mn"
     )
     family_normalized = family_normalized.replace("-", " ")
     family_normalized = re.sub(r"[^\w\s]", "", family_normalized)
@@ -51,14 +53,13 @@ def make_blocking_key(given: str | None, family: str | None):
 
     # Normalize given name and extract first alphabetic character
     given_normalized = unicodedata.normalize("NFD", given.lower())
-    initial = next(
-        (c for c in given_normalized if c.isalpha()), None
-    )
+    initial = next((c for c in given_normalized if c.isalpha()), None)
 
     if not initial:
         return family_normalized
 
     return f"{initial}.{family_normalized}"
+
 
 def blocking(database_path: str):
     """
@@ -84,6 +85,7 @@ def blocking(database_path: str):
     select_cursor.close()
     perf.log(f"blocking built {len(blocks)} blocks")
     return blocks
+
 
 def process(database_path: str):
     """
