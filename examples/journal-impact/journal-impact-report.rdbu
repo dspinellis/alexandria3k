@@ -83,7 +83,7 @@ journal_id	community_id	weight
 
 END
 
-INCLUDE SELECT journal-impact-report-test.sql
+INCLUDE SELECT journal-impact-report.sql
 
 BEGIN RESULT
 title	publisher	issn_print	issn_eprint	issns_additional	doi	citations_number2	publications_number2	citation_mean_2y	citations_number5	publications_number5	citation_mean_5y	h5_index	h5_median	network_centrality	prestige_rank	mean_article_score	context_impact	clusters

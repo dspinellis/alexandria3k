@@ -9,9 +9,6 @@ CREATE INDEX IF NOT EXISTS rolap.mean_article_score_idx ON mean_article_score(jo
 CREATE INDEX IF NOT EXISTS rolap.context_impact_idx ON context_impact(journal_id);
 CREATE INDEX IF NOT EXISTS rolap.journal_communities_idx ON journal_communities(journal_id);
 
-.mode csv
-.headers on
-
 SELECT
     rolap.journal_names.title,
     rolap.journal_names.publisher,

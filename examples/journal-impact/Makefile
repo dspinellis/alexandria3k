@@ -26,12 +26,6 @@ populate: $(CROSSREF_DIR)
 	  --sample 'random.random() < 0.0001'
 	touch $@
 
-# Create a test file
-test: journal-impact-report-test.sql
-
-journal-impact-report-test.sql: journal-impact-report.sql
-	grep -v '^\.' $? >$@
-
 # Calculate Journal Network Centrality
 tables/network_centrality: tables/citation_network tables/publications5 journal_network_metrics.py
 	./journal_network_metrics.py --metric network_centrality --db "$(MAINDB).db" --rolap-db "$(ROLAPDB).db"
