@@ -34,22 +34,22 @@ journal-impact-report-test.sql: journal-impact-report.sql
 
 # Calculate Journal Network Centrality
 tables/network_centrality: tables/citation_network tables/publications5 journal_network_metrics.py
-	./journal_network_metrics.py --metric network_centrality --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+	./journal_network_metrics.py --metric network_centrality --db "$(MAINDB).db" --rolap-db "$(ROLAPDB).db"
 	touch $@
 
 # Calculate Prestige Weighted Rank
 tables/prestige_rank: tables/citation_network3 tables/publications3 journal_network_metrics.py
-	./journal_network_metrics.py --metric prestige_rank --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+	./journal_network_metrics.py --metric prestige_rank --db "$(MAINDB).db" --rolap-db "$(ROLAPDB).db"
 	touch $@
 
 # Calculate Mean Article Network Score
 tables/mean_article_score: tables/citation_network tables/publications5 journal_network_metrics.py
-	./journal_network_metrics.py --metric mean_article_score --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+	./journal_network_metrics.py --metric mean_article_score --db "$(MAINDB).db" --rolap-db "$(ROLAPDB).db"
 	touch $@
 
 # Calculate Context Normalized Impact (also produces journal_communities as a side effect)
 tables/context_impact: tables/bibliographic_coupling tables/publications3 tables/citation_network3 tables/journal_reference_density context_normalized_impact.py
-	./context_normalized_impact.py --db "$(MAINDB).db" --rolap-db "$(MAINDB).db"
+	./context_normalized_impact.py --db "$(MAINDB).db" --rolap-db "$(ROLAPDB).db"
 	touch $@
 
 tables/journal_communities: tables/context_impact
