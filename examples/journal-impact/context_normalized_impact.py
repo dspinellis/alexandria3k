@@ -324,35 +324,57 @@ def calculate_context_impact_fallback(publications_df, citations_df, reference_d
     return result[["journal_id", "impact_score", "raw_impact", "citation_potential"]]
 
 
+def write_df_to_attached(conn: sqlite3.Connection,
+                                df: pd.DataFrame,
+                                table: str,
+                                db: str = "rolap"):
+    """
+    Drop and recreate table `db.table` and load DataFrame contents.
+    Works with sqlite3 and attached databases.
+    """
+    cols = list(df.columns)
+
+    # simple type mapping
+    type_map = {
+        "int64": "INTEGER",
+        "float64": "REAL",
+        "bool": "INTEGER",
+        "object": "TEXT",
+    }
+    col_defs = []
+    for c in cols:
+        sql_type = type_map.get(str(df[c].dtype), "TEXT")
+        col_defs.append(f'"{c}" {sql_type}')
+
+    conn.execute(f'DROP TABLE IF EXISTS {db}."{table}"')
+    conn.execute(f'CREATE TABLE {db}."{table}" ({", ".join(col_defs)})')
+
+    quoted_cols = ", ".join([f'"{c}"' for c in cols])
+    placeholders = ", ".join(["?"] * len(cols))
+    insert_sql = f'INSERT INTO {db}."{table}" ({quoted_cols}) VALUES ({placeholders})'
+
+    conn.executemany(insert_sql, df.itertuples(index=False, name=None))
+    conn.commit()
+
 def save_results(conn, impact_df, assignments_df=None, community_potential_df=None):
     """Save results and intermediate data to the database."""
     logging.info("Saving results to database...")
 
-    conn.execute("DROP TABLE IF EXISTS rolap.context_impact")
-    impact_df.to_sql("context_impact", conn, schema="rolap", index=False, if_exists="replace")
+    write_df_to_attached(conn, impact_df, "context_impact")
     logging.info(f"Saved {len(impact_df)} scores to rolap.context_impact")
 
     if assignments_df is not None:
-        conn.execute("DROP TABLE IF EXISTS rolap.journal_communities")
-        assignments_df.to_sql(
-            "journal_communities",
-            conn,
-            schema="rolap",
-            index=False,
-            if_exists="replace",
-        )
+        write_df_to_attached(conn, assignments_df, "journal_communities")
         logging.info(
             f"Saved {len(assignments_df)} community assignments to rolap.journal_communities"
         )
 
     if community_potential_df is not None:
         conn.execute("DROP TABLE IF EXISTS rolap.community_citation_potential")
-        community_potential_df.to_sql(
-            "community_citation_potential",
+        write_df_to_attached(
             conn,
-            schema="rolap",
-            index=False,
-            if_exists="replace",
+            community_potential_df,
+            "community_citation_potential"
         )
         logging.info(
             f"Saved {len(community_potential_df)} community potentials to rolap.community_citation_potential"
