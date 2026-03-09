@@ -1,6 +1,6 @@
 BEGIN SETUP
 
-rolap.journal_names:
+journal_names:
 id	title	publisher	issn_print	issn_eprint	issns_additional	doi
 10	T1	P1	IP1	IE1	IA1	D1
 20	T2	P2	IP2	IE2	IA2	D2
@@ -83,9 +83,10 @@ journal_id	community_id	weight
 
 END
 
-INCLUDE SELECT journal-impact-report.sql
+INCLUDE CREATE journal_impact.sql
 
 BEGIN RESULT
+rolap.journal_impact:
 title	publisher	issn_print	issn_eprint	issns_additional	doi	citations_number2	publications_number2	citation_mean_2y	citations_number5	publications_number5	citation_mean_5y	h5_index	h5_median	network_centrality	prestige_rank	mean_article_score	context_impact	clusters
 T2	P2	IP2	IE2	IA2	D2	2002	202	2.0	2005	205	2.5	2	2.2	20.2	0.202	0.22	1.0	"1-2"
 T1	P1	IP1	IE1	IA1	D1	1002	102	1.0	1005	105	1.5	1	1.1	10.1	0.101	0.11	0.5	"1"
