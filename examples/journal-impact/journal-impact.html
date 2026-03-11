@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Journal Impact Metrics</title>
+
+<link rel="stylesheet"
+href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+body {
+    font-family: sans-serif;
+    margin: 30px;
+}
+
+table.dataTable tbody tr:nth-child(even) {
+    background: #f3f3f3;
+}
+
+tfoot input {
+    width: 100%;
+    box-sizing: border-box;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Journal Impact Metrics</h2>
+
+<table id="tbl" class="display" style="width:100%">
+<thead></thead>
+<tfoot></tfoot>
+<tbody></tbody>
+</table>
+
+<script>
+
+const CSV_URL = "journal-impact-public.txt";
+
+fetch(CSV_URL)
+  .then(r => r.text())
+  .then(text => {
+
+    const parsed = Papa.parse(text, {
+        header: true,
+        skipEmptyLines: true
+    });
+
+    const cols = Object.keys(parsed.data[0]);
+
+    const thead = "<tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr>";
+    const tfoot = "<tr>" + cols.map(c => `<th><input placeholder="filter"></th>`).join("") + "</tr>";
+
+    $("#tbl thead").html(thead);
+    $("#tbl tfoot").html(tfoot);
+
+    const table = $("#tbl").DataTable({
+        data: parsed.data,
+        columns: cols.map(c => ({data: c})),
+        pageLength: 25
+    });
+
+    table.columns().every(function() {
+        const column = this;
+        $('input', this.footer()).on('keyup change clear', function() {
+            if (column.search() !== this.value) {
+                column.search(this.value).draw();
+            }
+        });
+    });
+
+  });
+
+</script>
+
+</body>
+</html>
