@@ -7,10 +7,32 @@
 SELECT
     title AS 'Journal Title',
     Publisher,
-    issn_print AS 'Print ISSN',
-    issn_eprint AS 'E-Print ISSN',
-    issns_additional AS 'Additional ISSN',
-    DOI,
+    CASE
+        WHEN issn_print != ''
+        THEN '<a href="https://portal.issn.org/resource/ISSN/' ||
+          issn_print || '">' ||
+          substr(issn_print, 1, 4) || '-' || substr(issn_print, 5, 4) ||
+          ' (p)</a> '
+        ELSE ''
+    END ||
+    CASE
+        WHEN issn_eprint != ''
+        THEN '<a href="https://portal.issn.org/resource/ISSN/' ||
+          issn_eprint || '">' ||
+          substr(issn_eprint, 1, 4) || '-' || substr(issn_eprint, 5, 4) ||
+          ' (e)</a> '
+        ELSE ''
+    END ||
+    CASE
+        WHEN issns_additional != ''
+        THEN '[' || issns_additional || '] (a) '
+        ELSE ''
+    END AS ISSNs,
+    CASE
+      WHEN doi != ''
+      THEN '<a href="https://doi.org/' || doi || '">' || doi || '</a>'
+      ELSE ''
+    END AS DOI,
     citations_number2 AS '2-Year Citations',
     publications_number2 AS '2-Year Publications',
     CASE
