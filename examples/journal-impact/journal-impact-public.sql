@@ -59,5 +59,5 @@ SELECT
       THEN context_impact
       ELSE NULL
     END AS 'Context Impact',
-    Replace(clusters, '-', ', ') AS Clusters
+    Clusters
   FROM rolap.journal_impact ORDER BY title;

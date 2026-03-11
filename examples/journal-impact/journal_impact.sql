@@ -53,7 +53,7 @@ CREATE TABLE rolap.journal_impact AS
   LEFT JOIN rolap.context_impact
     ON context_impact.journal_id = journal_names.id
   LEFT JOIN (
-    SELECT journal_id, Group_concat(community_id, '-') AS clusters
+    SELECT journal_id, Group_concat(community_id, ', ') AS clusters
     FROM (
         SELECT journal_id, community_id 
         FROM rolap.journal_communities 
