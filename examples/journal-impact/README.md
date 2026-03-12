@@ -96,24 +96,43 @@ coupling network to discover research fields organically:
    is applied to discover communities of related journals. Unlike seeded
    approaches, this finds fields based on actual citation patterns without
    bias toward high-citation areas.
-3. **Multi-Community Assignment**: Journals can belong to multiple communities.
-   A journal is assigned to a community if its coupling strength to that
-   community is ≥30% of its maximum coupling strength. This handles
-   interdisciplinary journals naturally.
-4. **Citation Potential per Community**: For each community, the weighted
+3. **Small Community Merging**: Communities smaller than 3 journals
+   are dissolved — each member is reassigned to its nearest large
+   community by strongest coupling edge. This prevents singleton
+   clusters from distorting citation potential estimates.
+4. **Multi-Community Assignment**: Journals can belong to multiple
+   communities. For each journal, coupling strengths toward every
+   community's members are summed and ranked. An adaptive threshold
+   (derived via Otsu's method on secondary/primary strength ratios)
+   determines which secondary assignments are genuinely interdisciplinary
+   versus noise. Normalized weights sum to 1.0 per journal, with the
+   primary weight structurally guaranteed to be ≥ 0.5.
+5. **Citation Potential per Community**: For each community, the weighted
    average reference density is calculated based on member journals.
-5. **Journal Citation Potential**: Each journal's citation potential is the
+6. **Journal Citation Potential**: Each journal's citation potential is the
    weighted average of its communities' potentials.
-6. **Score Calculation**: Score = (Citations/Paper) / Citation_Potential
+7. **Score Calculation**: Score = (Citations/Paper) / Citation_Potential
 
 Key advantages of the Leiden approach:
 - **No bias toward high-citation fields**: Communities emerge from data
 - **Handles niche fields**: Even low-citation areas form communities
-- **Better interdisciplinary handling**: Multi-community assignment
+- **Better interdisciplinary handling**: Multi-community assignment with
+  data-driven Otsu threshold
+- **Robust to tiny clusters**: Small communities are merged before assignment
 - **Reproducible**: Uses a fixed random seed for deterministic results
 
 This metric is calculated using the `context_normalized_impact.py` Python script, which requires
 the `leidenalg` and `python-igraph` packages. Run with: `make tables/context_impact`
+
+### Otsu's Method for Secondary Assignment Threshold
+
+For each journal coupled to 2+ communities, a ratio
+*r = secondary strength / primary strength* is computed.
+Otsu's method automatically finds the threshold that best separates
+low ratios (noise) from high ratios (genuine interdisciplinarity)
+by maximizing between-class variance across all candidate splits.
+A secondary assignment is kept only if *r* ≥ threshold.
+Falls back to 0.5 when fewer than 2 ratios exist.
 
 ## Dependencies
 
@@ -149,5 +168,6 @@ The file `reports/journal-impact-report.txt` contains the following columns for 
 - **mean_article_score**: Mean Article Network Score (average influence per article). *Resembles the Article Influence Score (AIS) metric.*
 - **context_impact**: Context Normalized Impact (normalized by field citation potential). *Resembles the Source Normalized Impact per Paper (SNIP) metric.*
 - **clusters**: Journal Communities (hyphen-separated list of community IDs the journal belongs to, e.g., 1-2)
+- **cluster_weights**: Community weights in the format `community_id:weight`, joined with ` | ` for multi-community journals
 
 This report provides a comprehensive comparison of journals across multiple impact metrics and citation windows.

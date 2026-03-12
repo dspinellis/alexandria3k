@@ -27,8 +27,7 @@ populate: $(CROSSREF_DIR)
 	   works.published_year \
 	   work_references.work_id \
 	   work_references.doi \
-	  --row-selection "works.published_year between $$(expr $(YEAR) - 5)  and $(YEAR)" \
-	  --sample 'random.random() < 0.0001'
+	  --row-selection "works.published_year between $$(expr $(YEAR) - 5)  and $(YEAR)"
 	touch $@
 
 # Calculate Journal Network Centrality
