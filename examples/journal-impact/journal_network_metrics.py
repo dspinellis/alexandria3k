@@ -375,11 +375,14 @@ def parse_args():
         default="network_centrality",
         help="Metric to calculate: network_centrality, prestige_rank, mean_article_score",
     )
-    parser.add_argument("--db", required=True, help="Path to the main SQLite database")
+    parser.add_argument("--db", help="Path to the main SQLite database")
     parser.add_argument(
         "--rolap-db",
-        required=True,
         help="Path to the ROLAP SQLite database (can be same as main)",
+    )
+    parser.add_argument(
+        "--test-db",
+        help="Single database file used for both main and ROLAP (for testing)",
     )
     return parser.parse_args()
 
@@ -390,9 +393,20 @@ def main() -> None:
 
     logging.info("Calculating %s...", metric)
 
+    if args.test_db:
+        db_path = args.test_db
+        rolap_db_path = args.test_db
+    elif args.db and args.rolap_db:
+        db_path = args.db
+        rolap_db_path = args.rolap_db
+    else:
+        import sys
+        print("error: provide either --test-db or both --db and --rolap-db", file=sys.stderr)
+        sys.exit(2)
+
     conn = None
     try:
-        conn = get_db_connection(args.db, args.rolap_db)
+        conn = get_db_connection(db_path, rolap_db_path)
         citations_df, journal_article_counts = load_data(conn, metric)
 
         if citations_df.empty:
