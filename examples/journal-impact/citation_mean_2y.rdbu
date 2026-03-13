@@ -14,7 +14,7 @@ journal_id        publications_number
 
 END
 
-INCLUDE CREATE citation_mean_2y.sql
+INCLUDE CREATE calculate_citation_mean_2y.sql
 
 BEGIN RESULT
 citation_mean_2y:
