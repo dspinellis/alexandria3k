@@ -222,7 +222,7 @@ def test_assign_journals_to_communities():
     )
     g, journals, _ = build_graph(coupling_df)
     partition = run_leiden_clustering(g, resolution=0.5)
-    assignments = assign_journals_to_communities(g, partition, journals, threshold_min=0.3)
+    assignments = assign_journals_to_communities(g, partition, journals)
     assert len(assignments) > 0
     assert "journal_id" in assignments.columns
     assert "community_id" in assignments.columns
