@@ -81,16 +81,22 @@ journal_id	community_id	weight
 40	3	1.0
 51	3	1.0
 
+rolap.cluster_labels:
+community_id	label	top_phrases	top_publishers	sample_journals	journals_count
+1	"Materials & Physics"	"Materials, Physics"	"P1, P2"	"T1 | T2"	2
+2	"Chemistry & Synthesis"	"Chemistry, Synthesis"	"P2, P3"	"T2 | T3"	2
+3	"Agronomy & Soil"	"Agronomy, Soil"	"P4, P5"	"T4 | T5"	2
+
 END
 
 INCLUDE CREATE journal_impact.sql
 
 BEGIN RESULT
 rolap.journal_impact:
-title	publisher	issn_print	issn_eprint	issns_additional	doi	citations_number2	publications_number2	citation_mean_2y	citations_number5	publications_number5	citation_mean_5y	h5_index	h5_median	network_centrality	prestige_rank	mean_article_score	context_impact	clusters
-T2	P2	IP2	IE2	IA2	D2	2002	202	2.0	2005	205	2.5	2	2.2	20.2	0.202	0.22	1.0	"1, 2"
-T1	P1	IP1	IE1	IA1	D1	1002	102	1.0	1005	105	1.5	1	1.1	10.1	0.101	0.11	0.5	"1"
-T3	P3	IP3	IE3	IA3	D3	3002	302	3.0	3005	305	3.5	3	3.3	30.3	0.303	0.33	1.5	"2"
-T4	P4	IP4	IE4	IA4	D5	4002	402	4.0	4005	405	4.5	4	4.4	40.4	0.404	0.44	2.0	"3"
-T5	P5	IP5	IE5	IA5	D5	5002	502	5.0	5005	505	5.5	5	5.5	50.5	0.505	0.55	2.5	"3"
+title	publisher	issn_print	issn_eprint	issns_additional	doi	citations_number2	publications_number2	citation_mean_2y	citations_number5	publications_number5	citation_mean_5y	h5_index	h5_median	network_centrality	prestige_rank	mean_article_score	context_impact	clusters	cluster_weights	cluster_labels
+T2	P2	IP2	IE2	IA2	D2	2002	202	2.0	2005	205	2.5	2	2.2	20.2	0.202	0.22	1.0	"1-2"	"1:0.600 | 2:0.400"	"1 (0.600): Materials & Physics | 2 (0.400): Chemistry & Synthesis"
+T1	P1	IP1	IE1	IA1	D1	1002	102	1.0	1005	105	1.5	1	1.1	10.1	0.101	0.11	0.5	"1"	"1:1.000"	"1 (1.000): Materials & Physics"
+T3	P3	IP3	IE3	IA3	D3	3002	302	3.0	3005	305	3.5	3	3.3	30.3	0.303	0.33	1.5	"2"	"2:1.000"	"2 (1.000): Chemistry & Synthesis"
+T4	P4	IP4	IE4	IA4	D5	4002	402	4.0	4005	405	4.5	4	4.4	40.4	0.404	0.44	2.0	"3"	"3:1.000"	"3 (1.000): Agronomy & Soil"
+T5	P5	IP5	IE5	IA5	D5	5002	502	5.0	5005	505	5.5	5	5.5	50.5	0.505	0.55	2.5	"3"	"3:1.000"	"3 (1.000): Agronomy & Soil"
 END

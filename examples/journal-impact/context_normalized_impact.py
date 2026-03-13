@@ -33,7 +33,7 @@ trademarks or registered trademarks of their respective owners.
 Algorithm:
 1. Build bibliographic coupling graph (journals sharing references)
 2. Run Leiden clustering to discover research communities
-3. Assign each journal to multiple communities (within 30% of max similarity)
+3. Assign each journal to multiple communities (threshold derived from data via Otsu's method)
 4. Calculate citation potential per community
 5. Compute each journal's weighted citation potential
 6. Score = Raw Impact per Paper / Citation Potential
@@ -67,8 +67,7 @@ logging.basicConfig(
 
 
 DEFAULT_RESOLUTION = 1.0
-SIMILARITY_THRESHOLD_MIN = 0.30  # Minimum 30% of max similarity for multi-assignment
-SIMILARITY_THRESHOLD_MAX = 0.40  # Maximum 40% of max similarity
+MAX_COMMUNITIES_PER_JOURNAL = 2
 MIN_COMMUNITY_SIZE = 3
 
 
@@ -175,21 +174,50 @@ def run_leiden_clustering(g, resolution=DEFAULT_RESOLUTION):
     return partition
 
 
+def _otsu_threshold(values: np.ndarray) -> float:
+    """Find the threshold that minimizes within-class variance (Otsu's method).
+
+    Applied to the distribution of secondary/primary strength ratios to
+    automatically determine which multi-community assignments are meaningful.
+    """
+    if len(values) < 2:
+        return 0.5
+    n_bins = min(256, len(values))
+    hist, bin_edges = np.histogram(values, bins=n_bins, range=(0.0, 1.0))
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+    hist = hist.astype(float)
+    total = hist.sum()
+    if total == 0:
+        return 0.5
+    hist /= total
+    w1 = np.cumsum(hist)
+    w2 = 1.0 - w1
+    mu1 = np.cumsum(hist * bin_centers) / np.where(w1 > 0, w1, 1.0)
+    mu2 = (
+        np.sum(hist * bin_centers) - np.cumsum(hist * bin_centers)
+    ) / np.where(w2 > 0, w2, 1.0)
+    inter_var = w1 * w2 * (mu1 - mu2) ** 2
+    return float(bin_centers[np.argmax(inter_var)])
+
+
 def assign_journals_to_communities(
     g,
     partition,
     journals,
-    threshold_min=SIMILARITY_THRESHOLD_MIN,
-    threshold_max=SIMILARITY_THRESHOLD_MAX,
+    threshold_override=None,
 ):
     """Assign each journal to multiple communities based on coupling similarity.
+
+    The secondary-assignment threshold is derived automatically from the data
+    using Otsu's method on the distribution of secondary/primary strength ratios,
+    unless overridden by ``threshold_override``.
 
     Community ids are stored as 1-based integers for readability.
     """
     logging.info("Assigning journals to communities (multi-assignment)...")
 
-    journal_community_strength = []
-
+    # Pass 1: compute per-journal ranked community strengths.
+    strengths_by_journal = {}
     for vertex_idx, journal_id in enumerate(journals):
         neighbors = g.neighbors(vertex_idx)
         neighbor_weights = [g.es[g.get_eid(vertex_idx, n)]["weight"] for n in neighbors]
@@ -201,16 +229,39 @@ def assign_journals_to_communities(
 
         if not community_strengths:
             own_community = int(partition.membership[vertex_idx]) + 1
-            journal_community_strength.append(
-                {"journal_id": journal_id, "community_id": own_community, "strength": 1.0}
-            )
-            continue
+            community_strengths = {own_community: 1.0}
 
-        max_strength = max(community_strengths.values())
-        threshold = max_strength * threshold_min
+        strengths_by_journal[journal_id] = sorted(
+            community_strengths.items(),
+            key=lambda item: (-item[1], item[0]),
+        )
 
-        for community_id, strength in community_strengths.items():
-            if strength >= threshold:
+    # Derive threshold from data via Otsu's method on secondary/primary ratios.
+    if threshold_override is not None:
+        threshold_min = threshold_override
+        logging.info(f"Using explicit secondary assignment threshold: {threshold_min:.3f}")
+    else:
+        ratios = []
+        for ranked in strengths_by_journal.values():
+            if len(ranked) >= 2:
+                primary_strength = ranked[0][1]
+                for i in range(1, min(MAX_COMMUNITIES_PER_JOURNAL, len(ranked))):
+                    ratios.append(ranked[i][1] / primary_strength)
+        threshold_min = _otsu_threshold(np.array(ratios)) if ratios else 0.5
+        logging.info(
+            f"Adaptive secondary assignment threshold (Otsu): {threshold_min:.3f} "
+            f"(computed from {len(ratios)} candidate secondary assignments)"
+        )
+
+    # Pass 2: apply threshold.
+    journal_community_strength = []
+    for journal_id, ranked in strengths_by_journal.items():
+        primary_strength = ranked[0][1]
+        threshold = primary_strength * threshold_min
+        for index, (community_id, strength) in enumerate(ranked):
+            if index >= MAX_COMMUNITIES_PER_JOURNAL:
+                break
+            if index == 0 or strength >= threshold:
                 journal_community_strength.append(
                     {"journal_id": journal_id, "community_id": community_id, "strength": strength}
                 )
@@ -223,6 +274,10 @@ def assign_journals_to_communities(
     n_multi = (assignments_df.groupby("journal_id").size() > 1).sum()
     logging.info(f"Assigned journals to communities: {len(assignments_df)} total assignments.")
     logging.info(f"Journals with multiple community assignments: {n_multi}")
+    logging.info(
+        "Average communities per journal: %.2f",
+        assignments_df.groupby("journal_id").size().mean(),
+    )
 
     return assignments_df[["journal_id", "community_id", "weight"]]
 
@@ -396,15 +451,28 @@ def main():
     parser.add_argument(
         "--threshold",
         type=float,
-        default=SIMILARITY_THRESHOLD_MIN,
-        help="Multi-assignment threshold",
+        default=None,
+        help="Secondary assignment threshold (default: adaptive via Otsu's method)",
     )
-    parser.add_argument("--db", required=True, help="Path to the main SQLite database")
-    parser.add_argument("--rolap-db", required=True, help="Path to the ROLAP SQLite database")
+    parser.add_argument("--db", help="Path to the main SQLite database")
+    parser.add_argument("--rolap-db", help="Path to the ROLAP SQLite database")
+    parser.add_argument(
+        "--test-db",
+        help="Single database file used for both main and ROLAP (for testing)",
+    )
     args = parser.parse_args()
 
+    if args.test_db:
+        db_path = args.test_db
+        rolap_db_path = args.test_db
+    elif args.db and args.rolap_db:
+        db_path = args.db
+        rolap_db_path = args.rolap_db
+    else:
+        parser.error("Provide either --test-db or both --db and --rolap-db")
+
     try:
-        conn = get_db_connection(args.db, args.rolap_db)
+        conn = get_db_connection(db_path, rolap_db_path)
 
         publications_df, citations_df, reference_df = load_journal_data(conn)
         coupling_df = load_bibliographic_coupling(conn)
@@ -421,8 +489,7 @@ def main():
                 g,
                 partition,
                 journals,
-                threshold_min=args.threshold,
-                threshold_max=SIMILARITY_THRESHOLD_MAX,
+                threshold_override=args.threshold,
             )
 
             community_potential_df = calculate_citation_potential(assignments_df, reference_df)

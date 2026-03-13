@@ -98,8 +98,9 @@ coupling network to discover research fields organically:
    bias toward high-citation areas.
 3. **Multi-Community Assignment**: Journals can belong to multiple communities.
    A journal is assigned to a community if its coupling strength to that
-   community is ≥30% of its maximum coupling strength. This handles
-   interdisciplinary journals naturally.
+   community is ≥50% of its maximum coupling strength, and at most two
+   communities are retained per journal. This keeps interdisciplinary
+   assignments while avoiding diffuse memberships.
 4. **Citation Potential per Community**: For each community, the weighted
    average reference density is calculated based on member journals.
 5. **Journal Citation Potential**: Each journal's citation potential is the
@@ -149,5 +150,7 @@ The file `reports/journal-impact-report.txt` contains the following columns for 
 - **mean_article_score**: Mean Article Network Score (average influence per article). *Resembles the Article Influence Score (AIS) metric.*
 - **context_impact**: Context Normalized Impact (normalized by field citation potential). *Resembles the Source Normalized Impact per Paper (SNIP) metric.*
 - **clusters**: Journal Communities (hyphen-separated list of community IDs the journal belongs to, e.g., 1-2)
+- **cluster_weights**: Community weights in the format `community_id:weight`, joined with ` | ` for multi-community journals
+- **cluster_labels**: Human-readable weighted cluster labels derived via TF-IDF analysis, in the format `community_id (weight): label`, joined with ` | ` for multi-community journals
 
 This report provides a comprehensive comparison of journals across multiple impact metrics and citation windows.
