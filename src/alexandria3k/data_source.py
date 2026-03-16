@@ -1146,16 +1146,16 @@ class DataFiles:
         # Collect the names of all available data files
         self.data_files = []
         counter = 1
-        for file_name in os.listdir(directory):
+        for file_name in sorted(os.listdir(directory)):
             path = os.path.join(directory, file_name)
             if not os.path.isfile(path):
-                continue
-            if not sample_container(path):
                 continue
             if file_extension and not path.endswith(file_extension):
                 # MacOS creates a .DS_Store file by default
                 continue
             if file_name_regex and not re.match(file_name_regex, file_name):
+                continue
+            if not sample_container(path):
                 continue
             counter += 1
             self.data_files.append(path)
