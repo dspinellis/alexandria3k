@@ -10,6 +10,11 @@ export DEPENDENCIES=populate journal-names
 
 include ../common/Makefile
 
+# Run all tests: rdbunit SQL tests + pytest integration tests
+test:
+	$(SRD)/run_test.sh
+	pytest test_integration.py -v
+
 # Populate database
 populate: $(CROSSREF_DIR)
 	$(TIME) $(A3K) --progress \
