@@ -16,7 +16,10 @@ jobs:
     - name: Install Dependencies
       run: |
         pip install pipenv
-        cd src && pipenv install --dev
+        cd src
+        pipenv --rm || true
+        pipenv --python $(which python)
+        pipenv install --dev
 
     - name: Build HTML with Sphinx
       run: cd src && pipenv run make -C ../docs html
