@@ -34,7 +34,8 @@ CREATE TABLE rolap.journal_impact AS
     Round(rolap.mean_article_score.mean_score, 5) AS mean_article_score,
     Round(rolap.context_impact.impact_score, 5) AS context_impact,
     -- Clusters
-    SortedClusters.clusters
+    SortedClusters.clusters,
+    SortedClusters.cluster_weights
   FROM journal_names
   INNER JOIN rolap.active_journals
     ON active_journals.id = journal_names.id
@@ -53,9 +54,12 @@ CREATE TABLE rolap.journal_impact AS
   LEFT JOIN rolap.context_impact
     ON context_impact.journal_id = journal_names.id
   LEFT JOIN (
-    SELECT journal_id, Group_concat(community_id, ', ') AS clusters
+    SELECT
+      journal_id,
+      Group_concat(community_id, '-') AS clusters,
+      Group_concat(printf('%d:%.3f', community_id, weight), ' | ') AS cluster_weights
     FROM (
-        SELECT journal_id, community_id 
+      SELECT journal_id, community_id, weight
         FROM rolap.journal_communities 
         ORDER BY community_id ASC
     )
