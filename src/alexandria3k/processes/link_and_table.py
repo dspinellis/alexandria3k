@@ -4,7 +4,8 @@ from math import floor
 from itertools import groupby
 
 import apsw
-#import jellyfish
+
+# import jellyfish
 
 from alexandria3k.common import ensure_table_exists, log_sql, set_fast_writing
 
@@ -35,10 +36,12 @@ def jaccard_similarity(set_a, set_b):
 
 
 """Algorithm taken from GeeksforGeeks"""
+
+
 def jaro_distance(s1, s2):
-    
+
     # If the s are equal
-    if (s1 == s2):
+    if s1 == s2:
         return 1.0
 
     # Length of two s
@@ -60,18 +63,17 @@ def jaro_distance(s1, s2):
     for i in range(len1):
 
         # Check if there is any matches
-        for j in range(max(0, i - max_dist), 
-                       min(len2, i + max_dist + 1)):
-            
+        for j in range(max(0, i - max_dist), min(len2, i + max_dist + 1)):
+
             # If there is a match
-            if (s1[i] == s2[j] and hash_s2[j] == 0):
+            if s1[i] == s2[j] and hash_s2[j] == 0:
                 hash_s1[i] = 1
                 hash_s2[j] = 1
                 match += 1
                 break
 
     # If there is no match
-    if (match == 0):
+    if match == 0:
         return 0.0
 
     # Number of transpositions
@@ -83,49 +85,50 @@ def jaro_distance(s1, s2):
     # there is a third matched character
     # in between the indices
     for i in range(len1):
-        if (hash_s1[i]):
+        if hash_s1[i]:
 
             # Find the next matched character
             # in second
-            while (hash_s2[point] == 0):
+            while hash_s2[point] == 0:
                 point += 1
 
-            if (s1[i] != s2[point]):
+            if s1[i] != s2[point]:
                 t += 1
             point += 1
-    t = t//2
+    t = t // 2
 
     # Return the Jaro Similarity
-    return (match/ len1 + match / len2 + 
-            (match - t) / match)/ 3.0
+    return (match / len1 + match / len2 + (match - t) / match) / 3.0
 
-def jaro_Winkler(s1, s2) : 
 
-    jaro_dist = jaro_distance(s1, s2); 
+def jaro_Winkler(s1, s2):
 
-    # If the jaro Similarity is above a threshold 
-    if (jaro_dist > 0.7) :
+    jaro_dist = jaro_distance(s1, s2)
 
-        # Find the length of common prefix 
-        prefix = 0; 
+    # If the jaro Similarity is above a threshold
+    if jaro_dist > 0.7:
 
-        for i in range(min(len(s1), len(s2))) :
-        
-            # If the characters match 
-            if (s1[i] == s2[i]) :
-                prefix += 1; 
+        # Find the length of common prefix
+        prefix = 0
 
-            # Else break 
-            else :
-                break; 
+        for i in range(min(len(s1), len(s2))):
 
-        # Maximum of 4 characters are allowed in prefix 
-        prefix = min(4, prefix); 
+            # If the characters match
+            if s1[i] == s2[i]:
+                prefix += 1
 
-        # Calculate jaro winkler Similarity 
-        jaro_dist += 0.1 * prefix * (1 - jaro_dist); 
+            # Else break
+            else:
+                break
 
-    return jaro_dist; 
+        # Maximum of 4 characters are allowed in prefix
+        prefix = min(4, prefix)
+
+        # Calculate jaro winkler Similarity
+        jaro_dist += 0.1 * prefix * (1 - jaro_dist)
+
+    return jaro_dist
+
 
 def get_co_authors(key, database):
     """Gets all the co-authors of a specific work of an author"""
@@ -165,15 +168,15 @@ def compare_authors(auth1, auth2, co_authors_map):
     id_a, name_a = auth1
     id_b, name_b = auth2
 
-    jaro_w = jaro_Winkler(name_a , name_b)
-    #jaro_w = jellyfish.jaro_winkler_similarity(name_a , name_b)  //if we choose to add the dependency , with sample it saves one second
+    jaro_w = jaro_Winkler(name_a, name_b)
+    # jaro_w = jellyfish.jaro_winkler_similarity(name_a , name_b)  //if we choose to add the dependency , with sample it saves one second
 
     co_authors_a = co_authors_map.get(id_a, set())
     co_authors_b = co_authors_map.get(id_b, set())
 
     jaccard = jaccard_similarity(co_authors_a, co_authors_b)
 
-    if (jaccard + jaro_w) / 2  > 0.7:
+    if (jaccard + jaro_w) / 2 > 0.7:
         return True
 
     return False
@@ -188,25 +191,26 @@ def create_author_clusters(database_path):
     database.execute(log_sql(table[0].table_schema()))
     set_fast_writing(database)
     ensure_table_exists(database, "author_name_blocks")
+    # perf.log("author_clusters table created")
 
     block_cursor = database.cursor()
 
-    query = (
-        "SELECT block_key , work_author_id , normalized_name FROM author_name_blocks ORDER BY block_key"
-    )
+    query = "SELECT block_key , work_author_id , normalized_name FROM author_name_blocks ORDER BY block_key"
     c = "a"
     count = 0
     total = 0
-    for block_key , grouped_authors in groupby (block_cursor.execute(query), key=lambda row: row[0]):
+    for block_key, grouped_authors in groupby(
+        block_cursor.execute(query), key=lambda row: row[0]
+    ):
 
         if c != block_key[0]:
             c = block_key[0]
             print(c, count)
             total += count
             count = 0
-            
+            # perf.log(f"finished letter {c}")
 
-        authors = [(row[1] , row[2]) for row in grouped_authors]
+        authors = [(row[1], row[2]) for row in grouped_authors]
         if len(authors) < 2:
             continue
         co_authors = get_co_authors(block_key, database)
@@ -215,6 +219,7 @@ def create_author_clusters(database_path):
                 if compare_authors(authors[i], authors[j], co_authors):
                     count += 1
     print(total)
+    # perf.log("finished comparing all blocks")
 
 
 def process(database_path):

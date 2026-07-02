@@ -26,7 +26,8 @@ table = [
 
 def normalized(s: str):
     tmp = "".join(
-        c for c in unicodedata.normalize("NFKD", s) 
+        c
+        for c in unicodedata.normalize("NFKD", s)
         if unicodedata.category(c) != "Mn" and (c.isalpha() or c.isspace())
     )
     return tmp.lower().strip()
@@ -36,13 +37,12 @@ def create_author_blocks_table(database_path):
     """Create the blocks table from the populated dataset.
     Procedure is mentioned in the comment of the process below"""
 
-    # TODO: LOG ALL COMMANDS , LINK UNIT TESTS
-
     database = apsw.Connection(database_path)
     database.execute(log_sql("DROP TABLE IF EXISTS author_name_blocks"))
     database.execute(log_sql(table[0].table_schema()))
     set_fast_writing(database)
     ensure_table_exists(database, "work_authors")
+    # perf.log("author_blocks table created")
 
     select_cursor = database.cursor()
     insert_cursor = database.cursor()
@@ -66,6 +66,7 @@ def create_author_blocks_table(database_path):
         )
     select_cursor.close()
     insert_cursor.close()
+    # perf.log("filled author_blocks table")
     database.execute(
         log_sql(
             "CREATE INDEX IF NOT EXISTS idx_block_key ON author_name_blocks(block_key)"
@@ -76,7 +77,7 @@ def create_author_blocks_table(database_path):
             "CREATE INDEX IF NOT EXISTS idx_work_author_id ON author_name_blocks(work_author_id)"
         )
     )
-    # perf.log("filled author_blocks table")
+    # perf.log("created author_blocks indexes")
 
 
 def process(database_path):
