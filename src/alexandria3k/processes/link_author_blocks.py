@@ -1,3 +1,5 @@
+"""Create author_name_blocks table based on normalised author names"""
+
 import unicodedata
 
 import apsw
@@ -24,9 +26,9 @@ table = [
 
 def normalized(s: str):
     tmp = "".join(
-        c for c in unicodedata.normalize("NFKD", s) if unicodedata.category(c) != "Mn"
+        c for c in unicodedata.normalize("NFKD", s) 
+        if unicodedata.category(c) != "Mn" and (c.isalpha() or c.isspace())
     )
-    tmp = "".join(c for c in tmp if c.isalpha() or c.isspace())
     return tmp.lower().strip()
 
 
@@ -64,6 +66,12 @@ def create_author_blocks_table(database_path):
         )
     select_cursor.close()
     insert_cursor.close()
+    database.execute(log_sql(
+        "CREATE INDEX IF NOT EXISTS idx_block_key ON author_name_blocks(block_key)"
+    ))
+    database.execute(log_sql(
+        "CREATE INDEX IF NOT EXISTS idx_work_author_id ON author_name_blocks(work_author_id)"
+    ))
     # perf.log("filled author_blocks table")
 
 
@@ -76,3 +84,4 @@ def process(database_path):
     block_key is consisted of the normalised_family_name + first inital of normalised name"""
 
     create_author_blocks_table(database_path)
+    print("Created author_blocks table")

@@ -1,4 +1,7 @@
+"""Cluster authors into disambiguated identities based on shared signals."""
+
 # from math import floor
+from itertools import groupby
 
 import apsw
 
@@ -91,11 +94,27 @@ def create_author_clusters(database_path):
 
     block_cursor = database.cursor()
 
-    # for a specific block get all author_id and name
-    for (key,) in block_cursor.execute(
-        "SELECT DISTINCT block_key FROM author_name_blocks"
-    ):
-        co_author_map = get_co_authors(key, database)
+    query = "SELECT block_key , work_author_id FROM author_name_blocks ORDER BY block_key"
+    c = 'a'
+    count = 0
+    for block_key, grouped_authors in groupby(block_cursor.execute(query), key=lambda row: row[0]):
+        if (c != block_key[0]): 
+            c = block_key[0]
+            print(c , count)
+            count = 0
+        authors = [row[1] for row in grouped_authors]
+        if len(authors) < 2:
+            continue
+        co_authors = get_co_authors(block_key , database)
+
+        for i in range(len(authors)):
+            for j in range(i+1 , len(authors)):
+                if compare_authors(authors[i] , authors[j] , co_authors):
+                    count += 1
+       
+       
+        
+        
 
 
 def process(database_path):
@@ -103,8 +122,8 @@ def process(database_path):
     Input will be the author_names_block table created in
     /alexandria3k/src/alexandria3k/processes/link_author_blocks.py for less comparisons.
     For every entry in a block , compares every pair of authors and decides if they are the same person
-    To calculate that , each pair will go through a scoring function which they will be compared by some criteria
-    (for more details on the criteria check the compare_authors comment)
+    To calculate that , each pair will go through a scoring function,
+    which they will be compared by some criteria (for more details on the criteria check the compare_authors comment)
     Process will return a table that contains work_author_id , cluster_id , confidence_score
     where cluster_id is the id of the merged author"""
 
