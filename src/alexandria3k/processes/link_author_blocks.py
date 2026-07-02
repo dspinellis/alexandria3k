@@ -66,12 +66,16 @@ def create_author_blocks_table(database_path):
         )
     select_cursor.close()
     insert_cursor.close()
-    database.execute(log_sql(
-        "CREATE INDEX IF NOT EXISTS idx_block_key ON author_name_blocks(block_key)"
-    ))
-    database.execute(log_sql(
-        "CREATE INDEX IF NOT EXISTS idx_work_author_id ON author_name_blocks(work_author_id)"
-    ))
+    database.execute(
+        log_sql(
+            "CREATE INDEX IF NOT EXISTS idx_block_key ON author_name_blocks(block_key)"
+        )
+    )
+    database.execute(
+        log_sql(
+            "CREATE INDEX IF NOT EXISTS idx_work_author_id ON author_name_blocks(work_author_id)"
+        )
+    )
     # perf.log("filled author_blocks table")
 
 
