@@ -123,8 +123,12 @@ def compare_authors(auth1, auth2, co_authors_map, database):
     - Topic overlap using Leiden clustering
     """
 
-    author_1_id, author_1_name = auth1
-    author_2_id, author_2_name = auth2
+    author_1_id, author_1_name, author_1_work_id = auth1
+    author_2_id, author_2_name, author_2_work_id = auth2
+
+    #if they are co authors then they are surely different authors
+    if author_1_work_id == author_2_work_id:
+        return 0 
 
     #Jaro winkler for name similarity
     jaro_winkler_names = JaroWinkler.similarity(author_1_name, author_2_name)
@@ -140,10 +144,10 @@ def compare_authors(auth1, auth2, co_authors_map, database):
 
 
     #jaccard for co_author similarity
-    author_a_coauthors = co_authors_map.get(author_1_id, set())
-    author_b_coauthors = co_authors_map.get(author_2_id, set())
+    author_1_coauthors = co_authors_map.get(author_1_id, set())
+    author_2_coauthors = co_authors_map.get(author_2_id, set())
 
-    jaccard_coauthors = jaccard_similarity(author_a_coauthors, author_b_coauthors)
+    jaccard_coauthors = jaccard_similarity(author_1_coauthors, author_2_coauthors)
 
 
     #check year_gap of publication, if really big probably not the same person
@@ -187,12 +191,12 @@ def create_merged_authors_table(database_path):
     block_cursor = database.cursor()
     insert_cursor = database.cursor()
 
-    query = "SELECT block_key , work_author_id , normalized_name FROM author_name_blocks ORDER BY block_key"
+    query = "SELECT block_key , work_author_id , normalized_name, work_id FROM author_name_blocks ORDER BY block_key"
 
     for block_key, grouped_authors in groupby(block_cursor.execute(query), key=lambda row: row[0]):
 
         #sets of author name and id
-        authors = [(row[1], row[2]) for row in grouped_authors]
+        authors = [(row[1], row[2], row[3]) for row in grouped_authors]
         scores  = [0.0] * len(authors)  
         co_authors = get_co_authors(block_key, database)
 
@@ -213,7 +217,7 @@ def create_merged_authors_table(database_path):
                     scores[i] = max(scores[i] , s)
                     scores[j] = max(scores[j] , s)
 
-        for i, (author_id, _) in enumerate(authors):
+        for i, (author_id, _ , _) in enumerate(authors):
             root = uf.find(i)
             cluster_id = authors[root][0]  # translate the root index back to a real work_author_id
             insert_cursor.execute(
