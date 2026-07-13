@@ -1,10 +1,24 @@
-"""Create author_name_blocks table based on normalised author names"""
+"""
+Process creates and links author_name_blocks table 
+(work_author_id, normalized_name, normalized_family_name, work_id, block_key)
 
-import unicodedata
+Takes input work_authors table which gets populated with Crossref metadata
+
+Process is the first phase of the author_name_disambiguation layer in alexandria3k
+- Gets every author in the populated table
+- Normalizes name with custom function normalize()
+- Groups them on "blocks" based on that normalization function 
+  (current grouping logic is normalized_last_name + normalized first name initial)
+
+Output is the filled author_name_blocks table 
+
+"""
 
 import apsw
 
 from alexandria3k.common import ensure_table_exists, log_sql, set_fast_writing
+
+from alexandria3k.author_name_disambiguation_utils  import normalized
 
 # from alexandria3k import perf
 from alexandria3k.db_schema import ColumnMeta, TableMeta
@@ -24,17 +38,10 @@ table = [
 ]
 
 
-def normalized(s: str):
-    tmp = "".join(
-        c
-        for c in unicodedata.normalize("NFKD", s)
-        if unicodedata.category(c) != "Mn" and (c.isalpha() or c.isspace())
-    )
-    return tmp.lower().strip()
 
 
 def create_author_blocks_table(database_path):
-    """Create the blocks table from the populated dataset.
+    """Creates the author_blocks_table from the populated dataset.
     Procedure is mentioned in the comment of the process below"""
 
     database = apsw.Connection(database_path)
@@ -77,15 +84,21 @@ def create_author_blocks_table(database_path):
             "CREATE INDEX IF NOT EXISTS idx_work_author_id ON author_name_blocks(work_author_id)"
         )
     )
+    database.execute(
+        log_sql(
+            "CREATE INDEX IF NOT EXISTS idx_work_id ON author_name_blocks(work_id)"
+        )
+    )
     # perf.log("created author_blocks indexes")
 
 
 def process(database_path):
-    """This process will create the name_block tables for every author in the database
-    For each author in the database, his named will be passed through a name-normalisation function,
+    """
+    Process creates and links the author_blocks_table with the populated dataset 
+    Table consists of (work_author_id, normalised_name, normalised_family_name, work_id, block_key)
+    For each author in the database, his name will be passed through a name-normalization function,
     based on that output each author will be put into a block with that id so that we need less comparisons
     to disambiguate authors.
-    Table consists of work_author_id normalised_name normalised_family_name work_id block_key
     block_key is consisted of the normalised_family_name + first inital of normalised name"""
 
     create_author_blocks_table(database_path)

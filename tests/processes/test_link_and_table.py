@@ -1,4 +1,4 @@
-#
+# Konstantinos Tsesmelis
 # Alexandria3k Crossref bibliographic metadata processing
 # Copyright (C) 2026  Diomidis Spinellis
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -24,44 +24,31 @@ from ..test_dir import add_src_dir
 
 add_src_dir()
 
-from alexandria3k.processes.link_and_table import (
+from alexandria3k.processes.link_author_clusters_table import (
     jaccard_similarity,
-    jaro_distance,
-    jaro_Winkler,
+    JaroWinkler
 )
 from alexandria3k.processes.link_author_blocks import normalized
 
 
-class TestJaroDistance(unittest.TestCase):
+class TestJaroWinkler(unittest.TestCase):
     def test_identical_strings(self):
-        self.assertEqual(jaro_distance("same", "same"), 1.0)
+        self.assertEqual(JaroWinkler.similarity("same", "same"), 1.0)
 
     def test_disjoint_strings(self):
-        self.assertEqual(jaro_distance("abc", "xyz"), 0.0)
+        self.assertEqual(JaroWinkler.similarity("abc", "xyz"), 0.0)
 
     def test_known_reference_pair(self):
         # Standard textbook example (Winkler, 1990)
-        self.assertAlmostEqual(jaro_distance("martha", "marhta"), 0.9444444444444445)
+        self.assertAlmostEqual(
+            JaroWinkler.similarity("martha", "marhta"), 0.9611111111111111
+        )
 
     def test_one_empty_string(self):
-        self.assertEqual(jaro_distance("", "abc"), 0.0)
+        self.assertEqual(JaroWinkler.similarity("", "abc"), 0.0)
 
     def test_both_empty_strings(self):
-        self.assertEqual(jaro_distance("", ""), 1.0)
-
-
-class TestJaroWinkler(unittest.TestCase):
-    def test_identical_strings(self):
-        self.assertEqual(jaro_Winkler("same", "same"), 1.0)
-
-    def test_known_reference_pair(self):
-        # Jaro-Winkler boosts the base Jaro score for a shared prefix
-        self.assertAlmostEqual(jaro_Winkler("martha", "marhta"), 0.9611111111111111)
-
-    def test_boost_requires_jaro_above_threshold(self):
-        # Below the 0.7 Jaro threshold, no prefix boost is applied
-        base = jaro_distance("abc", "xyz")
-        self.assertEqual(jaro_Winkler("abc", "xyz"), base)
+        self.assertEqual(JaroWinkler.similarity("", ""), 1.0)
 
 
 class TestJaccardSimilarity(unittest.TestCase):
