@@ -4,6 +4,8 @@ import unicodedata
 
 from rapidfuzz.distance import JaroWinkler
 
+from sklearn.feature_extraction.text import CountVectorizer
+
 
 # Adapted from uf-toolkit (https://github.com/hugginsc10/uf-toolkit)
 # Copyright (c) Chas Huggins
@@ -61,3 +63,11 @@ def normalized(s: str):
         if unicodedata.category(c) != "Mn" and (c.isalpha() or c.isspace())
     )
     return tmp.lower().strip()
+
+
+
+
+ngram = CountVectorizer(ngram_range=(1, 3)).build_analyzer()
+
+def get_ngrams(text):
+    return set(ngram(text))
