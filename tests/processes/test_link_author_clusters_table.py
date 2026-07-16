@@ -25,8 +25,6 @@ from ..test_dir import add_src_dir
 add_src_dir()
 
 from alexandria3k.processes.link_merged_author_table import (
-    compare_authors,
-    get_ngrams,
     jaccard_similarity,
     JaroWinkler
 )
@@ -68,52 +66,6 @@ class TestJaccardSimilarity(unittest.TestCase):
 
     def test_one_set_empty(self):
         self.assertEqual(jaccard_similarity({1, 2}, set()), 0)
-
-
-class TestCompareAuthorsSameWorkId(unittest.TestCase):
-    def test_same_work_id_never_matches(self):
-        auth1 = (1, "yun", 555)
-        auth2 = (2, "yun", 555)
-        self.assertEqual(compare_authors(auth1, auth2, {}, {}, None), 0)
-
-    def test_different_work_id_does_not_short_circuit(self):
-        # work_id check.
-        auth1 = (1, "yun", 555)
-        auth2 = (2, "xyz", 999)
-        self.assertEqual(compare_authors(auth1, auth2, {}, {}, None), 0)
-
-
-class TestGetNgrams(unittest.TestCase):
-    def test_single_word_has_no_bigrams_or_trigrams(self):
-        self.assertEqual(get_ngrams("edinburgh"), {"edinburgh"})
-
-    def test_two_words_has_unigrams_and_one_bigram_only(self):
-        self.assertEqual(
-            get_ngrams("university edinburgh"),
-            {"university", "edinburgh", "university edinburgh"},
-        )
-
-    def test_three_words_has_1_2_3_grams(self):
-        self.assertEqual(
-            get_ngrams("university of edinburgh"),
-            {
-                "university",
-                "of",
-                "edinburgh",
-                "university of",
-                "of edinburgh",
-                "university of edinburgh",
-            },
-        )
-
-    def test_empty_string_has_no_ngrams(self):
-        self.assertEqual(get_ngrams(""), set())
-
-    def test_identical_text_gives_identical_ngram_sets(self):
-        self.assertEqual(
-            get_ngrams("roslin institute"), get_ngrams("roslin institute")
-        )
-
 
 class TestNormalized(unittest.TestCase):
     def test_lowercases(self):

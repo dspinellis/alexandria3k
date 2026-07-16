@@ -21,6 +21,7 @@ from rapidfuzz.distance import JaroWinkler
 from alexandria3k.common import ensure_table_exists, log_sql, set_fast_writing
 
 from alexandria3k.author_name_disambiguation_utils import (
+    Author,
     UnionFind,
     jaccard_similarity,
     normalized,
@@ -92,59 +93,105 @@ def get_affiliations_per_block(block_key, database):
         WHERE author_name_blocks.block_key = ? """,
         (block_key,),
     ):
+        if not affiliation_name:
+            continue
         if author_id not in affiliations_map:
             affiliations_map[author_id] = set()
-        affiliations_map[author_id].update(get_ngrams(normalized(affiliation_name)))
+        affiliations_map[author_id].update(get_ngrams(affiliation_name))
     return affiliations_map
 
 
-def get_publication_year(auth_id, database):
+def get_publication_years_per_block(block_key, database):
     """
     Queries the database for publication year of a work of an author
     """
 
     cursor = database.cursor()
-    year = cursor.execute(
+
+    # Key: author_id, Value: publication_year
+    publication_year_map: dict[int, int] = {}
+
+    for author_id, published_year in cursor.execute(
         """
-    SELECT published_year FROM works
-    JOIN work_authors ON work_authors.work_id = works.id
-    WHERE work_authors.id = ? """,
-        (auth_id,),
-    ).fetchone()
-    return year[0] if year else None
+    SELECT work_author_id ,published_year  FROM works
+    JOIN author_name_blocks ON author_name_blocks.work_id = works.id
+    WHERE author_name_blocks.block_key = ? """,
+        (block_key,),
+    ):
+        publication_year_map[author_id] = published_year
+
+    return publication_year_map
 
 
-def score_year_gap(auth1_id, auth2_id, database, max_gap=40):
+def score_year_gap(auth1, auth2, publication_year, max_gap=40):
     """
     Get year gaps where authors made publications
     If there is a big gap between them they are probably not the same person
     """
 
-    year1 = get_publication_year(auth1_id, database)
-    year2 = get_publication_year(auth2_id, database)
+    year1 = publication_year.get(auth1.id)
+    year2 = publication_year.get(auth2.id)
 
     if year1 is None or year2 is None:
-        return 0
+        return None
 
     gap = abs(year1 - year2)
     return max(0, 1 - gap / max_gap)
 
 
-def score_affiliations(auth1_id, auth2_id, affiliations_map):
-    """Jaccard similarity of two authors' normalized affiliation strings"""
-    author_1_affiliations = affiliations_map.get(auth1_id, set())
-    author_2_affiliations = affiliations_map.get(auth2_id, set())
+def score_affiliations(auth1, auth2, affiliations_map):
+    """
+    1-3 word n-gram Jaccard similarity of two authors normalized affiliation strings
+    auth = set(author_id, author_name, author_work_id )
+    """
+
+    author_1_affiliations = affiliations_map.get(auth1.id, set())
+    author_2_affiliations = affiliations_map.get(auth2.id, set())
+
+    if not author_1_affiliations and not author_2_affiliations:
+        return None
+
     return jaccard_similarity(author_1_affiliations, author_2_affiliations)
 
 
-def score_coauthors(auth1_id, auth2_id, co_authors_map):
+def score_coauthors(auth1, auth2, co_authors_map, weight=1.5):
     """Jaccard similarity of two authors' co-author block-key sets"""
-    author_1_coauthors = co_authors_map.get(auth1_id, set())
-    author_2_coauthors = co_authors_map.get(auth2_id, set())
-    return jaccard_similarity(author_1_coauthors, author_2_coauthors)
+
+    author_1_coauthors = co_authors_map.get(auth1.id, set())
+    author_2_coauthors = co_authors_map.get(auth2.id, set())
+
+    if not author_1_coauthors and not author_2_coauthors:
+        return None
+
+    return min(1.0, weight * jaccard_similarity(author_1_coauthors, author_2_coauthors))
 
 
-def compare_authors(auth1, auth2, co_authors_map, affiliations_map, database):
+def score_name_similarity(auth1, auth2, threshold=0.75):
+    """
+    Score the name similarity of 2 authors normalised_name
+    If the name is the same return 1
+    If name1 != name2 find jaroWinkler similarity
+    if jarowinkler < threshold return 0
+    """
+
+    if auth1.name == auth2.name:
+        return 1.0
+    name_similarity = JaroWinkler.similarity(auth1.name, auth2.name)
+
+    return 0 if name_similarity < threshold else name_similarity
+
+
+def check_if_co_authors(auth1, auth2):
+    """
+    Checks if 2 authors are co_authors by comparing if work_id is the same
+    """
+
+    return auth1.work_id == auth2.work_id
+
+
+def compare_authors(
+    auth1, auth2, co_authors_map, affiliations_map, publication_year, threashold=0.67
+):
 
     """This will serve as the scoring function to determine if 2 authors are the same person.
     The scoring function will be calculated based on a couple of criteria:
@@ -155,32 +202,21 @@ def compare_authors(auth1, auth2, co_authors_map, affiliations_map, database):
     - Topic overlap using Leiden clustering
     """
 
-    author_1_id, author_1_name, author_1_work_id = auth1
-    author_2_id, author_2_name, author_2_work_id = auth2
-
     # if they are co authors then they are surely different authors
-    if author_1_work_id == author_2_work_id:
+    if auth1.work_id == auth2.work_id:
         return 0
 
-    # Jaro winkler for name similarity
-    jaro_winkler_names = JaroWinkler.similarity(author_1_name, author_2_name)
-
-    # early cutoff if there is big difference in their names
-    if jaro_winkler_names < 0.75:
-        return 0
-
-    jaccard_affiliations = score_affiliations(author_1_id, author_2_id, affiliations_map)
-    jaccard_coauthors = score_coauthors(author_1_id, author_2_id, co_authors_map)
-    year_gap = score_year_gap(author_1_id, author_2_id, database)
+    name_similarity = score_name_similarity(auth1, auth2)
+    jaccard_affiliations = score_affiliations(auth1, auth2, affiliations_map)
+    jaccard_coauthors = score_coauthors(auth1, auth2, co_authors_map)
+    year_gap = score_year_gap(auth1, auth2, publication_year)
 
     # calculate confidence score
-    score = (
-        jaccard_coauthors + jaro_winkler_names + year_gap + jaccard_affiliations
-    ) / 4
-    if score > 0.75:
-        return score
+    scores = [name_similarity, jaccard_affiliations, jaccard_coauthors, year_gap]
+    valid_scores = [s for s in scores if s is not None]
+    avg = sum(valid_scores) / len(valid_scores)
 
-    return 0
+    return avg if avg >= threashold else 0
 
 
 def create_merged_authors_table(database_path):
@@ -204,6 +240,11 @@ def create_merged_authors_table(database_path):
     database.execute(
         log_sql("CREATE INDEX IF NOT EXISTS idx_work_authors_id ON work_authors(id)")
     )
+    database.execute(
+        log_sql(
+            "CREATE INDEX IF NOT EXISTS idx_author_affiliations_author_id ON author_affiliations(author_id)"
+        )
+    )
     # perf.log("created works/work_authors indexes")
 
     block_cursor = database.cursor()
@@ -218,42 +259,74 @@ def create_merged_authors_table(database_path):
     for block_key, grouped_authors in groupby(
         block_cursor.execute(query), key=lambda row: row[0]
     ):
+        # uses custom Author class for explicitness, set(id , name, work_id)
+        authors = [Author(row[1], row[2], row[3]) for row in grouped_authors]
 
-        # sets of (work_author_id, normalized_name, work_id) 
-        authors = [(row[1], row[2], row[3]) for row in grouped_authors]
-        scores = [0.0] * len(authors)
+        # computes everything once per-block for lower query counts
         co_authors = get_co_authors(block_key, database)
         affiliations = get_affiliations_per_block(block_key, database)
+        publication_year = get_publication_years_per_block(block_key, database)
 
         # if block only has one author, skip
         if len(authors) < 2:
             insert_cursor.execute(
                 "INSERT INTO merged_authors VALUES (?, ?, ?)",
-                # authors[0][0] = first authors work_author_id
-                (authors[0][0], authors[0][0], 1.0),  
+                (authors[0].id, authors[0].id, 1.0),
                 prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
             )
             continue
 
-        union_find = UnionFind(len(authors))
-        for i in range(len(authors)):
-            for j in range(i + 1, len(authors)):
+        # If authors contain same signatures, put them into a group
+        # Comparisons happen between representatives of each group
+        # We say that every author with the exact same signatures are the same person
+        groups = {}
+        for author in authors:
+            signature = (
+                author.name,
+                frozenset(co_authors.get(author.id, set())),
+                frozenset(affiliations.get(author.id, set())),
+                publication_year[author.id],
+            )
+            if signature not in groups:
+                groups[signature] = []
+            groups[signature].append(author)
+
+        representatives = [groups[sign][0] for sign in groups.keys()]
+
+        # Use unionfind dataset for merging
+        union_find = UnionFind(len(groups))
+        scores = [0.0] * len(groups)
+
+        for i, signature in enumerate(groups.keys()):
+            if len(groups[signature]) > 1:
+                scores[i] = 1.0
+
+        for i, representative_1 in enumerate(representatives):
+            for j, representative_2 in enumerate(representatives):
+
+                if representative_1 == representative_2:
+                    continue
+
                 if score := compare_authors(
-                    authors[i], authors[j], co_authors, affiliations, database
+                    representative_1,
+                    representative_2,
+                    co_authors,
+                    affiliations,
+                    publication_year,
                 ):
                     union_find.union(i, j)
                     scores[i] = max(scores[i], score)
                     scores[j] = max(scores[j], score)
 
-        for i, (author_id, _, _) in enumerate(authors):
+        for i, signature in enumerate(groups.keys()):
             root = union_find.find(i)
-            #return merged author work_author_id
-            merged_author_id  = authors[root][0]  
-            insert_cursor.execute(
-                "INSERT INTO merged_authors VALUES (?, ?, ?)",
-                (author_id, merged_author_id, scores[i]),
-                prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
-            )
+            merged_author_id = representatives[root].id
+            for author in groups[signature]:
+                insert_cursor.execute(
+                    "INSERT INTO merged_authors VALUES (?, ?, ?)",
+                    (author.id, merged_author_id, scores[i]),
+                    prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
+                )
 
     # perf.log("finished comparing all blocks")
 

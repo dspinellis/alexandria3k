@@ -61,7 +61,15 @@ def create_author_blocks_table(database_path):
 
         normalized_name = normalized(given)
         normalized_family = normalized(family_name)
-        block_key = normalized_family + "_" + normalized_name[0]  # last name + initial
+
+        if not normalized_name  and not normalized_family:
+            continue
+        elif not normalized_name and normalized_family:
+            block_key = normalized_family + "_" + normalized_family[0]
+        elif normalized_name and not normalized_family:
+            block_key = normalized_name + "_" + normalized_name[0]
+        else: 
+            block_key = normalized_family + "_" + normalized_name[0]  # last name + initial
 
         insert_cursor.execute(
             "INSERT INTO author_name_blocks VALUES (?, ?, ?, ?, ?) ",

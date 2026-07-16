@@ -1,10 +1,18 @@
 from itertools import groupby
+from typing import NamedTuple
 
 import unicodedata
 
 from rapidfuzz.distance import JaroWinkler
 
 from sklearn.feature_extraction.text import CountVectorizer
+
+
+class Author(NamedTuple):
+    """One author mention within a block"""
+    id: int
+    name: str
+    work_id: int
 
 
 # Adapted from uf-toolkit (https://github.com/hugginsc10/uf-toolkit)
@@ -60,14 +68,12 @@ def normalized(s: str):
     """Custom normalization function used for normalizing author_names """
     tmp = "".join(
         c for c in unicodedata.normalize("NFKD", s)
-        if unicodedata.category(c) != "Mn" and (c.isalpha() or c.isspace())
+        if unicodedata.category(c) != "Mn" and c.isalpha() 
     )
     return tmp.lower().strip()
 
 
-
-
-ngram = CountVectorizer(ngram_range=(1, 3)).build_analyzer()
+ngram = CountVectorizer(ngram_range=(1, 1)).build_analyzer()
 
 def get_ngrams(text):
     return set(ngram(text))
