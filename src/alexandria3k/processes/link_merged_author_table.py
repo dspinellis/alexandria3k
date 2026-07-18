@@ -13,6 +13,8 @@ fills the merged_authors table
 """
 
 from itertools import groupby
+from multiprocessing import Pool
+import time
 
 import apsw
 
@@ -24,7 +26,6 @@ from alexandria3k.author_name_disambiguation_utils import (
     Author,
     UnionFind,
     jaccard_similarity,
-    normalized,
     get_ngrams,
 )
 
@@ -88,7 +89,7 @@ def get_affiliations_per_block(block_key, database):
     affiliations_map: dict[int, set[str]] = {}
 
     for author_id, affiliation_name in affiliations_cursor.execute(
-        """SELECT author_id, name FROM author_affiliations 
+        """SELECT author_id, name FROM author_affiliations
         JOIN author_name_blocks ON  author_id = author_name_blocks.work_author_id
         WHERE author_name_blocks.block_key = ? """,
         (block_key,),
@@ -190,7 +191,7 @@ def check_if_co_authors(auth1, auth2):
 
 
 def compare_authors(
-    auth1, auth2, co_authors_map, affiliations_map, publication_year, threashold=0.67
+    auth1, auth2, co_authors_map, affiliations_map, publication_year, threashold=0.75
 ):
 
     """This will serve as the scoring function to determine if 2 authors are the same person.
@@ -219,7 +220,166 @@ def compare_authors(
     return avg if avg >= threashold else 0
 
 
-def create_merged_authors_table(database_path):
+def group_by_signature(authors, co_authors, affiliations, publication_year):
+    """Groups authors by their (name, co-authors, affiliations, year) signature."""
+    groups = {}
+    for author in authors:
+        signature = (
+            author.name,
+            frozenset(co_authors.get(author.id, set())),
+            frozenset(affiliations.get(author.id, set())),
+            publication_year.get(author.id),
+        )
+        if signature not in groups:
+            groups[signature] = []
+        groups[signature].append(author)
+    return groups
+
+
+def process_block(block_key, grouped_authors, database_path, database=None):
+    """
+    Main loop for comparing each author with every other in the block
+    Returns a list of each author entry in the database
+    entry = tuple(work_author_id, merged_id, confidence_score)
+    for comparison details check compare_authors
+    """
+    if database is None:
+        database = apsw.Connection(database_path)
+
+    author_block_list: list[tuple] = []
+    # uses custom Author class for explicitness, set(id , name, work_id)
+    authors = [Author(row[1], row[2], row[3]) for row in grouped_authors]
+
+    # if block only has one author, skip
+    if len(authors) < 2:
+        author_id = authors[0].id
+        merged_author_id = author_id
+        confidence_score = 1.0
+        
+        merged_authors_entry = (author_id, merged_author_id, confidence_score)
+        author_block_list.append(merged_authors_entry)
+        return author_block_list
+
+    # computes everything once per-block for lower query counts
+    co_authors = get_co_authors(block_key, database)
+    affiliations = get_affiliations_per_block(block_key, database)
+    publication_year = get_publication_years_per_block(block_key, database)
+
+    # Groups authors by signature, every author sharing a signature is the same person.
+    # Comparisons happen between representatives of each group
+    groups = group_by_signature(authors, co_authors, affiliations, publication_year)
+
+    # representative is the first person of each group
+    representatives = [groups[sign][0] for sign in groups.keys()]
+
+    # Use unionfind dataset for merging
+    union_find = UnionFind(len(groups))
+    scores = [0.0] * len(groups)
+
+    # score = 1 for authors in the same group
+    for i, signature in enumerate(groups.keys()):
+        if len(groups[signature]) > 1:
+            scores[i] = 1.0
+
+    for i, representative_1 in enumerate(representatives):
+        for j, representative_2 in enumerate(representatives):
+
+            if representative_1 == representative_2:
+                continue
+
+            if score := compare_authors(
+                representative_1,
+                representative_2,
+                co_authors,
+                affiliations,
+                publication_year,
+            ):
+                union_find.union(i, j)
+                scores[i] = max(scores[i], score)
+                scores[j] = max(scores[j], score)
+
+    for i, signature in enumerate(groups.keys()):
+        root = union_find.find(i)
+        merged_author_id = representatives[root].id
+        confidence_score = scores[i]
+        for author in groups[signature]:
+            merged_authors_entry = (author.id, merged_author_id, confidence_score)
+            author_block_list.append(merged_authors_entry)
+
+    return author_block_list
+
+
+def process_blocks_parallel(
+    block_cursor, query, database_path, database, big_block_threashold
+):
+    """
+    Function is called when create_merged_authors_table "parallelised" flag = True
+    Processes blocks in parallel rather than sequencially
+    Bigger blocks over a threashold are processed in parallel
+    Smaller blocks are processed seriliazed after bigger blocks finish
+    Concurrency occurs with processes not threads
+    Returns a list of block entries in form of a list of tuples
+    """
+
+    start_time = time.perf_counter()
+    big_block_args = []
+    small_block_args = []
+    for block_key, grouped_authors in groupby(
+        block_cursor.execute(query), key=lambda row: row[0]
+    ):
+        grouped_authors = list(grouped_authors)
+        if len(grouped_authors) > big_block_threashold:
+            big_block_args.append((block_key, grouped_authors, database_path))
+        else:
+            small_block_args.append((block_key, grouped_authors, database_path))
+
+    args_built_time = time.perf_counter()
+    print(f"populated args {args_built_time - start_time:.2f}s")
+
+    with Pool() as pool:
+        big_block_args.sort(key=lambda args: len(args[1]), reverse=True)
+        results_big = pool.starmap(process_block, big_block_args, chunksize=1)
+
+    big_blocks_done_time = time.perf_counter()
+    print(f"big blocks {big_blocks_done_time - args_built_time:.2f}s ")
+    results_small = []
+    for block_key, grouped_authors, path in small_block_args:
+        results_small.append(
+            process_block(block_key, grouped_authors, path, database=database)
+        )
+
+    small_blocks_done_time = time.perf_counter()
+    print(f"small blocks {small_blocks_done_time - big_blocks_done_time:.2f}s ")
+    results = results_big + results_small
+    return results
+
+
+def process_blocks_sequential(block_cursor, query, database_path, database):
+
+    """
+    Function is called when create_merged_authors_table "parallelised" flag = False
+    Processes blocks sequencially rather than in parallel
+    Returns a list of block entries in form of a list of tuples
+    """
+    args = []
+    for block_key, grouped_authors in groupby(
+        block_cursor.execute(query), key=lambda row: row[0]
+    ):
+        grouped_authors = list(grouped_authors)
+        args.append((block_key, grouped_authors, database_path))
+
+    results = []
+    for block_key, grouped_authors, path in args:
+        results.append(
+            process_block(block_key, grouped_authors, path, database=database)
+        )
+
+    return results
+
+
+def create_merged_authors_table(
+    database_path, big_block_threashold=50, parallelised=True
+):
 
     """Creates and links merged_authors table.
     Takes as input the database path and checks if author_name_blocks table exists
@@ -242,7 +402,10 @@ def create_merged_authors_table(database_path):
     )
     database.execute(
         log_sql(
-            "CREATE INDEX IF NOT EXISTS idx_author_affiliations_author_id ON author_affiliations(author_id)"
+            """
+            CREATE INDEX IF NOT EXISTS idx_author_affiliations_author_id
+            ON author_affiliations(author_id)
+            """
         )
     )
     # perf.log("created works/work_authors indexes")
@@ -251,82 +414,27 @@ def create_merged_authors_table(database_path):
     insert_cursor = database.cursor()
 
     query = """SELECT block_key , work_author_id , normalized_name, work_id
-               FROM author_name_blocks 
+               FROM author_name_blocks
                ORDER BY block_key
             """
     # perf.log("starting block comparison loop")
 
-    for block_key, grouped_authors in groupby(
-        block_cursor.execute(query), key=lambda row: row[0]
-    ):
-        # uses custom Author class for explicitness, set(id , name, work_id)
-        authors = [Author(row[1], row[2], row[3]) for row in grouped_authors]
+    if parallelised:
+        results = process_blocks_parallel(
+            block_cursor, query, database_path, database, big_block_threashold
+        )
+    else:
+        results = process_blocks_sequential(
+            block_cursor, query, database_path, database
+        )
 
-        # computes everything once per-block for lower query counts
-        co_authors = get_co_authors(block_key, database)
-        affiliations = get_affiliations_per_block(block_key, database)
-        publication_year = get_publication_years_per_block(block_key, database)
-
-        # if block only has one author, skip
-        if len(authors) < 2:
+    for rows in results:
+        for row in rows:
             insert_cursor.execute(
                 "INSERT INTO merged_authors VALUES (?, ?, ?)",
-                (authors[0].id, authors[0].id, 1.0),
+                row,
                 prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
             )
-            continue
-
-        # If authors contain same signatures, put them into a group
-        # Comparisons happen between representatives of each group
-        # We say that every author with the exact same signatures are the same person
-        groups = {}
-        for author in authors:
-            signature = (
-                author.name,
-                frozenset(co_authors.get(author.id, set())),
-                frozenset(affiliations.get(author.id, set())),
-                publication_year[author.id],
-            )
-            if signature not in groups:
-                groups[signature] = []
-            groups[signature].append(author)
-
-        representatives = [groups[sign][0] for sign in groups.keys()]
-
-        # Use unionfind dataset for merging
-        union_find = UnionFind(len(groups))
-        scores = [0.0] * len(groups)
-
-        for i, signature in enumerate(groups.keys()):
-            if len(groups[signature]) > 1:
-                scores[i] = 1.0
-
-        for i, representative_1 in enumerate(representatives):
-            for j, representative_2 in enumerate(representatives):
-
-                if representative_1 == representative_2:
-                    continue
-
-                if score := compare_authors(
-                    representative_1,
-                    representative_2,
-                    co_authors,
-                    affiliations,
-                    publication_year,
-                ):
-                    union_find.union(i, j)
-                    scores[i] = max(scores[i], score)
-                    scores[j] = max(scores[j], score)
-
-        for i, signature in enumerate(groups.keys()):
-            root = union_find.find(i)
-            merged_author_id = representatives[root].id
-            for author in groups[signature]:
-                insert_cursor.execute(
-                    "INSERT INTO merged_authors VALUES (?, ?, ?)",
-                    (author.id, merged_author_id, scores[i]),
-                    prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
-                )
 
     # perf.log("finished comparing all blocks")
 
