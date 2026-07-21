@@ -15,6 +15,7 @@ fills the merged_authors table
 from itertools import groupby
 from multiprocessing import Pool
 import time
+from os import cpu_count
 
 import apsw
 
@@ -186,7 +187,6 @@ def check_if_co_authors(auth1, auth2):
     """
     Checks if 2 authors are co_authors by comparing if work_id is the same
     """
-
     return auth1.work_id == auth2.work_id
 
 
@@ -255,7 +255,7 @@ def process_block(block_key, grouped_authors, database_path, database=None):
         author_id = authors[0].id
         merged_author_id = author_id
         confidence_score = 1.0
-        
+
         merged_authors_entry = (author_id, merged_author_id, confidence_score)
         author_block_list.append(merged_authors_entry)
         return author_block_list
@@ -294,9 +294,22 @@ def process_block(block_key, grouped_authors, database_path, database=None):
                 affiliations,
                 publication_year,
             ):
-                union_find.union(i, j)
-                scores[i] = max(scores[i], score)
-                scores[j] = max(scores[j], score)
+                merged_members = union_find.get_set_elements(i)
+                consistent = all(
+                    compare_authors(
+                        representatives[member],
+                        representative_2,
+                        co_authors,
+                        affiliations,
+                        publication_year,
+                    )
+                    for member in merged_members
+                    if member != i
+                )
+                if consistent:
+                    union_find.union(i, j)
+                    scores[i] = max(scores[i], score)
+                    scores[j] = max(scores[j], score)
 
     for i, signature in enumerate(groups.keys()):
         root = union_find.find(i)
@@ -308,9 +321,15 @@ def process_block(block_key, grouped_authors, database_path, database=None):
 
     return author_block_list
 
+def process_chunk(chunk, database_path):
+    database = apsw.Connection(database_path)
+    result = []
+    for block_key, grouped_authors, _ in chunk:
+        result.append(process_block(block_key, grouped_authors, database_path, database))
+    return result
 
 def process_blocks_parallel(
-    block_cursor, query, database_path, database, big_block_threashold
+    block_cursor, database_path, database, big_block_threashold
 ):
     """
     Function is called when create_merged_authors_table "parallelised" flag = True
@@ -324,6 +343,10 @@ def process_blocks_parallel(
     start_time = time.perf_counter()
     big_block_args = []
     small_block_args = []
+    query = """SELECT block_key , work_author_id , normalized_name, work_id
+               FROM author_name_blocks
+               ORDER BY block_key
+            """
     for block_key, grouped_authors in groupby(
         block_cursor.execute(query), key=lambda row: row[0]
     ):
@@ -335,26 +358,33 @@ def process_blocks_parallel(
 
     args_built_time = time.perf_counter()
     print(f"populated args {args_built_time - start_time:.2f}s")
+    big_block_args.sort(key=lambda args: len(args[1]), reverse=True)
+    small_block_args.sort(key=lambda args: len(args[1]), reverse=True)
 
     with Pool() as pool:
-        big_block_args.sort(key=lambda args: len(args[1]), reverse=True)
         results_big = pool.starmap(process_block, big_block_args, chunksize=1)
 
     big_blocks_done_time = time.perf_counter()
     print(f"big blocks {big_blocks_done_time - args_built_time:.2f}s ")
-    results_small = []
-    for block_key, grouped_authors, path in small_block_args:
-        results_small.append(
-            process_block(block_key, grouped_authors, path, database=database)
-        )
 
+    #split arguments into a number of workers
+    workers_count = cpu_count()
+    chunk_size = len(small_block_args) // workers_count 
+    chunks = []
+    i = 0
+    chunks = [small_block_args[j::workers_count] for j in range(workers_count)]
+
+    with Pool(processes=workers_count) as pool:
+        results_small = pool.starmap(process_chunk, [(chunk, database_path) for chunk in chunks])
+
+    results_small = [row for batch in results_small for row in batch]
     small_blocks_done_time = time.perf_counter()
     print(f"small blocks {small_blocks_done_time - big_blocks_done_time:.2f}s ")
     results = results_big + results_small
     return results
 
 
-def process_blocks_sequential(block_cursor, query, database_path, database):
+def process_blocks_sequential(block_cursor, database_path, database):
 
     """
     Function is called when create_merged_authors_table "parallelised" flag = False
@@ -362,6 +392,10 @@ def process_blocks_sequential(block_cursor, query, database_path, database):
     Returns a list of block entries in form of a list of tuples
     """
     args = []
+    query = """SELECT block_key , work_author_id , normalized_name, work_id
+               FROM author_name_blocks
+               ORDER BY block_key
+            """
     for block_key, grouped_authors in groupby(
         block_cursor.execute(query), key=lambda row: row[0]
     ):
@@ -413,19 +447,16 @@ def create_merged_authors_table(
     block_cursor = database.cursor()
     insert_cursor = database.cursor()
 
-    query = """SELECT block_key , work_author_id , normalized_name, work_id
-               FROM author_name_blocks
-               ORDER BY block_key
-            """
+
     # perf.log("starting block comparison loop")
 
     if parallelised:
         results = process_blocks_parallel(
-            block_cursor, query, database_path, database, big_block_threashold
+            block_cursor, database_path, database, big_block_threashold
         )
     else:
         results = process_blocks_sequential(
-            block_cursor, query, database_path, database
+            block_cursor, database_path, database
         )
 
     for rows in results:
