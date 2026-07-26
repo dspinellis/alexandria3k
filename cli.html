@@ -38,13 +38,13 @@
 <p>The <em>a3k</em> command can be invoked from the shell as follows.</p>
 <p><p>a3k: Relational interface to publication metadata</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">a3k</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DEBUG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="a3k"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">a3k</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DEBUG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
            <span class="p">{</span><span class="n">help</span><span class="p">,</span><span class="n">populate</span><span class="p">,</span><span class="n">process</span><span class="p">,</span><span class="n">query</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">processes</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">complete</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">source</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">schema</span><span class="p">,</span><span class="nb">list</span><span class="o">-</span><span class="n">sources</span><span class="p">,</span><span class="n">version</span><span class="p">,</span><span class="n">download</span><span class="p">}</span>
            <span class="o">...</span>
 </pre></div>
 </div>
-<section id="alexandria3k.__main__-get_cli_parser-positional-arguments">
-<h2>Positional Arguments<a class="headerlink" href="#alexandria3k.__main__-get_cli_parser-positional-arguments" title="Link to this heading">¶</a></h2>
+<section id="a3k-positional-arguments">
+<span id="alexandria3k.__main__-get_cli_parser-positional-arguments"></span><h2>Positional Arguments<a class="headerlink" href="#a3k-positional-arguments" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>command</kbd></dt>
 <dd><p>Possible choices: help, populate, process, query, list-processes, list-complete-schema, list-source-schema, list-process-schema, list-sources, version, download</p>
@@ -52,8 +52,8 @@
 </dd>
 </dl>
 </section>
-<section id="alexandria3k.__main__-get_cli_parser-named-arguments">
-<h2>Named Arguments<a class="headerlink" href="#alexandria3k.__main__-get_cli_parser-named-arguments" title="Link to this heading">¶</a></h2>
+<section id="a3k-named-arguments">
+<span id="alexandria3k.__main__-get_cli_parser-named-arguments"></span><h2>Named Arguments<a class="headerlink" href="#a3k-named-arguments" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>-d, --debug</kbd></dt>
 <dd><dl class="simple">
@@ -83,32 +83,32 @@ stderr: Log to standard error;</p>
 </section>
 <section id="Sub-commands">
 <h2>Sub-commands<a class="headerlink" href="#Sub-commands" title="Link to this heading">¶</a></h2>
-<section id="help">
-<h3>help<a class="headerlink" href="#help" title="Link to this heading">¶</a></h3>
+<section id="a3k-help">
+<span id="help"></span><h3>help<a class="headerlink" href="#a3k-help" title="Link to this heading">¶</a></h3>
 <p>Show top-level help message.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">help</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
-<section id="populate">
-<h3>populate<a class="headerlink" href="#populate" title="Link to this heading">¶</a></h3>
+<section id="a3k-populate">
+<span id="populate"></span><h3>populate<a class="headerlink" href="#a3k-populate" title="Link to this heading">¶</a></h3>
 <p>Populate an SQLite database from the specified data source.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">populate</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
              <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">COLUMNS</span> <span class="p">[</span><span class="n">COLUMNS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">R</span> <span class="n">ROW_SELECTION_FILE</span><span class="p">]</span>
              <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">ROW_SELECTION</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
              <span class="n">database</span>
-             <span class="p">{</span><span class="n">doaj</span><span class="p">,</span><span class="n">datacite</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">orcid</span><span class="p">}</span>
+             <span class="p">{</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">datacite</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">orcid</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">uspto</span><span class="p">}</span>
              <span class="p">[</span><span class="n">data_location</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="positional-arguments">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h4>
+<section id="a3k-populate-positional-arguments">
+<span id="-positional-arguments"></span><h4>Positional Arguments<a class="headerlink" href="#a3k-populate-positional-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>database</kbd></dt>
 <dd><p>File path of the database to populate</p>
 </dd>
 <dt><kbd>data_name</kbd></dt>
-<dd><p>Possible choices: doaj, datacite, crossref, journal-names, uspto, issn-subject-codes, funder-names, asjcs, pubmed, ror, orcid</p>
+<dd><p>Possible choices: funder-names, crossref, journal-names, ror, doaj, datacite, asjcs, orcid, issn-subject-codes, pubmed, uspto</p>
 <p>Name of the data source to use</p>
 </dd>
 <dt><kbd>data_location</kbd></dt>
@@ -116,8 +116,8 @@ stderr: Log to standard error;</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h4>
+<section id="a3k-populate-named-arguments">
+<span id="-named-arguments"></span><h4>Named Arguments<a class="headerlink" href="#a3k-populate-named-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>-a, --attach-databases</kbd></dt>
 <dd><p>Databases to attach for the row selection expression</p>
@@ -138,42 +138,42 @@ stderr: Log to standard error;</p>
 </dl>
 </section>
 </section>
-<section id="process">
-<h3>process<a class="headerlink" href="#process" title="Link to this heading">¶</a></h3>
+<section id="a3k-process">
+<span id="process"></span><h3>process<a class="headerlink" href="#a3k-process" title="Link to this heading">¶</a></h3>
 <p>Run a processing step on the specified database.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">process</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
             <span class="n">database</span>
-            <span class="p">{</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">}</span>
+            <span class="p">{</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">}</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat1">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat1" title="Link to this heading">¶</a></h4>
+<section id="a3k-process-positional-arguments">
+<span id="-positional-arguments_repeat1"></span><h4>Positional Arguments<a class="headerlink" href="#a3k-process-positional-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>database</kbd></dt>
 <dd><p>file path of the database to run the process on</p>
 </dd>
 <dt><kbd>process</kbd></dt>
-<dd><p>Possible choices: link-works-asjcs, link-uspto-doi, link-aa-top-ror, link-aa-base-ror</p>
+<dd><p>Possible choices: link-uspto-doi, link-aa-top-ror, link-works-asjcs, link-aa-base-ror</p>
 <p>Name of the process to perform;see the data processing operations in the Alexandria3k Python user API documentation for more details</p>
 </dd>
 </dl>
 </section>
 </section>
-<section id="query">
-<h3>query<a class="headerlink" href="#query" title="Link to this heading">¶</a></h3>
+<section id="a3k-query">
+<span id="query"></span><h3>query<a class="headerlink" href="#a3k-query" title="Link to this heading">¶</a></h3>
 <p>Run a query directly on a data source. The query’s results can be sent to the standard output (default), to a specified file, or to populate a table in an attached database.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">query</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
           <span class="p">[</span><span class="o">-</span><span class="n">E</span> <span class="n">OUTPUT_ENCODING</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">F</span> <span class="n">FIELD_SEPARATOR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">H</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">P</span><span class="p">]</span>
           <span class="p">(</span><span class="o">-</span><span class="n">Q</span> <span class="n">QUERY_FILE</span> <span class="o">|</span> <span class="o">-</span><span class="n">q</span> <span class="n">QUERY</span><span class="p">)</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
-          <span class="p">{</span><span class="n">doaj</span><span class="p">,</span><span class="n">datacite</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">orcid</span><span class="p">}</span>
+          <span class="p">{</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">datacite</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">orcid</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">uspto</span><span class="p">}</span>
           <span class="p">[</span><span class="n">data_location</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat2">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat2" title="Link to this heading">¶</a></h4>
+<section id="a3k-query-positional-arguments">
+<span id="-positional-arguments_repeat2"></span><h4>Positional Arguments<a class="headerlink" href="#a3k-query-positional-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>data_name</kbd></dt>
-<dd><p>Possible choices: doaj, datacite, crossref, journal-names, uspto, issn-subject-codes, funder-names, asjcs, pubmed, ror, orcid</p>
+<dd><p>Possible choices: funder-names, crossref, journal-names, ror, doaj, datacite, asjcs, orcid, issn-subject-codes, pubmed, uspto</p>
 <p>Name of the data source to use</p>
 </dd>
 <dt><kbd>data_location</kbd></dt>
@@ -181,8 +181,8 @@ stderr: Log to standard error;</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat1">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat1" title="Link to this heading">¶</a></h4>
+<section id="a3k-query-named-arguments">
+<span id="-named-arguments_repeat1"></span><h4>Named Arguments<a class="headerlink" href="#a3k-query-named-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>-a, --attach-databases</kbd></dt>
 <dd><p>Databases to attach making them available to the query</p>
@@ -219,81 +219,81 @@ stderr: Log to standard error;</p>
 </dl>
 </section>
 </section>
-<section id="list-processes">
-<h3>list-processes<a class="headerlink" href="#list-processes" title="Link to this heading">¶</a></h3>
+<section id="a3k-list-processes">
+<span id="list-processes"></span><h3>list-processes<a class="headerlink" href="#a3k-list-processes" title="Link to this heading">¶</a></h3>
 <p>List available data processes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">processes</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
-<section id="list-complete-schema">
-<h3>list-complete-schema<a class="headerlink" href="#list-complete-schema" title="Link to this heading">¶</a></h3>
+<section id="a3k-list-complete-schema">
+<span id="list-complete-schema"></span><h3>list-complete-schema<a class="headerlink" href="#a3k-list-complete-schema" title="Link to this heading">¶</a></h3>
 <p>List all data source and process schemas.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">complete</span><span class="o">-</span><span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
-<section id="list-source-schema">
-<h3>list-source-schema<a class="headerlink" href="#list-source-schema" title="Link to this heading">¶</a></h3>
+<section id="a3k-list-source-schema">
+<span id="list-source-schema"></span><h3>list-source-schema<a class="headerlink" href="#a3k-list-source-schema" title="Link to this heading">¶</a></h3>
 <p>List all data source schemas (default) or the specified one.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">source</span><span class="o">-</span><span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-                       <span class="p">[{</span><span class="n">doaj</span><span class="p">,</span><span class="n">datacite</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">orcid</span><span class="p">}]</span>
+                       <span class="p">[{</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">datacite</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">orcid</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">uspto</span><span class="p">}]</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat3">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat3" title="Link to this heading">¶</a></h4>
+<section id="a3k-list-source-schema-positional-arguments">
+<span id="-positional-arguments_repeat3"></span><h4>Positional Arguments<a class="headerlink" href="#a3k-list-source-schema-positional-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>facility</kbd></dt>
-<dd><p>Possible choices: doaj, datacite, crossref, journal-names, uspto, issn-subject-codes, funder-names, asjcs, pubmed, ror, orcid</p>
+<dd><p>Possible choices: funder-names, crossref, journal-names, ror, doaj, datacite, asjcs, orcid, issn-subject-codes, pubmed, uspto</p>
 </dd>
 </dl>
 </section>
 </section>
-<section id="list-process-schema">
-<h3>list-process-schema<a class="headerlink" href="#list-process-schema" title="Link to this heading">¶</a></h3>
+<section id="a3k-list-process-schema">
+<span id="list-process-schema"></span><h3>list-process-schema<a class="headerlink" href="#a3k-list-process-schema" title="Link to this heading">¶</a></h3>
 <p>List the schema of all processes (default) or of the specified one.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-                        <span class="p">[{</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">}]</span>
+                        <span class="p">[{</span><span class="n">link</span><span class="o">-</span><span class="n">uspto</span><span class="o">-</span><span class="n">doi</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">ror</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">works</span><span class="o">-</span><span class="n">asjcs</span><span class="p">,</span><span class="n">link</span><span class="o">-</span><span class="n">aa</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">ror</span><span class="p">}]</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat4">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat4" title="Link to this heading">¶</a></h4>
+<section id="a3k-list-process-schema-positional-arguments">
+<span id="-positional-arguments_repeat4"></span><h4>Positional Arguments<a class="headerlink" href="#a3k-list-process-schema-positional-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>facility</kbd></dt>
-<dd><p>Possible choices: link-works-asjcs, link-uspto-doi, link-aa-top-ror, link-aa-base-ror</p>
+<dd><p>Possible choices: link-uspto-doi, link-aa-top-ror, link-works-asjcs, link-aa-base-ror</p>
 </dd>
 </dl>
 </section>
 </section>
-<section id="list-sources">
-<h3>list-sources<a class="headerlink" href="#list-sources" title="Link to this heading">¶</a></h3>
+<section id="a3k-list-sources">
+<span id="list-sources"></span><h3>list-sources<a class="headerlink" href="#a3k-list-sources" title="Link to this heading">¶</a></h3>
 <p>List available data sources</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="nb">list</span><span class="o">-</span><span class="n">sources</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
-<section id="version">
-<h3>version<a class="headerlink" href="#version" title="Link to this heading">¶</a></h3>
+<section id="a3k-version">
+<span id="version"></span><h3>version<a class="headerlink" href="#a3k-version" title="Link to this heading">¶</a></h3>
 <p>Report program version</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">version</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
-<section id="download">
-<h3>download<a class="headerlink" href="#download" title="Link to this heading">¶</a></h3>
+<section id="a3k-download">
+<span id="download"></span><h3>download<a class="headerlink" href="#a3k-download" title="Link to this heading">¶</a></h3>
 <p>Download data using the specified data source.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a3k</span> <span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="p">[</span><span class="n">DATABASE</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">sql</span><span class="o">-</span><span class="n">query</span> <span class="n">SQL_QUERY</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">extra_args</span> <span class="p">[</span><span class="n">EXTRA_ARGS</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SAMPLE</span><span class="p">]</span>
              <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ATTACH_DATABASES</span> <span class="p">[</span><span class="n">ATTACH_DATABASES</span> <span class="o">...</span><span class="p">]]</span>
-             <span class="p">{</span><span class="n">doaj</span><span class="p">,</span><span class="n">datacite</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">uspto</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">orcid</span><span class="p">}</span>
+             <span class="p">{</span><span class="n">funder</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">crossref</span><span class="p">,</span><span class="n">journal</span><span class="o">-</span><span class="n">names</span><span class="p">,</span><span class="n">ror</span><span class="p">,</span><span class="n">doaj</span><span class="p">,</span><span class="n">datacite</span><span class="p">,</span><span class="n">asjcs</span><span class="p">,</span><span class="n">orcid</span><span class="p">,</span><span class="n">issn</span><span class="o">-</span><span class="n">subject</span><span class="o">-</span><span class="n">codes</span><span class="p">,</span><span class="n">pubmed</span><span class="p">,</span><span class="n">uspto</span><span class="p">}</span>
              <span class="n">data_location</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat5">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Link to this heading">¶</a></h4>
+<section id="a3k-download-positional-arguments">
+<span id="-positional-arguments_repeat5"></span><h4>Positional Arguments<a class="headerlink" href="#a3k-download-positional-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>data_name</kbd></dt>
-<dd><p>Possible choices: doaj, datacite, crossref, journal-names, uspto, issn-subject-codes, funder-names, asjcs, pubmed, ror, orcid</p>
+<dd><p>Possible choices: funder-names, crossref, journal-names, ror, doaj, datacite, asjcs, orcid, issn-subject-codes, pubmed, uspto</p>
 <p>Name of the data source to use</p>
 </dd>
 <dt><kbd>data_location</kbd></dt>
@@ -301,8 +301,8 @@ stderr: Log to standard error;</p>
 </dd>
 </dl>
 </section>
-<section id="named-arguments_repeat2">
-<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat2" title="Link to this heading">¶</a></h4>
+<section id="a3k-download-named-arguments">
+<span id="-named-arguments_repeat2"></span><h4>Named Arguments<a class="headerlink" href="#a3k-download-named-arguments" title="Link to this heading">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>-d, --database</kbd></dt>
 <dd><p>File path of the database to use</p>
@@ -370,8 +370,8 @@ stderr: Log to standard error;</p>
 <li class="toctree-l1"><a class="reference internal" href="app-eg.html">Application examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">Schema diagrams</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#alexandria3k.__main__-get_cli_parser-positional-arguments">Positional Arguments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#alexandria3k.__main__-get_cli_parser-named-arguments">Named Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a3k-positional-arguments">Positional Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a3k-named-arguments">Named Arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Sub-commands">Sub-commands</a></li>
 </ul>
 </li>

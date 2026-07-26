@@ -186,20 +186,22 @@
 <!-- work_links -->
 <g id="node9" class="node">
 <title>work_links</title>
-<polygon fill="#ffc62c" stroke="transparent" points="2803,-1298.5 2719,-1298.5 2719,-1213.5 2803,-1213.5 2803,-1298.5"/>
-<text text-anchor="start" x="2725.5" y="-1284.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#000000">work_links</text>
-<text text-anchor="start" x="2722" y="-1264.8" font-family="Arial" font-size="14.00" fill="#000000">work_id</text>
-<text text-anchor="start" x="2722" y="-1249.8" font-family="Arial" font-size="14.00" fill="#000000">container_id</text>
-<text text-anchor="start" x="2722" y="-1234.8" font-family="Arial" font-size="14.00" fill="#000000">url</text>
-<text text-anchor="start" x="2722" y="-1219.8" font-family="Arial" font-size="14.00" fill="#000000">content_type</text>
-<polygon fill="black" stroke="black" points="2719,-1278 2719,-1278 2803,-1278 2803,-1278 2719,-1278"/>
-<polygon fill="none" stroke="black" points="2719,-1213.5 2719,-1298.5 2803,-1298.5 2803,-1213.5 2719,-1213.5"/>
+<polygon fill="#ffc62c" stroke="transparent" points="2849,-1313.5 2719,-1313.5 2719,-1198.5 2849,-1198.5 2849,-1313.5"/>
+<text text-anchor="start" x="2748.5" y="-1299.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#000000">work_links</text>
+<text text-anchor="start" x="2722" y="-1279.8" font-family="Arial" font-size="14.00" fill="#000000">work_id</text>
+<text text-anchor="start" x="2722" y="-1264.8" font-family="Arial" font-size="14.00" fill="#000000">container_id</text>
+<text text-anchor="start" x="2722" y="-1249.8" font-family="Arial" font-size="14.00" fill="#000000">url</text>
+<text text-anchor="start" x="2722" y="-1234.8" font-family="Arial" font-size="14.00" fill="#000000">content_type</text>
+<text text-anchor="start" x="2722" y="-1219.8" font-family="Arial" font-size="14.00" fill="#000000">content_version</text>
+<text text-anchor="start" x="2722" y="-1204.8" font-family="Arial" font-size="14.00" fill="#000000">intended_application</text>
+<polygon fill="black" stroke="black" points="2719,-1293 2719,-1293 2849,-1293 2849,-1293 2719,-1293"/>
+<polygon fill="none" stroke="black" points="2719,-1198.5 2719,-1313.5 2849,-1313.5 2849,-1198.5 2719,-1198.5"/>
 </g>
 <!-- works&#45;&gt;work_links -->
 <g id="edge8" class="edge">
 <title>works&#45;&gt;work_links</title>
-<path fill="none" stroke="black" d="M2270.81,-1845.39C2305.08,-1812.05 2347.97,-1776.2 2393,-1753 2521.44,-1686.84 2613.27,-1788.31 2710,-1681 2807.05,-1573.34 2785.61,-1382.84 2770.06,-1298.81"/>
-<text text-anchor="middle" x="2754.06" y="-1302.61" font-family="Arial" font-size="14.00">0…N</text>
+<path fill="none" stroke="black" d="M2270.81,-1845.39C2305.08,-1812.05 2347.97,-1776.2 2393,-1753 2521.44,-1686.84 2610.45,-1785.71 2710,-1681 2805.25,-1580.81 2801.48,-1404 2792.06,-1313.63"/>
+<text text-anchor="middle" x="2776.06" y="-1317.43" font-family="Arial" font-size="14.00">0…N</text>
 <text text-anchor="middle" x="2274.81" y="-1834.19" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- person_works -->
@@ -311,20 +313,20 @@
 <!-- journals_issns -->
 <g id="node100" class="node">
 <title>journals_issns</title>
-<polygon fill="#dfa60c" stroke="transparent" points="3582.5,-1291 3481.5,-1291 3481.5,-1221 3582.5,-1221 3582.5,-1291"/>
-<text text-anchor="start" x="3485" y="-1277.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#000000">journals_issns</text>
-<text text-anchor="start" x="3503" y="-1257.8" font-family="Arial" font-size="14.00" fill="#000000">journal_id</text>
-<text text-anchor="start" x="3503" y="-1242.8" font-family="Arial" font-size="14.00" fill="#000000">issn</text>
-<text text-anchor="start" x="3503" y="-1227.8" font-family="Arial" font-size="14.00" fill="#000000">issn_type</text>
-<polygon fill="black" stroke="black" points="3482,-1271 3482,-1271 3583,-1271 3583,-1271 3482,-1271"/>
-<polygon fill="none" stroke="black" points="3481.5,-1221 3481.5,-1291 3582.5,-1291 3582.5,-1221 3481.5,-1221"/>
+<polygon fill="#dfa60c" stroke="transparent" points="3605.5,-1291 3504.5,-1291 3504.5,-1221 3605.5,-1221 3605.5,-1291"/>
+<text text-anchor="start" x="3508" y="-1277.8" font-family="Arial" font-weight="bold" font-size="14.00" fill="#000000">journals_issns</text>
+<text text-anchor="start" x="3526" y="-1257.8" font-family="Arial" font-size="14.00" fill="#000000">journal_id</text>
+<text text-anchor="start" x="3526" y="-1242.8" font-family="Arial" font-size="14.00" fill="#000000">issn</text>
+<text text-anchor="start" x="3526" y="-1227.8" font-family="Arial" font-size="14.00" fill="#000000">issn_type</text>
+<polygon fill="black" stroke="black" points="3505,-1271 3505,-1271 3606,-1271 3606,-1271 3505,-1271"/>
+<polygon fill="none" stroke="black" points="3504.5,-1221 3504.5,-1291 3605.5,-1291 3605.5,-1221 3504.5,-1221"/>
 </g>
 <!-- works&#45;&gt;journals_issns -->
 <g id="edge83" class="edge">
 <title>works&#45;&gt;journals_issns</title>
-<path fill="none" stroke="black" d="M2270.69,-1843.76C2304.79,-1810.35 2347.58,-1774.89 2393,-1753 2563.21,-1670.96 2634.58,-1746 2812,-1681 3088.17,-1579.82 3378.51,-1372.95 3487.35,-1291.27"/>
-<text text-anchor="middle" x="3472.35" y="-1295.07" font-family="Arial" font-size="14.00">0…1</text>
-<text text-anchor="middle" x="2274.69" y="-1847.56" font-family="Arial" font-size="14.00">1</text>
+<path fill="none" stroke="black" d="M2270.51,-1843.39C2304.58,-1809.92 2347.4,-1774.52 2393,-1753 2582.14,-1663.77 2661.55,-1752.72 2858,-1681 3128.42,-1582.27 3408.8,-1373.04 3512.86,-1291.01"/>
+<text text-anchor="middle" x="3497.86" y="-1294.81" font-family="Arial" font-size="14.00">0…1</text>
+<text text-anchor="middle" x="2274.51" y="-1847.19" font-family="Arial" font-size="14.00">1</text>
 </g>
 <!-- author_affiliations -->
 <g id="node3" class="node">
@@ -2414,9 +2416,9 @@
 <!-- journal_names&#45;&gt;journals_issns -->
 <g id="edge82" class="edge">
 <title>journal_names&#45;&gt;journals_issns</title>
-<path fill="none" stroke="black" d="M4175.68,-1850.47C4166.19,-1818.35 4152.14,-1782.04 4132,-1753 3977.57,-1530.33 3697,-1352.2 3582.6,-1285.43"/>
-<text text-anchor="middle" x="3598.6" y="-1289.23" font-family="Arial" font-size="14.00">1…N</text>
-<text text-anchor="middle" x="4163.18" y="-1839.27" font-family="Arial" font-size="14.00">1..N</text>
+<path fill="none" stroke="black" d="M4175.27,-1850.22C4165.74,-1818.23 4151.77,-1782.1 4132,-1753 3984.09,-1535.29 3716.89,-1356.01 3605.69,-1287.22"/>
+<text text-anchor="middle" x="3621.69" y="-1291.02" font-family="Arial" font-size="14.00">1…N</text>
+<text text-anchor="middle" x="4162.77" y="-1839.02" font-family="Arial" font-size="14.00">1..N</text>
 </g>
 <!-- issn_subject_codes -->
 <g id="node101" class="node">
