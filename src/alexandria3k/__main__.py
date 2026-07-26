@@ -24,6 +24,7 @@ import csv
 import importlib
 import os
 import random
+import signal
 import shutil
 import sys
 import textwrap
@@ -626,8 +627,15 @@ def error_raising_main():
 def main():
     """Program entry point that catches API's exceptions to print
     more helpful message."""
+    if hasattr(signal, "SIGPIPE"):
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     try:
         error_raising_main()
+        sys.stdout.flush()
+    except KeyboardInterrupt:
+        sys.exit(130)
+    except BrokenPipeError:
+        sys.exit(1)
     except Alexandria3kError as message:
         if debug.enabled("stacktrace"):
             traceback.print_stack()

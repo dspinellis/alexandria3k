@@ -18,14 +18,14 @@
 #
 """main module test"""
 
-import argparse
-import sys
+import io
 import unittest
+from unittest.mock import patch
 
 from .test_dir import add_src_dir, td
 add_src_dir()
 
-from alexandria3k.__main__ import module_get_attribute, class_name
+from alexandria3k.__main__ import class_name, main, module_get_attribute
 from alexandria3k.data_sources.asjcs import DEFAULT_SOURCE
 
 
@@ -36,3 +36,36 @@ class TestMain(unittest.TestCase):
 
     def test_class_name(self):
         self.assertEqual(class_name("funder-names"), "FunderNames")
+
+    @patch("alexandria3k.__main__.signal.signal")
+    @patch("alexandria3k.__main__.error_raising_main")
+    def test_main_keyboard_interrupt_exits_without_traceback(
+        self, mock_error_raising_main, _mock_signal
+    ):
+        mock_error_raising_main.side_effect = KeyboardInterrupt
+        stderr = io.StringIO()
+
+        with patch("sys.stderr", stderr), self.assertRaises(SystemExit) as cm:
+            main()
+
+        self.assertEqual(cm.exception.code, 130)
+        self.assertEqual(stderr.getvalue(), "")
+
+    @patch("alexandria3k.__main__.signal.signal")
+    @patch("alexandria3k.__main__.error_raising_main")
+    def test_main_broken_pipe_exits_without_traceback(
+        self, mock_error_raising_main, _mock_signal
+    ):
+        mock_error_raising_main.side_effect = BrokenPipeError
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+
+        with (
+            patch("sys.stdout", stdout),
+            patch("sys.stderr", stderr),
+            self.assertRaises(SystemExit) as cm,
+        ):
+            main()
+
+        self.assertEqual(cm.exception.code, 1)
+        self.assertEqual(stderr.getvalue(), "")
