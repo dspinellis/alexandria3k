@@ -7,7 +7,7 @@ export RDBMS?=sqlite
 export ROLAPDB?=rolap
 
 A3K?=a3k
-CROSSREF_DIR?=../common/Crossref-March-2025
+CROSSREF_DIR?=../common/Crossref-March-2026
 USPTO_DIR?=../common/uspto-data
 ORCID_SUMMARIES?=../common/ORCID_2022_10_summaries.tar.gz
 ROR?=../common/v1.73-2025-10-28-ror-data.zip
@@ -23,7 +23,7 @@ include simple-rolap/Makefile
 $(CROSSREF_DIR):
 	cd ../common && \
 	aria2c https://academictorrents.com/download/e0eda0104902d61c025e27e4846b66491d4c9f98.torrent && \
-	mv 'March 2025 Public Data File from Crossref' Crossref-March-2025
+	mv 'March 2026 Public Data File from Crossref' Crossref-March-2026
 
 $(USPTO_DIR):
 	cd ../common && ./fetch-uspto.sh
