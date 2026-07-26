@@ -310,9 +310,11 @@ def query(args):
         csv_file = open(
             args.output, "w", newline="", encoding=args.output_encoding
         )
+        close_csv_file = True
     else:
         sys.stdout.reconfigure(encoding=args.output_encoding)
         csv_file = sys.stdout
+        close_csv_file = False
 
     csv_writer = csv.writer(csv_file, delimiter=args.field_separator)
     for rec in data_source_instance.query(args.query, args.partition):
@@ -320,7 +322,8 @@ def query(args):
             csv_writer.writerow(data_source_instance.get_query_column_names())
             args.header = False
         csv_writer.writerow(rec)
-    csv_file.close()
+    if close_csv_file:
+        csv_file.close()
     debug.log("files-read", f"{FileCache.file_reads} files read")
     perf.log("Query execution")
 
