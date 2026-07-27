@@ -34,7 +34,6 @@ from journal_network_metrics import (
     calculate_mean_article_score,
 )
 
-
 # =============================================================================
 # NETWORK CENTRALITY TESTS
 # =============================================================================

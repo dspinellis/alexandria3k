@@ -52,7 +52,6 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix, diags
 
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -130,7 +129,9 @@ def load_data(conn: sqlite3.Connection, metric: str):
     """
     articles_df = pd.read_sql_query(article_query, conn)
 
-    journal_article_counts = dict(zip(articles_df["journal_id"], articles_df["article_count"]))
+    journal_article_counts = dict(
+        zip(articles_df["journal_id"], articles_df["article_count"])
+    )
     logging.info("Found %d journals with citable works.", len(journal_article_counts))
 
     logging.info("Fetching citation network (%d-year window)...", window_years)
@@ -168,7 +169,11 @@ def calculate_metric(
     score_column = score_columns[metric]
 
     journals = sorted(
-        list(set(citations_df["citing_journal"]).union(set(citations_df["cited_journal"])) )
+        list(
+            set(citations_df["citing_journal"]).union(
+                set(citations_df["cited_journal"])
+            )
+        )
     )
     journal_to_idx = {journal: i for i, journal in enumerate(journals)}
     n = len(journals)
@@ -182,14 +187,19 @@ def calculate_metric(
     cited_indices = citations_df["cited_journal"].map(journal_to_idx).values
     counts = citations_df["citation_count"].values.astype(np.float32)
 
-    Z = csr_matrix((counts, (citing_indices, cited_indices)), shape=(n, n), dtype=np.float32)
+    Z = csr_matrix(
+        (counts, (citing_indices, cited_indices)), shape=(n, n), dtype=np.float32
+    )
     H = Z.T.tocsr()
 
     if metric in ("network_centrality", "mean_article_score"):
         H.setdiag(0)
         H.eliminate_zeros()
     else:
-        logging.info("Capping self-citations at %.0f%% of incoming citations...", 100 * max_self_citation_ratio)
+        logging.info(
+            "Capping self-citations at %.0f%% of incoming citations...",
+            100 * max_self_citation_ratio,
+        )
         H_lil = H.tolil()
         for j in range(n):
             col_sum = H[:, j].sum()
@@ -200,7 +210,9 @@ def calculate_metric(
                     H_lil[j, j] = max_allowed
         H = H_lil.tocsr()
 
-    article_counts_arr = np.array([journal_article_counts.get(j, 0) for j in journals], dtype=np.float32)
+    article_counts_arr = np.array(
+        [journal_article_counts.get(j, 0) for j in journals], dtype=np.float32
+    )
     total_articles = article_counts_arr.sum()
 
     if total_articles > 0:
@@ -244,7 +256,9 @@ def calculate_metric(
 
     if metric == "network_centrality":
         total_score = prestige_scores.sum()
-        scores = 100 * prestige_scores / total_score if total_score > 0 else prestige_scores
+        scores = (
+            100 * prestige_scores / total_score if total_score > 0 else prestige_scores
+        )
     else:
         scores = np.zeros(n, dtype=np.float32)
         for i, journal in enumerate(journals):
@@ -338,18 +352,18 @@ def save_results(conn: sqlite3.Connection, df: pd.DataFrame, metric: str) -> Non
     try:
         with conn:
             conn.execute(f"DROP TABLE IF EXISTS rolap.{table_name}")
-            conn.execute(
-                f"""
+            conn.execute(f"""
                 CREATE TABLE rolap.{table_name} (
                     journal_id INTEGER PRIMARY KEY,
                     {score_column} REAL
                 )
-                """
-            )
+                """)
 
             insert_query = f"INSERT INTO rolap.{table_name} (journal_id, {score_column}) VALUES (?, ?)"
 
-            data_gen = ((int(row[0]), float(row[1])) for row in df.itertuples(index=False))
+            data_gen = (
+                (int(row[0]), float(row[1])) for row in df.itertuples(index=False)
+            )
 
             count = 0
             while True:
@@ -375,11 +389,14 @@ def parse_args():
         default="network_centrality",
         help="Metric to calculate: network_centrality, prestige_rank, mean_article_score",
     )
-    parser.add_argument("--db", required=True, help="Path to the main SQLite database")
+    parser.add_argument("--db", help="Path to the main SQLite database")
     parser.add_argument(
         "--rolap-db",
-        required=True,
         help="Path to the ROLAP SQLite database (can be same as main)",
+    )
+    parser.add_argument(
+        "--test-db",
+        help="Single database file used for both main and ROLAP (for testing)",
     )
     return parser.parse_args()
 
@@ -390,16 +407,33 @@ def main() -> None:
 
     logging.info("Calculating %s...", metric)
 
+    if args.test_db:
+        db_path = args.test_db
+        rolap_db_path = args.test_db
+    elif args.db and args.rolap_db:
+        db_path = args.db
+        rolap_db_path = args.rolap_db
+    else:
+        import sys
+
+        print(
+            "error: provide either --test-db or both --db and --rolap-db",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
     conn = None
     try:
-        conn = get_db_connection(args.db, args.rolap_db)
+        conn = get_db_connection(db_path, rolap_db_path)
         citations_df, journal_article_counts = load_data(conn, metric)
 
         if citations_df.empty:
             logging.critical("No citation data found.")
-            return
-
-        results_df = calculate_metric(citations_df, journal_article_counts, metric=metric)
+            results_df = pd.DataFrame(columns=["journal_id", "score"])
+        else:
+            results_df = calculate_metric(
+                citations_df, journal_article_counts, metric=metric
+            )
         save_results(conn, results_df, metric)
     finally:
         if conn:
