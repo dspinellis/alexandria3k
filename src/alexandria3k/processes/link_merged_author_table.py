@@ -13,6 +13,7 @@ fills the merged_authors table
 """
 
 from itertools import groupby
+import math
 from multiprocessing import Pool
 import time
 from os import cpu_count
@@ -105,7 +106,7 @@ def get_affiliations_per_block(block_key, database):
 
 def get_publication_years_per_block(block_key, database):
     """
-    Queries the database for publication year of a work of an author
+    Queries the database for publication year of the work of each author in a block 
     """
 
     cursor = database.cursor()
@@ -124,6 +125,32 @@ def get_publication_years_per_block(block_key, database):
 
     return publication_year_map
 
+def get_venue_per_block(block_key, database):
+    """
+    Queries the database for venue of the work of each author in block
+    """
+    cursor = database.cursor()
+
+    # Key: author_id, Value: set of venues
+    venue_map: dict[int, set[str]] = {}
+
+    for work_author_id, container_title, shortened_container_title in cursor.execute(
+        """
+        SELECT work_author_id, works.container_title, works.short_container_title
+        FROM works 
+        JOIN author_name_blocks ON author_name_blocks.work_id = works.id
+        WHERE author_name_blocks.block_key = ?
+        """,
+        (block_key,),
+    ):
+        venue = container_title or shortened_container_title
+        if not venue:
+            continue
+
+        if work_author_id not in venue_map:
+            venue_map[work_author_id] = set()
+        venue_map[work_author_id].update(get_ngrams(venue))
+    return venue_map
 
 def score_year_gap(auth1, auth2, publication_year, max_gap=40):
     """
@@ -154,6 +181,20 @@ def score_affiliations(auth1, auth2, affiliations_map):
         return None
 
     return jaccard_similarity(author_1_affiliations, author_2_affiliations)
+
+
+def score_venue(auth1, auth2, venue_map):
+    """
+    Word n-gram Jaccard similarity of the venues two authors published in.
+    """
+
+    author_1_venue = venue_map.get(auth1.id, set())
+    author_2_venue = venue_map.get(auth2.id, set())
+
+    if not author_1_venue and not author_2_venue:
+        return None
+
+    return jaccard_similarity(author_1_venue, author_2_venue)
 
 
 def score_coauthors(auth1, auth2, co_authors_map, weight=1.5):
@@ -190,8 +231,21 @@ def check_if_co_authors(auth1, auth2):
     return auth1.work_id == auth2.work_id
 
 
+# Weights from a logistic regression trained on authenticated-ORCID sample dataset
+# Right now the file is ignored and the results are hardcoded, but it will be added in a seperate file
+
+NAME_WEIGHT = 12.5648
+AFFILIATION_WEIGHT = 4.0467
+CO_AUTHOR_WEIGHT = 9.3089
+YEAR_WEIGHT = 0.0627
+VENUE_WEIGHT = 3.1889
+INTERCEPT = -15.4871
+THRESHOLD = 0.5
+
+
 def compare_authors(
-    auth1, auth2, co_authors_map, affiliations_map, publication_year, threashold=0.75
+    auth1, auth2, co_authors_map, affiliations_map, publication_year, venue_map,
+    threashold=THRESHOLD
 ):
 
     """This will serve as the scoring function to determine if 2 authors are the same person.
@@ -211,16 +265,29 @@ def compare_authors(
     jaccard_affiliations = score_affiliations(auth1, auth2, affiliations_map)
     jaccard_coauthors = score_coauthors(auth1, auth2, co_authors_map)
     year_gap = score_year_gap(auth1, auth2, publication_year)
+    jaccard_venue = score_venue(auth1, auth2, venue_map)
 
-    # calculate confidence score
-    scores = [name_similarity, jaccard_affiliations, jaccard_coauthors, year_gap]
-    valid_scores = [s for s in scores if s is not None]
-    avg = sum(valid_scores) / len(valid_scores)
+    # scores = [name_similarity, jaccard_affiliations, jaccard_coauthors,
+    #           year_gap, jaccard_venue]
+    # valid_scores = [s for s in scores if s is not None]
+    # avg = sum(valid_scores) / len(valid_scores)
+    # return avg if avg >= threashold else 0
 
-    return avg if avg >= threashold else 0
+    # calculate confidence score, missing signals score 0 and so contribute nothing
+    logit = (
+        NAME_WEIGHT * name_similarity
+        + AFFILIATION_WEIGHT * (jaccard_affiliations or 0.0)
+        + CO_AUTHOR_WEIGHT * (jaccard_coauthors or 0.0)
+        + YEAR_WEIGHT * (year_gap or 0.0)
+        + VENUE_WEIGHT * (jaccard_venue or 0.0)
+        + INTERCEPT
+    )
+    score = 1 / (1 + math.exp(-logit))
+
+    return score if score >= threashold else 0
 
 
-def group_by_signature(authors, co_authors, affiliations, publication_year):
+def group_by_signature(authors, co_authors, affiliations, publication_year, venues):
     """Groups authors by their (name, co-authors, affiliations, year) signature."""
     groups = {}
     for author in authors:
@@ -229,6 +296,7 @@ def group_by_signature(authors, co_authors, affiliations, publication_year):
             frozenset(co_authors.get(author.id, set())),
             frozenset(affiliations.get(author.id, set())),
             publication_year.get(author.id),
+            venues.get(author.id, set())
         )
         if signature not in groups:
             groups[signature] = []
@@ -264,6 +332,7 @@ def process_block(block_key, grouped_authors, database_path, database=None):
     co_authors = get_co_authors(block_key, database)
     affiliations = get_affiliations_per_block(block_key, database)
     publication_year = get_publication_years_per_block(block_key, database)
+    venues = get_venue_per_block(block_key, database)
 
     # Groups authors by signature, every author sharing a signature is the same person.
     # Comparisons happen between representatives of each group
@@ -293,6 +362,7 @@ def process_block(block_key, grouped_authors, database_path, database=None):
                 co_authors,
                 affiliations,
                 publication_year,
+                venues,
             ):
                 merged_members = union_find.get_set_elements(i)
                 consistent = all(
@@ -302,6 +372,7 @@ def process_block(block_key, grouped_authors, database_path, database=None):
                         co_authors,
                         affiliations,
                         publication_year,
+                        venues,
                     )
                     for member in merged_members
                     if member != i
@@ -321,21 +392,28 @@ def process_block(block_key, grouped_authors, database_path, database=None):
 
     return author_block_list
 
+
 def process_chunk(chunk, database_path):
+    """
+    Processes a number of blocks in parallel instead of one block at a time
+    """
     database = apsw.Connection(database_path)
     result = []
     for block_key, grouped_authors, _ in chunk:
-        result.append(process_block(block_key, grouped_authors, database_path, database))
+        result.append(
+            process_block(block_key, grouped_authors, database_path, database)
+        )
     return result
 
+
 def process_blocks_parallel(
-    block_cursor, database_path, database, big_block_threashold
+    block_cursor, database_path, big_block_threashold
 ):
     """
     Function is called when create_merged_authors_table "parallelised" flag = True
     Processes blocks in parallel rather than sequencially
     Bigger blocks over a threashold are processed in parallel
-    Smaller blocks are processed seriliazed after bigger blocks finish
+    Smaller blocks are divided into chunks and handled in parallel 
     Concurrency occurs with processes not threads
     Returns a list of block entries in form of a list of tuples
     """
@@ -343,6 +421,7 @@ def process_blocks_parallel(
     start_time = time.perf_counter()
     big_block_args = []
     small_block_args = []
+    single_block_results = []
     query = """SELECT block_key , work_author_id , normalized_name, work_id
                FROM author_name_blocks
                ORDER BY block_key
@@ -351,7 +430,10 @@ def process_blocks_parallel(
         block_cursor.execute(query), key=lambda row: row[0]
     ):
         grouped_authors = list(grouped_authors)
-        if len(grouped_authors) > big_block_threashold:
+        if len(grouped_authors) < 2:
+           work_author_id = grouped_authors[0][1]
+           single_block_results.append([(work_author_id, work_author_id, 1.0)])
+        elif len(grouped_authors) > big_block_threashold:
             big_block_args.append((block_key, grouped_authors, database_path))
         else:
             small_block_args.append((block_key, grouped_authors, database_path))
@@ -361,26 +443,26 @@ def process_blocks_parallel(
     big_block_args.sort(key=lambda args: len(args[1]), reverse=True)
     small_block_args.sort(key=lambda args: len(args[1]), reverse=True)
 
+    #big blocks get processed one for each process
     with Pool() as pool:
         results_big = pool.starmap(process_block, big_block_args, chunksize=1)
 
     big_blocks_done_time = time.perf_counter()
     print(f"big blocks {big_blocks_done_time - args_built_time:.2f}s ")
 
-    #split arguments into a number of workers
+    #split small blocks into a number of workers and process each of them concurrently
     workers_count = cpu_count()
-    chunk_size = len(small_block_args) // workers_count 
-    chunks = []
-    i = 0
     chunks = [small_block_args[j::workers_count] for j in range(workers_count)]
 
     with Pool(processes=workers_count) as pool:
-        results_small = pool.starmap(process_chunk, [(chunk, database_path) for chunk in chunks])
+        results_small = pool.starmap(
+            process_chunk, [(chunk, database_path) for chunk in chunks]
+        )
 
     results_small = [row for batch in results_small for row in batch]
     small_blocks_done_time = time.perf_counter()
     print(f"small blocks {small_blocks_done_time - big_blocks_done_time:.2f}s ")
-    results = results_big + results_small
+    results = results_big + results_small + single_block_results
     return results
 
 
@@ -447,17 +529,14 @@ def create_merged_authors_table(
     block_cursor = database.cursor()
     insert_cursor = database.cursor()
 
-
     # perf.log("starting block comparison loop")
 
     if parallelised:
         results = process_blocks_parallel(
-            block_cursor, database_path, database, big_block_threashold
+            block_cursor, database_path, big_block_threashold
         )
     else:
-        results = process_blocks_sequential(
-            block_cursor, database_path, database
-        )
+        results = process_blocks_sequential(block_cursor, database_path, database)
 
     for rows in results:
         for row in rows:
