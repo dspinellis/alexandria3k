@@ -287,7 +287,7 @@ def compare_authors(
     return score if score >= threashold else 0
 
 
-def group_by_signature(authors, co_authors, affiliations, publication_year, venues):
+def group_by_signature(authors, co_authors, affiliations, publication_year):
     """Groups authors by their (name, co-authors, affiliations, year) signature."""
     groups = {}
     for author in authors:
@@ -296,7 +296,6 @@ def group_by_signature(authors, co_authors, affiliations, publication_year, venu
             frozenset(co_authors.get(author.id, set())),
             frozenset(affiliations.get(author.id, set())),
             publication_year.get(author.id),
-            venues.get(author.id, set())
         )
         if signature not in groups:
             groups[signature] = []
