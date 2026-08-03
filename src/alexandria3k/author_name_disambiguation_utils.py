@@ -13,6 +13,7 @@ class Author(NamedTuple):
     id: int
     name: str
     work_id: int
+    community_id: int
 
 
 # Adapted from uf-toolkit (https://github.com/hugginsc10/uf-toolkit)

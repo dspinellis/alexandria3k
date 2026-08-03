@@ -13,7 +13,13 @@ Process is the first phase of the author_name_disambiguation layer in alexandria
 Output is the filled author_name_blocks table
 """
 
+import time
+
 import apsw
+import igraph as ig
+import leidenalg
+
+from itertools import combinations , groupby 
 
 from alexandria3k.common import ensure_table_exists, log_sql, set_fast_writing
 
@@ -32,9 +38,82 @@ table = [
             ColumnMeta("normalized_family_name"),
             ColumnMeta("work_id"),
             ColumnMeta("block_key"),
+            ColumnMeta("community_id")
         ],
     ),
 ]
+
+DEFAULT_RESOLUTION = 1.0
+
+def build_graph(database):
+    """Build an igraph graph from the coupling work refrences."""
+
+    graph_cursor = database.cursor()
+
+    journals = [row[0] for row in database.execute(
+    "SELECT DISTINCT container_title FROM works WHERE container_title IS NOT NULL"
+    )]
+
+    query = """
+        SELECT work_references.doi, works.container_title
+        FROM work_references
+        JOIN works ON works.id = work_references.work_id
+        WHERE works.container_title IS NOT NULL
+        AND work_references.doi IS NOT NULL
+        ORDER BY work_references.doi
+    """
+    
+    edges = []
+    for _ , journal_doi_groups in groupby(graph_cursor.execute(query), key=lambda row: row[0]):
+        journal_list = {group[1] for group in journal_doi_groups}
+        edges.extend(combinations(journal_list, 2))
+
+    g = ig.Graph()
+    g.add_vertices(journals)
+    g.add_edges(edges)
+
+    return g
+
+
+def run_leiden_clustering(g, resolution=DEFAULT_RESOLUTION):
+    """Run Leiden clustering and return the partition."""
+    leiden_start = time.perf_counter()
+    partition = leidenalg.find_partition(
+        g,
+        leidenalg.RBConfigurationVertexPartition,
+        resolution_parameter=resolution,
+        n_iterations=-1,
+        seed=42,
+    )
+    leiden_end = time.perf_counter()
+    n_communities = len(partition)
+    print(f"Found {n_communities} communities in {leiden_end - leiden_start:.2f}s.")
+
+    community_map = dict(zip(g.vs["name"], partition.membership))
+    return community_map
+
+def get_journal_communities(database):
+    g = build_graph(database)
+    community_map = run_leiden_clustering(g)
+    return community_map
+    
+def get_normalized_names(given, family_name):
+    normalized_name = normalized(given)
+    normalized_family = normalized(family_name)
+
+    if not normalized_name and not normalized_family:
+        return None
+
+    if not normalized_name and normalized_family:
+        block_key = normalized_family + "_" + normalized_family[0]
+    elif normalized_name and not normalized_family:
+        block_key = normalized_name + "_" + normalized_name[0]
+    else:
+        block_key = (
+            normalized_family + "_" + normalized_name[0]
+        )  # last name + initial
+
+    return (normalized_name, normalized_family, block_key)
 
 
 def create_author_blocks_table(database_path):
@@ -46,37 +125,38 @@ def create_author_blocks_table(database_path):
     database.execute(log_sql(table[0].table_schema()))
     set_fast_writing(database)
     ensure_table_exists(database, "work_authors")
+    ensure_table_exists(database, "work_references")
+    ensure_table_exists(database, "works")
     # perf.log("author_blocks table created")
 
     select_cursor = database.cursor()
     insert_cursor = database.cursor()
     # perf.log("author_blocks SELECT")
-    for author_id, given, family_name, work_id in select_cursor.execute(
-        """
-        SELECT id , given , family , work_id FROM work_authors"""
-    ):
 
+    community_map = get_journal_communities(database)
+    for author_id, given, family_name, work_id, journal in select_cursor.execute(
+        """
+        SELECT work_authors.id,
+               work_authors.given, 
+               work_authors.family, 
+               work_authors.work_id, 
+               works.container_title  
+        FROM work_authors
+        LEFT JOIN works ON works.id = work_authors.work_id
+        """
+    ):
         if not given or not family_name:
             continue
 
-        normalized_name = normalized(given)
-        normalized_family = normalized(family_name)
-
-        if not normalized_name and not normalized_family:
-            continue
-
-        if not normalized_name and normalized_family:
-            block_key = normalized_family + "_" + normalized_family[0]
-        elif normalized_name and not normalized_family:
-            block_key = normalized_name + "_" + normalized_name[0]
-        else:
-            block_key = (
-                normalized_family + "_" + normalized_name[0]
-            )  # last name + initial
+        names = get_normalized_names(given, family_name)
+        if not names:
+            continue 
+        normalized_name, normalized_family, block_key = names
+        community_id = community_map.get(journal)
 
         insert_cursor.execute(
-            "INSERT INTO author_name_blocks VALUES (?, ?, ?, ?, ?) ",
-            (author_id, normalized_name, normalized_family, work_id, block_key),
+            "INSERT INTO author_name_blocks VALUES (?, ?, ?, ?, ?, ?) ",
+            (author_id, normalized_name, normalized_family, work_id, block_key, community_id),
             prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
         )
     select_cursor.close()

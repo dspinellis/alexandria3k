@@ -13,7 +13,6 @@ fills the merged_authors table
 """
 
 from itertools import groupby
-import math
 from multiprocessing import Pool
 import time
 from os import cpu_count
@@ -43,7 +42,7 @@ table = [
             ColumnMeta("merged_author_id"),
             ColumnMeta("confidence_score"),
         ],
-    )
+    ),
 ]
 
 
@@ -230,22 +229,16 @@ def check_if_co_authors(auth1, auth2):
     """
     return auth1.work_id == auth2.work_id
 
-
-# Weights from a logistic regression trained on authenticated-ORCID sample dataset
-# Right now the file is ignored and the results are hardcoded, but it will be added in a seperate file
-
-NAME_WEIGHT = 12.5648
-AFFILIATION_WEIGHT = 4.0467
-CO_AUTHOR_WEIGHT = 9.3089
-YEAR_WEIGHT = 0.0627
-VENUE_WEIGHT = 3.1889
-INTERCEPT = -15.4871
-THRESHOLD = 0.5
+def check_communities(auth1, auth2):
+    "Checks if 2 authors are in the same community based on journals"
+    if auth1.community_id is None or auth2.community_id is None:
+        return False
+    return auth1.community_id != auth2.community_id
 
 
 def compare_authors(
     auth1, auth2, co_authors_map, affiliations_map, publication_year, venue_map,
-    threashold=THRESHOLD
+    threashold=0.67
 ):
 
     """This will serve as the scoring function to determine if 2 authors are the same person.
@@ -257,9 +250,8 @@ def compare_authors(
     - Topic overlap using Leiden clustering
     """
 
-    # if they are co authors then they are surely different authors
-    if auth1.work_id == auth2.work_id:
-        return 0
+    if check_communities(auth1, auth2): return 0
+    if check_if_co_authors(auth1, auth2): return 0
 
     name_similarity = score_name_similarity(auth1, auth2)
     jaccard_affiliations = score_affiliations(auth1, auth2, affiliations_map)
@@ -267,24 +259,18 @@ def compare_authors(
     year_gap = score_year_gap(auth1, auth2, publication_year)
     jaccard_venue = score_venue(auth1, auth2, venue_map)
 
-    # scores = [name_similarity, jaccard_affiliations, jaccard_coauthors,
-    #           year_gap, jaccard_venue]
-    # valid_scores = [s for s in scores if s is not None]
-    # avg = sum(valid_scores) / len(valid_scores)
-    # return avg if avg >= threashold else 0
+    # calculate confidence score
+    scores = [
+        name_similarity,
+        jaccard_affiliations,
+        jaccard_coauthors,
+        year_gap,
+        jaccard_venue,
+    ]
+    valid_scores = [s for s in scores if s is not None]
+    avg = sum(valid_scores) / len(valid_scores)
 
-    # calculate confidence score, missing signals score 0 and so contribute nothing
-    logit = (
-        NAME_WEIGHT * name_similarity
-        + AFFILIATION_WEIGHT * (jaccard_affiliations or 0.0)
-        + CO_AUTHOR_WEIGHT * (jaccard_coauthors or 0.0)
-        + YEAR_WEIGHT * (year_gap or 0.0)
-        + VENUE_WEIGHT * (jaccard_venue or 0.0)
-        + INTERCEPT
-    )
-    score = 1 / (1 + math.exp(-logit))
-
-    return score if score >= threashold else 0
+    return avg if avg >= threashold else 0
 
 
 def group_by_signature(authors, co_authors, affiliations, publication_year):
@@ -315,7 +301,7 @@ def process_block(block_key, grouped_authors, database_path, database=None):
 
     author_block_list: list[tuple] = []
     # uses custom Author class for explicitness, set(id , name, work_id)
-    authors = [Author(row[1], row[2], row[3]) for row in grouped_authors]
+    authors = [Author(row[1], row[2], row[3], row[4]) for row in grouped_authors]
 
     # if block only has one author, skip
     if len(authors) < 2:
@@ -421,7 +407,7 @@ def process_blocks_parallel(
     big_block_args = []
     small_block_args = []
     single_block_results = []
-    query = """SELECT block_key , work_author_id , normalized_name, work_id
+    query = """SELECT block_key , work_author_id , normalized_name, work_id, community_id
                FROM author_name_blocks
                ORDER BY block_key
             """
@@ -432,6 +418,7 @@ def process_blocks_parallel(
         if len(grouped_authors) < 2:
            work_author_id = grouped_authors[0][1]
            single_block_results.append([(work_author_id, work_author_id, 1.0)])
+
         elif len(grouped_authors) > big_block_threashold:
             big_block_args.append((block_key, grouped_authors, database_path))
         else:
@@ -473,7 +460,7 @@ def process_blocks_sequential(block_cursor, database_path, database):
     Returns a list of block entries in form of a list of tuples
     """
     args = []
-    query = """SELECT block_key , work_author_id , normalized_name, work_id
+    query = """SELECT block_key, work_author_id, normalized_name, work_id, community_id
                FROM author_name_blocks
                ORDER BY block_key
             """
@@ -556,5 +543,6 @@ def process(database_path):
     which they will be compared by some criteria mentioned in compare_authors
     Process will return a table that contains work_author_id , cluster_id , confidence_score
     where cluster_id is the id of the merged author"""
+
 
     create_merged_authors_table(database_path)

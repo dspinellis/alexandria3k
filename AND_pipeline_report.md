@@ -90,3 +90,8 @@ The % correct merges stays consistently high across all datasets (above 97%), me
 1. The threshold (0.75) is deliberately strict to avoid false positives, at the cost of missing some real matches (false negatives).
 2. Many of the missed pairs lack data such as affiliations (about 37% at the 700MB tier), which affects the likelihood of two authors being merged.
 
+# Future plans / TODO list:
+
+1. Make parallelism be supported for large distributed parallel systems using libraries like celery 
+2. Filter dataset for a specific subset of the entire Crossref dataset (like Greek researchers) to test the pipeline there.
+3. Train a logistic regression model that fine tunes the weights of specific signals for increased correctness
