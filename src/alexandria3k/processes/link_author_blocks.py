@@ -14,12 +14,11 @@ Output is the filled author_name_blocks table
 """
 
 import time
+from itertools import combinations , groupby
 
 import apsw
 import igraph as ig
 import leidenalg
-
-from itertools import combinations , groupby 
 
 from alexandria3k.common import ensure_table_exists, log_sql, set_fast_writing
 
@@ -62,7 +61,7 @@ def build_graph(database):
         AND work_references.doi IS NOT NULL
         ORDER BY work_references.doi
     """
-    
+
     edges = []
     for _ , journal_doi_groups in groupby(graph_cursor.execute(query), key=lambda row: row[0]):
         journal_list = {group[1] for group in journal_doi_groups}
@@ -93,11 +92,24 @@ def run_leiden_clustering(g, resolution=DEFAULT_RESOLUTION):
     return community_map
 
 def get_journal_communities(database):
+    """
+    Gets author communities based on bibliographic coupling
+    Builds igraph, vertices = journals, edges = journals citing the same doi
+    If 2 works from different journals cite the same doi then they are connected
+    Runs leiden clustering algorithm to get the communities
+    Returns a dictionary of key = journal , value = community_id
+    """
     g = build_graph(database)
     community_map = run_leiden_clustering(g)
     return community_map
-    
-def get_normalized_names(given, family_name):
+
+def normalized_block(given, family_name):
+    """
+    Normalizes given and family name and creates authors block key
+    If given is missing, block_key = family + initial_family
+    If family is missing, block_key = given + initial_given 
+    Returns a set of (normalized given, normalized_family, block_key) 
+    """
     normalized_name = normalized(given)
     normalized_family = normalized(family_name)
 
@@ -148,9 +160,9 @@ def create_author_blocks_table(database_path):
         if not given or not family_name:
             continue
 
-        names = get_normalized_names(given, family_name)
+        names = normalized_block(given, family_name)
         if not names:
-            continue 
+            continue
         normalized_name, normalized_family, block_key = names
         community_id = community_map.get(journal)
 

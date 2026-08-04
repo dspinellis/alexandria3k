@@ -250,8 +250,10 @@ def compare_authors(
     - Topic overlap using Leiden clustering
     """
 
-    if check_communities(auth1, auth2): return 0
-    if check_if_co_authors(auth1, auth2): return 0
+    if check_communities(auth1, auth2):
+        return 0
+    if check_if_co_authors(auth1, auth2):
+        return 0
 
     name_similarity = score_name_similarity(auth1, auth2)
     jaccard_affiliations = score_affiliations(auth1, auth2, affiliations_map)
@@ -319,11 +321,8 @@ def process_block(block_key, grouped_authors, database_path, database=None):
     publication_year = get_publication_years_per_block(block_key, database)
     venues = get_venue_per_block(block_key, database)
 
-    # Groups authors by signature, every author sharing a signature is the same person.
-    # Comparisons happen between representatives of each group
+    # Groups authors by signature, compare only first author of each group
     groups = group_by_signature(authors, co_authors, affiliations, publication_year)
-
-    # representative is the first person of each group
     representatives = [groups[sign][0] for sign in groups.keys()]
 
     # Use unionfind dataset for merging
@@ -416,8 +415,8 @@ def process_blocks_parallel(
     ):
         grouped_authors = list(grouped_authors)
         if len(grouped_authors) < 2:
-           work_author_id = grouped_authors[0][1]
-           single_block_results.append([(work_author_id, work_author_id, 1.0)])
+            work_author_id = grouped_authors[0][1]
+            single_block_results.append([(work_author_id, work_author_id, 1.0)])
 
         elif len(grouped_authors) > big_block_threashold:
             big_block_args.append((block_key, grouped_authors, database_path))
