@@ -33,7 +33,6 @@ from alexandria3k.author_name_disambiguation_utils import (
 # from alexandria3k import perf
 from alexandria3k.db_schema import ColumnMeta, TableMeta
 
-
 table = [
     TableMeta(
         "merged_authors",
@@ -105,7 +104,7 @@ def get_affiliations_per_block(block_key, database):
 
 def get_publication_years_per_block(block_key, database):
     """
-    Queries the database for publication year of the work of each author in a block 
+    Queries the database for publication year of the work of each author in a block
     """
 
     cursor = database.cursor()
@@ -123,6 +122,7 @@ def get_publication_years_per_block(block_key, database):
         publication_year_map[author_id] = published_year
 
     return publication_year_map
+
 
 def get_venue_per_block(block_key, database):
     """
@@ -150,6 +150,7 @@ def get_venue_per_block(block_key, database):
             venue_map[work_author_id] = set()
         venue_map[work_author_id].update(get_ngrams(venue))
     return venue_map
+
 
 def score_year_gap(auth1, auth2, publication_year, max_gap=40):
     """
@@ -229,6 +230,7 @@ def check_if_co_authors(auth1, auth2):
     """
     return auth1.work_id == auth2.work_id
 
+
 def check_communities(auth1, auth2):
     "Checks if 2 authors are in the same community based on journals"
     if auth1.community_id is None or auth2.community_id is None:
@@ -237,10 +239,14 @@ def check_communities(auth1, auth2):
 
 
 def compare_authors(
-    auth1, auth2, co_authors_map, affiliations_map, publication_year, venue_map,
-    threashold=0.67
+    auth1,
+    auth2,
+    co_authors_map,
+    affiliations_map,
+    publication_year,
+    venue_map,
+    threashold=0.67,
 ):
-
     """This will serve as the scoring function to determine if 2 authors are the same person.
     The scoring function will be calculated based on a couple of criteria:
     - Jaccard similarity on co-author sets of each author (how many co-authors they have in common)
@@ -378,9 +384,8 @@ def process_block(block_key, grouped_authors, database_path, database=None):
 
 
 def process_chunk(chunk, database_path):
-    """
-    Processes a number of blocks in parallel instead of one block at a time
-    """
+    "Processes a number of blocks in parallel instead of one block at a time"
+
     database = apsw.Connection(database_path)
     result = []
     for block_key, grouped_authors, _ in chunk:
@@ -390,14 +395,12 @@ def process_chunk(chunk, database_path):
     return result
 
 
-def process_blocks_parallel(
-    block_cursor, database_path, big_block_threashold
-):
+def process_blocks_parallel(block_cursor, database_path, big_block_threashold):
     """
     Function is called when create_merged_authors_table "parallelised" flag = True
     Processes blocks in parallel rather than sequencially
     Bigger blocks over a threashold are processed in parallel
-    Smaller blocks are divided into chunks and handled in parallel 
+    Smaller blocks are divided into chunks and handled in parallel
     Concurrency occurs with processes not threads
     Returns a list of block entries in form of a list of tuples
     """
@@ -428,14 +431,14 @@ def process_blocks_parallel(
     big_block_args.sort(key=lambda args: len(args[1]), reverse=True)
     small_block_args.sort(key=lambda args: len(args[1]), reverse=True)
 
-    #big blocks get processed one for each process
+    # big blocks get processed one for each process
     with Pool() as pool:
         results_big = pool.starmap(process_block, big_block_args, chunksize=1)
 
     big_blocks_done_time = time.perf_counter()
     print(f"big blocks {big_blocks_done_time - args_built_time:.2f}s ")
 
-    #split small blocks into a number of workers and process each of them concurrently
+    # split small blocks into a number of workers and process each of them concurrently
     workers_count = cpu_count()
     chunks = [small_block_args[j::workers_count] for j in range(workers_count)]
 
@@ -452,7 +455,6 @@ def process_blocks_parallel(
 
 
 def process_blocks_sequential(block_cursor, database_path, database):
-
     """
     Function is called when create_merged_authors_table "parallelised" flag = False
     Processes blocks sequencially rather than in parallel
@@ -481,7 +483,6 @@ def process_blocks_sequential(block_cursor, database_path, database):
 def create_merged_authors_table(
     database_path, big_block_threashold=50, parallelised=True
 ):
-
     """Creates and links merged_authors table.
     Takes as input the database path and checks if author_name_blocks table exists
     """
@@ -501,14 +502,10 @@ def create_merged_authors_table(
     database.execute(
         log_sql("CREATE INDEX IF NOT EXISTS idx_work_authors_id ON work_authors(id)")
     )
-    database.execute(
-        log_sql(
-            """
+    database.execute(log_sql("""
             CREATE INDEX IF NOT EXISTS idx_author_affiliations_author_id
             ON author_affiliations(author_id)
-            """
-        )
-    )
+            """))
     # perf.log("created works/work_authors indexes")
 
     block_cursor = database.cursor()
@@ -542,6 +539,5 @@ def process(database_path):
     which they will be compared by some criteria mentioned in compare_authors
     Process will return a table that contains work_author_id , cluster_id , confidence_score
     where cluster_id is the id of the merged author"""
-
 
     create_merged_authors_table(database_path)

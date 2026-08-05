@@ -14,7 +14,7 @@ Output is the filled author_name_blocks table
 """
 
 import time
-from itertools import combinations , groupby
+from itertools import combinations, groupby
 
 import apsw
 import igraph as ig
@@ -27,7 +27,6 @@ from alexandria3k.author_name_disambiguation_utils import normalized
 # from alexandria3k import perf
 from alexandria3k.db_schema import ColumnMeta, TableMeta
 
-
 table = [
     TableMeta(
         "author_name_blocks",
@@ -37,21 +36,25 @@ table = [
             ColumnMeta("normalized_family_name"),
             ColumnMeta("work_id"),
             ColumnMeta("block_key"),
-            ColumnMeta("community_id")
+            ColumnMeta("community_id"),
         ],
     ),
 ]
 
 DEFAULT_RESOLUTION = 1.0
 
+
 def build_graph(database):
     """Build an igraph graph from the coupling work refrences."""
 
     graph_cursor = database.cursor()
 
-    journals = [row[0] for row in database.execute(
-    "SELECT DISTINCT container_title FROM works WHERE container_title IS NOT NULL"
-    )]
+    journals = [
+        row[0]
+        for row in database.execute(
+            "SELECT DISTINCT container_title FROM works WHERE container_title IS NOT NULL"
+        )
+    ]
 
     query = """
         SELECT work_references.doi, works.container_title
@@ -63,7 +66,9 @@ def build_graph(database):
     """
 
     edges = []
-    for _ , journal_doi_groups in groupby(graph_cursor.execute(query), key=lambda row: row[0]):
+    for _, journal_doi_groups in groupby(
+        graph_cursor.execute(query), key=lambda row: row[0]
+    ):
         journal_list = {group[1] for group in journal_doi_groups}
         edges.extend(combinations(journal_list, 2))
 
@@ -91,6 +96,7 @@ def run_leiden_clustering(g, resolution=DEFAULT_RESOLUTION):
     community_map = dict(zip(g.vs["name"], partition.membership))
     return community_map
 
+
 def get_journal_communities(database):
     """
     Gets author communities based on bibliographic coupling
@@ -103,12 +109,13 @@ def get_journal_communities(database):
     community_map = run_leiden_clustering(g)
     return community_map
 
+
 def normalized_block(given, family_name):
     """
     Normalizes given and family name and creates authors block key
     If given is missing, block_key = family + initial_family
-    If family is missing, block_key = given + initial_given 
-    Returns a set of (normalized given, normalized_family, block_key) 
+    If family is missing, block_key = given + initial_given
+    Returns a set of (normalized given, normalized_family, block_key)
     """
     normalized_name = normalized(given)
     normalized_family = normalized(family_name)
@@ -121,9 +128,7 @@ def normalized_block(given, family_name):
     elif normalized_name and not normalized_family:
         block_key = normalized_name + "_" + normalized_name[0]
     else:
-        block_key = (
-            normalized_family + "_" + normalized_name[0]
-        )  # last name + initial
+        block_key = normalized_family + "_" + normalized_name[0]  # last name + initial
 
     return (normalized_name, normalized_family, block_key)
 
@@ -146,8 +151,7 @@ def create_author_blocks_table(database_path):
     # perf.log("author_blocks SELECT")
 
     community_map = get_journal_communities(database)
-    for author_id, given, family_name, work_id, journal in select_cursor.execute(
-        """
+    for author_id, given, family_name, work_id, journal in select_cursor.execute("""
         SELECT work_authors.id,
                work_authors.given, 
                work_authors.family, 
@@ -155,8 +159,7 @@ def create_author_blocks_table(database_path):
                works.container_title  
         FROM work_authors
         LEFT JOIN works ON works.id = work_authors.work_id
-        """
-    ):
+        """):
         if not given or not family_name:
             continue
 
@@ -168,7 +171,14 @@ def create_author_blocks_table(database_path):
 
         insert_cursor.execute(
             "INSERT INTO author_name_blocks VALUES (?, ?, ?, ?, ?, ?) ",
-            (author_id, normalized_name, normalized_family, work_id, block_key, community_id),
+            (
+                author_id,
+                normalized_name,
+                normalized_family,
+                work_id,
+                block_key,
+                community_id,
+            ),
             prepare_flags=apsw.SQLITE_PREPARE_PERSISTENT,
         )
     select_cursor.close()
@@ -197,7 +207,8 @@ def process(database_path):
     For each author in the database, his name will be passed through a name-normalization function,
     based on that output each author will be put into a block with that id,
     reducing comparisons to just each authors in the same block to distinguish.
-    block_key is consisted of the normalised_family_name + first inital of normalised name"""
+    block_key is consisted of the normalised_family_name + first inital of normalised name
+    """
 
     create_author_blocks_table(database_path)
     print("Created author_blocks table")

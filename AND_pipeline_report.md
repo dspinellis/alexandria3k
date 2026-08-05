@@ -18,6 +18,8 @@ For this process to work, the work_authors table must have been populated before
 
 The next process fully depends on the existence of the produced author_name_blocks table, so in the future they'll be merged into one process, but since they currently have fairly different functionality I've temporarily kept them as separate processes
 
+link-author-blocks also contains splitting authors into communities based on their journals. Specifically this is done by creating a graph based on cited doi's. Vertices are Journals and Edges are cited doi's. Two works from different journals (vertices) that cite the same doi connect with eachother (edge being the doi). Then we run Leidens clustering algorithm to split them into communites
+
 - link_merged_authors.py
 
 link_merged_authors.py takes as input the author_name_blocks described above.
@@ -30,6 +32,8 @@ The author attributes compared so far are:
 - Co-authors (Jaccard on block keys)
 - Publication year of the paper (year gap)
 - Smaller comparison measures, such as: if two authors are co-authors, we immediately consider them different people.
+- Venue overlap (Jaccard similarity)
+- Community similarity, if 2 authors arent in the same community we discard them
 
 These criteria mirror the signals used in S2AND, one of the more well-known author-name-disambiguation datasets
 https://arxiv.org/pdf/2103.07534#table.3 .
@@ -44,6 +48,8 @@ https://en.wikipedia.org/wiki/Disjoint-set_data_structure
 
 - rapidfuzz for Jaro Winkler similarity
 - scikit-learn for n-grams (likely for upcoming features too)
+- igraph and leidenalg for journal community clustering
+- name-ethnicity-classifier for ethnicity filtering. Note that this isnt a package and has to be git cloned from this repo : https://github.com/name-ethnicity-classifier .
 
 ## Optimisations and Benchmarks
 
@@ -89,6 +95,25 @@ The % correct merges stays consistently high across all datasets (above 97%), me
 
 1. The threshold (0.75) is deliberately strict to avoid false positives, at the cost of missing some real matches (false negatives).
 2. Many of the missed pairs lack data such as affiliations (about 37% at the 700MB tier), which affects the likelihood of two authors being merged.
+
+## Ethnicity filtering
+
+In src/filter_ethnicity.py is a python script that populates a dataset based on a specific ethnicity. 
+
+Classifier used to get the ethnicity based on names is names-ethnicity-classifier from this repository https://github.com/name-ethnicity-classifier
+
+This classifier was used since its the only free option found that contains greek authors (that works)
+Script works on compressed data so to not need to populate first and then write the script, saving disk space, but will get changed as to work on already populated datasets as well. It also handles populating the dataset and only adding the necessary authors in (author from one ethnicity and their co authors from any ethnicity) so afterwards can run different processes queries without needing to populate. 
+
+Right now it runs sub-optimally in 50minutes+ total for 5GB of compressed jsonl files in one directory (650 files in total).
+The classifier is the biggest runtime factor since it has to scan through the entire dataset
+
+Results are saved into a database on disk together with a table tracking
+which compressed files have been read, so adding files to the dataset only
+classifies the names that are new rather than reclassifying everything. 
+Names with classification confidence over a threashold of 95% are chosen and names that are under 50% confidence classification are skipped all together from being saved in the dataset since they arent sufficient metrics
+
+--rebuild flag can be used to delete the database and reclassify all names from the start
 
 # Future plans / TODO list:
 
