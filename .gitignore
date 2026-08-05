@@ -6,3 +6,5 @@ Session.vim
 /data
 __pycache__
 .DS_Store
+benchmark*.py
+*.csv
