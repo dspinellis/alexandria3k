@@ -712,6 +712,7 @@ tables = [
 
 
 # pylint: disable=consider-using-with
+# pylint: disable=access-member-before-definition
 # pylint: disable-next=too-many-instance-attributes
 class TarFiles:
     """The source of the files residing in the tar.gz file"""

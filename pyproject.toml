@@ -32,6 +32,12 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+# Optional dependency since n2e imports torch, which is a huge dependency for just one feature
+# Usage: pip install alexandria3k[ethnicities] 
+
+[project.optional-dependencies]
+ethnicities = ["n2e"]
+
 [project.urls]
 "Homepage" = "https://github.com/dspinellis/alexandria3k"
 "Repository" = "https://github.com/dspinellis/alexandria3k.git"

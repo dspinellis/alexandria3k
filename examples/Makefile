@@ -33,7 +33,7 @@ export EXPENSIVE_DEPENDENCIES?=true
 
 SUBDIRS?=$(shell find . -mindepth 1 -maxdepth 1 -type d -not -name cdindex \
   -not -name tawfik -not -name cs_cdindex -not -name greek-pubs \
-  -not -name journal-impact)
+  -not -name journal-impact -not -name calculate-author-ethnicity)
 
 .PHONY: all $(SUBDIRS) verify-links clean
 
