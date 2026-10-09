@@ -74,13 +74,13 @@ Example:</p></li>
 </ul>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">tables</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">TableMeta</span><span class="p">(</span>
-        <span class="s2">&quot;funder_names&quot;</span><span class="p">,</span>
+        <span class="s2">"funder_names"</span><span class="p">,</span>
         <span class="n">cursor_class</span><span class="o">=</span><span class="n">CsvCursor</span><span class="p">,</span>
         <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">ColumnMeta</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">),</span>
-            <span class="n">ColumnMeta</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">),</span>
-            <span class="n">ColumnMeta</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span>
-            <span class="n">ColumnMeta</span><span class="p">(</span><span class="s2">&quot;replaced&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">ColumnMeta</span><span class="p">(</span><span class="s2">"id"</span><span class="p">),</span>
+            <span class="n">ColumnMeta</span><span class="p">(</span><span class="s2">"url"</span><span class="p">),</span>
+            <span class="n">ColumnMeta</span><span class="p">(</span><span class="s2">"name"</span><span class="p">),</span>
+            <span class="n">ColumnMeta</span><span class="p">(</span><span class="s2">"replaced"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span>
                        <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span>
         <span class="p">],</span>
     <span class="p">)</span>

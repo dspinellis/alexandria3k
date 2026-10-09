@@ -79,7 +79,7 @@ as detailed in the following sections.
 In addition, testing, formatting, and linting can be easilly configured
 to be run as a fast Git pre-commit hook by running the following commands
 at the top-level directory.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;#!/bin/sh\nbin/pre-commit\n&#39;</span><span class="w"> </span>&gt;.git/hooks/pre-commit
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">printf</span><span class="w"> </span><span class="s1">'#!/bin/sh\nbin/pre-commit\n'</span><span class="w"> </span>&gt;.git/hooks/pre-commit
 chmod<span class="w"> </span>+x<span class="w"> </span>.git/hooks/pre-commit
 </pre></div>
 </div>
@@ -117,14 +117,14 @@ pytest
 <section id="code-formatting">
 <h2>Code formatting<a class="headerlink" href="#code-formatting" title="Link to this heading">¶</a></h2>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in the top-level directory</span>
-find<span class="w"> </span>src<span class="w"> </span>-name<span class="w"> </span><span class="s1">&#39;*.py&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>black<span class="w"> </span>-l<span class="w"> </span><span class="m">79</span>
+find<span class="w"> </span>src<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*.py'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>black<span class="w"> </span>-l<span class="w"> </span><span class="m">79</span>
 </pre></div>
 </div>
 </section>
 <section id="linting">
 <h2>Linting<a class="headerlink" href="#linting" title="Link to this heading">¶</a></h2>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># While in the top-level directory</span>
-find<span class="w"> </span>src<span class="w"> </span>-name<span class="w"> </span><span class="s1">&#39;*.py&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pylint<span class="w"> </span>--rcfile<span class="w"> </span>.pylintrc
+find<span class="w"> </span>src<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*.py'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pylint<span class="w"> </span>--rcfile<span class="w"> </span>.pylintrc
 </pre></div>
 </div>
 </section>

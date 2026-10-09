@@ -50,15 +50,15 @@ directory.</p>
 </section>
 <section id="show-doi-and-title-of-all-publications">
 <h2>Show DOI and title of all publications<a class="headerlink" href="#show-doi-and-title-of-all-publications" title="Link to this heading">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--query<span class="w"> </span><span class="s1">&#39;SELECT DOI, title FROM works&#39;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query<span class="w"> </span><span class="s1">'SELECT DOI, title FROM works'</span>
 </pre></div>
 </div>
 </section>
 <section id="save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel">
 <h2>Save DOI and title of 2021 publications in a CSV file suitable for Excel<a class="headerlink" href="#save-doi-and-title-of-2021-publications-in-a-csv-file-suitable-for-excel" title="Link to this heading">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--query<span class="w"> </span><span class="s1">&#39;SELECT DOI, title FROM works WHERE published_year = 2021&#39;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s1">'SELECT DOI, title FROM works WHERE published_year = 2021'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--output<span class="w"> </span><span class="m">2021</span>.csv<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--output-encoding<span class="w"> </span>utf-8-sig
 </pre></div>
@@ -72,11 +72,11 @@ The <code class="docutils literal notranslate"><span class="pre">--partition</sp
 separately on each container file, allowing the query’s execution in
 a single pass.
 Without this option, the query would take millenia to complete.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref/&#39;</span><span class="w"> </span><span class="se">\</span>
---partition<span class="w"> </span>--query<span class="w"> </span><span class="s1">&#39;SELECT doi, Count(*) AS author_number</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref/'</span><span class="w"> </span><span class="se">\</span>
+--partition<span class="w"> </span>--query<span class="w"> </span><span class="s1">'SELECT doi, Count(*) AS author_number</span>
 <span class="s1">  FROM works LEFT JOIN work_authors</span>
 <span class="s1">    ON work_authors.work_id = works.id</span>
-<span class="s1">  GROUP BY doi HAVING Count(*) &gt; 50&#39;</span>
+<span class="s1">  GROUP BY doi HAVING Count(*) &gt; 50'</span>
 </pre></div>
 </div>
 </section>
@@ -84,7 +84,7 @@ Without this option, the query would take millenia to complete.</p>
 <h2>Count Crossref publications by year and type<a class="headerlink" href="#count-crossref-publications-by-year-and-type" title="Link to this heading">¶</a></h2>
 <p>This query performs a single pass through the data set to obtain the
 number of Crossref publications by year and publication type.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">   </span>--query-file<span class="w"> </span>count-year-type.sql<span class="w"> </span>&gt;results.csv
 </pre></div>
 </div>
@@ -111,27 +111,27 @@ number of Crossref publications by year and publication type.</p>
 containing the word “blockchain” in their title.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>rm<span class="w"> </span>blockchain_citations.db
 
-sqlite3<span class="w"> </span>blockchain_citations.db<span class="w"> </span><span class="s1">&#39;CREATE TABLE citations(citing_doi, cited_doi)&#39;</span>
+sqlite3<span class="w"> </span>blockchain_citations.db<span class="w"> </span><span class="s1">'CREATE TABLE citations(citing_doi, cited_doi)'</span>
 
-a3k<span class="w"> </span>--progress<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+a3k<span class="w"> </span>--progress<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--attach-databases<span class="w"> </span>bc:blockchain_citations.db<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--partition<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--query<span class="w"> </span><span class="s2">&quot;</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s2">"</span>
 <span class="s2">    INSERT INTO bc.citations(citing_doi, cited_doi)</span>
 <span class="s2">      SELECT works.doi, work_references.doi</span>
 <span class="s2">        FROM works</span>
 <span class="s2">        INNER JOIN work_references ON work_references.work_id = works.id</span>
 <span class="s2">        WHERE work_references.container_id = works.container_id</span>
 <span class="s2">          AND work_references.doi IS NOT NULL</span>
-<span class="s2">          AND work_references.article_title LIKE &#39;%blockchain%&#39;;</span>
-<span class="s2">&quot;</span>
+<span class="s2">          AND work_references.article_title LIKE '%blockchain%';</span>
+<span class="s2">"</span>
 </pre></div>
 </div>
 </section>
 <section id="obtain-patent-office-granted-patents-by-type">
 <h2>Obtain Patent Office granted patents by type<a class="headerlink" href="#obtain-patent-office-granted-patents-by-type" title="Link to this heading">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">&#39;uspto-data&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--query<span class="w"> </span><span class="s1">&#39;SELECT type, Count(*) FROM us_patents GROUP BY type&#39;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">'uspto-data'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query<span class="w"> </span><span class="s1">'SELECT type, Count(*) FROM us_patents GROUP BY type'</span>
 </pre></div>
 </div>
 </section>
@@ -142,9 +142,9 @@ not have an abstract in a <em>deterministic</em> sample of approximately 1% of
 the data set’s containers. It uses a tab character (<code class="docutils literal notranslate"><span class="pre">\t</span></code>) to separate
 the output fields. Through sampling the data containers it runs in a
 couple of minutes, rather than hours.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="w">   </span>--sample<span class="w"> </span><span class="s1">&#39;random.random() &lt; 0.01&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--field-separator<span class="w"> </span><span class="s1">$&#39;\t&#39;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref'</span><span class="w">  </span><span class="se">\</span>
+<span class="w">   </span>--sample<span class="w"> </span><span class="s1">'random.random() &lt; 0.01'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--field-separator<span class="w"> </span><span class="s1">$'\t'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">   </span>--query-file<span class="w"> </span>count-no-abstract.sql
 </pre></div>
 </div>
@@ -171,15 +171,15 @@ through the weekly issued patents (path) or on the patents’ full text
 (container) located within the issued file.
 The tuple’s second value is a USPTO Zip file path or the patent’s text, respectively.</p>
 <p>For sampling the compressed files</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">&#39;uspto-data&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="w">   </span>--sample<span class="w"> </span><span class="s1">&#39;random.random() &lt; 0.5 if data[0] == &quot;&quot;path&quot;&quot; else True&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--query<span class="w"> </span><span class="s2">&quot;SELECT Count(*), relation FROM usp_related_documents GROUP BY relation&quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">'uspto-data'</span><span class="w">  </span><span class="se">\</span>
+<span class="w">   </span>--sample<span class="w"> </span><span class="s1">'random.random() &lt; 0.5 if data[0] == ""path"" else True'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query<span class="w"> </span><span class="s2">"SELECT Count(*), relation FROM usp_related_documents GROUP BY relation"</span>
 </pre></div>
 </div>
 <p>Or for sampling unique patents</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">&#39;uspto-data&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="w">   </span>--sample<span class="w"> </span><span class="s1">&#39;random.random() &lt; 0.5 if data[0] == &quot;&quot;container&quot;&quot; else True&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--query<span class="w"> </span><span class="s2">&quot;SELECT Count(*), relation FROM usp_related_documents GROUP BY relation&quot;</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>query<span class="w"> </span>uspto<span class="w"> </span><span class="s1">'uspto-data'</span><span class="w">  </span><span class="se">\</span>
+<span class="w">   </span>--sample<span class="w"> </span><span class="s1">'random.random() &lt; 0.5 if data[0] == ""container"" else True'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--query<span class="w"> </span><span class="s2">"SELECT Count(*), relation FROM usp_related_documents GROUP BY relation"</span>
 </pre></div>
 </div>
 </section>
@@ -190,8 +190,8 @@ with all Crossref data regarding publications that contain “COVID”
 in their title or abstract.
 The created database can be opened with <em>SQLite</em>.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>covid.db<span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">&quot;title like &#39;%COVID%&#39; OR abstract like &#39;%COVID%&#39; &quot;</span>
+<span class="w">   </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">"title like '%COVID%' OR abstract like '%COVID%' "</span>
 </pre></div>
 </div>
 </section>
@@ -200,7 +200,7 @@ The created database can be opened with <em>SQLite</em>.</p>
 <p>The following command selects only a subset of columns of the complete
 Crossref data set to create a graph between navigable entities.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>graph.db<span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">   </span>--columns<span class="w"> </span>works.id<span class="w"> </span>works.doi<span class="w"> </span>works.published_year<span class="w"> </span><span class="se">\</span>
 <span class="w">     </span>work_references.work_id<span class="w"> </span>work_references.doi<span class="w"> </span>work_references.isbn<span class="w"> </span><span class="se">\</span>
 <span class="w">     </span>work_funders.id<span class="w"> </span>work_funders.work_id<span class="w"> </span>work_funders.doi<span class="w"> </span><span class="se">\</span>
@@ -241,9 +241,9 @@ following.</p>
 of works whose DOI appears in the attached database named
 <code class="docutils literal notranslate"><span class="pre">selected.db</span></code>.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>selected-works.db<span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>crossref<span class="w"> </span><span class="s1">&#39;April 2024 Public Data File from Crossref&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--attach-databases<span class="w"> </span><span class="s1">&#39;attached:selected.db&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">&quot;EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)&quot;</span>
+<span class="w">   </span>crossref<span class="w"> </span><span class="s1">'April 2024 Public Data File from Crossref'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--attach-databases<span class="w"> </span><span class="s1">'attached:selected.db'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">"EXISTS (SELECT 1 FROM attached.selected_dois WHERE works.doi = selected_dois.doi)"</span>
 </pre></div>
 </div>
 </section>
@@ -253,8 +253,8 @@ of works whose DOI appears in the attached database named
 an ORCID will be added.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>a3k<span class="w"> </span>populate<span class="w"> </span>database.db<span class="w"> </span><span class="se">\</span>
 <span class="w">   </span>ORCID<span class="w"> </span>ORCID_2022_10_summaries.tar.gz<span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">&quot;EXISTS (SELECT 1 FROM populated.work_authors</span>
-<span class="s2">     WHERE work_authors.orcid = persons.orcid)&quot;</span>
+<span class="w">   </span>--row-selection<span class="w"> </span><span class="s2">"EXISTS (SELECT 1 FROM populated.work_authors</span>
+<span class="s2">     WHERE work_authors.orcid = persons.orcid)"</span>
 </pre></div>
 </div>
 </section>
@@ -293,7 +293,7 @@ a3k<span class="w"> </span>process<span class="w"> </span>database.db<span class
 <p>Populate the research organization registry (ROR) tables.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fetch the ROR data file (~21 MB)</span>
 wget<span class="w"> </span>-O<span class="w"> </span>ror-v1.17.1.zip<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span><span class="s2">&quot;https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1&quot;</span>
+<span class="w">  </span><span class="s2">"https://zenodo.org/record/7448410/files/v1.17.1-2022-12-16-ror-data.zip?download=1"</span>
 
 <span class="c1"># Populate the database</span>
 a3k<span class="w"> </span>populate<span class="w"> </span>database.db<span class="w"> </span>ror<span class="w"> </span>ror-v1.17.1.zip
